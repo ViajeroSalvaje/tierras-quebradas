@@ -149,6 +149,20 @@
       "path": "packs/armamento-armas-arrojadizas",
       "type": "Item",
       "system": "tierras-quebradas"
+    },
+    {
+      "name": "equipo",
+      "label": "Equipo",
+      "path": "packs/equipo",
+      "type": "Item",
+      "system": "tierras-quebradas"
+    },
+    {
+      "name": "idiomas",
+      "label": "Idiomas",
+      "path": "packs/idiomas",
+      "type": "Item",
+      "system": "tierras-quebradas"
     }
   ]
 }
