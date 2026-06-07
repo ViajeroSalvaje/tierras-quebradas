@@ -1,0 +1,315 @@
+{
+  "Actor": {
+    "types": ["pj", "pnj", "criatura", "demonio"],
+    "templates": {
+      "base": {
+        "caracteristicas": {
+          "cuerpo": { "valor": 5 },
+          "mente": { "valor": 5 },
+          "espiritu": { "valor": 5 },
+          "atractivo": { "valor": 0 },
+          "tamano": { "valor": 0 }
+        },
+        "derivadas": {
+          "fuerza": { "valor": 0 },
+          "mDano1m": { "valor": 0 },
+          "mDano2m": { "valor": 0 }
+        },
+        "bases": {
+          "agilidad": { "valor": 0 },
+          "comunicacion": { "valor": 0 },
+          "cultura": { "valor": 0 },
+          "hechiceria": { "valor": 0 },
+          "percepcion": { "valor": 0 },
+          "tecnica": { "valor": 0 },
+          "vigor": { "valor": 0 }
+        },
+        "salud": {
+          "pvMax": { "valor": 0 },
+          "pvActual": { "valor": 0 },
+          "pvRagunos": { "valor": 0 },
+          "pvLeve": { "valor": 0 },
+          "pvGrave": { "valor": 0 },
+          "heridasLeves1": false,
+          "heridasLeves2": false,
+          "heridasGraves1": false,
+          "heridasGraves2": false,
+          "debilitado": false,
+          "incapacitado": false,
+          "muerto": false,
+          "sanando": false,
+          "desangre": false,
+          "dolorExtremo": false,
+          "piernaInutilizada": false,
+          "brazoInutilizado": false,
+          "agonia": false
+        },
+        "estorbo": { "valor": 0 },
+        "carga": { "valor": 0 },
+        "dinero": 0,
+        "descripcion": ""
+      },
+      "aventurero": {
+        "fortuna": {
+          "max": 3,
+          "actual": 3
+        },
+        "destino": {
+          "max": 1,
+          "actual": 1
+        },
+        "lealtad": {
+          "caos": 0,
+          "ley": 0,
+          "elementos": 0,
+          "antepasados": 0,
+          "divina1": 0,
+          "divina2": 0,
+          "divina3": 0,
+          "divina4": 0
+        },
+        "actitudDivina": "indiferente",
+        "habilidades": {
+          "academia": { "nivel": 0, "px": 0, "base": "cultura", "puntosFijos": 0 },
+          "actuacion": { "nivel": 0, "px": 0, "base": "comunicacion", "puntosFijos": 0 },
+          "atletismo": { "nivel": 0, "px": 0, "base": "agilidad", "puntosFijos": 2, "estorbo": 1 },
+          "buscar": { "nivel": 0, "px": 0, "base": "percepcion", "puntosFijos": 1 },
+          "callejeo": { "nivel": 0, "px": 0, "base": "comunicacion", "puntosFijos": 0 },
+          "conocimientoMagico": { "nivel": 0, "px": 0, "base": "cultura", "puntosFijos": 0 },
+          "disfrazarse": { "nivel": 0, "px": 0, "base": "comunicacion", "puntosFijos": 0 },
+          "documentacion": { "nivel": 0, "px": 0, "base": "percepcion", "puntosFijos": 0 },
+          "encanto": { "nivel": 0, "px": 0, "base": "comunicacion", "puntosFijos": 2 },
+          "esquivar": { "nivel": 0, "px": 0, "base": "agilidad", "puntosFijos": 1, "estorbo": 1 },
+          "estrategia": { "nivel": 0, "px": 0, "base": "cultura", "puntosFijos": 0 },
+          "forzarCerraduras": { "nivel": 0, "px": 0, "base": "tecnica", "puntosFijos": 0 },
+          "hurtar": { "nivel": 0, "px": 0, "base": "tecnica", "puntosFijos": 0, "estorbo": 1 },
+          "imponerse": { "nivel": 0, "px": 0, "base": "comunicacion", "puntosFijos": 1 },
+          "instruir": { "nivel": 0, "px": 0, "base": "comunicacion", "puntosFijos": 0 },
+          "artesania": { "nivel": 0, "px": 0, "base": "tecnica", "puntosFijos": 0 },
+          "juego": { "nivel": 0, "px": 0, "base": "percepcion", "puntosFijos": 0 },
+          "lanzar": { "nivel": 0, "px": 0, "base": "vigor", "puntosFijos": 2 },
+          "leyendas": { "nivel": 0, "px": 0, "base": "cultura", "puntosFijos": 2 },
+          "manejarBotes": { "nivel": 0, "px": 0, "base": "vigor", "puntosFijos": 0, "estorbo": 1 },
+          "manejarCarros": { "nivel": 0, "px": 0, "base": "tecnica", "puntosFijos": 0 },
+          "navegacion": { "nivel": 0, "px": 0, "base": "cultura", "puntosFijos": 0 },
+          "manipulacion": { "nivel": 0, "px": 0, "base": "comunicacion", "puntosFijos": 2 },
+          "medicina": { "nivel": 0, "px": 0, "base": "cultura", "puntosFijos": 0 },
+          "memorizar": { "nivel": 0, "px": 0, "base": "cultura", "puntosFijos": 1 },
+          "montar": { "nivel": 0, "px": 0, "base": "vigor", "puntosFijos": 0, "estorbo": 1 },
+          "multiverso": { "nivel": 0, "px": 0, "base": "cultura", "puntosFijos": 0 },
+          "oratoria": { "nivel": 0, "px": 0, "base": "comunicacion", "puntosFijos": 0 },
+          "nadar": { "nivel": 0, "px": 0, "base": "agilidad", "puntosFijos": 0, "estorbo": 3 },
+          "naturaleza": { "nivel": 0, "px": 0, "base": "cultura", "puntosFijos": 1 },
+          "ocultar": { "nivel": 0, "px": 0, "base": "tecnica", "puntosFijos": 0, "estorbo": 1 },
+          "percatarse": { "nivel": 0, "px": 0, "base": "percepcion", "puntosFijos": 0 },
+          "perspicacia": { "nivel": 0, "px": 0, "base": "percepcion", "puntosFijos": 0 },
+          "pociones": { "nivel": 0, "px": 0, "base": "cultura", "puntosFijos": 0 },
+          "primerosAuxilios": { "nivel": 0, "px": 0, "base": "tecnica", "puntosFijos": 0 },
+          "rastrear": { "nivel": 0, "px": 0, "base": "percepcion", "puntosFijos": 0 },
+          "sigilo": { "nivel": 0, "px": 0, "base": "agilidad", "puntosFijos": 1, "estorbo": 2 },
+          "seguir": { "nivel": 0, "px": 0, "base": "percepcion", "puntosFijos": 0 },
+          "sueños": { "nivel": 0, "px": 0, "base": "cultura", "puntosFijos": 0 },
+          "trepar": { "nivel": 0, "px": 0, "base": "agilidad", "puntosFijos": 0, "estorbo": 1 },
+          "tratarAnimales": { "nivel": 0, "px": 0, "base": "comunicacion", "puntosFijos": 0 },
+          "armasAsta": { "nivel": 0, "px": 0, "base": "vigor", "puntosFijos": 0, "estorbo": 1 },
+          "escudo": { "nivel": 0, "px": 0, "base": "vigor", "puntosFijos": 0, "estorbo": 1 },
+          "armasEspada": { "nivel": 0, "px": 0, "base": "vigor", "puntosFijos": 0, "estorbo": 1 },
+          "armasMangos": { "nivel": 0, "px": 0, "base": "vigor", "puntosFijos": 0, "estorbo": 1 },
+          "armasPunhal": { "nivel": 0, "px": 0, "base": "vigor", "puntosFijos": 0, "estorbo": 1 },
+          "pelea": { "nivel": 0, "px": 0, "base": "vigor", "puntosFijos": 0, "estorbo": 1 },
+          "arco": { "nivel": 0, "px": 0, "base": "tecnica", "puntosFijos": 0 },
+          "ballesta": { "nivel": 0, "px": 0, "base": "tecnica", "puntosFijos": 0 },
+          "canonDeMano": { "nivel": 0, "px": 0, "base": "tecnica", "puntosFijos": 0 },
+          "honda": { "nivel": 0, "px": 0, "base": "tecnica", "puntosFijos": 0 },
+          "idioma1": { "nivel": 0, "px": 0, "base": "cultura", "puntosFijos": 0, "nombre": "" },
+          "idioma2": { "nivel": 0, "px": 0, "base": "cultura", "puntosFijos": 0, "nombre": "" },
+          "idioma3": { "nivel": 0, "px": 0, "base": "cultura", "puntosFijos": 0, "nombre": "" },
+          "tierrasQuebradas": { "nivel": 0, "px": 0, "base": "cultura", "puntosFijos": 0 }
+        },
+        "hechiceria": {
+          "pmMax": 0,
+          "pmActual": 0,
+          "espirituConsagrado": 0,
+          "verbos": {
+            "aumentar": 0,
+            "conocer": 0,
+            "disminuir": 0,
+            "dirigir": 0,
+            "inhibir": 0,
+            "invocar": 0,
+            "modificar": 0,
+            "transformar": 0
+          },
+          "esferas": {
+            "agua": 0,
+            "aire": 0,
+            "fuego": 0,
+            "tierra": 0,
+            "cuerpo": 0,
+            "espiritu": 0,
+            "mente": 0,
+            "planta": 0,
+            "caos": 0,
+            "ley": 0
+          }
+        },
+        "motivacion": "",
+        "tuMentira": "",
+        "pasionAmor": "",
+        "pasionOdio": "",
+        "rasgosPositivos": "",
+        "rasgosNegativos": "",
+        "rasgoPos1": "", "rasgoPos2": "", "rasgoPos3": "",
+        "rasgoNeg1": "", "rasgoNeg2": "", "rasgoNeg3": "",
+        "rasgos": "",
+        "trasfondo": "",
+        "entorno": "",
+        "profesion": "",
+        "edad": 30,
+        "origen": "",
+        "religion": "",
+        "descripcionFisica": "",
+        "puntosPP": 0,
+        "puntosHab": 0,
+        "idiomaNoativo": ""
+      }
+    },
+    "pj": {
+      "templates": ["base", "aventurero"]
+    },
+    "pnj": {
+      "templates": ["base"],
+      "habilidades": {},
+      "notas": ""
+    },
+    "criatura": {
+      "templates": ["base"],
+      "habilidades": {},
+      "poderes": "",
+      "debilidades": "",
+      "tipo": "",
+      "proteccion": { "valor": 0, "tipo": "blanda" },
+      "alImpacto": 0,
+      "movimiento": "",
+      "pm": 0,
+      "notas": ""
+    },
+    "demonio": {
+      "templates": ["base"],
+      "habilidades": {},
+      "poderes": "",
+      "debilidades": "",
+      "tipo": "",
+      "proteccion": { "valor": 0, "tipo": "blanda" },
+      "alImpacto": 0,
+      "movimiento": "",
+      "pm": 0,
+      "valorMagico": 0,
+      "vinculo": "",
+      "notas": ""
+    }
+  },
+  "Item": {
+    "types": ["arma", "armadura", "hechizo", "ventaja", "rasgo", "pacto", "bendicion", "especie", "entorno", "origen", "profesion"],
+    "templates": {
+      "base": {
+        "descripcion": "",
+        "precio": 0,
+        "peso": 0
+      }
+    },
+    "arma": {
+      "templates": ["base"],
+      "danoArma": "1d6",
+      "manos": "1m",
+      "fue": 0,
+      "tipo": "cortante",
+      "longitud": "media",
+      "carga": 1,
+      "recarga": 0,
+      "habilidad": "",
+      "alcance": "contacto",
+      "noLetal": false,
+      "propiedades": "",
+      "precio": 0
+    },
+    "armadura": {
+      "templates": ["base"],
+      "proteccion": 0,
+      "tipo": "blanda",
+      "carga": 0,
+      "zona": "cuerpo",
+      "precio": 0
+    },
+    "hechizo": {
+      "templates": ["base"],
+      "verbo": "",
+      "esfera": "",
+      "pmCoste": 1,
+      "pmMax": 0,
+      "dificultad": 15,
+      "duracion": "instantaneo",
+      "alcance": "toque",
+      "requiereTiradaEspiritu": false,
+      "escola": "",
+      "sintaxis": ""
+    },
+    "ventaja": {
+      "templates": ["base"],
+      "coste": 0,
+      "tipo": "ventaja",
+      "efecto": "",
+      "fuente": ""
+    },
+    "pacto": {
+      "dios": "",
+      "religion": "caos",
+      "espirituConsagrado": 1,
+      "notas": ""
+    },
+    "bendicion": {
+      "coste": 1,
+      "tipo": "pasiva",
+      "pmCoste": 0,
+      "efecto": ""
+    },
+    "entorno": {
+      "descripcion": "",
+      "habilidades": []
+    },
+    "origen": {
+      "descripcion": "",
+      "idiomaNoativo": "",
+      "religion": "",
+      "ppBonus": 0,
+      "habilidades": []
+    },
+    "profesion": {
+      "descripcion": "",
+      "habilidades": [],
+      "ventajas": []
+    },
+    "rasgo": {
+      "coste": 0,
+      "tipo": "rasgoSobrenatural",
+      "efecto": "",
+      "habilidades": [],
+      "fuente": ""
+    },
+    "especie": {
+      "costePP": 0,
+      "bonusPuntos": 0,
+      "bonusCuerpo": 0,
+      "bonusMente": 0,
+      "bonusEspiritu": 0,
+      "tamanoMin": -3,
+      "tamanoMax": 3,
+      "atractivoMin": -3,
+      "atractivoMax": 3,
+      "esteril": false,
+      "extraviado": false,
+      "descripcion": "",
+      "rasgos": ""
+    }
+  }
+}

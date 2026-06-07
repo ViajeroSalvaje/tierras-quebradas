@@ -1,0 +1,34 @@
+<div style="height:100%;width:100%;display:flex;flex-direction:column;">
+  <div class="item-body" style="flex:1;overflow-y:auto;padding:8px 12px;display:flex;flex-direction:column;gap:10px;">
+
+    <div class="field-group full">
+      <label>Nombre</label>
+      <input type="text" name="name" value="{{item.name}}" />
+    </div>
+
+    <div class="field-group full">
+      <label>Descripción</label>
+      <textarea name="system.descripcion" rows="5">{{system.descripcion}}</textarea>
+    </div>
+
+    <div class="field-group full">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+        <label>Modificadores de Habilidades</label>
+        <a class="ent-hab-add" style="font-size:11px;color:var(--tq-teal);cursor:pointer;"><i class="fas fa-plus"></i> Añadir</a>
+      </div>
+      <table style="width:100%;font-size:12px;">
+        <thead><tr><th style="text-align:left;">Clave</th><th style="width:70px;text-align:center;">Bonus</th><th style="width:30px;"></th></tr></thead>
+        <tbody>
+          {{#each habilidades as |h|}}
+          <tr>
+            <td><input type="text" class="ent-hab-clave" data-index="{{h.index}}" data-field="clave" value="{{h.clave}}" style="width:100%;" /></td>
+            <td><input type="number" class="ent-hab-bonus" data-index="{{h.index}}" data-field="bonus" value="{{h.bonus}}" style="width:60px;text-align:center;" /></td>
+            <td><a class="ent-hab-del" data-index="{{h.index}}" style="color:var(--tq-red-dmg);cursor:pointer;"><i class="fas fa-trash"></i></a></td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div>

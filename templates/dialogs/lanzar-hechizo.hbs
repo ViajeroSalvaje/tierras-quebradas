@@ -1,0 +1,62 @@
+<div class="lh-dialog">
+
+  {{!-- Cabecera --}}
+  <div class="lh-header">
+    <span class="lh-nombre">{{hechizo.name}}</span>
+    <span class="lh-sintaxis">{{hechizo.system.verbo}}{{#if hechizo.system.esfera}} {{hechizo.system.esfera}}{{/if}}</span>
+  </div>
+  <div class="lh-stats">
+    <span>DIF <strong>{{dif}}</strong></span>
+    <span class="lh-sep">·</span>
+    <span>PM base <strong>{{pmBase}}</strong></span>
+    <span class="lh-sep">·</span>
+    <span>Puntuación <strong>{{puntuacion}}</strong></span>
+    <span class="lh-sep">·</span>
+    <span>PM {{pmActual}} / {{pmMaxTotal}}</span>
+  </div>
+
+  {{!-- PM variable --}}
+  {{#if pmVariable}}
+  <div class="lh-fila">
+    <label>PM a gastar ({{pmMin}}–{{pmMax}})</label>
+    <input type="number" name="pmElegido" value="{{pmMin}}" min="{{pmMin}}" max="{{pmMax}}" class="lh-input-num" />
+  </div>
+  {{else}}
+  <input type="hidden" name="pmElegido" value="{{pmMin}}" />
+  {{/if}}
+
+  {{!-- Blancos y duración --}}
+  <div class="lh-grid-2">
+    <div class="lh-campo">
+      <label>Blancos totales <span class="lh-hint">(+{{pmBase}} PM/extra)</span></label>
+      <input type="number" name="blancos" value="1" min="1" max="10" class="lh-input-num" />
+    </div>
+    <div class="lh-campo">
+      <label>Duración</label>
+      <select name="duracion">
+        <option value="standard">Estándar (ESP en turnos)</option>
+        <option value="minutos">Minutos (+1 PM)</option>
+        <option value="horas">Horas (+2 PM)</option>
+      </select>
+    </div>
+  </div>
+
+  {{!-- Modificadores — div en lugar de fieldset para evitar estilos de navegador --}}
+  <div class="lh-mod-box">
+    <div class="lh-mod-titulo">Modificadores al lanzamiento</div>
+    <div class="lh-checks">
+      <label class="lh-check"><input type="checkbox" name="ceremonia" /> Ceremonia (+2)</label>
+      <label class="lh-check"><input type="checkbox" name="grimorio" /> Grimorio / texto (+2)</label>
+      <label class="lh-check"><input type="checkbox" name="acelerar" /> Acelerar — Fase 1 (−2)</label>
+    </div>
+    <div class="lh-campo" style="margin-top:8px;">
+      <label>Limitación física</label>
+      <select name="limFisica">
+        <option value="0">Sin penalización</option>
+        <option value="-1">Una mano ocupada (−1)</option>
+        <option value="-2">Sin hablar o sin manos libres (−2)</option>
+      </select>
+    </div>
+  </div>
+
+</div>

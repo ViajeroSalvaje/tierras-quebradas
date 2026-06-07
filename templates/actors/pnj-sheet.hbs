@@ -1,0 +1,62 @@
+<form class="{{cssClass}} flexcol" autocomplete="off">
+  <header class="sheet-header">
+    <img class="profile-img" src="{{actor.img}}" data-edit="img" title="{{actor.name}}" />
+    <div class="header-fields">
+      <h1 class="charname">
+        <input name="name" type="text" value="{{actor.name}}" placeholder="Nombre" />
+      </h1>
+    </div>
+  </header>
+
+  <nav class="sheet-tabs">
+    <a class="item active" data-tab="stats">Stats</a>
+    <a class="item" data-tab="notas">Notas</a>
+  </nav>
+
+  <section class="sheet-body">
+    <div class="tab active" data-tab="stats">
+      <div class="caract-grid">
+        {{#each system.caracteristicas as |caract clave|}}
+        <div class="caract-item">
+          <label class="tirar-caracteristica" data-caracteristica="{{clave}}">
+            {{localize (concat "TQ.Caracteristicas." clave)}}
+          </label>
+          <input type="number" name="system.caracteristicas.{{clave}}.valor"
+                 value="{{caract.valor}}" min="-5" max="20" />
+        </div>
+        {{/each}}
+      </div>
+
+      <div class="salud-simple">
+        <label>PV</label>
+        <input type="number" name="system.salud.pvActual.valor" value="{{system.salud.pvActual.valor}}" style="width:48px" />
+        <span>/</span>
+        <span>{{system.salud.pvMax.valor}}</span>
+      </div>
+
+      <div class="section-header">
+        <span>Habilidades</span>
+        <a class="anadir-habilidad" title="Añadir habilidad"><i class="fas fa-plus"></i></a>
+      </div>
+      <div class="pnj-habilidades">
+        {{#each system.habilidades as |valor nombre|}}
+        <div class="pnj-hab" data-nombre="{{nombre}}">
+          <span class="hab-nombre">{{nombre}}</span>
+          <input type="number" name="system.habilidades.{{nombre}}"
+                 value="{{valor}}" min="0" style="width:48px" />
+          <a class="tirar-habilidad" data-nombre="{{nombre}}" data-valor="{{valor}}" title="Tirar">
+            <i class="fas fa-dice-d10"></i>
+          </a>
+          <a class="eliminar-habilidad" data-nombre="{{nombre}}" title="Eliminar">
+            <i class="fas fa-trash"></i>
+          </a>
+        </div>
+        {{/each}}
+      </div>
+    </div>
+
+    <div class="tab" data-tab="notas">
+      <textarea name="system.notas" rows="15" class="notas-textarea">{{system.notas}}</textarea>
+    </div>
+  </section>
+</form>

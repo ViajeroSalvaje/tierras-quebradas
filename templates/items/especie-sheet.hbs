@@ -1,0 +1,65 @@
+<div class="{{cssClass}} flexcol" autocomplete="off" style="height:100%;width:100%;">
+
+  <section class="item-body">
+    <div class="field-group full-width" style="margin-bottom:8px;">
+      <label>Nombre</label>
+      <input type="text" name="name" value="{{item.name}}" placeholder="Nombre de la especie" />
+    </div>
+
+    <div class="item-grid">
+      <div class="field-group">
+        <label>Coste (PP)</label>
+        <input type="number" name="system.costePP" value="{{system.costePP}}" min="0" />
+      </div>
+      <div class="field-group">
+        <label>Bonus puntos reparto</label>
+        <input type="number" name="system.bonusPuntos" value="{{system.bonusPuntos}}" min="0" />
+      </div>
+      <div class="field-group">
+        <label>Bonus Cuerpo (aleatorio)</label>
+        <input type="number" name="system.bonusCuerpo" value="{{system.bonusCuerpo}}" />
+      </div>
+      <div class="field-group">
+        <label>Bonus Mente (aleatorio)</label>
+        <input type="number" name="system.bonusMente" value="{{system.bonusMente}}" />
+      </div>
+      <div class="field-group">
+        <label>Bonus Espíritu (aleatorio)</label>
+        <input type="number" name="system.bonusEspiritu" value="{{system.bonusEspiritu}}" />
+      </div>
+      <div class="field-group">
+        <label>Tamaño mín.</label>
+        <input type="number" name="system.tamanoMin" value="{{system.tamanoMin}}" />
+      </div>
+      <div class="field-group">
+        <label>Tamaño máx.</label>
+        <input type="number" name="system.tamanoMax" value="{{system.tamanoMax}}" />
+      </div>
+      <div class="field-group">
+        <label>Atractivo mín.</label>
+        <input type="number" name="system.atractivoMin" value="{{system.atractivoMin}}" />
+      </div>
+      <div class="field-group">
+        <label>Atractivo máx.</label>
+        <input type="number" name="system.atractivoMax" value="{{system.atractivoMax}}" />
+      </div>
+      <div class="field-group">
+        <label>Estéril</label>
+        <input type="checkbox" name="system.esteril" {{checked system.esteril}} />
+      </div>
+      <div class="field-group">
+        <label>Extraviado (+PP)</label>
+        <input type="checkbox" name="system.extraviado" {{checked system.extraviado}} />
+      </div>
+    </div>
+
+    <div class="field-group full-width">
+      <label>Rasgos</label>
+      <textarea name="system.rasgos" rows="3">{{system.rasgos}}</textarea>
+    </div>
+    <div class="field-group full-width">
+      <label>Descripción</label>
+      <textarea name="system.descripcion" rows="4">{{system.descripcion}}</textarea>
+    </div>
+  </section>
+</div>

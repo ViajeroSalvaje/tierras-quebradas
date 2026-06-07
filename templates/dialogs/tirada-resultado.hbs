@@ -1,0 +1,111 @@
+<div class="tq-tirada-resultado {{css}}">
+
+  {{!-- Cabecera --}}
+  <div class="tq-chat-header">
+    <span class="tq-chat-etiqueta">{{etiqueta}}</span>
+    <span class="tq-chat-badges">
+      {{#if debilitado}}<span class="tq-chat-badge" title="Debilitado: d6">d6</span>{{/if}}
+      {{#if dolorExtremo}}<span class="tq-chat-badge" title="Dolor extremo">−2</span>{{/if}}
+    </span>
+  </div>
+
+  {{!-- Resultado grande --}}
+  <div class="tq-chat-resultado">{{localize resultado.label}}</div>
+  {{#if criticos}}
+  <div class="tq-chat-criticos">{{criticos}}</div>
+  {{/if}}
+
+  {{#if esMelee}}
+  {{!-- Melé: dos columnas --}}
+  <div class="tq-melee-grid">
+    <div class="tq-melee-col">
+      <div class="tq-melee-titulo">PJ</div>
+      <div class="tq-melee-nums">
+        <span><i class="fas fa-dice-d10"></i> <strong>{{dadoDisplay}}</strong></span>
+        <span>+ {{puntuacion}}</span>
+        {{#if bonificador}}<span>{{#if (tq-gt bonificador 0)}}+{{/if}}{{bonificador}}</span>{{/if}}
+        {{#if modLongitud}}<span>+{{modLongitud}} (long.)</span>{{/if}}
+        <span class="tq-melee-total">= <strong>{{total}}</strong></span>
+      </div>
+    </div>
+    <div class="tq-melee-col rival">
+      <div class="tq-melee-titulo">Rival</div>
+      <div class="tq-melee-nums">
+        <span><i class="fas fa-dice-d10"></i> <strong>{{dadoDisplayRival}}</strong></span>
+        <span>+ {{puntuacionRival}}</span>
+        {{#if bonificadorRival}}<span>{{#if (tq-gt bonificadorRival 0)}}+{{/if}}{{bonificadorRival}}</span>{{/if}}
+        {{#if modLongitudRival}}<span>+{{modLongitudRival}} (long.)</span>{{/if}}
+        <span class="tq-melee-total">= <strong>{{totalRival}}</strong></span>
+      </div>
+    </div>
+  </div>
+  <div class="tq-chat-exitos-row">
+    {{#if (tq-gt exitos 0)}}+{{/if}}{{exitos}} éxitos
+  </div>
+  {{else if desgloseHechizo}}
+  {{!-- Hechizo: desglose detallado --}}
+  <div class="tq-chat-desglose">
+    <span class="tq-dado"><i class="fas fa-dice-d10"></i> {{dadoDisplay}}</span>
+    <span class="tq-sep">+</span>
+    <span class="tq-desglose-comp" title="Base Hechicería">Hec. {{desgloseHechizo.base}}</span>
+    {{#each desgloseHechizo.skills as |sk|}}
+    {{#if sk.esMinimo}}
+    <span class="tq-sep">+</span>
+    <span class="tq-desglose-comp tq-desglose-min">{{sk.nombre}} {{sk.valor}}</span>
+    {{/if}}
+    {{/each}}
+    {{#if bonificador}}
+    <span class="tq-sep">{{#if (tq-gt bonificador 0)}}+{{/if}}</span>
+    <span>{{bonificador}}</span>
+    {{/if}}
+    <span class="tq-sep">=</span>
+    <span class="tq-total">{{total}}</span>
+    <span class="tq-sep tq-vs">vs</span>
+    <span class="tq-dif">{{dificultad}}</span>
+    <span class="tq-sep">→</span>
+    <span class="tq-exitos">{{#if (tq-gt exitos 0)}}+{{/if}}{{exitos}}</span>
+  </div>
+
+  {{else}}
+  {{!-- Normal: fila de cálculo --}}
+  <div class="tq-chat-desglose">
+    <span class="tq-dado"><i class="fas fa-dice-d10"></i> {{dadoDisplay}}</span>
+    <span class="tq-sep">+</span>
+    <span>{{puntuacion}}</span>
+    {{#if bonificador}}
+    <span class="tq-sep">{{#if (tq-gt bonificador 0)}}+{{/if}}</span>
+    <span>{{bonificador}}</span>
+    {{/if}}
+    <span class="tq-sep">=</span>
+    <span class="tq-total">{{total}}</span>
+    <span class="tq-sep tq-vs">vs</span>
+    <span class="tq-dif">{{dificultad}}</span>
+    <span class="tq-sep">→</span>
+    <span class="tq-exitos">{{#if (tq-gt exitos 0)}}+{{/if}}{{exitos}}</span>
+  </div>
+  {{/if}}
+
+  {{!-- Daño del PJ --}}
+  {{#if pd}}
+  <div class="tq-chat-danho">
+    {{#if pd.total}}
+    {{pd.formula}} = <strong>{{pd.total}} PD</strong>{{#if pd.noLetal}} <em>(No letal)</em>{{/if}}
+    {{#if proteccionTarget}} — {{proteccionTarget}} prot. → <strong>{{danhoAplicado}} aplicados</strong>{{/if}}
+    {{else}}
+    {{pd.formula}}
+    {{/if}}
+  </div>
+  {{/if}}
+
+  {{!-- Daño del rival --}}
+  {{#if pdRival}}
+  <div class="tq-chat-danho rival">
+    Rival: {{pdRival.formula}}
+    {{#if pdRival.total}}
+    = <strong>{{pdRival.total}} PD</strong>
+    {{#if proteccionJugador}} — {{proteccionJugador}} prot. → <strong>{{danhoRivalAplicado}} aplicados</strong>{{/if}}
+    {{/if}}
+  </div>
+  {{/if}}
+
+</div>

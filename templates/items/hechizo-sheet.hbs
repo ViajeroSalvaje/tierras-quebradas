@@ -1,0 +1,59 @@
+<div class="{{cssClass}} flexcol" autocomplete="off" style="height:100%;width:100%;">
+  <section class="item-body">
+
+    <div class="field-group full-width" style="margin-bottom:8px;">
+      <label>Nombre</label>
+      <input type="text" name="name" value="{{item.name}}" placeholder="Nombre del hechizo" />
+    </div>
+
+    <div class="item-grid">
+      <div class="field-group">
+        <label>Verbo</label>
+        <select name="system.verbo">
+          {{#each (tq-verbos) as |v|}}
+          <option value="{{v}}" {{#if (tq-eq ../system.verbo v)}}selected{{/if}}>{{v}}</option>
+          {{/each}}
+        </select>
+      </div>
+      <div class="field-group">
+        <label>Esfera</label>
+        <select name="system.esfera">
+          {{#each (tq-esferas) as |e|}}
+          <option value="{{e}}" {{#if (tq-eq ../system.esfera e)}}selected{{/if}}>{{e}}</option>
+          {{/each}}
+        </select>
+      </div>
+      <div class="field-group">
+        <label>Dificultad</label>
+        <input type="number" name="system.dificultad" value="{{system.dificultad}}" min="5" />
+      </div>
+      <div class="field-group">
+        <label>PM mín.</label>
+        <input type="number" name="system.pmCoste" value="{{system.pmCoste}}" min="0" />
+      </div>
+      <div class="field-group">
+        <label>PM máx. <span style="font-size:9px;opacity:0.6;">(0 = fijo)</span></label>
+        <input type="number" name="system.pmMax" value="{{system.pmMax}}" min="0" />
+      </div>
+      <div class="field-group">
+        <label>Duración</label>
+        <input type="text" name="system.duracion" value="{{system.duracion}}" />
+      </div>
+      <div class="field-group">
+        <label>Alcance</label>
+        <input type="text" name="system.alcance" value="{{system.alcance}}" />
+      </div>
+      <div class="field-group" style="align-items:center;gap:6px;">
+        <label>Lucha espíritu</label>
+        <input type="checkbox" name="system.requiereTiradaEspiritu"
+               {{checked system.requiereTiradaEspiritu}} style="width:auto;" />
+      </div>
+    </div>
+
+    <div class="field-group full-width" style="margin-top:6px;">
+      <label>Descripción</label>
+      <textarea name="system.descripcion" rows="6">{{system.descripcion}}</textarea>
+    </div>
+
+  </section>
+</div>

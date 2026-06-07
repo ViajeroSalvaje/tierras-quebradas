@@ -1,0 +1,32 @@
+<div class="{{cssClass}} flexcol" autocomplete="off" style="height:100%;width:100%;">
+
+  <section class="item-body">
+    <div class="field-group full-width" style="margin-bottom:8px;">
+      <label>Nombre</label>
+      <input type="text" name="name" value="{{item.name}}" placeholder="Nombre de la bendición" />
+    </div>
+    <div class="item-grid">
+      <div class="field-group">
+        <label>Coste (ESP)</label>
+        <input type="number" name="system.coste" value="{{system.coste}}" min="0" />
+      </div>
+      <div class="field-group">
+        <label>Tipo</label>
+        <select name="system.tipo">
+          <option value="pasiva"  {{selected system.tipo "pasiva"}}>Pasiva</option>
+          <option value="activa"  {{selected system.tipo "activa"}}>Activa</option>
+        </select>
+      </div>
+      {{#if (tq-eq system.tipo "activa")}}
+      <div class="field-group">
+        <label>Coste PM</label>
+        <input type="number" name="system.pmCoste" value="{{system.pmCoste}}" min="0" />
+      </div>
+      {{/if}}
+    </div>
+    <div class="field-group full-width">
+      <label>Efecto</label>
+      <textarea name="system.efecto" rows="5">{{system.efecto}}</textarea>
+    </div>
+  </section>
+</div>

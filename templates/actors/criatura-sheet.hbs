@@ -1,0 +1,100 @@
+<form class="{{cssClass}} flexcol" autocomplete="off">
+  <header class="sheet-header">
+    <img class="profile-img" src="{{actor.img}}" data-edit="img" title="{{actor.name}}" />
+    <div class="header-fields">
+      <h1 class="charname">
+        <input name="name" type="text" value="{{actor.name}}" placeholder="Nombre" />
+      </h1>
+      <div class="header-info">
+        <div class="field-group inline">
+          <label>Tipo</label>
+          <input type="text" name="system.tipo" value="{{system.tipo}}" />
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="sheet-body">
+    <div class="caract-grid">
+      {{#each system.caracteristicas as |caract clave|}}
+      <div class="caract-item">
+        <label class="tirar-caracteristica" data-caracteristica="{{clave}}">
+          {{localize (concat "TQ.Caracteristicas." clave)}}
+        </label>
+        <input type="number" name="system.caracteristicas.{{clave}}.valor"
+               value="{{caract.valor}}" min="-5" max="40" />
+      </div>
+      {{/each}}
+    </div>
+
+    <div class="combat-stats">
+      <div class="stat-item">
+        <label>FUE</label>
+        <input type="number" name="system.derivadas.fuerza.valor" value="{{system.derivadas.fuerza.valor}}" style="width:48px" />
+      </div>
+      <div class="stat-item">
+        <label>Prot.</label>
+        <input type="number" name="system.proteccion.valor" value="{{system.proteccion.valor}}" style="width:40px" />
+        <select name="system.proteccion.tipo">
+          <option value="blanda" {{#if (eq system.proteccion.tipo "blanda")}}selected{{/if}}>Blanda</option>
+          <option value="dura" {{#if (eq system.proteccion.tipo "dura")}}selected{{/if}}>Dura</option>
+        </select>
+      </div>
+      <div class="stat-item">
+        <label>Al Impacto</label>
+        <input type="number" name="system.alImpacto" value="{{system.alImpacto}}" style="width:40px" />
+      </div>
+      <div class="stat-item">
+        <label>PM</label>
+        <input type="number" name="system.pm" value="{{system.pm}}" style="width:40px" />
+      </div>
+    </div>
+
+    <div class="movimiento-row">
+      <label>Movimiento</label>
+      <input type="text" name="system.movimiento" value="{{system.movimiento}}" />
+    </div>
+
+    <div class="salud-simple">
+      <label>PV</label>
+      <input type="number" name="system.salud.pvActual.valor" value="{{system.salud.pvActual.valor}}" style="width:48px" />
+      <span>/</span>
+      <input type="number" name="system.salud.pvMax.valor" value="{{system.salud.pvMax.valor}}" style="width:48px" />
+      <span class="salud-threshold">(Deb: {{system.salud.pvLeve.valor}} · Inc: {{system.salud.pvGrave.valor}})</span>
+    </div>
+
+    <div class="section-header">
+      <span>Habilidades</span>
+      <a class="anadir-habilidad" title="Añadir habilidad"><i class="fas fa-plus"></i></a>
+    </div>
+    <div class="pnj-habilidades">
+      {{#each system.habilidades as |valor nombre|}}
+      <div class="pnj-hab" data-nombre="{{nombre}}">
+        <span class="hab-nombre">{{nombre}}</span>
+        <input type="number" name="system.habilidades.{{nombre}}"
+               value="{{valor}}" min="0" style="width:48px" />
+        <a class="tirar-habilidad" data-nombre="{{nombre}}" data-valor="{{valor}}" title="Tirar">
+          <i class="fas fa-dice-d10"></i>
+        </a>
+        <a class="eliminar-habilidad" data-nombre="{{nombre}}" title="Eliminar">
+          <i class="fas fa-trash"></i>
+        </a>
+      </div>
+      {{/each}}
+    </div>
+
+    <div class="field-group">
+      <label>Debilidades</label>
+      <textarea name="system.debilidades" rows="2">{{system.debilidades}}</textarea>
+    </div>
+    <div class="field-group">
+      <label>Poderes</label>
+      <textarea name="system.poderes" rows="4">{{system.poderes}}</textarea>
+    </div>
+    <div class="field-group">
+      <label>Notas</label>
+      <textarea name="system.notas" rows="4">{{system.notas}}</textarea>
+    </div>
+  </div>
+</form>
+

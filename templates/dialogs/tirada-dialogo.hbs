@@ -1,0 +1,109 @@
+<div class="tirada-dialogo">
+  <div class="tirada-info">
+    <span class="tirada-nombre">{{etiqueta}}</span>
+    <span class="tirada-puntuacion">Puntuación: <strong>{{puntuacion}}</strong></span>
+  </div>
+
+  <div class="tirada-campos">
+
+    {{#if (tq-eq modo "melee")}}
+    {{!-- Tirada enfrentada: fila del jugador --}}
+    <div class="tq-melee-fila">
+      <div class="campo-grupo">
+        <label>Tu arma</label>
+        <span class="longitud-jugador">{{longitudArma}}</span>
+      </div>
+      <div class="campo-grupo">
+        <label>Daño</label>
+        <span>{{jugadorDatos.danoArma}}</span>
+      </div>
+      <div class="campo-grupo">
+        <label>MD</label>
+        <span>{{jugadorDatos.md}}</span>
+      </div>
+      <div class="campo-grupo">
+        <label>Tipo</label>
+        <span>{{jugadorDatos.tipo}}</span>
+      </div>
+      <div class="campo-grupo">
+        <label for="bonificador">Bonificador</label>
+        <input type="number" name="bonificador" id="bonificador" value="0" step="1" />
+      </div>
+    </div>
+    {{!-- Fila del rival --}}
+    <div class="tq-melee-fila">
+      <div class="campo-grupo">
+        <label for="rival_puntuacion">Punt. rival</label>
+        <input type="number" name="rival_puntuacion" id="rival_puntuacion" value="{{rivalDatos.puntuacion}}" min="0" step="1" />
+      </div>
+      <div class="campo-grupo">
+        <label for="rival_longitud">Arma rival</label>
+        <select name="rival_longitud" id="rival_longitud">
+          <option value="corta"     {{#if (tq-eq rivalDatos.longitud "corta")}}selected{{/if}}>Corta</option>
+          <option value="media"     {{#if (tq-eq rivalDatos.longitud "media")}}selected{{/if}}>Media</option>
+          <option value="larga"     {{#if (tq-eq rivalDatos.longitud "larga")}}selected{{/if}}>Larga</option>
+          <option value="muy larga" {{#if (tq-eq rivalDatos.longitud "muy larga")}}selected{{/if}}>Muy larga</option>
+        </select>
+      </div>
+      <div class="campo-grupo">
+        <label for="rival_bonificador">Bon. rival</label>
+        <input type="number" name="rival_bonificador" id="rival_bonificador" value="0" step="1" />
+      </div>
+      <div class="campo-grupo">
+        <label for="rival_danoArma">Daño rival</label>
+        <input type="text" name="rival_danoArma" id="rival_danoArma" value="{{rivalDatos.danoArma}}" />
+      </div>
+      <div class="campo-grupo">
+        <label for="rival_md">MD rival</label>
+        <input type="number" name="rival_md" id="rival_md" value="{{rivalDatos.md}}" step="1" />
+      </div>
+      <div class="campo-grupo">
+        <label for="rival_tipo">Tipo rival</label>
+        <select name="rival_tipo" id="rival_tipo">
+          <option value="cortante"     {{#if (tq-eq rivalDatos.tipo "cortante")}}selected{{/if}}>Cortante</option>
+          <option value="contundente"  {{#if (tq-eq rivalDatos.tipo "contundente")}}selected{{/if}}>Contundente</option>
+          <option value="desgarradora" {{#if (tq-eq rivalDatos.tipo "desgarradora")}}selected{{/if}}>Desgarradora</option>
+          <option value="penetrante"   {{#if (tq-eq rivalDatos.tipo "penetrante")}}selected{{/if}}>Penetrante</option>
+        </select>
+      </div>
+    </div>
+
+    {{else if (tq-eq modo "distancia")}}
+    {{!-- Tirada a distancia --}}
+    <div class="campo-grupo">
+      <label for="distancia">Distancia</label>
+      <select name="distancia" id="distancia">
+        <option value="10">Corta — 0-14 m (10)</option>
+        <option value="15" selected>Media — 15-49 m (15)</option>
+        <option value="20">Larga — 50-99 m (20)</option>
+        <option value="25">Muy larga — 100+ m (25)</option>
+      </select>
+    </div>
+    <div class="campo-grupo">
+      <label for="esquivar_blanco" title="Si el blanco es consciente del disparo, se usa el mayor entre la distancia y su Esquivar">Esq. del blanco (?)</label>
+      <input type="number" name="esquivar_blanco" id="esquivar_blanco" value="0" min="0" step="1" />
+    </div>
+    <div class="campo-grupo">
+      <label for="bonificador">Bonificador</label>
+      <input type="number" name="bonificador" id="bonificador" value="0" step="1" />
+    </div>
+
+    {{else}}
+    {{!-- Tirada genérica de habilidad --}}
+    <div class="campo-grupo">
+      <label for="dificultad">Dificultad</label>
+      <select name="dificultad" id="dificultad">
+        <option value="10"  {{#if (tq-eq dificultadPorDefecto "10")}}selected{{/if}}>Fácil (10)</option>
+        <option value="15"  {{#if (tq-eq dificultadPorDefecto "15")}}selected{{/if}}>Normal (15)</option>
+        <option value="20"  {{#if (tq-eq dificultadPorDefecto "20")}}selected{{/if}}>Difícil (20)</option>
+        <option value="25"  {{#if (tq-eq dificultadPorDefecto "25")}}selected{{/if}}>Muy Difícil (25)</option>
+      </select>
+    </div>
+    <div class="campo-grupo">
+      <label for="bonificador">Bonificador</label>
+      <input type="number" name="bonificador" id="bonificador" value="0" step="1" />
+    </div>
+    {{/if}}
+
+  </div>
+</div>

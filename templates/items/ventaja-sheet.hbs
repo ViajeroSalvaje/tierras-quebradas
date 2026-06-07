@@ -1,0 +1,30 @@
+<div class="{{cssClass}} flexcol" autocomplete="off" style="height:100%;width:100%;">
+
+  <section class="item-body">
+    <div class="field-group full-width" style="margin-bottom:8px;">
+      <label>Nombre</label>
+      <input type="text" name="name" value="{{item.name}}" placeholder="Nombre" />
+    </div>
+    <div class="item-grid">
+      <div class="field-group">
+        <label>Tipo</label>
+        <select name="system.tipo">
+          <option value="ventaja" {{selected system.tipo "ventaja"}}>Ventaja</option>
+          <option value="desventaja" {{selected system.tipo "desventaja"}}>Desventaja</option>
+        </select>
+      </div>
+      <div class="field-group">
+        <label>Coste PP</label>
+        <input type="number" name="system.coste" value="{{system.coste}}" />
+      </div>
+    </div>
+    <div class="field-group full-width">
+      <label>Efecto</label>
+      <input type="text" name="system.efecto" value="{{system.efecto}}" />
+    </div>
+    <div class="field-group full-width">
+      <label>Descripción</label>
+      <textarea name="system.descripcion" rows="5">{{system.descripcion}}</textarea>
+    </div>
+  </section>
+</div>

@@ -1,0 +1,28 @@
+<div class="{{cssClass}} flexcol" autocomplete="off" style="height:100%;width:100%;">
+
+  <section class="item-body">
+    <div class="field-group full-width" style="margin-bottom:8px;">
+      <label>Nombre</label>
+      <input type="text" name="name" value="{{item.name}}" placeholder="Nombre del dios" />
+    </div>
+    <div class="item-grid">
+      <div class="field-group">
+        <label>Religión</label>
+        <select name="system.religion">
+          <option value="caos"        {{selected system.religion "caos"}}>Caos</option>
+          <option value="ley"         {{selected system.religion "ley"}}>Ley</option>
+          <option value="elementos"   {{selected system.religion "elementos"}}>Elementos</option>
+          <option value="antepasados" {{selected system.religion "antepasados"}}>Antepasados</option>
+        </select>
+      </div>
+      <div class="field-group">
+        <label>Espíritu Consagrado</label>
+        <input type="number" name="system.espirituConsagrado" value="{{system.espirituConsagrado}}" min="0" />
+      </div>
+    </div>
+    <div class="field-group full-width">
+      <label>Notas</label>
+      <textarea name="system.notas" rows="5">{{system.notas}}</textarea>
+    </div>
+  </section>
+</div>

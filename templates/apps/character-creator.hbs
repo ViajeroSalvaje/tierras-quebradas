@@ -1,0 +1,683 @@
+<div class="cc-wizard">
+
+  {{!-- ══ BARRA DE PASOS ══ --}}
+  <div class="cc-steps-bar">
+    {{#each steps}}
+    <div class="cc-step {{#if active}}active{{/if}} {{#if done}}done{{/if}}">
+      <div class="cc-step-circle">{{num}}</div>
+      <div class="cc-step-label">{{short}}</div>
+    </div>
+    {{#unless @last}}<div class="cc-step-line {{#if done}}done{{/if}}"></div>{{/unless}}
+    {{/each}}
+  </div>
+
+  {{!-- ══ BARRA DE CARACTERÍSTICAS ══ --}}
+  <div class="cc-caract-bar">
+    <div class="cc-caract-bar-item">
+      <span class="cc-caract-bar-label">CUE</span>
+      <span class="cc-caract-bar-val" data-caract="cuerpo"></span>
+    </div>
+    <div class="cc-caract-bar-sep">·</div>
+    <div class="cc-caract-bar-item">
+      <span class="cc-caract-bar-label">MEN</span>
+      <span class="cc-caract-bar-val" data-caract="mente"></span>
+    </div>
+    <div class="cc-caract-bar-sep">·</div>
+    <div class="cc-caract-bar-item">
+      <span class="cc-caract-bar-label">ESP</span>
+      <span class="cc-caract-bar-val" data-caract="espiritu"></span>
+    </div>
+    <div class="cc-caract-bar-sep">·</div>
+    <div class="cc-caract-bar-item">
+      <span class="cc-caract-bar-label">ATR</span>
+      <span class="cc-caract-bar-val" data-caract="atractivo"></span>
+    </div>
+    <div class="cc-caract-bar-sep">·</div>
+    <div class="cc-caract-bar-item">
+      <span class="cc-caract-bar-label">TAM</span>
+      <span class="cc-caract-bar-val" data-caract="tamano"></span>
+    </div>
+  </div>
+
+  {{!-- ══ CONTENIDO ══ --}}
+  <div class="cc-content">
+
+    {{!-- ════════════════════ PASO 0: CARACTERÍSTICAS ════════════════════ --}}
+    {{#if (tq-eq stepId "caracteristicas")}}
+
+    <div class="cc-metodo-toggle">
+      <button type="button" class="cc-metodo-btn {{#if (tq-eq data.metodoCaract 'distribuir')}}active{{/if}}" data-metodo="distribuir">Repartir valores</button>
+      <button type="button" class="cc-metodo-btn {{#if (tq-eq data.metodoCaract 'aleatorio')}}active{{/if}}" data-metodo="aleatorio">Aleatorio</button>
+    </div>
+
+    {{!-- Repartir --}}
+    {{#if (tq-eq data.metodoCaract "distribuir")}}
+    <div class="cc-section">
+      <h3 class="cc-section-title">
+        Características
+        <span class="cc-pts-badge {{#if (tq-gt ptsRestantes 0)}}pendiente{{else if (tq-gt 0 ptsRestantes)}}exceso{{/if}}">
+          {{#if (tq-gt ptsRestantes 0)}}Faltan {{ptsRestantes}} pts.
+          {{else if (tq-gt 0 ptsRestantes)}}Exceso {{ptsRestantes}} pts.
+          {{else}}19 / 19 ✓{{/if}}
+        </span>
+      </h3>
+      <div class="cc-caract-grid">
+        {{#each caractLista as |c|}}
+        <div class="cc-caract-row">
+          <span class="cc-caract-label">{{c.label}}</span>
+          <button type="button" class="cc-caract-btn" data-caract="{{c.key}}" data-delta="-1">−</button>
+          <span class="cc-caract-val">{{c.valor}}</span>
+          <button type="button" class="cc-caract-btn" data-caract="{{c.key}}" data-delta="1">+</button>
+          <span class="cc-caract-range">{{c.min}} – {{c.max}}</span>
+        </div>
+        {{/each}}
+      </div>
+    </div>
+    {{/if}}
+
+    {{!-- Aleatorio --}}
+    {{#if (tq-eq data.metodoCaract "aleatorio")}}
+    <div class="cc-section">
+      <h3 class="cc-section-title">Características — aleatorio</h3>
+      {{#if asignacionAleatoria}}
+      <p class="cc-aleatorio-hint">Asigna los 3 valores obtenidos libremente.</p>
+      <div class="cc-aleatorio-layout">
+        <div class="cc-aleatorio-asignacion">
+          <div class="cc-caract-grid cc-aleatorio-grid">
+            {{#each asignacionAleatoria as |c|}}
+            <div class="cc-caract-row">
+              <span class="cc-caract-label">{{c.label}}</span>
+              <select class="cc-aleatorio-select" data-caract="{{c.key}}">
+                {{#each c.opciones as |op|}}
+                <option value="{{op.valor}}" {{#if op.seleccionado}}selected{{/if}}>{{op.valor}}</option>
+                {{/each}}
+              </select>
+            </div>
+            {{/each}}
+          </div>
+        </div>
+        {{#if tiradaBruta}}
+        <div class="cc-aleatorio-resultados">
+          <p class="cc-aleatorio-resultados-titulo">Resultados obtenidos</p>
+          {{#each tiradaBruta as |v i|}}
+          <div class="cc-aleatorio-dado {{#if v.descartado}}descartado{{/if}}">{{v.valor}}</div>
+          {{/each}}
+          <p class="cc-aleatorio-resultados-nota">El 2.º valor por abajo se descarta</p>
+        </div>
+        {{/if}}
+      </div>
+      <button type="button" class="cc-tirar-aleatorio cc-tirar-de-nuevo">Volver a tirar</button>
+      {{else}}
+      <p class="cc-aleatorio-hint">Tira 4 veces 1d6+3, descarta el 2.º valor por abajo y asigna los 3 restantes.</p>
+      <button type="button" class="cc-tirar-aleatorio">Tirar dados</button>
+      {{/if}}
+    </div>
+    {{/if}}
+
+    {{!-- Atractivo y Tamaño --}}
+    <div class="cc-section cc-atr-tam-section">
+      <h3 class="cc-section-title">Atractivo y Tamaño</h3>
+      <div class="cc-atr-tam-grid">
+        {{#each atrTamLista as |c|}}
+        <div class="cc-caract-row">
+          <span class="cc-caract-label">{{c.label}}</span>
+          <button type="button" class="cc-caract-btn" data-caract="{{c.key}}" data-delta="-1">−</button>
+          <span class="cc-caract-val">{{c.valor}}</span>
+          <button type="button" class="cc-caract-btn" data-caract="{{c.key}}" data-delta="1">+</button>
+          <span class="cc-caract-range">{{c.min}} – +{{c.max}}</span>
+          {{#if c.ppStr}}
+          <span class="cc-atr-pp {{#if (tq-gt c.ppMod 0)}}bonus{{else if (tq-gt 0 c.ppMod)}}coste{{/if}}">{{c.ppStr}}</span>
+          {{/if}}
+        </div>
+        {{/each}}
+      </div>
+    </div>
+
+
+    {{!-- ════════════════════════ PASO 1: EDAD ════════════════════════ --}}
+    {{else if (tq-eq stepId "edad")}}
+
+    <div class="cc-section">
+      <h3 class="cc-section-title">Nombre del personaje</h3>
+      <input type="text" id="cc-nombre" class="cc-nombre-input"
+             value="{{data.nombre}}" placeholder="Nombre del personaje" autofocus />
+    </div>
+
+    <div class="cc-section">
+      <h3 class="cc-section-title">Categoría de edad</h3>
+      <div class="edad-grid">
+        {{#each edades as |e|}}
+        <div class="edad-card {{#if e.selected}}selected{{/if}}" data-edad="{{e.key}}">
+          <div class="edad-card-header">
+            <span class="edad-nombre">{{e.label}}</span>
+            <span class="edad-rango">{{e.rango}}</span>
+            <span class="edad-pp-badge">{{e.ppStr}}</span>
+          </div>
+          <div class="edad-card-body">
+            <div class="edad-stat"><span class="edad-stat-label">Hab. libres</span><span class="edad-stat-val">{{e.puntosHab}}</span></div>
+            <div class="edad-stat"><span class="edad-stat-label">Pts. caract.</span><span class="edad-stat-val">{{e.puntosCaract}}</span></div>
+            <div class="edad-stat"><span class="edad-stat-label">Máx. Cuerpo</span><span class="edad-stat-val">{{e.maxCuerpo}}</span></div>
+            {{#if e.maxTamanyo}}<div class="edad-stat"><span class="edad-stat-label">Máx. Tamaño</span><span class="edad-stat-val">+{{e.maxTamanyo}}</span></div>{{/if}}
+          </div>
+        </div>
+        {{/each}}
+      </div>
+      <div class="cc-edad-num-row">
+        <label>Edad exacta</label>
+        <input type="number" id="cc-edad-num" value="{{data.edadNumero}}" min="1" max="200" />
+        <span class="cc-hint">({{edad.rango}})</span>
+      </div>
+    </div>
+
+    {{#if reduccionesAleatorias}}
+    <div class="cc-aleatorio-reduccion-panel">
+      <div class="cc-aleatorio-red-titulo">Ajuste automático por edad (método aleatorio)</div>
+      {{#each reduccionesAleatorias as |r|}}
+      <div class="cc-aleatorio-red-fila">
+        <span class="cc-aleatorio-red-label">{{r.label}}</span>
+        <span class="cc-aleatorio-red-base">{{r.base}}</span>
+        <span class="cc-aleatorio-red-mod">{{r.mod}}</span>
+        <span class="cc-aleatorio-red-arrow">→</span>
+        <span class="cc-aleatorio-red-final">{{r.final}}</span>
+      </div>
+      {{/each}}
+    </div>
+    {{/if}}
+
+    {{#if hayConflicto}}
+    <div class="cc-conflicto-panel">
+      <div class="cc-conflicto-titulo">⚠ Ajuste de características necesario</div>
+      {{#if (tq-gt ptsExceso 0)}}
+      <p>La categoría <strong>{{edad.label}}</strong> permite {{edad.puntosCaract}} puntos (tienes {{sumCaract}}). Debes retirar <strong>{{ptsExceso}} punto(s)</strong>.</p>
+      {{/if}}
+      {{#if conflictoCuerpo}}
+      <p>Cuerpo no puede superar <strong>{{edad.maxCuerpo}}</strong> con esta edad (actualmente {{data.cuerpo}}).</p>
+      {{/if}}
+      <div class="cc-caract-grid" style="margin-top:8px;">
+        {{#each caractLista as |c|}}
+        <div class="cc-caract-row">
+          <span class="cc-caract-label">{{c.label}}</span>
+          <button type="button" class="cc-caract-btn" data-caract="{{c.key}}" data-delta="-1">−</button>
+          <span class="cc-caract-val">{{c.valor}}</span>
+          <button type="button" class="cc-caract-btn" data-caract="{{c.key}}" data-delta="1">+</button>
+        </div>
+        {{/each}}
+      </div>
+    </div>
+    {{/if}}
+
+
+    {{!-- ════════════════════════ PASO 3: ORIGEN ════════════════════════ --}}
+    {{else if (tq-eq stepId "origen")}}
+
+    <div class="cc-section">
+      <h3 class="cc-section-title">Origen Étnico</h3>
+      {{#if origenes}}
+      <div class="origen-grid">
+        {{#each origenes as |o|}}
+        <div class="origen-card {{#if o.selected}}selected{{/if}}" data-origen-id="{{o.id}}">
+          <div class="origen-card-header">
+            <span class="origen-nombre">{{o.name}}</span>
+            {{#if o.ppStr}}<span class="especie-pp-badge coste">{{o.ppStr}}</span>{{/if}}
+          </div>
+          <div class="origen-meta">
+            <span><strong>Idioma:</strong> {{o.idiomaNoativo}}</span>
+            <span><strong>Religión:</strong> {{o.religion}}</span>
+          </div>
+          {{#if o.habStr}}
+          <div class="origen-habs">{{o.habStr}}</div>
+          {{/if}}
+          {{#if o.selected}}
+          <p class="especie-desc" style="-webkit-line-clamp:unset;overflow:visible;">{{o.descripcion}}</p>
+          {{/if}}
+        </div>
+        {{/each}}
+      </div>
+      {{else}}
+      <p style="color:var(--tq-text-dim);font-size:13px;">Recarga el sistema para cargar el compendio de orígenes.</p>
+      {{/if}}
+    </div>
+
+    {{!-- ════════════════════════ PASO 2: ESPECIE ════════════════════════ --}}
+    {{else if (tq-eq stepId "especie")}}
+
+    <div class="cc-section">
+      <h3 class="cc-section-title">Especie</h3>
+      <div class="especie-grid">
+        {{#each especies as |e|}}
+        <div class="especie-card {{#if e.selected}}selected{{/if}}"
+             data-especie-id="{{e.id}}" data-coste-pp="{{e.costePP}}"
+             data-bonus-mente="{{e.bonusMente}}" data-bonus-esp="{{e.bonusEspiritu}}"
+             data-bonus-puntos="{{e.bonusPuntos}}">
+          <div class="especie-card-header">
+            <span class="especie-nombre">{{e.name}}</span>
+            <span class="especie-pp-badge {{#if (tq-gt e.costePP 0)}}coste{{/if}}">{{e.ppCostStr}}</span>
+          </div>
+          {{#if e.bonusPuntosStr}}<div class="especie-bonus-puntos">{{e.bonusPuntosStr}}</div>{{/if}}
+          {{#if e.bonusCaract}}<div class="especie-bonus-caract">{{e.bonusCaract}}</div>{{/if}}
+          {{#if (tq-gt e.tamanoMax 0)}}<div class="especie-bonus-caract">TAM máx. +{{e.tamanoMax}}</div>{{/if}}
+          <p class="especie-desc">{{e.descripcion}}</p>
+        </div>
+        {{/each}}
+      </div>
+    </div>
+
+    {{!-- Panel de redistribución de características (método distribuir) --}}
+    {{#if (tq-eq data.metodoCaract "distribuir")}}
+    <div class="cc-section cc-atr-tam-section">
+      <h3 class="cc-section-title">
+        Características
+        <span class="cc-pts-badge {{#if (tq-gt ptsRestantes 0)}}pendiente{{else if (tq-gt 0 ptsRestantes)}}exceso{{/if}}">
+          {{#if (tq-gt ptsRestantes 0)}}Faltan {{ptsRestantes}} pts.
+          {{else if (tq-gt 0 ptsRestantes)}}Exceso {{ptsRestantes}} pts.
+          {{else}}✓ Repartidos{{/if}}
+        </span>
+      </h3>
+      <div class="cc-caract-grid">
+        {{#each caractLista as |c|}}
+        <div class="cc-caract-row">
+          <span class="cc-caract-label">{{c.label}}</span>
+          <button type="button" class="cc-caract-btn" data-caract="{{c.key}}" data-delta="-1">−</button>
+          <span class="cc-caract-val">{{c.valor}}</span>
+          <button type="button" class="cc-caract-btn" data-caract="{{c.key}}" data-delta="1">+</button>
+          <span class="cc-caract-range">{{c.min}} – {{c.max}}</span>
+        </div>
+        {{/each}}
+      </div>
+    </div>
+    {{/if}}
+
+
+    {{!-- ════════════════════════ PASO 4: ENTORNO ════════════════════════ --}}
+    {{else if (tq-eq stepId "entorno")}}
+
+    <div class="cc-section">
+      <h3 class="cc-section-title">Entorno</h3>
+      {{#if entornos}}
+      <div class="origen-grid">
+        {{#each entornos as |e|}}
+        <div class="entorno-card origen-card {{#if e.selected}}selected{{/if}}" data-entorno-id="{{e.id}}">
+          <div class="origen-card-header">
+            <span class="origen-nombre">{{e.name}}</span>
+          </div>
+          {{#if e.habStr}}
+          <div class="origen-habs">{{e.habStr}}</div>
+          {{/if}}
+          {{#if e.selected}}
+          <p class="especie-desc" style="-webkit-line-clamp:unset;overflow:visible;">{{e.descripcion}}</p>
+          {{/if}}
+        </div>
+        {{/each}}
+      </div>
+      {{else}}
+      <p style="color:var(--tq-text-dim);font-size:13px;">Recarga el sistema para cargar el compendio de entornos.</p>
+      {{/if}}
+    </div>
+
+    {{#if eleccionesEntorno}}
+    <div class="cc-section cc-elecciones-armas">
+      <h3 class="cc-section-title">Elige tu arma</h3>
+      {{#each eleccionesEntorno as |e|}}
+      <div class="cc-eleccion-row">
+        <span class="cc-eleccion-nombre">{{e.nombre}} <span class="cc-eleccion-bonus">+{{e.bonus}}</span></span>
+        <select class="cc-arma-select" data-idx="{{e.idx}}" data-tipo="entorno">
+          {{#each e.opciones as |op|}}
+          <option value="{{op.clave}}" {{#if op.selected}}selected{{/if}}>{{op.label}}</option>
+          {{/each}}
+        </select>
+      </div>
+      {{/each}}
+    </div>
+    {{/if}}
+
+
+    {{!-- ════════════════════════ PASO 5: PROFESIÓN ════════════════════════ --}}
+    {{else if (tq-eq stepId "profesion")}}
+
+    <div class="cc-section">
+      <h3 class="cc-section-title">Profesión</h3>
+      {{#if profesiones}}
+      <div class="origen-grid">
+        {{#each profesiones as |p|}}
+        <div class="profesion-card origen-card {{#if p.selected}}selected{{/if}}" data-profesion-id="{{p.id}}">
+          <div class="origen-card-header">
+            <span class="origen-nombre">{{p.name}}</span>
+          </div>
+          {{#if p.habStr}}
+          <div class="origen-habs">{{p.habStr}}</div>
+          {{/if}}
+          {{#if p.ventajas.length}}
+          <div class="origen-habs" style="color:var(--tq-green);">
+            Ventajas: {{#each p.ventajas as |v|}}{{v.nombre}}{{#unless @last}}, {{/unless}}{{/each}}
+          </div>
+          {{/if}}
+          {{#if p.selected}}
+          <p class="especie-desc" style="-webkit-line-clamp:unset;overflow:visible;">{{p.descripcion}}</p>
+          {{/if}}
+        </div>
+        {{/each}}
+      </div>
+      {{else}}
+      <p style="color:var(--tq-text-dim);font-size:13px;">Recarga el sistema para cargar el compendio de profesiones.</p>
+      {{/if}}
+    </div>
+
+    {{#if eleccionesProfesion}}
+    <div class="cc-section cc-elecciones-armas">
+      <h3 class="cc-section-title">Elige tus armas</h3>
+      {{#each eleccionesProfesion as |e|}}
+      <div class="cc-eleccion-row">
+        <span class="cc-eleccion-nombre">{{e.nombre}} <span class="cc-eleccion-bonus">+{{e.bonus}}</span></span>
+        <select class="cc-arma-select" data-idx="{{e.idx}}" data-tipo="profesion">
+          {{#each e.opciones as |op|}}
+          <option value="{{op.clave}}" {{#if op.selected}}selected{{/if}}>{{op.label}}</option>
+          {{/each}}
+        </select>
+      </div>
+      {{/each}}
+    </div>
+    {{/if}}
+
+
+    {{!-- ════════════════════════ PASO 6: VENTAJAS ════════════════════════ --}}
+    {{else if (tq-eq stepId "ventajas")}}
+
+    <div class="cc-section">
+      <div class="cc-ventajas-info">
+        Seleccionadas: <strong>{{ventajasConteo}}/4</strong>
+        <span class="cc-hint">(no es obligatorio elegir)</span>
+      </div>
+
+      <h3 class="cc-section-title">Ventajas</h3>
+      {{#if ventajasLista}}
+      <div class="ventaja-grid">
+        {{#each ventajasLista as |v|}}
+        <div class="ventaja-card {{#if v.selected}}selected{{/if}} {{#if v.deshabilitada}}disabled{{/if}}"
+             data-ventaja-id="{{v.id}}">
+          <div class="ventaja-card-header">
+            <span class="ventaja-nombre">{{v.name}}</span>
+            <span class="ventaja-pp coste">{{v.costeBadge}}</span>
+          </div>
+          <p class="ventaja-efecto">{{v.efecto}}</p>
+        </div>
+        {{/each}}
+      </div>
+      {{else}}
+      <p style="color:var(--tq-text-dim);font-size:13px;">Recarga el sistema para cargar el compendio de ventajas.</p>
+      {{/if}}
+
+      <h3 class="cc-section-title cc-desventajas-title">Desventajas</h3>
+      {{#if desventajasLista}}
+      <div class="ventaja-grid">
+        {{#each desventajasLista as |v|}}
+        <div class="ventaja-card desventaja {{#if v.selected}}selected{{/if}} {{#if v.deshabilitada}}disabled{{/if}}"
+             data-ventaja-id="{{v.id}}">
+          <div class="ventaja-card-header">
+            <span class="ventaja-nombre">{{v.name}}</span>
+            <span class="ventaja-pp bonus">{{v.costeBadge}}</span>
+          </div>
+          <p class="ventaja-efecto">{{v.efecto}}</p>
+        </div>
+        {{/each}}
+      </div>
+      {{/if}}
+    </div>
+
+
+    {{!-- ════════════════════════ PASO 7: RASGOS ════════════════════════ --}}
+    {{else if (tq-eq stepId "rasgos")}}
+
+    {{!-- Selección de rasgos sobrenaturales y sociales --}}
+    {{#if rasgosItemsData}}
+
+    {{#if rasgosItemsData.sobrenaturales.length}}
+    <div class="cc-section">
+      <h3 class="cc-section-title">Rasgos sobrenaturales</h3>
+      <div class="ventaja-grid">
+        {{#each rasgosItemsData.sobrenaturales as |r|}}
+        <div class="ventaja-card rasgo-card {{#if r.selected}}selected{{/if}} {{#if r.deshabilitada}}disabled{{/if}}"
+             data-rasgo-id="{{r.id}}">
+          <div class="ventaja-card-header">
+            <span class="ventaja-nombre">{{r.name}}</span>
+            <span class="ventaja-pp {{#if (tq-gt 0 r.coste)}}coste{{else}}bonus{{/if}}">{{r.costeBadge}}</span>
+          </div>
+          <p class="ventaja-efecto">{{r.efecto}}</p>
+        </div>
+        {{/each}}
+      </div>
+    </div>
+    {{/if}}
+
+    {{#if rasgosItemsData.sociales.length}}
+    <div class="cc-section">
+      <h3 class="cc-section-title">Rasgos sociales</h3>
+      <div class="ventaja-grid">
+        {{#each rasgosItemsData.sociales as |r|}}
+        <div class="ventaja-card rasgo-card {{#if r.selected}}selected{{/if}} {{#if r.deshabilitada}}disabled{{/if}}"
+             data-rasgo-id="{{r.id}}">
+          <div class="ventaja-card-header">
+            <span class="ventaja-nombre">{{r.name}}</span>
+            <span class="ventaja-pp {{#if (tq-gt 0 r.coste)}}coste{{else}}bonus{{/if}}">{{r.costeBadge}}</span>
+          </div>
+          <p class="ventaja-efecto">{{r.efecto}}</p>
+        </div>
+        {{/each}}
+      </div>
+    </div>
+    {{/if}}
+
+    {{else}}
+    <p class="cc-hint">Recarga el sistema para cargar el compendio de rasgos.</p>
+    {{/if}}
+
+    {{!-- Rasgos de personalidad --}}
+    {{#if rasgosData}}
+    <div class="cc-section">
+      <h3 class="cc-section-title" style="margin-top:8px;">Rasgos de personalidad
+        <span class="cc-hint" style="font-weight:normal;">(opcional)</span>
+      </h3>
+      <div class="cc-rasgos-grid" style="margin-bottom:12px;">
+        {{#each rasgosData.positivos as |r|}}
+        <div class="cc-rasgo-row">
+          <label class="cc-rasgo-label">{{r.label}}</label>
+          <input type="text" class="cc-rasgo-input" data-tipo="pos" data-idx="{{r.idx}}"
+                 value="{{r.valor}}" placeholder="Describe un rasgo positivo…" />
+        </div>
+        {{/each}}
+      </div>
+      <div class="cc-rasgos-grid">
+        {{#each rasgosData.negativos as |r|}}
+        <div class="cc-rasgo-row">
+          <label class="cc-rasgo-label">{{r.label}}</label>
+          <input type="text" class="cc-rasgo-input" data-tipo="neg" data-idx="{{r.idx}}"
+                 value="{{r.valor}}" placeholder="Describe un rasgo negativo…" />
+        </div>
+        {{/each}}
+      </div>
+    </div>
+    {{/if}}
+
+
+    {{!-- ════════════════════════ PASO 9: EQUIPO ════════════════════════ --}}
+    {{else if (tq-eq stepId "equipo")}}
+
+    <div class="cc-section">
+      <h3 class="cc-section-title">Fondos iniciales</h3>
+      <p class="cc-hint">Salvo indicación del director, o justificación narrativa, escoge el adecuado a tu profesión.{{#if data.profesionNombre}} ({{data.profesionNombre}}){{/if}}</p>
+      <div class="cc-nivel-grid">
+        {{#each equipoData.niveles as |n|}}
+        <div class="cc-nivel-adquisitivo-card {{#if (tq-eq data.nivelAdquisitivo n.id)}}selected{{/if}}"
+             data-nivel-id="{{n.id}}">
+          <div class="cc-nivel-header">
+            <span class="cc-nivel-nombre">{{n.label}}</span>
+            <span class="cc-nivel-mb">{{n.mb}} mb</span>
+          </div>
+          <p class="cc-nivel-desc">{{n.desc}}</p>
+        </div>
+        {{/each}}
+      </div>
+      {{#if data.nivelAdquisitivo}}
+      <p class="cc-equipo-fondos-total">
+        Fondos disponibles: <strong>{{data.fondosIniciales}} mb</strong>
+        {{#if equipoData.mbGastado}}
+          &nbsp;·&nbsp; Gastado: <strong>{{equipoData.mbGastado}} mb</strong>
+          &nbsp;·&nbsp; Restante: <strong class="{{#if equipoData.mbNegativo}}cc-mb-deficit{{/if}}">{{equipoData.mbRestantes}} mb</strong>
+        {{/if}}
+      </p>
+      {{/if}}
+    </div>
+
+    {{#if armadurasData}}
+    <div class="cc-section">
+      <h3 class="cc-section-title">Armadura</h3>
+      <p class="cc-hint">Selecciona las piezas que equipa tu personaje. El coste se descuenta de los fondos iniciales.</p>
+      <div class="cc-armadura-lista">
+        {{#each armadurasData as |a|}}
+        <label class="cc-armadura-fila {{#if a.selected}}selected{{/if}}">
+          <input type="checkbox" class="cc-armadura-check"
+                 data-armadura-id="{{a.id}}"
+                 data-nombre="{{a.name}}"
+                 data-precio="{{a.precio}}"
+                 data-carga="{{a.carga}}"
+                 {{#if a.selected}}checked{{/if}} />
+          <span class="cc-armadura-nombre">{{a.name}} <span class="cc-armadura-precio">({{a.precio}} mb)</span></span>
+        </label>
+        {{/each}}
+      </div>
+    </div>
+    {{/if}}
+
+    {{#if armasCaCData}}
+    <div class="cc-section">
+      <h3 class="cc-section-title">Armas cuerpo a cuerpo</h3>
+      <p class="cc-hint">Selecciona las armas que porta tu personaje. El coste se descuenta de los fondos iniciales.</p>
+      <div class="cc-armadura-lista">
+        {{#each armasCaCData as |a|}}
+        <label class="cc-armadura-fila {{#if a.selected}}selected{{/if}}">
+          <input type="checkbox" class="cc-armacac-check"
+                 data-arma-id="{{a.id}}"
+                 data-nombre="{{a.name}}"
+                 data-precio="{{a.precio}}"
+                 data-carga="{{a.carga}}"
+                 {{#if a.selected}}checked{{/if}} />
+          <span class="cc-armadura-nombre">{{a.name}} <span class="cc-armadura-precio">({{a.precio}} mb)</span></span>
+        </label>
+        {{/each}}
+      </div>
+    </div>
+    {{/if}}
+
+    {{#if armasProyData}}
+    <div class="cc-section">
+      <h3 class="cc-section-title">Armas de proyectiles</h3>
+      <p class="cc-hint">Selecciona las armas que porta tu personaje. El coste se descuenta de los fondos iniciales.</p>
+      <div class="cc-armadura-lista">
+        {{#each armasProyData as |a|}}
+        <label class="cc-armadura-fila {{#if a.selected}}selected{{/if}}">
+          <input type="checkbox" class="cc-armaproy-check"
+                 data-arma-id="{{a.id}}"
+                 data-nombre="{{a.name}}"
+                 data-precio="{{a.precio}}"
+                 data-carga="{{a.carga}}"
+                 {{#if a.selected}}checked{{/if}} />
+          <span class="cc-armadura-nombre">{{a.name}} <span class="cc-armadura-precio">({{a.precio}} mb)</span></span>
+        </label>
+        {{/each}}
+      </div>
+    </div>
+    {{/if}}
+
+    {{#if armasArrData}}
+    <div class="cc-section">
+      <h3 class="cc-section-title">Armas arrojadizas</h3>
+      <p class="cc-hint">Selecciona las armas que porta tu personaje. El coste se descuenta de los fondos iniciales.</p>
+      <div class="cc-armadura-lista">
+        {{#each armasArrData as |a|}}
+        <label class="cc-armadura-fila {{#if a.selected}}selected{{/if}}">
+          <input type="checkbox" class="cc-armaArr-check"
+                 data-arma-id="{{a.id}}"
+                 data-nombre="{{a.name}}"
+                 data-precio="{{a.precio}}"
+                 data-carga="{{a.carga}}"
+                 {{#if a.selected}}checked{{/if}} />
+          <span class="cc-armadura-nombre">{{a.name}} <span class="cc-armadura-precio">({{a.precio}} mb)</span></span>
+        </label>
+        {{/each}}
+      </div>
+    </div>
+    {{/if}}
+
+    <div class="cc-section">
+      <h3 class="cc-section-title">Carga y Estorbo</h3>
+      <p class="cc-hint">Basado en tu Fuerza ({{equipoData.fuerza}}). Se recalculará automáticamente al equiparte.</p>
+      <div class="cc-estorbo-tabla">
+        <div class="cc-estorbo-fila encabezado">
+          <span>Carga total</span>
+          <span>Estorbo</span>
+          <span>Estado</span>
+        </div>
+        <div class="cc-estorbo-fila">
+          <span>Menos de {{equipoData.cargaNormal}}</span>
+          <span>0</span>
+          <span>Normal</span>
+        </div>
+        <div class="cc-estorbo-fila">
+          <span>{{equipoData.cargaNormal}} – {{equipoData.cargaMucha}}</span>
+          <span>−2</span>
+          <span>Cargado</span>
+        </div>
+        <div class="cc-estorbo-fila">
+          <span>{{equipoData.cargaMucha}} – {{equipoData.cargaDebilita}}</span>
+          <span>−4</span>
+          <span>Muy cargado</span>
+        </div>
+        <div class="cc-estorbo-fila alerta">
+          <span>Más de {{equipoData.cargaDebilita}}</span>
+          <span>−4</span>
+          <span>Debilitado</span>
+        </div>
+        <div class="cc-estorbo-fila limite">
+          <span>Más de {{equipoData.cargaMaxima}}</span>
+          <span colspan="2">Imposible cargar</span>
+        </div>
+      </div>
+    </div>
+
+
+    {{!-- ════════════════════════ PASOS PENDIENTES ════════════════════════ --}}
+    {{else}}
+    <div class="cc-placeholder">
+      <div class="cc-placeholder-icon">⚙</div>
+      <p class="cc-placeholder-titulo">{{stepLabel}}</p>
+      <p class="cc-placeholder-desc">Este paso se implementará próximamente.</p>
+    </div>
+    {{/if}}
+
+  </div>
+
+  {{!-- ══ PIE ══ --}}
+  <div class="cc-footer">
+    <div class="cc-footer-recursos">
+      <div class="cc-pp-total">
+        <span class="cc-pp-label">PP</span>
+        <span class="cc-pp-valor">{{ppTotal}}</span>
+      </div>
+      <div class="cc-pp-total">
+        <span class="cc-pp-label">Hab. libres</span>
+        <span class="cc-pp-valor">{{puntosHab}}</span>
+      </div>
+    </div>
+    <div class="cc-nav">
+      {{#if hayAnterior}}
+      <button type="button" class="cc-btn-anterior">Anterior</button>
+      {{/if}}
+      {{#if mostrarCrear}}
+      <button type="button" class="cc-btn-crear">Crear Personaje</button>
+      {{/if}}
+      {{#unless esUltimoPaso}}
+      <button type="button" class="cc-btn-siguiente">Siguiente</button>
+      {{/unless}}
+    </div>
+  </div>
+
+</div>

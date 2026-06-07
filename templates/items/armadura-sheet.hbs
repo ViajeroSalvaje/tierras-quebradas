@@ -1,0 +1,44 @@
+<div class="{{cssClass}} flexcol" autocomplete="off" style="height:100%;width:100%;">
+
+  <section class="item-body">
+    <div class="field-group full-width" style="margin-bottom:8px;">
+      <label>Nombre</label>
+      <input type="text" name="name" value="{{item.name}}" placeholder="Nombre de la armadura" />
+    </div>
+    <div class="item-grid">
+      <div class="field-group">
+        <label>Protección</label>
+        <input type="number" name="system.proteccion" value="{{system.proteccion}}" min="0" />
+      </div>
+      <div class="field-group">
+        <label>Carga</label>
+        <input type="number" name="system.carga" value="{{system.carga}}" min="0" />
+      </div>
+      <div class="field-group">
+        <label>Tipo</label>
+        <select name="system.tipo">
+          <option value="blanda" {{selected system.tipo "blanda"}}>Blanda</option>
+          <option value="dura"   {{selected system.tipo "dura"}}>Dura</option>
+        </select>
+      </div>
+      <div class="field-group">
+        <label>Zona</label>
+        <select name="system.zona">
+          <option value="cuerpo" {{selected system.zona "cuerpo"}}>Cuerpo</option>
+          <option value="cabeza" {{selected system.zona "cabeza"}}>Cabeza</option>
+          <option value="brazos" {{selected system.zona "brazos"}}>Brazos</option>
+          <option value="piernas" {{selected system.zona "piernas"}}>Piernas</option>
+          <option value="escudo" {{selected system.zona "escudo"}}>Escudo</option>
+        </select>
+      </div>
+      <div class="field-group">
+        <label>Precio</label>
+        <input type="number" name="system.precio" value="{{system.precio}}" min="0" />
+      </div>
+    </div>
+    <div class="field-group full-width">
+      <label>Descripción</label>
+      <textarea name="system.descripcion" rows="4">{{system.descripcion}}</textarea>
+    </div>
+  </section>
+</div>

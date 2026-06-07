@@ -1,0 +1,154 @@
+{
+  "id": "tierras-quebradas",
+  "title": "Tierras Quebradas",
+  "description": "Tierras Quebradas: Aventuras entre la Ley y el Caos — Edición Revisada",
+  "version": "0.1.0",
+  "authors": [
+    {
+      "name": "Carlos Ferrer"
+    }
+  ],
+  "compatibility": {
+    "minimum": "13",
+    "verified": "13"
+  },
+  "esmodules": [
+    "tierras-quebradas.mjs"
+  ],
+  "styles": [
+    "styles/tierras-quebradas.css"
+  ],
+  "languages": [
+    {
+      "lang": "es",
+      "name": "Español",
+      "path": "lang/es.json"
+    }
+  ],
+  "actorTypes": [
+    "pj",
+    "pnj",
+    "criatura",
+    "demonio"
+  ],
+  "itemTypes": [
+    "arma",
+    "armadura",
+    "hechizo",
+    "ventaja",
+    "rasgo",
+    "pacto",
+    "bendicion",
+    "especie",
+    "entorno",
+    "origen",
+    "profesion"
+  ],
+  "packs": [
+    {
+      "name": "bendiciones",
+      "label": "Bendiciones Divinas",
+      "path": "packs/bendiciones",
+      "type": "Item",
+      "system": "tierras-quebradas"
+    },
+    {
+      "name": "criaturas",
+      "label": "Bestiario — Criaturas",
+      "path": "packs/criaturas",
+      "type": "Actor",
+      "system": "tierras-quebradas"
+    },
+    {
+      "name": "demonios",
+      "label": "Bestiario — Demonios",
+      "path": "packs/demonios",
+      "type": "Actor",
+      "system": "tierras-quebradas"
+    },
+    {
+      "name": "tablas-sucesos",
+      "label": "Tablas de Sucesos",
+      "path": "packs/tablas-sucesos",
+      "type": "RollTable",
+      "system": "tierras-quebradas"
+    },
+    {
+      "name": "especies",
+      "label": "Especies",
+      "path": "packs/especies",
+      "type": "Item",
+      "system": "tierras-quebradas"
+    },
+    {
+      "name": "entornos",
+      "label": "Entornos",
+      "path": "packs/entornos",
+      "type": "Item",
+      "system": "tierras-quebradas"
+    },
+    {
+      "name": "origenes",
+      "label": "Orígenes Étnicos",
+      "path": "packs/origenes",
+      "type": "Item",
+      "system": "tierras-quebradas"
+    },
+    {
+      "name": "profesiones",
+      "label": "Profesiones",
+      "path": "packs/profesiones",
+      "type": "Item",
+      "system": "tierras-quebradas"
+    },
+    {
+      "name": "ventajas",
+      "label": "Ventajas y Desventajas",
+      "path": "packs/ventajas",
+      "type": "Item",
+      "system": "tierras-quebradas"
+    },
+    {
+      "name": "rasgos",
+      "label": "Rasgos",
+      "path": "packs/rasgos",
+      "type": "Item",
+      "system": "tierras-quebradas"
+    },
+    {
+      "name": "armamento-armaduras",
+      "label": "Armamento: Armaduras",
+      "path": "packs/armamento-armaduras",
+      "type": "Item",
+      "system": "tierras-quebradas"
+    },
+    {
+      "name": "armamento-armas-improvisadas",
+      "label": "Armamento: Armas Improvisadas",
+      "path": "packs/armamento-armas-improvisadas",
+      "type": "Item",
+      "system": "tierras-quebradas"
+    },
+    {
+      "name": "armamento-armas-cuerpo-a-cuerpo",
+      "label": "Armamento: Armas Cuerpo a Cuerpo",
+      "path": "packs/armamento-armas-cuerpo-a-cuerpo",
+      "type": "Item",
+      "system": "tierras-quebradas"
+    },
+    {
+      "name": "armamento-armas-proyectiles",
+      "label": "Armamento: Armas de Proyectiles",
+      "path": "packs/armamento-armas-proyectiles",
+      "type": "Item",
+      "system": "tierras-quebradas"
+    },
+    {
+      "name": "armamento-armas-arrojadizas",
+      "label": "Armamento: Armas Arrojadizas",
+      "path": "packs/armamento-armas-arrojadizas",
+      "type": "Item",
+      "system": "tierras-quebradas"
+    }
+  ]
+}
