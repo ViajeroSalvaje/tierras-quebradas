@@ -1,4 +1,13 @@
 
+# Notas 9 de junio 2026
+
+**Cambios**
+
+- Cambios en la estética de la ficha de PNJ
+- Mejoras en el importador de PNJ mejorando los procesos de RegEx
+
+
+
 # Notas 8 de junio 2026
 
 **Cambios**
@@ -24,15 +33,6 @@
 - El valor de Lealtad que esté 10 puntos por encima de los otros se pone en rojo
 
 **Fallos detectados a corregir**
-
-
-
-
-
-
-
-
-
 
 
 
