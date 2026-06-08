@@ -3,8 +3,10 @@
 
 **Cambios**
 
-- Cambios en la estética de la ficha de PNJ
-- Mejoras en el importador de PNJ mejorando los procesos de RegEx
+- Cambios en la estética de la ficha de PNJ.
+- Mejoras en el importador de PNJ mejorando los procesos de RegEx.
+- Corrección de fallos en el paso de habilidades del Creador de Personajes.
+- 
 
 
 
