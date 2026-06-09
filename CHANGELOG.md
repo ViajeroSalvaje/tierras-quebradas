@@ -1,3 +1,14 @@
+# Notas 10 de junio 2026
+
+**Cambios**
+
+- Texto informativo en el importador de PNJ
+- Cambios en la tarjeta de chat de Hechizos
+- Cambios en el registro de numeración en la pestaña de Magia del PJ
+- Correcciones en la Lucha de Espíritu
+
+
+
 
 # Notas 9 de junio 2026
 
@@ -6,7 +17,7 @@
 - Cambios en la estética de la ficha de PNJ.
 - Mejoras en el importador de PNJ mejorando los procesos de RegEx.
 - Corrección de fallos en el paso de habilidades del Creador de Personajes.
-- 
+
 
 
 
