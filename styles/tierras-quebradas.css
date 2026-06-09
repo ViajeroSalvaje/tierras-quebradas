@@ -107,8 +107,8 @@
   border: 2px solid var(--tq-teal);
   border-radius: 3px;
   object-fit: cover;
-  width: 192px;
-  height: 192px;
+  width: 134px;
+  height: 134px;
   flex-shrink: 0;
   cursor: pointer;
 }
@@ -118,6 +118,11 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
+}
+
+.tierras-quebradas .pnj-header-fields {
+  justify-content: flex-end;
+  align-self: stretch;
 }
 
 .tierras-quebradas .charname input {
@@ -316,7 +321,7 @@
   gap: 3px;
 }
 
-.caract-label {
+.caract-etiqueta {
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -327,11 +332,11 @@
   text-align: center;
 }
 
-.caract-label:hover {
+.caract-etiqueta:hover {
   color: var(--tq-teal-light);
 }
 
-.caract-circle {
+.caract-circulo {
   width: 50px;
   height: 50px;
   border-radius: 50%;
@@ -342,7 +347,7 @@
   justify-content: center;
 }
 
-.caract-circle input[type="number"] {
+.caract-circulo input[type="number"] {
   width: 38px;
   border: none;
   background: transparent;
@@ -354,8 +359,8 @@
   -moz-appearance: textfield;
 }
 
-.caract-circle input[type="number"]::-webkit-outer-spin-button,
-.caract-circle input[type="number"]::-webkit-inner-spin-button {
+.caract-circulo input[type="number"]::-webkit-outer-spin-button,
+.caract-circulo input[type="number"]::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
@@ -887,6 +892,9 @@
 .skill-name:hover {
   color: var(--tq-teal-dark);
   text-decoration: underline;
+  text-shadow: none !important;
+  filter: none !important;
+  box-shadow: none !important;
 }
 
 .skill-px-display {
@@ -1344,7 +1352,7 @@
 .btn-lanzar:hover { color: var(--tq-teal-dark) !important; }
 
 /* Notas textarea */
-.notas-textarea {
+.tierras-quebradas .notas-textarea {
   width: 100%;
   resize: vertical;
   background: var(--tq-input);
@@ -1352,7 +1360,7 @@
   color: var(--tq-text);
   font-family: var(--tq-font);
   padding: 4px;
-  font-size: 11px;
+  font-size: 15px;
   min-height: 60px;
 }
 
@@ -1387,6 +1395,23 @@
 .tierras-quebradas.item .item-body {
   padding: 10px;
   background: var(--tq-parchment);
+}
+
+.tierras-quebradas .item-header-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.tierras-quebradas .item-img {
+  width: 104px !important;
+  height: 104px !important;
+  object-fit: contain;
+  border: 1px solid var(--tq-border);
+  border-radius: 4px;
+  cursor: pointer;
+  flex-shrink: 0;
 }
 
 .tierras-quebradas .item-grid {
@@ -1745,6 +1770,31 @@
   border-radius: 2px;
 }
 
+.tirada-dialogo .campo-tope {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-top: 1px solid rgba(28,100,115,0.2);
+  padding-top: 6px;
+  flex-wrap: wrap;
+}
+.tirada-dialogo .tope-label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: bold;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.tq-chat-tope {
+  font-size: 11px;
+  color: var(--tq-teal-dark);
+  padding: 2px 8px 0;
+  font-style: italic;
+}
+
 /* ─── PNJ / Criatura / Demonio ───────────────────────────────────── */
 .tierras-quebradas .section-header {
   display: flex;
@@ -1787,7 +1837,7 @@
   border-radius: 2px;
 }
 
-.tierras-quebradas .pnj-habilidades { display: flex; flex-direction: column; gap: 2px; }
+.tierras-quebradas .pnj-habilidades { display: grid; grid-template-columns: 1fr 1fr; column-gap: 23px; row-gap: 2px; }
 
 .tierras-quebradas .pnj-hab {
   display: flex;
@@ -1807,13 +1857,48 @@
 .tierras-quebradas .pnj-hab a:hover { opacity: 1; color: var(--tq-teal); }
 .tierras-quebradas .pnj-hab .eliminar-habilidad:hover { color: var(--tq-red-dmg); }
 
-.tierras-quebradas .pnj-hab .hab-nombre { flex: 1; color: var(--tq-text); }
+.tierras-quebradas .pnj-hab .hab-nombre { flex: 1; color: var(--tq-text); font-size: 15px; cursor: pointer; }
+.tierras-quebradas .pnj-hab .hab-nombre:hover { text-decoration: underline; }
+
+.tierras-quebradas .pnj-items-lista { display: flex; flex-direction: column; gap: 2px; margin-bottom: 8px; }
+
+.tierras-quebradas .pnj-item-fila {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 4px;
+  border-radius: 3px;
+}
+.tierras-quebradas .pnj-item-fila:hover { background: rgba(196,150,26,0.06); }
+
+.tierras-quebradas .pnj-item-nombre {
+  flex: 1;
+  cursor: pointer;
+  color: var(--tq-text);
+  font-size: 15px;
+}
+.tierras-quebradas .pnj-item-nombre:hover { color: var(--tq-teal); text-decoration: underline; }
+
+.tierras-quebradas .pnj-item-detalle {
+  font-size: 14px;
+  color: var(--tq-text-dim);
+  white-space: nowrap;
+}
+
+.tierras-quebradas .pnj-item-fila a:not(.pnj-item-nombre) {
+  color: var(--tq-text-dim);
+  opacity: 0.6;
+  cursor: pointer;
+  font-size: 14px;
+}
+.tierras-quebradas .pnj-item-fila a:not(.pnj-item-nombre):hover { opacity: 1; color: var(--tq-teal); }
+.tierras-quebradas .pnj-item-borrar:hover { color: var(--tq-red-dmg) !important; }
 
 .tierras-quebradas .pnj-hab input {
   width: 40px;
   height: 24px;
   text-align: center;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: bold;
   background: var(--tq-input);
   border: 1px solid rgba(28,100,115,0.35);
@@ -1895,13 +1980,12 @@
 
 /* ─── Lealtad: alineamiento e hitos ─────────────────────────────── */
 .lealtad-item.lealtad-alineada label {
-  color: var(--tq-teal);
   font-weight: bold;
 }
 
 .lealtad-item.lealtad-alineada input {
-  border-color: var(--tq-teal);
-  background: rgba(28,100,115,0.08);
+  color: var(--tq-red-dmg) !important;
+  font-weight: bold;
 }
 
 .lealtad-hito {
@@ -2272,6 +2356,40 @@
 .tq-chat-desglose .tq-desglose-comp { color: #555; }
 .tq-chat-desglose .tq-desglose-min  { color: var(--acc); font-weight: bold; }
 
+/* Hechizo: desglose vertical */
+.tq-hechizo-desglose {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin: 4px 0;
+  font-size: 13px;
+}
+.tq-hechizo-fila {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 6px;
+}
+.tq-hechizo-etiq { color: #555; }
+.tq-hechizo-val  { font-weight: bold; color: var(--acc); min-width: 28px; text-align: right; }
+.tq-hechizo-vs {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin: 4px 0 2px;
+  border-top: 1px solid rgba(0,0,0,0.1);
+  padding-top: 4px;
+}
+.tq-hechizo-vs-texto { color: #999; font-style: italic; font-size: 11px; }
+.tq-hechizo-dif { font-weight: bold; color: #555; }
+.tq-hechizo-resultado-fila {
+  text-align: center;
+  font-weight: bold;
+  color: var(--acc);
+  font-size: 14px;
+}
+
 /* Melé: dos columnas */
 .tq-melee-grid {
   display: grid;
@@ -2454,6 +2572,129 @@
   background: var(--tq-teal) !important;
   color: #fff !important;
   border: none !important;
+}
+
+/* ─── WIDGET DIRECTOR ───────────────────────────────────────────── */
+
+.director-widget {
+  --dw-accent: var(--tq-teal-dark);
+  --dw-accent-hover: var(--tq-teal);
+}
+
+.director-widget .window-content {
+  padding: 0;
+  background: var(--tq-bg);
+  overflow: hidden;
+}
+
+.director-widget-body {
+  display: flex;
+  flex-direction: column;
+}
+
+.director-bloque {
+  padding: 10px 14px;
+}
+
+.director-separador {
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(28,100,115,0.35), transparent);
+  margin: 0 10px;
+}
+
+.director-titulo {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--tq-text-dim);
+  margin-bottom: 6px;
+}
+
+/* Contador infortunio */
+.director-infortunio {
+  text-align: center;
+}
+
+.inf-contador {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.inf-menos,
+.inf-mas {
+  width: 22px;
+  height: 22px;
+  border-radius: 3px;
+  border: 1px solid var(--dw-accent);
+  background: transparent;
+  color: var(--dw-accent);
+  font-size: 15px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, color 0.15s;
+  padding: 0;
+}
+
+.inf-menos:hover,
+.inf-mas:hover {
+  background: var(--dw-accent);
+  color: var(--tq-white);
+}
+
+.inf-valor {
+  font-size: 36px;
+  font-weight: bold;
+  color: var(--dw-accent);
+  min-width: 48px;
+  line-height: 1;
+}
+
+/* Botones de fin */
+.director-btn {
+  display: block;
+  width: 100%;
+  background: var(--dw-accent);
+  color: var(--tq-white);
+  border: none;
+  border-radius: 4px;
+  padding: 7px 10px;
+  font-family: var(--tq-font);
+  font-size: 13px;
+  font-weight: bold;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.director-btn:hover {
+  background: var(--dw-accent-hover);
+}
+
+/* Fin de Aventura */
+.aventura-px {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 8px;
+  gap: 2px;
+}
+
+.px-aventura-input {
+  width: 54px;
+  text-align: center;
+  background: var(--tq-input);
+  border: 1px solid rgba(28,100,115,0.45);
+  color: var(--tq-text);
+  border-radius: 4px;
+  padding: 4px;
+  font-family: var(--tq-font);
+  font-size: 16px;
+  font-weight: bold;
 }
 
 /* ─── CREADOR DE PERSONAJE ──────────────────────────────────────── */
@@ -2783,7 +3024,7 @@
   gap: 8px;
 }
 
-.cc-caract-label {
+.cc-caract-etiqueta {
   font-size: 13px;
   color: var(--tq-text);
   width: 70px;
@@ -3395,12 +3636,12 @@
   padding: 5px 8px;
   border-radius: 4px;
   cursor: pointer;
-  border: 1px solid transparent;
-  transition: background 0.15s;
+  border: 2px solid rgba(196,150,26,0.2);
+  transition: background 0.15s, border-color 0.15s;
 }
 
 .cc-armadura-fila:hover { background: var(--tq-bg-mid); }
-.cc-armadura-fila.selected { background: rgba(196,150,26,0.12); border-color: var(--tq-gold); }
+.cc-armadura-fila.selected { background: rgba(196,150,26,0.12); border: 2px solid var(--tq-gold); }
 
 .cc-armadura-fila input[type="checkbox"] { flex-shrink: 0; }
 
@@ -3841,4 +4082,240 @@ li.chat-message .message-delete {
 
 li.chat-message .message-delete:hover {
   color: #fff !important;
+}
+
+/* ─── Barras laterales ───────────────────────────────────────────── */
+#sidebar section.tab,
+#sidebar .directory-header,
+#sidebar .directory-footer {
+  background: var(--tq-parchment) !important;
+  font-family: var(--tq-font) !important;
+  color: var(--tq-text) !important;
+}
+
+#sidebar .directory-header {
+  border-bottom: 2px solid var(--tq-teal) !important;
+  padding-bottom: 6px !important;
+}
+
+#sidebar .action-buttons button,
+#sidebar .header-actions button {
+  background: var(--tq-teal) !important;
+  color: var(--tq-white) !important;
+  border: none !important;
+  font-family: var(--tq-font) !important;
+  border-radius: 3px !important;
+}
+
+#sidebar .action-buttons button:hover,
+#sidebar .header-actions button:hover {
+  background: var(--tq-teal-light) !important;
+}
+
+#sidebar input[type="search"],
+#sidebar input[type="text"] {
+  background: var(--tq-input) !important;
+  border: 1px solid var(--tq-teal) !important;
+  color: var(--tq-text) !important;
+  font-family: var(--tq-font) !important;
+  border-radius: 3px !important;
+}
+
+#sidebar .directory-list {
+  background: var(--tq-parchment) !important;
+}
+
+#sidebar .directory-item {
+  border-bottom: 1px solid rgba(28, 100, 115, 0.2) !important;
+  color: var(--tq-text) !important;
+  font-family: var(--tq-font) !important;
+}
+
+#sidebar .directory-item:hover {
+  background: var(--tq-parchment-lt) !important;
+}
+
+#sidebar .directory-item .document-name {
+  color: var(--tq-text) !important;
+}
+
+#sidebar .folder-header {
+  background: var(--tq-teal-dark) !important;
+  color: var(--tq-white) !important;
+  border-radius: 3px !important;
+}
+
+#sidebar .folder-header * {
+  color: var(--tq-white) !important;
+}
+
+#compendium li.directory-item {
+  background: var(--tq-teal-dark) !important;
+}
+
+#compendium li.directory-item:hover {
+  background: var(--tq-teal) !important;
+}
+
+#compendium .compendium-banner {
+  display: none !important;
+}
+
+#compendium .entry-name,
+#compendium .compendium-name {
+  color: var(--tq-white) !important;
+  font-size: calc(1em - 3px) !important;
+}
+
+#compendium .compendium-footer {
+  background: var(--tq-teal-dark) !important;
+  color: rgba(255,255,255,0.5) !important;
+}
+
+#compendium .compendium-footer * {
+  color: rgba(255,255,255,0.5) !important;
+}
+
+#compendium li.directory-item i {
+  color: var(--tq-white) !important;
+}
+
+
+/* ═══ Paso Habilidades (Character Creator) ═══ */
+
+.cc-hab-header {
+  padding-bottom: 4px;
+}
+
+.cc-hab-puntos-restantes {
+  font-size: 1em;
+  margin-top: 4px;
+  color: var(--tq-teal-dark);
+}
+
+.cc-hab-puntos-restantes.agotados {
+  color: #888;
+}
+
+.cc-hab-grupo {
+  margin-bottom: 6px;
+}
+
+.cc-hab-lista {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px 12px;
+}
+
+.cc-hab-fila {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: 4px;
+  min-height: 26px;
+}
+
+.cc-hab-nombre {
+  font-size: calc(0.88em + 5px);
+  color: #222;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cc-hab-controles {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.cc-hab-btn {
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: 1px solid var(--tq-teal-dark);
+  border-radius: 50%;
+  background: var(--tq-cream);
+  color: var(--tq-teal-dark);
+  font-size: 1em;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cc-hab-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.cc-hab-btn:not(:disabled):hover {
+  background: var(--tq-teal-dark);
+  color: var(--tq-white);
+}
+
+.cc-hab-total {
+  min-width: 20px;
+  text-align: center;
+  font-weight: bold;
+  font-size: calc(0.9em + 5px);
+  color: #222;
+}
+
+.cc-hab-total.tiene-libre {
+  color: var(--tq-teal-dark);
+}
+
+.cc-hab-base {
+  font-size: calc(0.75em + 5px);
+  color: #888;
+  white-space: nowrap;
+  min-width: 58px;
+}
+
+.cc-hab-base-oculto {
+  visibility: hidden;
+}
+
+/* ═══ PNJ Sheet — PV centrado ═══ */
+
+.pnj-salud-centrada {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 10px 0 6px;
+  gap: 4px;
+}
+
+.pnj-salud-label {
+  font-size: 0.8em;
+  font-weight: bold;
+  color: var(--tq-teal-dark);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.pnj-salud-fila {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.pnj-pv-input {
+  width: 52px;
+  text-align: center;
+  font-size: 1.1em;
+  font-weight: bold;
+}
+
+.pnj-salud-sep {
+  font-size: 1.1em;
+  color: var(--tq-text-dim);
+}
+
+.pnj-pv-max {
+  font-size: 1.1em;
+  font-weight: bold;
+  color: var(--tq-text-dim);
 }

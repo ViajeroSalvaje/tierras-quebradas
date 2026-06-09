@@ -1,0 +1,20 @@
+<div class="tierras-quebradas sheet item idioma flexcol" autocomplete="off" style="height:100%;width:100%;">
+  <section class="item-body" style="padding:10px 14px;display:flex;flex-direction:column;gap:10px;">
+
+    <div class="field-group full-width">
+      <label>Nombre</label>
+      <input type="text" name="name" value="{{item.name}}" />
+    </div>
+
+    <div style="display:flex;align-items:center;gap:8px;">
+      <label style="margin:0;">Tiene forma escrita</label>
+      <input type="checkbox" name="system.escrita" {{#if system.escrita}}checked{{/if}} />
+    </div>
+
+    <div class="field-group full-width" style="flex:1;">
+      <label>Descripción</label>
+      <textarea name="system.descripcion" rows="6" style="resize:vertical;">{{system.descripcion}}</textarea>
+    </div>
+
+  </section>
+</div>

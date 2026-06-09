@@ -1,3 +1,4 @@
+import { HABILIDADES_OPCIONES } from "../../helpers/habilidades.mjs";
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 const { ItemSheetV2 } = foundry.applications.sheets;
 
@@ -20,7 +21,10 @@ export class OrigenSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
     return {
       item:   this.item,
       system: this.item.system,
-      habilidadesLista: (this.item.system.habilidades ?? []).map((h, i) => ({ ...h, index: i }))
+      habilidadesLista: (this.item.system.habilidades ?? []).map((h, i) => ({
+        ...h, index: i,
+        opciones: HABILIDADES_OPCIONES.map(op => ({ ...op, selected: op.clave === h.clave }))
+      }))
     };
   }
 
@@ -30,7 +34,7 @@ export class OrigenSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
 
     // Añadir fila de habilidad
     el.querySelector(".origen-hab-add")?.addEventListener("click", async () => {
-      const lista = [...(this.item.system.habilidades ?? []), { clave: "", bonus: 1 }];
+      const lista = [...(this.item.system.habilidades ?? []), { clave: "", nombre: "", bonus: 1 }];
       await this.item.update({ "system.habilidades": lista });
     });
 

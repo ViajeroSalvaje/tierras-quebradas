@@ -287,7 +287,8 @@ export class PJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     // Tabla de Lesiones
     el.querySelector(".tirar-lesion")?.addEventListener("click", ev => {
       ev.preventDefault();
-      this.actor.tirarLesion();
+      const objetivo = game.user.targets.first()?.actor ?? this.actor;
+      objetivo.tirarLesion();
     });
 
     // Fortuna

@@ -1,9 +1,12 @@
 <div class="{{cssClass}} flexcol" autocomplete="off" style="height:100%;width:100%;">
 
   <section class="item-body">
-    <div class="field-group full-width" style="margin-bottom:8px;">
-      <label>Nombre</label>
-      <input type="text" name="name" value="{{item.name}}" placeholder="Nombre del arma" />
+    <div class="item-header-row">
+      <img class="item-img" src="{{item.img}}" title="{{item.name}}" />
+      <div class="field-group full-width">
+        <label>Nombre</label>
+        <input type="text" name="name" value="{{item.name}}" placeholder="Nombre del arma" />
+      </div>
     </div>
     <div class="item-grid">
       <div class="field-group">
@@ -50,7 +53,20 @@
       </div>
       <div class="field-group">
         <label>Habilidad</label>
-        <input type="text" name="system.habilidad" value="{{system.habilidad}}" placeholder="ej: armasEspada" />
+        <select name="system.habilidad">
+          <option value="">— Ninguna —</option>
+          <option value="arco"         {{selected system.habilidad "arco"}}>Arco</option>
+          <option value="armasAsta"    {{selected system.habilidad "armasAsta"}}>Armas de Asta</option>
+          <option value="armasEspada"  {{selected system.habilidad "armasEspada"}}>Armas de Espada</option>
+          <option value="armasMangos"  {{selected system.habilidad "armasMangos"}}>Armas de Mango</option>
+          <option value="armasPunhal"  {{selected system.habilidad "armasPunhal"}}>Armas de Puñal</option>
+          <option value="ballesta"     {{selected system.habilidad "ballesta"}}>Ballesta</option>
+          <option value="canonDeMano"  {{selected system.habilidad "canonDeMano"}}>Cañón de Mano</option>
+          <option value="escudo"       {{selected system.habilidad "escudo"}}>Escudo</option>
+          <option value="honda"        {{selected system.habilidad "honda"}}>Honda</option>
+          <option value="lanzar"       {{selected system.habilidad "lanzar"}}>Lanzar</option>
+          <option value="pelea"        {{selected system.habilidad "pelea"}}>Pelea</option>
+        </select>
       </div>
       <div class="field-group">
         <label>Alcance</label>

@@ -9,6 +9,10 @@
     </span>
   </div>
 
+  {{#if topeInfo}}
+  <div class="tq-chat-tope">Topado: {{topeInfo.label}} ({{topeInfo.valor}})</div>
+  {{/if}}
+
   {{!-- Resultado grande --}}
   <div class="tq-chat-resultado">{{localize resultado.label}}</div>
   {{#if criticos}}
@@ -43,27 +47,33 @@
     {{#if (tq-gt exitos 0)}}+{{/if}}{{exitos}} éxitos
   </div>
   {{else if desgloseHechizo}}
-  {{!-- Hechizo: desglose detallado --}}
-  <div class="tq-chat-desglose">
-    <span class="tq-dado"><i class="fas fa-dice-d10"></i> {{dadoDisplay}}</span>
-    <span class="tq-sep">+</span>
-    <span class="tq-desglose-comp" title="Base Hechicería">Hec. {{desgloseHechizo.base}}</span>
+  {{!-- Hechizo: desglose vertical --}}
+  <div class="tq-hechizo-desglose">
+    <div class="tq-hechizo-fila">
+      <span class="tq-hechizo-etiq"><i class="fas fa-dice-d10"></i></span>
+      <span class="tq-hechizo-val">{{dadoDisplay}}</span>
+    </div>
     {{#each desgloseHechizo.skills as |sk|}}
     {{#if sk.esMinimo}}
-    <span class="tq-sep">+</span>
-    <span class="tq-desglose-comp tq-desglose-min">{{sk.nombre}} {{sk.valor}}</span>
+    <div class="tq-hechizo-fila">
+      <span class="tq-hechizo-etiq">{{sk.nombre}}</span>
+      <span class="tq-hechizo-val">{{sk.puntuacion}}</span>
+    </div>
     {{/if}}
     {{/each}}
-    {{#if bonificador}}
-    <span class="tq-sep">{{#if (tq-gt bonificador 0)}}+{{/if}}</span>
-    <span>{{bonificador}}</span>
-    {{/if}}
-    <span class="tq-sep">=</span>
-    <span class="tq-total">{{total}}</span>
-    <span class="tq-sep tq-vs">vs</span>
-    <span class="tq-dif">{{dificultad}}</span>
-    <span class="tq-sep">→</span>
-    <span class="tq-exitos">{{#if (tq-gt exitos 0)}}+{{/if}}{{exitos}}</span>
+    {{#each modDesglose as |m|}}
+    <div class="tq-hechizo-fila">
+      <span class="tq-hechizo-etiq">{{m.label}}</span>
+      <span class="tq-hechizo-val">{{#if (tq-gt m.valor 0)}}+{{/if}}{{m.valor}}</span>
+    </div>
+    {{/each}}
+    <div class="tq-hechizo-vs">
+      <span class="tq-hechizo-vs-texto">vs</span>
+      <span class="tq-hechizo-dif">{{dificultad}}</span>
+    </div>
+    <div class="tq-hechizo-resultado-fila">
+      <span class="tq-exitos">{{#if (tq-gt exitos 0)}}+{{/if}}{{exitos}} éxitos</span>
+    </div>
   </div>
 
   {{else}}

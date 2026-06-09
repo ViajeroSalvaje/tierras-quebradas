@@ -18,11 +18,13 @@
     <div class="caract-grid">
       {{#each system.caracteristicas as |caract clave|}}
       <div class="caract-item">
-        <label class="tirar-caracteristica" data-caracteristica="{{clave}}">
+        <span class="caract-etiqueta tirar-caracteristica" data-caracteristica="{{clave}}">
           {{localize (concat "TQ.Caracteristicas." clave)}}
-        </label>
-        <input type="number" name="system.caracteristicas.{{clave}}.valor"
-               value="{{caract.valor}}" min="-5" max="40" />
+        </span>
+        <div class="caract-circulo">
+          <input type="number" name="system.caracteristicas.{{clave}}.valor"
+                 value="{{caract.valor}}" min="-5" max="40" />
+        </div>
       </div>
       {{/each}}
     </div>

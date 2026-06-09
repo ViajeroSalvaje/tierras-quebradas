@@ -122,7 +122,7 @@ export class TQActor extends Actor {
       : game.i18n.localize(`TQ.Habilidades.${clave}`);
 
 
-    const resultado = await TQRoll.dialogoTirada(etiqueta, total, { actor: this });
+    const resultado = await TQRoll.dialogoTirada(etiqueta, total, { actor: this, habClave: clave });
     // solo marca una vez por sesión
     if (resultado && resultado.exitos >= 0 && !habilidad.exito) {
       await this.update({ [`system.habilidades.${clave}.exito`]: true });
@@ -172,15 +172,17 @@ export class TQActor extends Actor {
 
     const targetActor = game.user.targets.first()?.actor ?? null;
 
-    const resultado = await TQRoll.dialogoTirada(arma.name, puntuacion, { /** No confundirme, esta es la del diálogo de arma, no la de habilidad */
+    const resultado = await TQRoll.dialogoTirada(arma.name, puntuacion, {
       actor: this,
       targetActor,
       modo,
       esCombate: true,
       longitudArma: arma.system.longitud ?? "media",
+      habClave,
+      extraTopes: arma.system.alcance === "arrojadiza" ? ["lanzar"] : [],
       danho: {
         danoArma: arma.system.danoArma ?? "0",
-        tipo:   arma.system.tipo ?? "cortante",
+        tipo: arma.system.tipo ?? "cortante",
         md,
         manos,
         noLetal: arma.system.noLetal ?? false
@@ -540,7 +542,7 @@ export class TQActor extends Actor {
     const debilitado = this.system.salud?.debilitado ?? false;
     const dadoSize = debilitado ? 6 : 10;
 
-    const { dado, total: dadoTotal } = await TQRoll._tirarExplosivo(dadoSize);
+    const { dado, total: dadoTotal, tiradas } = await TQRoll._tirarExplosivo(dadoSize);
     const total = dadoTotal + puntuacion + mod;
     const exitos = total - dif;
     const resultado = TQRoll._clasificarResultado(dado, exitos);
@@ -583,17 +585,25 @@ export class TQActor extends Actor {
           (hechizo.system.verbo  && norm(hechizo.system.verbo)  === c) ? hechizo.system.verbo  :
           (hechizo.system.esfera && norm(hechizo.system.esfera) === c) ? hechizo.system.esfera :
           c;
-        return { nombre: display, valor: niveles[i], esMinimo: niveles[i] === minVal };
+        return { nombre: display, valor: niveles[i], esMinimo: niveles[i] === minVal, puntuacion: baseHech + niveles[i] };
       })
     } : null;
+
+    const modDesglose = [];
+    if (config.ceremonia)      modDesglose.push({ label: "Ceremonia",     valor:  2 });
+    if (config.grimorio)       modDesglose.push({ label: "Grimorio",       valor:  2 });
+    if (config.acelerar)       modDesglose.push({ label: "Acelerar",       valor: -2 });
+    if (config.limFisica < 0)  modDesglose.push({ label: "Lim. física",   valor: config.limFisica });
+    if (dolorExtremo)          modDesglose.push({ label: "Dolor extremo",  valor: -2 });
 
     const datosChat = {
       etiqueta: hechizo.name,
       puntuacion, bonificador: mod, dificultad: dif,
       debilitado, dolorExtremo,
-      dado: dadoTotal, total, exitos, resultado, css: resultado.css,
+      dado: dadoTotal, dadoDisplay: TQRoll._dadoDisplay(dadoTotal, tiradas),
+      total, exitos, resultado, css: resultado.css,
       pd: null,
-      desgloseHechizo
+      desgloseHechizo, modDesglose
     };
     const contenido = await foundry.applications.handlebars.renderTemplate(
       "systems/tierras-quebradas/templates/dialogs/tirada-resultado.hbs",
@@ -647,7 +657,7 @@ export class TQActor extends Actor {
 
     await ChatMessage.create({
       speaker: ChatMessage.getSpeaker({ actor: this }),
-      flavor: `Lucha de Espíritu — ${nombreHechizo}`,
+      flavor: `Lucha de Espíritu — ${nombreHechizo} vs ${targetActor.name}`,
       content: `<div class="tq-result-card ${gana ? "exito" : "fallo"}">
         <div class="tq-resultado-label">${gana ? "Hechizo surte efecto" : "Objetivo resiste"}</div>
         <div class="tq-desglose">
@@ -982,12 +992,10 @@ export class TQActor extends Actor {
 
     for (const { clave, bonus, nombre } of (origen.system.habilidades ?? [])) {
       if (!clave || !bonus) continue;
-      const habilidad = this.system.habilidades?.[clave];
-      if (habilidad !== undefined) {
-        updates[`system.habilidades.${clave}.nivel`] = (habilidad.nivel ?? 0) + bonus;
-        if (nombre && clave.startsWith("idioma")) {
-          updates[`system.habilidades.${clave}.nombre`] = nombre;
-        }
+      const nivel = this.system.habilidades?.[clave]?.nivel ?? 0;
+      updates[`system.habilidades.${clave}.nivel`] = nivel + bonus;
+      if (nombre && clave.startsWith("idioma")) {
+        updates[`system.habilidades.${clave}.nombre`] = nombre;
       }
     }
 
@@ -1014,12 +1022,10 @@ export class TQActor extends Actor {
 
     for (const { clave, bonus, nombre } of (origen.system.habilidades ?? [])) {
       if (!clave || !bonus) continue;
-      const habilidad = this.system.habilidades?.[clave];
-      if (habilidad !== undefined) {
-        updates[`system.habilidades.${clave}.nivel`] = Math.max(0, (habilidad.nivel ?? 0) - bonus);
-        if (nombre && clave.startsWith("idioma")) {
-          updates[`system.habilidades.${clave}.nombre`] = "";
-        }
+      const nivel = this.system.habilidades?.[clave]?.nivel ?? 0;
+      updates[`system.habilidades.${clave}.nivel`] = Math.max(0, nivel - bonus);
+      if (nombre && clave.startsWith("idioma")) {
+        updates[`system.habilidades.${clave}.nombre`] = "";
       }
     }
 
@@ -1215,7 +1221,7 @@ export class TQActor extends Actor {
     await ChatMessage.create({ speaker: ChatMessage.getSpeaker({ actor: this }), content: msg });
   }
 
-  async asignarPXHito() {
+  async asignarPXHito(totalPXFijo = null) {
     const { DialogV2 } = foundry.applications.api;
     const habs = this.system.habilidades ?? {};
 
@@ -1231,12 +1237,16 @@ export class TQActor extends Actor {
       </label>`;
     }).join("");
 
+    const pxCabecera = totalPXFijo !== null
+      ? `<p style="font-weight:bold;margin-bottom:8px;">PX disponibles: ${totalPXFijo} <input type="hidden" name="totalPX" value="${totalPXFijo}" /></p>`
+      : `<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+           <label>PX a repartir (1–5)</label>
+           <input type="number" name="totalPX" value="3" min="1" max="5" style="width:50px;" />
+         </div>`;
+
     const html = `
       <div style="padding:4px;">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-          <label>PX a repartir (1–5)</label>
-          <input type="number" name="totalPX" value="3" min="1" max="5" style="width:50px;" />
-        </div>
+        ${pxCabecera}
         <p style="font-size:11px;opacity:0.7;margin-bottom:6px;">Máximo 1 PX por habilidad.</p>
         <div style="max-height:300px;overflow-y:auto;border:1px solid var(--tq-bg-mid);padding:4px;border-radius:4px;">
           ${opcionesHTML}

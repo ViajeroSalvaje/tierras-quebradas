@@ -18,12 +18,17 @@
         <a class="prof-hab-add" style="font-size:11px;color:var(--tq-teal);cursor:pointer;"><i class="fas fa-plus"></i> Añadir</a>
       </div>
       <table style="width:100%;font-size:12px;">
-        <thead><tr><th style="text-align:left;">Clave</th><th style="width:70px;text-align:center;">Bonus</th><th style="width:30px;"></th></tr></thead>
+        <thead><tr><th style="text-align:left;">Habilidad</th><th style="width:60px;text-align:center;">Bonus</th><th style="width:30px;"></th></tr></thead>
         <tbody>
           {{#each habilidades as |h|}}
           <tr>
-            <td><input type="text" class="prof-hab-clave" data-index="{{h.index}}" data-field="clave" value="{{h.clave}}" style="width:100%;" /></td>
-            <td><input type="number" class="prof-hab-bonus" data-index="{{h.index}}" data-field="bonus" value="{{h.bonus}}" style="width:60px;text-align:center;" /></td>
+            <td>
+              <select class="prof-hab-clave" data-index="{{h.index}}" data-field="clave" style="width:100%;">
+                <option value="">— Seleccionar —</option>
+                {{#each h.opciones as |op|}}<option value="{{op.clave}}" {{#if op.selected}}selected{{/if}}>{{op.label}}</option>{{/each}}
+              </select>
+            </td>
+            <td><input type="number" class="prof-hab-bonus" data-index="{{h.index}}" data-field="bonus" value="{{h.bonus}}" style="width:55px;text-align:center;" /></td>
             <td><a class="prof-hab-del" data-index="{{h.index}}" style="color:var(--tq-red-dmg);cursor:pointer;"><i class="fas fa-trash"></i></a></td>
           </tr>
           {{/each}}
@@ -32,12 +37,21 @@
     </div>
 
     {{!-- Ventajas --}}
-    <div class="field-group full">
+    <div class="field-group full prof-vent-section">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
-        <label>Ventajas otorgadas</label>
+        <label>Ventajas otorgadas <span style="font-size:10px;color:var(--tq-text-dim);font-weight:normal;">(arrastra o añade manualmente)</span></label>
         <a class="prof-vent-add" style="font-size:11px;color:var(--tq-teal);cursor:pointer;"><i class="fas fa-plus"></i> Añadir</a>
       </div>
       {{#each ventajas as |v|}}
+      {{#if (tq-eq v.fuente "item")}}
+      <div style="border:1px solid rgba(28,100,115,0.2);border-radius:4px;padding:6px 8px;margin-bottom:4px;display:flex;justify-content:space-between;align-items:flex-start;gap:6px;">
+        <div style="flex:1;">
+          <strong style="font-size:12px;">{{v.nombre}}</strong>
+          {{#if v.efecto}}<p style="margin:2px 0 0;font-size:11px;color:var(--tq-text-dim);">{{v.efecto}}</p>{{/if}}
+        </div>
+        <a class="prof-vent-del" data-index="{{v.index}}" style="color:var(--tq-red-dmg);cursor:pointer;font-size:12px;flex-shrink:0;"><i class="fas fa-trash"></i></a>
+      </div>
+      {{else}}
       <div style="border:1px solid rgba(28,100,115,0.2);border-radius:4px;padding:6px;margin-bottom:4px;">
         <div style="display:flex;gap:6px;margin-bottom:4px;">
           <input type="text" class="prof-vent-field" data-index="{{v.index}}" data-field="nombre"
@@ -49,6 +63,7 @@
         <textarea class="prof-vent-field" data-index="{{v.index}}" data-field="efecto"
                   rows="2" placeholder="Efecto" style="width:100%;font-size:11px;">{{v.efecto}}</textarea>
       </div>
+      {{/if}}
       {{/each}}
     </div>
 

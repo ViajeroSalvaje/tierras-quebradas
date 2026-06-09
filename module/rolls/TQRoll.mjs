@@ -1,10 +1,11 @@
 const { DialogV2 } = foundry.applications.api;
 import { tirarComplicacion, TABLA_COMPLICACIONES_MELE, TABLA_COMPLICACIONES_MAGIA } from "../tablas/TQTablasSucesos.mjs";
+import { TOPES_HABILIDAD, HABILIDADES_OPCIONES } from "../helpers/habilidades.mjs";
 
 // Dado explosivo: al sacar el máximo se vuelve a tirar y se suma.
 export class TQRoll {
   static async tirar(etiqueta, puntuacion, dificultad, opciones = {}) {
-    const { bonificador = 0, flavor = "", actor = null, danho = null, tablaComplicacion = null, esCombate = false } = opciones;
+    const { bonificador = 0, flavor = "", actor = null, danho = null, tablaComplicacion = null, esCombate = false, topeInfo = null } = opciones;
 
     const debilitado = actor?.system?.salud?.debilitado ?? false;
     const dolorExtremo = actor?.system?.salud?.dolorExtremo ?? false;
@@ -36,7 +37,8 @@ export class TQRoll {
       css: resultado.css,
       criticos: esCombate ? TQRoll._criticosTexto(exitos) : null,
       pd,
-      actorImg: actor?.img ?? null
+      actorImg: actor?.img ?? null,
+      topeInfo
     };
 
     const contenido = await foundry.applications.handlebars.renderTemplate(
@@ -117,13 +119,26 @@ export class TQRoll {
   }
 
   static async dialogoTirada(etiqueta, puntuacion, opciones = {}) {
-    const { modo = "normal", longitudArma = "media", targetActor = null, dificultadPorDefecto = 15, danho = null } = opciones;
+    const { modo = "normal", longitudArma = "media", targetActor = null, dificultadPorDefecto = 15, danho = null, actor = null, habClave = null, extraTopes = [] } = opciones;
+
+    const capClaves = [...(TOPES_HABILIDAD[habClave] ?? []), ...extraTopes];
+    const getCapValor = (clave) => {
+      if (!actor || actor.type !== "pj") return 0;
+      const hab = actor.system.habilidades?.[clave];
+      if (!hab) return 0;
+      const base = actor.system.bases?.[hab.base]?.valor ?? 0;
+      const penalizacion = (actor.system.estorbo?.valor ?? 0) * (hab.estorbo ?? 0);
+      return base + (hab.nivel ?? 0) + (hab.puntosFijos ?? 0) - penalizacion;
+    };
+    const habLabel = (clave) => HABILIDADES_OPCIONES.find(h => h.clave === clave)?.label ?? clave;
+    const topesOpciones = capClaves.map(clave => ({ clave, label: habLabel(clave), valor: getCapValor(clave) }));
+
     const rivalDatos = TQRoll._prepararDatosRival(targetActor);
     const jugadorDatos = { danoArma: danho?.danoArma ?? "—", md: danho?.md ?? 0, tipo: danho?.tipo ?? "—" };
 
     const content = await foundry.applications.handlebars.renderTemplate(
       "systems/tierras-quebradas/templates/dialogs/tirada-dialogo.hbs",
-      { etiqueta, puntuacion, modo, longitudArma, jugadorDatos, rivalDatos, dificultadPorDefecto: String(dificultadPorDefecto) }
+      { etiqueta, puntuacion, modo, longitudArma, jugadorDatos, rivalDatos, dificultadPorDefecto: String(dificultadPorDefecto), topesOpciones }
     );
 
     const eleccion = await DialogV2.wait({
@@ -137,15 +152,18 @@ export class TQRoll {
           default: true,
           callback: (_ev, button) => {
             const f = button.form.elements;
+            const topeActivo = f.tope_activo?.checked ?? false;
+            const topeClave = topeActivo ? (f.tope_habilidad?.value ?? null) : null;
             if (modo === "melee") {
               return {
-                puntuacionRival:  parseInt(f.rival_puntuacion?.value)  || 0,
-                longitudRival:    f.rival_longitud?.value               || "media",
-                bonificadorRival: parseInt(f.rival_bonificador?.value)  || 0,
-                danoRival:      f.rival_danoArma?.value?.trim()         || "0",
-                mdRival:          parseInt(f.rival_md?.value)           || 0,
-                tipoRival:        f.rival_tipo?.value                   || "cortante",
-                bonificador:      parseInt(f.bonificador?.value)        || 0
+                puntuacionRival: parseInt(f.rival_puntuacion?.value) || 0,
+                longitudRival: f.rival_longitud?.value || "media",
+                bonificadorRival: parseInt(f.rival_bonificador?.value) || 0,
+                danoRival: f.rival_danoArma?.value?.trim() || "0",
+                mdRival: parseInt(f.rival_md?.value) || 0,
+                tipoRival: f.rival_tipo?.value || "cortante",
+                bonificador: parseInt(f.bonificador?.value) || 0,
+                topeClave
               };
             }
             let dificultad;
@@ -158,32 +176,43 @@ export class TQRoll {
             }
             return {
               dificultad,
-              bonificador: parseInt(f.bonificador?.value) || 0
+              bonificador: parseInt(f.bonificador?.value) || 0,
+              topeClave
             };
           }
         },
         {
           action: "cancelar",
-          label: game.i18n.localize("TQ.Cancelar") || "Cancelar"
+          label: game.i18n.localize("TQ.Cancelar") || "Cancelar",
+          callback: () => null
         }
       ]
     });
 
-    if (!eleccion) return null;
+    if (!eleccion || typeof eleccion !== "object") return null;
 
-    if (modo === "melee") {
-      return TQRoll.tirarMelee(etiqueta, puntuacion, longitudArma, eleccion, { ...opciones, targetActor });
+    const topeEntry = eleccion.topeClave ? topesOpciones.find(t => t.clave === eleccion.topeClave) : null;
+    let puntuacionFinal = puntuacion;
+    let topeInfo = null;
+    if (topeEntry && topeEntry.valor < puntuacion) {
+      puntuacionFinal = topeEntry.valor;
+      topeInfo = topeEntry;
     }
 
-    return TQRoll.tirar(etiqueta, puntuacion, eleccion.dificultad, {
+    if (modo === "melee") {
+      return TQRoll.tirarMelee(etiqueta, puntuacionFinal, longitudArma, eleccion, { ...opciones, targetActor, topeInfo });
+    }
+
+    return TQRoll.tirar(etiqueta, puntuacionFinal, eleccion.dificultad, {
       ...opciones,
-      bonificador: eleccion.bonificador
+      bonificador: eleccion.bonificador,
+      topeInfo
     });
   }
 
   /** Tirada enfrentada de melee: tira por ambos contendientes y muestra los dos resultados. */
   static async tirarMelee(etiqueta, puntuacion, longitudJugador, eleccion, opciones = {}) {
-    const { actor = null, danho = null, targetActor = null } = opciones;
+    const { actor = null, danho = null, targetActor = null, topeInfo = null } = opciones;
     const { puntuacionRival, longitudRival, bonificadorRival, danoRival, mdRival, tipoRival, bonificador } = eleccion;
 
     const modJugador = TQRoll._calcularModLongitud(longitudJugador, longitudRival);
@@ -245,7 +274,8 @@ export class TQRoll {
       criticos: TQRoll._criticosTexto(exitos),
       pd, danhoAplicado, proteccionTarget,
       pdRival, danhoRivalAplicado, proteccionJugador,
-      actorImg: actor?.img ?? null
+      actorImg: actor?.img ?? null,
+      topeInfo
     };
 
     const contenido = await foundry.applications.handlebars.renderTemplate(

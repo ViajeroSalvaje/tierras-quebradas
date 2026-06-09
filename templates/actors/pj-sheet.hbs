@@ -80,24 +80,24 @@
             <div class="tq-section-content">
               <div class="caract-grid">
                 <div class="caract-item">
-                  <span class="caract-label tirar-caracteristica" data-caracteristica="cuerpo">CUE</span>
-                  <div class="caract-circle">
+                  <span class="caract-etiqueta tirar-caracteristica" data-caracteristica="cuerpo">CUE</span>
+                  <div class="caract-circulo">
                     <input type="number" name="system.caracteristicas.cuerpo.valor"
                            value="{{system.caracteristicas.cuerpo.valor}}" min="1" max="20" />
                   </div>
                   <span style="font-size:10px;color:var(--tq-text-dim);">Cuerpo</span>
                 </div>
                 <div class="caract-item">
-                  <span class="caract-label tirar-caracteristica" data-caracteristica="mente">MEN</span>
-                  <div class="caract-circle">
+                  <span class="caract-etiqueta tirar-caracteristica" data-caracteristica="mente">MEN</span>
+                  <div class="caract-circulo">
                     <input type="number" name="system.caracteristicas.mente.valor"
                            value="{{system.caracteristicas.mente.valor}}" min="1" max="20" />
                   </div>
                   <span style="font-size:10px;color:var(--tq-text-dim);">Mente</span>
                 </div>
                 <div class="caract-item">
-                  <span class="caract-label tirar-caracteristica" data-caracteristica="espiritu">ESP</span>
-                  <div class="caract-circle">
+                  <span class="caract-etiqueta tirar-caracteristica" data-caracteristica="espiritu">ESP</span>
+                  <div class="caract-circulo">
                     <input type="number" name="system.caracteristicas.espiritu.valor"
                            value="{{system.caracteristicas.espiritu.valor}}" min="1" max="20" />
                   </div>
@@ -578,6 +578,7 @@
               <div class="hechiceria-row">
                 <span class="hechiceria-circle"></span>
                 <span class="hechiceria-nombre">{{localize (concat "TQ.Hechiceria." verbo)}}</span>
+                <span class="skill-total">{{tq-add @root.system.bases.hechiceria.valor val}}</span>
                 <span class="hechiceria-valor">
                   <input type="number" name="system.hechiceria.verbos.{{verbo}}" value="{{val}}" min="0" />
                 </span>
@@ -596,6 +597,7 @@
               <div class="hechiceria-row">
                 <span class="hechiceria-circle"></span>
                 <span class="hechiceria-nombre">{{localize (concat "TQ.Hechiceria." esfera)}}</span>
+                <span class="skill-total">{{tq-add @root.system.bases.hechiceria.valor val}}</span>
                 <span class="hechiceria-valor">
                   <input type="number" name="system.hechiceria.esferas.{{esfera}}" value="{{val}}" min="0" />
                 </span>

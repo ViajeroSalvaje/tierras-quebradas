@@ -1,3 +1,4 @@
+import { HABILIDADES_OPCIONES } from "../../helpers/habilidades.mjs";
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 const { ItemSheetV2 } = foundry.applications.sheets;
 
@@ -20,7 +21,10 @@ export class EntornoSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
     return {
       item:        this.item,
       system:      this.item.system,
-      habilidades: (this.item.system.habilidades ?? []).map((h, i) => ({ ...h, index: i }))
+      habilidades: (this.item.system.habilidades ?? []).map((h, i) => ({
+        ...h, index: i,
+        opciones: HABILIDADES_OPCIONES.map(op => ({ ...op, selected: op.clave === h.clave }))
+      }))
     };
   }
 

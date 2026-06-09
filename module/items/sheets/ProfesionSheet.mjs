@@ -1,3 +1,4 @@
+import { HABILIDADES_OPCIONES } from "../../helpers/habilidades.mjs";
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 const { ItemSheetV2 } = foundry.applications.sheets;
 
@@ -18,10 +19,13 @@ export class ProfesionSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
 
   async _prepareContext(options) {
     return {
-      item:         this.item,
-      system:       this.item.system,
-      habilidades:  (this.item.system.habilidades ?? []).map((h, i) => ({ ...h, index: i })),
-      ventajas:     (this.item.system.ventajas ?? []).map((v, i) => ({ ...v, index: i }))
+      item:        this.item,
+      system:      this.item.system,
+      habilidades: (this.item.system.habilidades ?? []).map((h, i) => ({
+        ...h, index: i,
+        opciones: HABILIDADES_OPCIONES.map(op => ({ ...op, selected: op.clave === h.clave }))
+      })),
+      ventajas: (this.item.system.ventajas ?? []).map((v, i) => ({ ...v, index: i }))
     };
   }
 
@@ -51,9 +55,9 @@ export class ProfesionSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
       });
     });
 
-    // Ventajas
+    // Ventajas — añadir manual
     el.querySelector(".prof-vent-add")?.addEventListener("click", async () => {
-      const lista = [...(this.item.system.ventajas ?? []), { nombre: "", efecto: "", coste: 0, tipo: "ventaja" }];
+      const lista = [...(this.item.system.ventajas ?? []), { nombre: "", efecto: "", coste: 0, tipo: "ventaja", fuente: "manual" }];
       await this.item.update({ "system.ventajas": lista });
     });
     el.querySelectorAll(".prof-vent-del").forEach(btn => {
@@ -72,5 +76,31 @@ export class ProfesionSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
         await this.item.update({ "system.ventajas": lista });
       });
     });
+
+    // Ventajas — arrastrar desde compendio o mundo
+    const dropZone = el.querySelector(".prof-vent-section");
+    if (dropZone) {
+      dropZone.addEventListener("dragover", ev => {
+        ev.preventDefault();
+        ev.dataTransfer.dropEffect = "copy";
+      });
+      dropZone.addEventListener("drop", async ev => {
+        ev.preventDefault();
+        let data;
+        try { data = JSON.parse(ev.dataTransfer.getData("text/plain")); } catch { return; }
+        if (data.type !== "Item") return;
+        const doc = await fromUuid(data.uuid);
+        if (!doc || !["ventaja", "rasgo"].includes(doc.type)) return;
+        const entrada = {
+          nombre: doc.name,
+          efecto: doc.system.efecto ?? "",
+          coste: doc.system.coste ?? 0,
+          tipo: doc.system.tipo ?? "ventaja",
+          fuente: "item"
+        };
+        const lista = [...(this.item.system.ventajas ?? []), entrada];
+        await this.item.update({ "system.ventajas": lista });
+      });
+    }
   }
 }

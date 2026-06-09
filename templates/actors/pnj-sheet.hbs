@@ -1,7 +1,7 @@
 <form class="{{cssClass}} flexcol" autocomplete="off">
   <header class="sheet-header">
     <img class="profile-img" src="{{actor.img}}" data-edit="img" title="{{actor.name}}" />
-    <div class="header-fields">
+    <div class="header-fields pnj-header-fields">
       <h1 class="charname">
         <input name="name" type="text" value="{{actor.name}}" placeholder="Nombre" />
       </h1>
@@ -9,7 +9,8 @@
   </header>
 
   <nav class="sheet-tabs">
-    <a class="item active" data-tab="stats">Stats</a>
+    <a class="item active" data-tab="stats">Estadísticas</a>
+    <a class="item" data-tab="combate">Combate</a>
     <a class="item" data-tab="notas">Notas</a>
   </nav>
 
@@ -18,20 +19,24 @@
       <div class="caract-grid">
         {{#each system.caracteristicas as |caract clave|}}
         <div class="caract-item">
-          <label class="tirar-caracteristica" data-caracteristica="{{clave}}">
+          <span class="caract-etiqueta tirar-caracteristica" data-caracteristica="{{clave}}">
             {{localize (concat "TQ.Caracteristicas." clave)}}
-          </label>
-          <input type="number" name="system.caracteristicas.{{clave}}.valor"
-                 value="{{caract.valor}}" min="-5" max="20" />
+          </span>
+          <div class="caract-circulo">
+            <input type="number" name="system.caracteristicas.{{clave}}.valor"
+                   value="{{caract.valor}}" min="-5" max="20" />
+          </div>
         </div>
         {{/each}}
       </div>
 
-      <div class="salud-simple">
-        <label>PV</label>
-        <input type="number" name="system.salud.pvActual.valor" value="{{system.salud.pvActual.valor}}" style="width:48px" />
-        <span>/</span>
-        <span>{{system.salud.pvMax.valor}}</span>
+      <div class="pnj-salud-centrada">
+        <label class="pnj-salud-label">PV</label>
+        <div class="pnj-salud-fila">
+          <input type="number" name="system.salud.pvActual.valor" value="{{system.salud.pvActual.valor}}" class="pnj-pv-input" />
+          <span class="pnj-salud-sep">/</span>
+          <span class="pnj-pv-max">{{system.salud.pvMax.valor}}</span>
+        </div>
       </div>
 
       <div class="section-header">
@@ -41,18 +46,64 @@
       <div class="pnj-habilidades">
         {{#each system.habilidades as |valor nombre|}}
         <div class="pnj-hab" data-nombre="{{nombre}}">
-          <span class="hab-nombre">{{nombre}}</span>
+          <span class="hab-nombre tirar-habilidad" data-nombre="{{nombre}}" data-valor="{{valor}}" title="Tirar {{nombre}}">{{nombre}}</span>
           <input type="number" name="system.habilidades.{{nombre}}"
                  value="{{valor}}" min="0" style="width:48px" />
-          <a class="tirar-habilidad" data-nombre="{{nombre}}" data-valor="{{valor}}" title="Tirar">
-            <i class="fas fa-dice-d10"></i>
-          </a>
           <a class="eliminar-habilidad" data-nombre="{{nombre}}" title="Eliminar">
             <i class="fas fa-trash"></i>
           </a>
         </div>
         {{/each}}
       </div>
+    </div>
+
+    <div class="tab" data-tab="combate">
+
+      {{#if armas}}
+      <div class="section-header"><span>Armas</span></div>
+      <div class="pnj-items-lista">
+        {{#each armas as |a|}}
+        <div class="pnj-item-fila">
+          <a class="pnj-item-nombre" data-id="{{a.id}}">{{a.name}}</a>
+          <span class="pnj-item-detalle">{{a.dano}}</span>
+          <a class="pnj-tirar-arma" data-id="{{a.id}}" title="Tirar"><i class="fas fa-dice-d10"></i></a>
+          <a class="pnj-item-borrar" data-id="{{a.id}}" title="Eliminar"><i class="fas fa-trash"></i></a>
+        </div>
+        {{/each}}
+      </div>
+      {{/if}}
+
+      {{#if armaduras}}
+      <div class="section-header"><span>Protecciones</span></div>
+      <div class="pnj-items-lista">
+        {{#each armaduras as |a|}}
+        <div class="pnj-item-fila">
+          <a class="pnj-item-nombre" data-id="{{a.id}}">{{a.name}}</a>
+          <span class="pnj-item-detalle">PR {{a.proteccion}}</span>
+          <a class="pnj-item-borrar" data-id="{{a.id}}" title="Eliminar"><i class="fas fa-trash"></i></a>
+        </div>
+        {{/each}}
+      </div>
+      {{/if}}
+
+      {{#if hechizos}}
+      <div class="section-header"><span>Hechizos</span></div>
+      <div class="pnj-items-lista">
+        {{#each hechizos as |h|}}
+        <div class="pnj-item-fila">
+          <a class="pnj-item-nombre" data-id="{{h.id}}">{{h.name}}</a>
+          <span class="pnj-item-detalle">Dif. {{h.dificultad}} · PM {{h.pmCoste}}</span>
+          <a class="pnj-tirar-hechizo" data-id="{{h.id}}" title="Lanzar"><i class="fas fa-dice-d10"></i></a>
+          <a class="pnj-item-borrar" data-id="{{h.id}}" title="Eliminar"><i class="fas fa-trash"></i></a>
+        </div>
+        {{/each}}
+      </div>
+      {{/if}}
+
+      {{#unless armas}}{{#unless armaduras}}{{#unless hechizos}}
+      <p style="color:var(--tq-text-dim);font-size:13px;padding:8px;">Sin items de combate. Arrastra armas, armaduras o hechizos aquí.</p>
+      {{/unless}}{{/unless}}{{/unless}}
+
     </div>
 
     <div class="tab" data-tab="notas">

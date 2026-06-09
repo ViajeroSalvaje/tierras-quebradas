@@ -17,12 +17,17 @@
         <a class="ent-hab-add" style="font-size:11px;color:var(--tq-teal);cursor:pointer;"><i class="fas fa-plus"></i> Añadir</a>
       </div>
       <table style="width:100%;font-size:12px;">
-        <thead><tr><th style="text-align:left;">Clave</th><th style="width:70px;text-align:center;">Bonus</th><th style="width:30px;"></th></tr></thead>
+        <thead><tr><th style="text-align:left;">Habilidad</th><th style="width:60px;text-align:center;">Bonus</th><th style="width:30px;"></th></tr></thead>
         <tbody>
           {{#each habilidades as |h|}}
           <tr>
-            <td><input type="text" class="ent-hab-clave" data-index="{{h.index}}" data-field="clave" value="{{h.clave}}" style="width:100%;" /></td>
-            <td><input type="number" class="ent-hab-bonus" data-index="{{h.index}}" data-field="bonus" value="{{h.bonus}}" style="width:60px;text-align:center;" /></td>
+            <td>
+              <select class="ent-hab-clave" data-index="{{h.index}}" data-field="clave" style="width:100%;">
+                <option value="">— Seleccionar —</option>
+                {{#each h.opciones as |op|}}<option value="{{op.clave}}" {{#if op.selected}}selected{{/if}}>{{op.label}}</option>{{/each}}
+              </select>
+            </td>
+            <td><input type="number" class="ent-hab-bonus" data-index="{{h.index}}" data-field="bonus" value="{{h.bonus}}" style="width:55px;text-align:center;" /></td>
             <td><a class="ent-hab-del" data-index="{{h.index}}" style="color:var(--tq-red-dmg);cursor:pointer;"><i class="fas fa-trash"></i></a></td>
           </tr>
           {{/each}}

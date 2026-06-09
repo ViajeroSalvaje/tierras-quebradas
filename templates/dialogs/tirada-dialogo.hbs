@@ -105,5 +105,18 @@
     </div>
     {{/if}}
 
+    {{#if topesOpciones}}
+    <div class="campo-tope">
+      <label class="tope-label">
+        <input type="checkbox" name="tope_activo" id="tope_activo"> Aplicar Tope
+      </label>
+      <select name="tope_habilidad" id="tope_habilidad">
+        {{#each topesOpciones as |t|}}
+        <option value="{{t.clave}}">{{t.label}} ({{t.valor}})</option>
+        {{/each}}
+      </select>
+    </div>
+    {{/if}}
+
   </div>
 </div>

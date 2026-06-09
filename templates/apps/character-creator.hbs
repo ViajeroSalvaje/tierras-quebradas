@@ -64,7 +64,7 @@
       <div class="cc-caract-grid">
         {{#each caractLista as |c|}}
         <div class="cc-caract-row">
-          <span class="cc-caract-label">{{c.label}}</span>
+          <span class="cc-caract-etiqueta">{{c.label}}</span>
           <button type="button" class="cc-caract-btn" data-caract="{{c.key}}" data-delta="-1">−</button>
           <span class="cc-caract-val">{{c.valor}}</span>
           <button type="button" class="cc-caract-btn" data-caract="{{c.key}}" data-delta="1">+</button>
@@ -86,7 +86,7 @@
           <div class="cc-caract-grid cc-aleatorio-grid">
             {{#each asignacionAleatoria as |c|}}
             <div class="cc-caract-row">
-              <span class="cc-caract-label">{{c.label}}</span>
+              <span class="cc-caract-etiqueta">{{c.label}}</span>
               <select class="cc-aleatorio-select" data-caract="{{c.key}}">
                 {{#each c.opciones as |op|}}
                 <option value="{{op.valor}}" {{#if op.seleccionado}}selected{{/if}}>{{op.valor}}</option>
@@ -120,7 +120,7 @@
       <div class="cc-atr-tam-grid">
         {{#each atrTamLista as |c|}}
         <div class="cc-caract-row">
-          <span class="cc-caract-label">{{c.label}}</span>
+          <span class="cc-caract-etiqueta">{{c.label}}</span>
           <button type="button" class="cc-caract-btn" data-caract="{{c.key}}" data-delta="-1">−</button>
           <span class="cc-caract-val">{{c.valor}}</span>
           <button type="button" class="cc-caract-btn" data-caract="{{c.key}}" data-delta="1">+</button>
@@ -196,7 +196,7 @@
       <div class="cc-caract-grid" style="margin-top:8px;">
         {{#each caractLista as |c|}}
         <div class="cc-caract-row">
-          <span class="cc-caract-label">{{c.label}}</span>
+          <span class="cc-caract-etiqueta">{{c.label}}</span>
           <button type="button" class="cc-caract-btn" data-caract="{{c.key}}" data-delta="-1">−</button>
           <span class="cc-caract-val">{{c.valor}}</span>
           <button type="button" class="cc-caract-btn" data-caract="{{c.key}}" data-delta="1">+</button>
@@ -238,6 +238,23 @@
       {{/if}}
     </div>
 
+    {{#if eleccionesIdiomaOrigen}}
+    <div class="cc-section cc-elecciones-armas">
+      <h3 class="cc-section-title">Elige el idioma adicional</h3>
+      {{#each eleccionesIdiomaOrigen as |e|}}
+      <div class="cc-eleccion-row">
+        <span class="cc-eleccion-nombre">Idioma <span class="cc-eleccion-bonus">+{{e.bonus}}</span></span>
+        <select class="cc-idioma-origen-select" data-idx="{{e.idx}}">
+          <option value="">— Elige un idioma —</option>
+          {{#each e.opciones as |op|}}
+          <option value="{{op.nombre}}" {{#if op.selected}}selected{{/if}}>{{op.nombre}}</option>
+          {{/each}}
+        </select>
+      </div>
+      {{/each}}
+    </div>
+    {{/if}}
+
     {{!-- ════════════════════════ PASO 2: ESPECIE ════════════════════════ --}}
     {{else if (tq-eq stepId "especie")}}
 
@@ -276,7 +293,7 @@
       <div class="cc-caract-grid">
         {{#each caractLista as |c|}}
         <div class="cc-caract-row">
-          <span class="cc-caract-label">{{c.label}}</span>
+          <span class="cc-caract-etiqueta">{{c.label}}</span>
           <button type="button" class="cc-caract-btn" data-caract="{{c.key}}" data-delta="-1">−</button>
           <span class="cc-caract-val">{{c.valor}}</span>
           <button type="button" class="cc-caract-btn" data-caract="{{c.key}}" data-delta="1">+</button>
@@ -506,7 +523,7 @@
       <p class="cc-hint">Salvo indicación del director, o justificación narrativa, escoge el adecuado a tu profesión.{{#if data.profesionNombre}} ({{data.profesionNombre}}){{/if}}</p>
       <div class="cc-nivel-grid">
         {{#each equipoData.niveles as |n|}}
-        <div class="cc-nivel-adquisitivo-card {{#if (tq-eq data.nivelAdquisitivo n.id)}}selected{{/if}}"
+        <div class="cc-nivel-adquisitivo-card {{#if n.selected}}selected{{/if}}"
              data-nivel-id="{{n.id}}">
           <div class="cc-nivel-header">
             <span class="cc-nivel-nombre">{{n.label}}</span>
@@ -607,44 +624,35 @@
     </div>
     {{/if}}
 
-    <div class="cc-section">
-      <h3 class="cc-section-title">Carga y Estorbo</h3>
-      <p class="cc-hint">Basado en tu Fuerza ({{equipoData.fuerza}}). Se recalculará automáticamente al equiparte.</p>
-      <div class="cc-estorbo-tabla">
-        <div class="cc-estorbo-fila encabezado">
-          <span>Carga total</span>
-          <span>Estorbo</span>
-          <span>Estado</span>
-        </div>
-        <div class="cc-estorbo-fila">
-          <span>Menos de {{equipoData.cargaNormal}}</span>
-          <span>0</span>
-          <span>Normal</span>
-        </div>
-        <div class="cc-estorbo-fila">
-          <span>{{equipoData.cargaNormal}} – {{equipoData.cargaMucha}}</span>
-          <span>−2</span>
-          <span>Cargado</span>
-        </div>
-        <div class="cc-estorbo-fila">
-          <span>{{equipoData.cargaMucha}} – {{equipoData.cargaDebilita}}</span>
-          <span>−4</span>
-          <span>Muy cargado</span>
-        </div>
-        <div class="cc-estorbo-fila alerta">
-          <span>Más de {{equipoData.cargaDebilita}}</span>
-          <span>−4</span>
-          <span>Debilitado</span>
-        </div>
-        <div class="cc-estorbo-fila limite">
-          <span>Más de {{equipoData.cargaMaxima}}</span>
-          <span colspan="2">Imposible cargar</span>
-        </div>
+
+
+    {{!-- ════════════════════════ PASO: HABILIDADES ════════════════════════ --}}
+    {{else if (tq-eq stepId "habilidades")}}
+    <div class="cc-section cc-hab-header">
+      <p class="cc-hint">Reparte tus puntos de habilidad libres. Cada punto sube el nivel de una habilidad en +1, hasta un máximo de 8.</p>
+      <div class="cc-hab-puntos-restantes {{#if (tq-eq habilidadesData.puntosRestantes 0)}}agotados{{/if}}">
+        Puntos libres: <strong>{{habilidadesData.puntosRestantes}}</strong> / {{habilidadesData.puntosTotal}}
       </div>
     </div>
+    {{#each habilidadesData.grupos as |g|}}
+    <div class="cc-section cc-hab-grupo">
+      <h3 class="cc-section-title">{{g.label}}</h3>
+      <div class="cc-hab-lista">
+        {{#each g.habs as |h|}}
+        <div class="cc-hab-fila">
+          <span class="cc-hab-nombre">{{h.label}}</span>
+          <div class="cc-hab-controles">
+            <button type="button" class="cc-hab-btn" data-clave="{{h.clave}}" data-delta="-1" {{#unless h.puedeBajar}}disabled{{/unless}}>−</button>
+            <span class="cc-hab-total {{#if h.libre}}tiene-libre{{/if}}">{{h.total}}</span>
+            <button type="button" class="cc-hab-btn" data-clave="{{h.clave}}" data-delta="1" {{#unless h.puedeSubir}}disabled{{/unless}}>+</button>
+          </div>
+          <span class="cc-hab-base{{#if (tq-eq h.base 0)}} cc-hab-base-oculto{{/if}}">(base {{h.base}})</span>
+        </div>
+        {{/each}}
+      </div>
+    </div>
+    {{/each}}
 
-
-    {{!-- ════════════════════════ PASOS PENDIENTES ════════════════════════ --}}
     {{else}}
     <div class="cc-placeholder">
       <div class="cc-placeholder-icon">⚙</div>

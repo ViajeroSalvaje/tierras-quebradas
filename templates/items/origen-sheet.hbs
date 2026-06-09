@@ -36,21 +36,28 @@
       <table style="width:100%;font-size:12px;">
         <thead>
           <tr>
-            <th style="text-align:left;">Habilidad (clave)</th>
-            <th style="width:70px;text-align:center;">Bonus</th>
+            <th style="text-align:left;">Habilidad</th>
+            <th style="text-align:left;">Nombre (idioma)</th>
+            <th style="width:60px;text-align:center;">Bonus</th>
             <th style="width:30px;"></th>
           </tr>
         </thead>
         <tbody>
           {{#each habilidadesLista as |h|}}
           <tr>
+            <td style="width:40%;">
+              <select class="origen-hab-clave" data-index="{{h.index}}" data-field="clave" style="width:100%;">
+                <option value="">— Seleccionar —</option>
+                {{#each h.opciones as |op|}}<option value="{{op.clave}}" {{#if op.selected}}selected{{/if}}>{{op.label}}</option>{{/each}}
+              </select>
+            </td>
             <td>
-              <input type="text" class="origen-hab-clave" data-index="{{h.index}}" data-field="clave"
-                     value="{{h.clave}}" style="width:100%;" />
+              <input type="text" class="origen-hab-clave" data-index="{{h.index}}" data-field="nombre"
+                     value="{{h.nombre}}" style="width:100%;" placeholder="—" />
             </td>
             <td>
               <input type="number" class="origen-hab-bonus" data-index="{{h.index}}" data-field="bonus"
-                     value="{{h.bonus}}" style="width:60px;text-align:center;" />
+                     value="{{h.bonus}}" style="width:55px;text-align:center;" />
             </td>
             <td>
               <a class="origen-hab-del" data-index="{{h.index}}"

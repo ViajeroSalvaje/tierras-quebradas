@@ -1,5 +1,79 @@
 const { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api;
 
+const GRUPOS_HABILIDADES = [
+  { id: "combateCC", label: "Combate CaC", habs: [
+    { clave: "armasPunhal", label: "Armas de Puñal" },
+    { clave: "armasEspada", label: "Armas de Espada" },
+    { clave: "armasAsta",   label: "Armas de Asta" },
+    { clave: "armasMangos", label: "Armas de Mango" },
+    { clave: "pelea",       label: "Pelea" },
+    { clave: "escudo",      label: "Escudo" }
+  ]},
+  { id: "combateDist", label: "Combate a Distancia", habs: [
+    { clave: "arco",        label: "Arco" },
+    { clave: "ballesta",    label: "Ballesta" },
+    { clave: "canonDeMano", label: "Cañón de Mano" },
+    { clave: "honda",       label: "Honda" },
+    { clave: "lanzar",      label: "Lanzar" }
+  ]},
+  { id: "fisico", label: "Físico", habs: [
+    { clave: "atletismo", label: "Atletismo" },
+    { clave: "nadar",     label: "Nadar" },
+    { clave: "trepar",    label: "Trepar" },
+    { clave: "montar",    label: "Montar" },
+    { clave: "esquivar",  label: "Esquivar" }
+  ]},
+  { id: "furtivo", label: "Sombras", habs: [
+    { clave: "sigilo",      label: "Sigilo" },
+    { clave: "ocultar",     label: "Ocultar" },
+    { clave: "hurtar",      label: "Hurtar" },
+    { clave: "disfrazarse", label: "Disfrazarse" },
+    { clave: "callejeo",    label: "Callejeo" },
+    { clave: "seguir",      label: "Seguir" },
+    { clave: "buscar",      label: "Buscar" },
+    { clave: "percatarse",  label: "Percatarse" },
+    { clave: "perspicacia", label: "Perspicacia" },
+    { clave: "rastrear",    label: "Rastrear" }
+  ]},
+  { id: "social", label: "Social", habs: [
+    { clave: "encanto",      label: "Encanto" },
+    { clave: "manipulacion", label: "Manipulación" },
+    { clave: "imponerse",    label: "Imponerse" },
+    { clave: "oratoria",     label: "Oratoria" },
+    { clave: "actuacion",    label: "Actuación" },
+    { clave: "instruir",     label: "Instruir" },
+    { clave: "juego",        label: "Juego" }
+  ]},
+  { id: "saber", label: "Conocimiento", habs: [
+    { clave: "academia",           label: "Academia" },
+    { clave: "estrategia",         label: "Estrategia" },
+    { clave: "leyendas",           label: "Leyendas" },
+    { clave: "medicina",           label: "Medicina" },
+    { clave: "naturaleza",         label: "Naturaleza" },
+    { clave: "memorizar",          label: "Memorizar" },
+    { clave: "navegacion",         label: "Navegación" },
+    { clave: "conocimientoMagico", label: "Conocimiento Mágico" },
+    { clave: "multiverso",         label: "Multiverso" },
+    { clave: "sueños",             label: "Sueños" },
+    { clave: "pociones",           label: "Pociones" },
+    { clave: "documentacion",      label: "Documentación" },
+    { clave: "tierrasQuebradas",   label: "Tierras Quebradas" }
+  ]},
+  { id: "tecnico", label: "Técnico", habs: [
+    { clave: "artesania",       label: "Artesanía" },
+    { clave: "forzarCerraduras",label: "Forzar Cerraduras" },
+    { clave: "manejarBotes",    label: "Manejar Botes" },
+    { clave: "manejarCarros",   label: "Manejar Carros" },
+    { clave: "primerosAuxilios",label: "Primeros Auxilios" },
+    { clave: "tratarAnimales",  label: "Tratar Animales" }
+  ]},
+  { id: "idiomas", label: "Idiomas", habs: [
+    { clave: "idioma1", label: "Idioma 1 (nativo)" },
+    { clave: "idioma2", label: "Idioma 2" },
+    { clave: "idioma3", label: "Idioma 3" }
+  ]}
+];
+
 const FONDOS_INICIALES = [
   { id: "indigente", label: "Indigente", mb: 10,   desc: "Mendigos y nómadas" },
   { id: "pobre",     label: "Pobre",     mb: 50,   desc: "Campesinos, cazadores, marineros y mineros" },
@@ -73,7 +147,9 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
     { id: "ventajas",        label: "Ventajas",         short: "Ventajas" },
     { id: "rasgos",          label: "Rasgos",           short: "Rasgos"   },
     { id: "equipo",          label: "Equipo",           short: "Equipo"   },
-    { id: "habilidades",     label: "Habilidades",      short: "Hab."     }
+    { id: "habilidades",     label: "Habilidades",      short: "Hab."     },
+    { id: "religion",        label: "Religión",          short: "Rel."     },
+    { id: "magia",           label: "Magia",             short: "Magia"    }
   ];
 
   _stepIndex = 0;
@@ -113,6 +189,7 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
     origenIdioma:       "",
     origenReligion:     "",
     origenHabilidades:  [],
+    origenElecciones:   {},
     // Profesión
     profesionId:        null,
     profesionNombre:    "",
@@ -134,7 +211,9 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
     armaduraSeleccionadas: [],
     armasCaCSeleccionadas: [],
     armasProySeleccionadas: [],
-    armasArrSeleccionadas: []
+    armasArrSeleccionadas: [],
+    // Paso habilidades: puntos libres gastados por clave
+    habilidadesLibres: {}
   };
 
   _origenesCache = null;
@@ -146,6 +225,7 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
   _armasCaCCache = null;
   _armasProyCache = null;
   _armasArrCache = null;
+  _idiomasCache = null;
 
   static async open(nombre = "") {
     const app = new CharacterCreator();
@@ -317,6 +397,16 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
     return this._armasArrCache;
   }
 
+  async _getIdiomas() {
+    if (this._idiomasCache) return this._idiomasCache;
+    const pack = game.packs.get("tierras-quebradas.idiomas");
+    if (!pack) return [];
+    const docs = await pack.getDocuments();
+    this._idiomasCache = docs.map(d => ({ id: d.id, name: d.name }))
+      .sort((a, b) => a.name.localeCompare(b.name));
+    return this._idiomasCache;
+  }
+
   async _getRasgos() {
     if (this._rasgosCache) return this._rasgosCache;
     const pack = game.packs.get("tierras-quebradas.rasgos");
@@ -467,6 +557,7 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
 
     // Datos de origen
     let origenesData = null;
+    let eleccionesIdiomaOrigen = null;
     if (stepId === "origen") {
       const lista = await this._getOrigenes();
       origenesData = lista.map(o => ({
@@ -476,6 +567,25 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
           .map(h => `${h.nombre ? h.nombre : h.clave} +${h.bonus}`)
           .join(", ")
       }));
+      if (this._charData.origenId) {
+        const o = this._origenesCache?.find(x => x.id === this._charData.origenId);
+        if (o) {
+          const conIdioma = (o.habilidades ?? [])
+            .map((h, i) => ({ ...h, idx: i }))
+            .filter(h => h.clave?.startsWith("idioma") && !h.nombre);
+          if (conIdioma.length) {
+            const idiomas = await this._getIdiomas();
+            eleccionesIdiomaOrigen = conIdioma.map(h => ({
+              idx:     h.idx,
+              bonus:   h.bonus,
+              opciones: idiomas.map(id => ({
+                nombre:   id.name,
+                selected: (this._charData.origenElecciones[h.idx] ?? "") === id.name
+              }))
+            }));
+          }
+        }
+      }
     }
 
     // Datos de especie
@@ -550,7 +660,7 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
     ].reduce((s, a) => s + a.precio, 0);
     const mbRestantes = this._charData.fondosIniciales - mbGastado;
     const equipoData = {
-      niveles: FONDOS_INICIALES,
+      niveles: FONDOS_INICIALES.map(n => ({ ...n, selected: n.id === this._charData.nivelAdquisitivo })),
       nivelFondos,
       fuerza,
       cargaNormal: fuerza,
@@ -584,7 +694,28 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
       armasArrData = listaArr.map(a => ({ ...a, selected: selArr.has(a.id) }));
     }
 
-    const implementados = new Set(["caracteristicas", "edad", "especie", "origen", "entorno", "profesion", "ventajas", "rasgos", "equipo"]);
+    const implementados = new Set(["caracteristicas", "edad", "especie", "origen", "entorno", "profesion", "ventajas", "rasgos", "equipo", "habilidades"]);
+
+    let habilidadesData = null;
+    if (stepId === "habilidades") {
+      const habBase = this._getHabilidadesBase();
+      const puntosTotal = this._charData.puntosHab + this._calcPPConVentajas() * 3;
+      const puntosGastados = Object.values(this._charData.habilidadesLibres).reduce((a, b) => a + b, 0);
+      const puntosRestantes = puntosTotal - puntosGastados;
+      habilidadesData = {
+        puntosTotal,
+        puntosRestantes,
+        grupos: GRUPOS_HABILIDADES.map(g => ({
+          ...g,
+          habs: g.habs.map(h => {
+            const base = habBase[h.clave] ?? 0;
+            const libre = this._charData.habilidadesLibres[h.clave] ?? 0;
+            const total = base + libre;
+            return { ...h, base, libre, total, puedeSubir: total < 8 && puntosRestantes > 0, puedeBajar: libre > 0 };
+          })
+        }))
+      };
+    }
 
     return {
       stepId, stepLabel, stepIndex: this._stepIndex,
@@ -605,6 +736,7 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
       eleccionesProfesion,
       // Origen
       origenes: origenesData,
+      eleccionesIdiomaOrigen,
       // Especie
       especies: especiesData,
       // Ventajas
@@ -617,6 +749,8 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
       armasCaCData,
       armasProyData,
       armasArrData,
+      // Habilidades
+      habilidadesData,
       // Global
       ppTotal:       this._calcPPConVentajas(),
       puntosHab:     this._charData.puntosHab,
@@ -624,6 +758,27 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
       mostrarCrear:  this._stepIndex > 0,
       hayAnterior:   this._stepIndex > 0
     };
+  }
+
+  _getHabilidadesBase() {
+    const base = {};
+    const sumar = (lista, elecciones) => {
+      for (const [i, h] of (lista ?? []).entries()) {
+        const clave = elecciones?.[i] ?? h.clave;
+        if (!clave || !h.bonus) continue;
+        base[clave] = (base[clave] ?? 0) + h.bonus;
+      }
+    };
+    sumar(this._charData.entornoHabilidades, this._charData.entornoElecciones);
+    sumar(this._charData.origenHabilidades, this._charData.origenElecciones);
+    sumar(this._charData.profesionHabilidades, this._charData.profesionElecciones);
+    for (const r of (this._charData.rasgosElegidos ?? [])) {
+      for (const h of (r.habilidades ?? [])) {
+        if (!h.clave || !h.bonus) continue;
+        base[h.clave] = (base[h.clave] ?? 0) + h.bonus;
+      }
+    }
+    return base;
   }
 
   _formatBonusCaract(e) {
@@ -761,6 +916,14 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
       });
     });
 
+    // ── Origen: idioma elección ──
+    el.querySelectorAll(".cc-idioma-origen-select").forEach(sel => {
+      sel.addEventListener("change", ev => {
+        const idx = parseInt(ev.target.dataset.idx);
+        this._charData.origenElecciones[idx] = ev.target.value;
+      });
+    });
+
     // ── Paso: Especie ──
     el.querySelectorAll(".especie-card").forEach(card => {
       card.addEventListener("click", () => {
@@ -817,6 +980,18 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
         const idx = parseInt(ev.target.dataset.idx);
         if (tipo === "pos") this._charData.rasgosPos[idx] = ev.target.value;
         else                this._charData.rasgosNeg[idx] = ev.target.value;
+      });
+    });
+
+    // ── Paso: Habilidades ──
+    el.querySelectorAll(".cc-hab-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        if (btn.disabled) return;
+        const clave = btn.dataset.clave;
+        const delta = parseInt(btn.dataset.delta);
+        const libre = this._charData.habilidadesLibres[clave] ?? 0;
+        this._charData.habilidadesLibres[clave] = libre + delta;
+        this.render();
       });
     });
 
@@ -1035,12 +1210,13 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
       if (this._charData.origenReligion) {
         habUpdates["system.religion"] = this._charData.origenReligion;
       }
-      for (const { clave, bonus, nombre } of (this._charData.origenHabilidades ?? [])) {
+      for (const [i, { clave, bonus, nombre }] of (this._charData.origenHabilidades ?? []).entries()) {
         if (!clave || !bonus) continue;
         const curr = actor.system.habilidades?.[clave]?.nivel ?? 0;
         habUpdates[`system.habilidades.${clave}.nivel`] = curr + bonus;
-        if (nombre && clave.startsWith("idioma")) {
-          habUpdates[`system.habilidades.${clave}.nombre`] = nombre;
+        if (clave.startsWith("idioma")) {
+          const nombreFinal = nombre || this._charData.origenElecciones[i] || "";
+          if (nombreFinal) habUpdates[`system.habilidades.${clave}.nombre`] = nombreFinal;
         }
       }
       if (Object.keys(habUpdates).length) await actor.update(habUpdates);
@@ -1176,6 +1352,18 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
         const doc = await packArr.getDocument(a.id);
         if (doc) await Item.create(doc.toObject(), { parent: actor });
       }
+    }
+
+    // Habilidades libres (puntos repartidos en el paso habilidades)
+    const habLibres = this._charData.habilidadesLibres ?? {};
+    if (Object.keys(habLibres).length) {
+      const libresUpdate = {};
+      for (const [clave, puntos] of Object.entries(habLibres)) {
+        if (!puntos) continue;
+        const curr = actor.system.habilidades?.[clave]?.nivel ?? 0;
+        libresUpdate[`system.habilidades.${clave}.nivel`] = curr + puntos;
+      }
+      if (Object.keys(libresUpdate).length) await actor.update(libresUpdate);
     }
 
     // Dinero restante tras compras
