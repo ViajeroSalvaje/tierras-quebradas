@@ -1,0 +1,5 @@
+2026/06/10-00:35:50.028 4cb0 Recovering log #261
+2026/06/10-00:35:50.029 4cb0 Level-0 table #263: started
+2026/06/10-00:35:50.034 4cb0 Level-0 table #263: 42467 bytes OK
+2026/06/10-00:35:50.041 4cb0 Delete type=0 #261
+2026/06/10-00:35:50.042 4cb0 Delete type=3 #260
