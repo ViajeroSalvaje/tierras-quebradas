@@ -180,6 +180,7 @@
     "pnj": {
       "templates": ["base"],
       "habilidades": {},
+      "pm": 0,
       "notas": ""
     },
     "criatura": {

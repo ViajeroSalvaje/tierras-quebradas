@@ -1042,6 +1042,7 @@
   display: flex;
   gap: 10px;
   align-items: center;
+  justify-content: center;
   padding: 4px 6px;
 }
 
@@ -1054,16 +1055,38 @@
 
 .lealtad-item label {
   font-size: 8px;
+  font-weight: bold;
   text-transform: uppercase;
   color: var(--tq-text-dim);
 }
 
-.lealtad-item input {
-  width: 40px;
-  height: 26px;
+.lealtad-circulo {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 2px solid var(--tq-teal);
+  background: var(--tq-input);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lealtad-circulo input[type="number"] {
+  width: 36px;
+  border: none;
+  background: transparent;
   text-align: center;
-  font-size: 15px;
+  font-size: 16px;
   font-weight: bold;
+  color: var(--tq-teal-dark);
+  padding: 0;
+  -moz-appearance: textfield;
+}
+
+.lealtad-circulo input[type="number"]::-webkit-outer-spin-button,
+.lealtad-circulo input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 /* Info personal */
@@ -1979,8 +2002,8 @@
 .tq-tirada-resultado .tirada-danho.rival { border-top: 1px solid var(--tq-border); margin-top: 4px; padding-top: 4px; }
 
 /* ─── Lealtad: alineamiento e hitos ─────────────────────────────── */
-.lealtad-item.lealtad-alineada label {
-  font-weight: bold;
+.lealtad-item.lealtad-alineada .lealtad-circulo {
+  border-color: var(--tq-red-dmg);
 }
 
 .lealtad-item.lealtad-alineada input {
