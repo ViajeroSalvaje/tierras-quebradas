@@ -3,7 +3,6 @@
 **Pendientes**
 - Cambiar diálogos
 - Cambiar tarjetas de chat
-- 
 **Cambios**
 
 - Cambiada la base de pnj para solucionar los problemas en herencias
