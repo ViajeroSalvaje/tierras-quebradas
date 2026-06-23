@@ -1,0 +1,5 @@
+2026/06/21-13:15:12.555 8ed4 Recovering log #333
+2026/06/21-13:15:12.556 8ed4 Level-0 table #335: started
+2026/06/21-13:15:12.559 8ed4 Level-0 table #335: 12734 bytes OK
+2026/06/21-13:15:12.571 8ed4 Delete type=0 #333
+2026/06/21-13:15:12.571 8ed4 Delete type=3 #331
