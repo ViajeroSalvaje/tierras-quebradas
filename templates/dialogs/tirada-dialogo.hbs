@@ -93,10 +93,17 @@
     <div class="campo-grupo">
       <label for="dificultad">Dificultad</label>
       <select name="dificultad" id="dificultad">
+        {{#if (tq-eq escalaDif "caracteristica")}}
+        <option value="9"  {{#if (tq-eq dificultadPorDefecto "9")}}selected{{/if}}>Fácil (9)</option>
+        <option value="12" {{#if (tq-eq dificultadPorDefecto "12")}}selected{{/if}}>Normal (12)</option>
+        <option value="15" {{#if (tq-eq dificultadPorDefecto "15")}}selected{{/if}}>Difícil (15)</option>
+        <option value="18" {{#if (tq-eq dificultadPorDefecto "18")}}selected{{/if}}>Muy Difícil (18)</option>
+        {{else}}
         <option value="10"  {{#if (tq-eq dificultadPorDefecto "10")}}selected{{/if}}>Fácil (10)</option>
         <option value="15"  {{#if (tq-eq dificultadPorDefecto "15")}}selected{{/if}}>Normal (15)</option>
         <option value="20"  {{#if (tq-eq dificultadPorDefecto "20")}}selected{{/if}}>Difícil (20)</option>
         <option value="25"  {{#if (tq-eq dificultadPorDefecto "25")}}selected{{/if}}>Muy Difícil (25)</option>
+        {{/if}}
       </select>
     </div>
     <div class="campo-grupo">

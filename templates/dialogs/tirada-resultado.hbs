@@ -18,8 +18,36 @@
   {{#if criticos}}
   <div class="tq-chat-criticos">{{criticos}}</div>
   {{/if}}
+  {{#if pasionEfecto}}
+  <div class="tq-chat-pasion"><i class="fas fa-fire"></i> {{pasionEfecto}}</div>
+  {{/if}}
 
-  {{#if esMelee}}
+  {{#if esEnfrentada}}
+  {{!-- Enfrentada: dos columnas --}}
+  <div class="tq-melee-grid">
+    <div class="tq-melee-col">
+      <div class="tq-melee-titulo">{{nombreA}} <span class="tq-enfrentada-hab">({{habNombreA}})</span></div>
+      <div class="tq-melee-nums">
+        <span><i class="fas fa-dice-d10"></i> <strong>{{dadoDisplayA}}</strong></span>
+        <span>+ {{puntuacionA}}</span>
+        {{#if bonificadorA}}<span>{{#if (tq-gt bonificadorA 0)}}+{{/if}}{{bonificadorA}}</span>{{/if}}
+        <span class="tq-melee-total">= <strong>{{totalA}}</strong></span>
+      </div>
+    </div>
+    <div class="tq-melee-col rival">
+      <div class="tq-melee-titulo">{{nombreB}} <span class="tq-enfrentada-hab">({{habNombreB}})</span></div>
+      <div class="tq-melee-nums">
+        <span><i class="fas fa-dice-d10"></i> <strong>{{dadoDisplayB}}</strong></span>
+        <span>+ {{puntuacionB}}</span>
+        <span class="tq-melee-total">= <strong>{{totalB}}</strong></span>
+      </div>
+    </div>
+  </div>
+  <div class="tq-chat-exitos-row">
+    {{#if (tq-gt exitos 0)}}+{{/if}}{{exitos}} éxitos
+  </div>
+
+  {{else if esMelee}}
   {{!-- Melé: dos columnas --}}
   <div class="tq-melee-grid">
     <div class="tq-melee-col">
@@ -33,7 +61,7 @@
       </div>
     </div>
     <div class="tq-melee-col rival">
-      <div class="tq-melee-titulo">Rival</div>
+      <div class="tq-melee-titulo">{{rivalNombre}}</div>
       <div class="tq-melee-nums">
         <span><i class="fas fa-dice-d10"></i> <strong>{{dadoDisplayRival}}</strong></span>
         <span>+ {{puntuacionRival}}</span>
@@ -110,11 +138,19 @@
   {{!-- Daño del rival --}}
   {{#if pdRival}}
   <div class="tq-chat-danho rival">
-    Rival: {{pdRival.formula}}
+    {{rivalNombre}}: {{pdRival.formula}}
     {{#if pdRival.total}}
     = <strong>{{pdRival.total}} PD</strong>
     {{#if proteccionJugador}} — {{proteccionJugador}} prot. → <strong>{{danhoRivalAplicado}} aplicados</strong>{{/if}}
     {{/if}}
+  </div>
+  {{/if}}
+
+  {{#if mostrarFortuna}}
+  <div class="tq-fortuna-actions">
+    <button class="tq-fortuna-repetir" type="button" data-actor-id="{{actorId}}">
+      Repetir Tirada - 1 Fortuna
+    </button>
   </div>
   {{/if}}
 

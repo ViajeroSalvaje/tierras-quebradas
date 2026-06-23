@@ -1,4 +1,26 @@
 {
+  "TYPES": {
+    "Actor": {
+      "pj": "Personaje Jugador",
+      "pnj": "Personaje No Jugador",
+      "criatura": "Criatura",
+      "demonio": "Demonio"
+    },
+    "Item": {
+      "arma": "Arma",
+      "armadura": "Armadura",
+      "hechizo": "Hechizo",
+      "ventaja": "Ventaja/Desventaja",
+      "rasgo": "Rasgo",
+      "pacto": "Pacto",
+      "bendicion": "Bendición",
+      "especie": "Especie",
+      "entorno": "Entorno",
+      "origen": "Origen Étnico",
+      "profesion": "Profesión",
+      "idioma": "Idioma"
+    }
+  },
   "TQ": {
     "Actor": {
       "Types": {
@@ -25,6 +47,7 @@
       "espiritu": "Espíritu",
       "atractivo": "Atractivo",
       "tamano": "Tamaño",
+      "tamanyo": "Tamaño",
       "fuerza": "Fuerza"
     },
     "Bases": {

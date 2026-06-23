@@ -1,4 +1,4 @@
-<form class="{{cssClass}} flexcol" autocomplete="off">
+<section class="{{cssClass}} flexcol" style="height:100%;width:100%;">
   <header class="sheet-header">
     <img class="profile-img" src="{{actor.img}}" data-edit="img" title="{{actor.name}}" />
     <div class="header-fields pnj-header-fields">
@@ -30,6 +30,27 @@
         {{/each}}
       </div>
 
+      <div class="derivadas-row">
+        <div class="derivada-item">
+          <span class="derivada-label tirar-caracteristica" data-caracteristica="fuerza" title="Tirar Fuerza" style="cursor:pointer;">Fuerza</span>
+          <div class="caract-sec-circle">
+            <span class="derivada-value">{{system.derivadas.fuerza.valor}}</span>
+          </div>
+        </div>
+        <div class="derivada-item">
+          <span class="derivada-label">MD 1M</span>
+          <div class="caract-sec-circle">
+            <span class="derivada-value">{{system.derivadas.mDano1m.valor}}</span>
+          </div>
+        </div>
+        <div class="derivada-item">
+          <span class="derivada-label">MD 2M</span>
+          <div class="caract-sec-circle">
+            <span class="derivada-value">{{system.derivadas.mDano2m.valor}}</span>
+          </div>
+        </div>
+      </div>
+
       <div class="pnj-salud-centrada">
         <label class="pnj-salud-label">PV</label>
         <div class="pnj-salud-fila">
@@ -59,8 +80,11 @@
 
     <div class="tab" data-tab="combate">
 
+      <div class="section-header">
+        <span>Armas</span>
+        <a class="anadir-arma" title="Añadir arma"><i class="fas fa-plus"></i></a>
+      </div>
       {{#if armas}}
-      <div class="section-header"><span>Armas</span></div>
       <div class="pnj-items-lista">
         {{#each armas as |a|}}
         <div class="pnj-item-fila">
@@ -73,14 +97,67 @@
       </div>
       {{/if}}
 
+      <div class="section-header">
+        <span>Protecciones</span>
+        <a class="anadir-armadura" title="Añadir protección"><i class="fas fa-plus"></i></a>
+      </div>
       {{#if armaduras}}
-      <div class="section-header"><span>Protecciones</span></div>
       <div class="pnj-items-lista">
         {{#each armaduras as |a|}}
         <div class="pnj-item-fila">
           <a class="pnj-item-nombre" data-id="{{a.id}}">{{a.name}}</a>
           <span class="pnj-item-detalle">PR {{a.proteccion}}</span>
           <a class="pnj-item-borrar" data-id="{{a.id}}" title="Eliminar"><i class="fas fa-trash"></i></a>
+        </div>
+        {{/each}}
+      </div>
+      {{/if}}
+
+      {{#if rasgos}}
+      <div class="section-header"><span>Rasgos</span></div>
+      <div class="pnj-items-lista">
+        {{#each rasgos as |r|}}
+        <div class="pnj-item-fila">
+          <a class="pnj-item-nombre" data-id="{{r.id}}">{{r.name}}</a>
+          <a class="pnj-item-borrar" data-id="{{r.id}}" title="Eliminar"><i class="fas fa-trash"></i></a>
+        </div>
+        {{/each}}
+      </div>
+      {{/if}}
+
+      {{#if ventajas}}
+      <div class="section-header"><span>Ventajas / Desventajas</span></div>
+      <div class="pnj-items-lista">
+        {{#each ventajas as |v|}}
+        <div class="pnj-item-fila">
+          <a class="pnj-item-nombre" data-id="{{v.id}}">{{v.name}}</a>
+          <a class="pnj-item-borrar" data-id="{{v.id}}" title="Eliminar"><i class="fas fa-trash"></i></a>
+        </div>
+        {{/each}}
+      </div>
+      {{/if}}
+
+      {{#if objetos}}
+      <div class="section-header"><span>Equipo</span></div>
+      <div class="pnj-items-lista">
+        {{#each objetos as |o|}}
+        <div class="pnj-item-fila">
+          <a class="pnj-item-nombre" data-id="{{o.id}}">{{o.name}}</a>
+          {{#if o.categoria}}<span class="pnj-item-detalle">{{o.categoria}}</span>{{/if}}
+          <a class="pnj-item-borrar" data-id="{{o.id}}" title="Eliminar"><i class="fas fa-trash"></i></a>
+        </div>
+        {{/each}}
+      </div>
+      {{/if}}
+
+      {{#if consumibles}}
+      <div class="section-header"><span>Consumibles</span></div>
+      <div class="pnj-items-lista">
+        {{#each consumibles as |c|}}
+        <div class="pnj-item-fila">
+          <a class="pnj-item-nombre" data-id="{{c.id}}">{{c.name}}</a>
+          <span class="pnj-item-detalle">×{{c.dosis}}{{#if c.efecto}} · {{c.efecto}}{{/if}}</span>
+          <a class="pnj-item-borrar" data-id="{{c.id}}" title="Eliminar"><i class="fas fa-trash"></i></a>
         </div>
         {{/each}}
       </div>
@@ -132,4 +209,4 @@
       <textarea name="system.notas" rows="15" class="notas-textarea">{{system.notas}}</textarea>
     </div>
   </section>
-</form>
+</section>

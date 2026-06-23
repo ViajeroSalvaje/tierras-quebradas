@@ -167,6 +167,13 @@
       "path": "packs/idiomas",
       "type": "Item",
       "system": "tierras-quebradas"
+    },
+    {
+      "name": "hechizos",
+      "label": "Hechizos",
+      "path": "packs/hechizos",
+      "type": "Item",
+      "system": "tierras-quebradas"
     }
   ]
 }

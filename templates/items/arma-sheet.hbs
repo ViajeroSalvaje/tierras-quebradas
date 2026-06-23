@@ -3,16 +3,19 @@
   <section class="item-body">
     <div class="item-header-row">
       <img class="item-img" src="{{item.img}}" title="{{item.name}}" />
-      <div class="field-group full-width">
-        <label>Nombre</label>
-        <input type="text" name="name" value="{{item.name}}" placeholder="Nombre del arma" />
-      </div>
+      <h1><input type="text" name="name" value="{{item.name}}" placeholder="Nombre del arma" /></h1>
     </div>
-    <div class="item-grid">
+    <div class="arma-fila-dano">
       <div class="field-group">
         <label>Daño</label>
         <input type="text" name="system.danoArma" value="{{system.danoArma}}" placeholder="ej: 1d6+2" />
       </div>
+      <div class="field-group field-group-check">
+        <label>No Letal</label>
+        <input type="checkbox" name="system.noLetal" {{checked system.noLetal}} />
+      </div>
+    </div>
+    <div class="item-grid">
       <div class="field-group">
         <label>Tipo de daño</label>
         <select name="system.tipo">
@@ -40,18 +43,6 @@
         </select>
       </div>
       <div class="field-group">
-        <label>FUE mín.</label>
-        <input type="number" name="system.fue" value="{{system.fue}}" min="0" />
-      </div>
-      <div class="field-group">
-        <label>Carga</label>
-        <input type="number" name="system.carga" value="{{system.carga}}" min="0" />
-      </div>
-      <div class="field-group">
-        <label>Recarga (turnos)</label>
-        <input type="number" name="system.recarga" value="{{system.recarga}}" min="0" />
-      </div>
-      <div class="field-group">
         <label>Habilidad</label>
         <select name="system.habilidad">
           <option value="">— Ninguna —</option>
@@ -77,12 +68,22 @@
         </select>
       </div>
       <div class="field-group">
-        <label>No Letal</label>
-        <input type="checkbox" name="system.noLetal" {{checked system.noLetal}} />
-      </div>
-      <div class="field-group">
         <label>Precio</label>
         <input type="number" name="system.precio" value="{{system.precio}}" min="0" />
+      </div>
+    </div>
+    <div class="arma-fila-numeros">
+      <div class="field-group">
+        <label>FUE mín.</label>
+        <input type="number" name="system.fue" value="{{system.fue}}" min="0" />
+      </div>
+      <div class="field-group">
+        <label>Carga</label>
+        <input type="number" name="system.carga" value="{{system.carga}}" min="0" />
+      </div>
+      <div class="field-group">
+        <label>Recarga (turnos)</label>
+        <input type="number" name="system.recarga" value="{{system.recarga}}" min="0" />
       </div>
     </div>
     <div class="field-group full-width">

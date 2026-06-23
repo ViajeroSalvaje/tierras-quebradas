@@ -89,34 +89,34 @@
           "juego": { "nivel": 0, "px": 0, "base": "percepcion", "puntosFijos": 0 },
           "lanzar": { "nivel": 0, "px": 0, "base": "vigor", "puntosFijos": 2 },
           "leyendas": { "nivel": 0, "px": 0, "base": "cultura", "puntosFijos": 2 },
-          "manejarBotes": { "nivel": 0, "px": 0, "base": "vigor", "puntosFijos": 0, "estorbo": 1 },
+          "manejarBotes": { "nivel": 0, "px": 0, "base": "vigor", "puntosFijos": 0 },
           "manejarCarros": { "nivel": 0, "px": 0, "base": "tecnica", "puntosFijos": 0 },
           "navegacion": { "nivel": 0, "px": 0, "base": "cultura", "puntosFijos": 0 },
           "manipulacion": { "nivel": 0, "px": 0, "base": "comunicacion", "puntosFijos": 2 },
           "medicina": { "nivel": 0, "px": 0, "base": "cultura", "puntosFijos": 0 },
           "memorizar": { "nivel": 0, "px": 0, "base": "cultura", "puntosFijos": 1 },
-          "montar": { "nivel": 0, "px": 0, "base": "vigor", "puntosFijos": 0, "estorbo": 1 },
+          "montar": { "nivel": 0, "px": 0, "base": "vigor", "puntosFijos": 0 },
           "multiverso": { "nivel": 0, "px": 0, "base": "cultura", "puntosFijos": 0 },
           "oratoria": { "nivel": 0, "px": 0, "base": "comunicacion", "puntosFijos": 0 },
           "nadar": { "nivel": 0, "px": 0, "base": "agilidad", "puntosFijos": 0, "estorbo": 2 },
           "naturaleza": { "nivel": 0, "px": 0, "base": "cultura", "puntosFijos": 1 },
-          "ocultar": { "nivel": 0, "px": 0, "base": "tecnica", "puntosFijos": 0, "estorbo": 1 },
+          "ocultar": { "nivel": 0, "px": 0, "base": "tecnica", "puntosFijos": 0 },
           "percatarse": { "nivel": 0, "px": 0, "base": "percepcion", "puntosFijos": 0 },
           "perspicacia": { "nivel": 0, "px": 0, "base": "percepcion", "puntosFijos": 0 },
           "pociones": { "nivel": 0, "px": 0, "base": "cultura", "puntosFijos": 0 },
           "primerosAuxilios": { "nivel": 0, "px": 0, "base": "tecnica", "puntosFijos": 0 },
           "rastrear": { "nivel": 0, "px": 0, "base": "percepcion", "puntosFijos": 0 },
-          "sigilo": { "nivel": 0, "px": 0, "base": "agilidad", "puntosFijos": 1, "estorbo": 2 },
+          "sigilo": { "nivel": 0, "px": 0, "base": "agilidad", "puntosFijos": 1, "estorbo": 1 },
           "seguir": { "nivel": 0, "px": 0, "base": "percepcion", "puntosFijos": 0 },
           "sueños": { "nivel": 0, "px": 0, "base": "cultura", "puntosFijos": 0 },
           "trepar": { "nivel": 0, "px": 0, "base": "agilidad", "puntosFijos": 0, "estorbo": 1 },
           "tratarAnimales": { "nivel": 0, "px": 0, "base": "comunicacion", "puntosFijos": 0 },
-          "armasAsta": { "nivel": 0, "px": 0, "base": "vigor", "puntosFijos": 0, "estorbo": 1 },
-          "escudo": { "nivel": 0, "px": 0, "base": "vigor", "puntosFijos": 0, "estorbo": 1 },
-          "armasEspada": { "nivel": 0, "px": 0, "base": "vigor", "puntosFijos": 0, "estorbo": 1 },
-          "armasMangos": { "nivel": 0, "px": 0, "base": "vigor", "puntosFijos": 0, "estorbo": 1 },
-          "armasPunhal": { "nivel": 0, "px": 0, "base": "vigor", "puntosFijos": 0, "estorbo": 1 },
-          "pelea": { "nivel": 0, "px": 0, "base": "vigor", "puntosFijos": 0, "estorbo": 1 },
+          "armasAsta": { "nivel": 0, "px": 0, "base": "vigor", "puntosFijos": 0 },
+          "escudo": { "nivel": 0, "px": 0, "base": "vigor", "puntosFijos": 0 },
+          "armasEspada": { "nivel": 0, "px": 0, "base": "vigor", "puntosFijos": 0 },
+          "armasMangos": { "nivel": 0, "px": 0, "base": "vigor", "puntosFijos": 0 },
+          "armasPunhal": { "nivel": 0, "px": 0, "base": "vigor", "puntosFijos": 0 },
+          "pelea": { "nivel": 0, "px": 0, "base": "vigor", "puntosFijos": 0 },
           "arco": { "nivel": 0, "px": 0, "base": "tecnica", "puntosFijos": 0 },
           "ballesta": { "nivel": 0, "px": 0, "base": "tecnica", "puntosFijos": 0 },
           "canonDeMano": { "nivel": 0, "px": 0, "base": "tecnica", "puntosFijos": 0 },
@@ -155,8 +155,12 @@
         },
         "motivacion": "",
         "tuMentira": "",
+        "tuMentiraMarcas": 0,
         "pasionAmor": "",
         "pasionOdio": "",
+        "pasionAmorUsada": false,
+        "pasionOdioUsada": false,
+        "pasionFlag": "",
         "rasgosPositivos": "",
         "rasgosNegativos": "",
         "rasgoPos1": "", "rasgoPos2": "", "rasgoPos3": "",
@@ -211,7 +215,7 @@
     }
   },
   "Item": {
-    "types": ["arma", "armadura", "hechizo", "ventaja", "rasgo", "pacto", "bendicion", "especie", "entorno", "origen", "profesion", "idioma"],
+    "types": ["arma", "armadura", "hechizo", "ventaja", "rasgo", "pacto", "bendicion", "especie", "entorno", "origen", "profesion", "idioma", "objeto", "consumible"],
     "templates": {
       "base": {
         "descripcion": "",
@@ -240,7 +244,9 @@
       "tipo": "blanda",
       "carga": 0,
       "zona": "cuerpo",
-      "precio": 0
+      "precio": 0,
+      "esYelmo": false,
+      "viseraBajada": false
     },
     "hechizo": {
       "templates": ["base"],
@@ -315,6 +321,22 @@
     "idioma": {
       "templates": ["base"],
       "escrita": false
+    },
+    "objeto": {
+      "templates": ["base"],
+      "carga": 0,
+      "precio": 0,
+      "categoria": "",
+      "descripcion": ""
+    },
+    "consumible": {
+      "templates": ["base"],
+      "potencia": 0,
+      "dificultad": 15,
+      "dosis": 1,
+      "carga": 0,
+      "efecto": "",
+      "descripcion": ""
     }
   }
 }

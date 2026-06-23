@@ -1,25 +1,14 @@
 <div class="{{cssClass}} flexcol" autocomplete="off" style="height:100%;width:100%;">
 
   <section class="item-body">
-    <div class="field-group full-width" style="margin-bottom:8px;">
-      <label>Nombre</label>
-      <input type="text" name="name" value="{{item.name}}" placeholder="Nombre de la armadura" />
+    <div class="item-header-row">
+      <img class="item-img" src="{{item.img}}" title="{{item.name}}" />
+      <h1><input type="text" name="name" value="{{item.name}}" placeholder="Nombre de la armadura" /></h1>
     </div>
     <div class="item-grid">
       <div class="field-group">
         <label>Protección</label>
         <input type="number" name="system.proteccion" value="{{system.proteccion}}" min="0" />
-      </div>
-      <div class="field-group">
-        <label>Carga</label>
-        <input type="number" name="system.carga" value="{{system.carga}}" min="0" />
-      </div>
-      <div class="field-group">
-        <label>Tipo</label>
-        <select name="system.tipo">
-          <option value="blanda" {{selected system.tipo "blanda"}}>Blanda</option>
-          <option value="dura"   {{selected system.tipo "dura"}}>Dura</option>
-        </select>
       </div>
       <div class="field-group">
         <label>Zona</label>
@@ -30,6 +19,27 @@
           <option value="piernas" {{selected system.zona "piernas"}}>Piernas</option>
           <option value="escudo" {{selected system.zona "escudo"}}>Escudo</option>
         </select>
+      </div>
+      <div class="field-group">
+        <label>Tipo</label>
+        <select name="system.tipo">
+          <option value="blanda" {{selected system.tipo "blanda"}}>Blanda</option>
+          <option value="dura"   {{selected system.tipo "dura"}}>Dura</option>
+        </select>
+      </div>
+      <div class="field-group">
+        <label>¿Es yelmo?</label>
+        <input type="checkbox" name="system.esYelmo" {{checked system.esYelmo}} />
+      </div>
+      {{#if system.esYelmo}}
+      <div class="field-group">
+        <label>Visera bajada</label>
+        <input type="checkbox" name="system.viseraBajada" {{checked system.viseraBajada}} />
+      </div>
+      {{/if}}
+      <div class="field-group">
+        <label>Carga</label>
+        <input type="number" name="system.carga" value="{{system.carga}}" min="0" />
       </div>
       <div class="field-group">
         <label>Precio</label>

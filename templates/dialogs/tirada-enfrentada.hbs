@@ -1,0 +1,31 @@
+<div class="tq-enfrentada-dialog">
+  <div class="tq-enfrentada-iniciador">
+    <span class="tq-enfrentada-quien">{{habNombreA}}</span>
+    <span class="tq-enfrentada-valor">{{habTotalA}}</span>
+  </div>
+
+  {{#if tieneTarget}}
+  <div class="tq-enfrentada-oponente">
+    <label>Habilidad de <strong>{{nombreTarget}}</strong>:</label>
+    <select name="habOponente" style="width:100%;margin-top:4px;">
+      {{#each habsTarget as |h|}}
+      <option value="{{h.total}}|{{h.nombre}}">{{h.nombre}} ({{h.total}})</option>
+      {{/each}}
+    </select>
+  </div>
+  {{else}}
+  <div class="tq-enfrentada-oponente tq-enfrentada-no-target">
+    <label>Oponente:</label>
+    <select name="actorUuid" style="width:100%;margin-top:4px;">
+      <option value="">— Elige actor —</option>
+      {{#each actoresEscena as |a|}}
+      <option value="{{a.uuid}}">{{a.name}}</option>
+      {{/each}}
+    </select>
+    <label style="margin-top:8px;">Habilidad:</label>
+    <select name="habOponente" style="width:100%;margin-top:4px;" disabled>
+      <option value="">— Elige actor primero —</option>
+    </select>
+  </div>
+  {{/if}}
+</div>

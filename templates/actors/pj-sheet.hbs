@@ -1,4 +1,8 @@
-<div class="{{cssClass}}" autocomplete="off" style="display:flex;flex-direction:column;height:100%;width:100%;">
+<div class="{{cssClass}}" autocomplete="off" style="display:flex;flex-direction:column;height:100%;width:100%;position:relative;">
+
+  {{#if imagenLealtad}}
+  <img class="lealtad-cabecera" src="{{imagenLealtad}}" alt="" />
+  {{/if}}
 
   {{!-- CABECERA --}}
   <header class="sheet-header">
@@ -126,16 +130,22 @@
               {{!-- Derivadas --}}
               <div class="derivadas-row">
                 <div class="derivada-item">
-                  <span class="derivada-label">Fuerza</span>
-                  <span class="derivada-value">{{system.derivadas.fuerza.valor}}</span>
+                  <span class="derivada-label tirar-caracteristica" data-caracteristica="fuerza" title="Tirar Fuerza" style="cursor:pointer;">Fuerza</span>
+                  <div class="caract-sec-circle">
+                    <span class="derivada-value">{{system.derivadas.fuerza.valor}}</span>
+                  </div>
                 </div>
                 <div class="derivada-item">
                   <span class="derivada-label">MD 1M</span>
-                  <span class="derivada-value">{{system.derivadas.mDano1m.valor}}</span>
+                  <div class="caract-sec-circle">
+                    <span class="derivada-value">{{system.derivadas.mDano1m.valor}}</span>
+                  </div>
                 </div>
                 <div class="derivada-item">
                   <span class="derivada-label">MD 2M</span>
-                  <span class="derivada-value">{{system.derivadas.mDano2m.valor}}</span>
+                  <div class="caract-sec-circle">
+                    <span class="derivada-value">{{system.derivadas.mDano2m.valor}}</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -199,12 +209,21 @@
               <div class="tq-section-header">Destino</div>
               <div class="tq-section-content">
                 <div class="destino-box">
-                  <label>Actual</label>
-                  <input type="number" name="system.destino.actual"
-                         value="{{system.destino.actual}}" min="0" max="{{system.destino.max}}" />
-                  <label>/ Máx</label>
-                  <input type="number" name="system.destino.max"
-                         value="{{system.destino.max}}" min="0" style="width:35px;" />
+                  <div class="destino-campo">
+                    <div class="caract-sec-circle">
+                      <input type="number" name="system.destino.actual"
+                             value="{{system.destino.actual}}" min="0" max="{{system.destino.max}}" />
+                    </div>
+                    <label>Actual</label>
+                  </div>
+                  <span class="destino-sep">/</span>
+                  <div class="destino-campo">
+                    <div class="caract-sec-circle">
+                      <input type="number" name="system.destino.max"
+                             value="{{system.destino.max}}" min="0" />
+                    </div>
+                    <label>Máx</label>
+                  </div>
                 </div>
               </div>
             </div>
@@ -257,34 +276,34 @@
             <span class="pv-max">{{system.salud.pvMax.valor}}</span>
 
             <span class="estados-row">
-              <label class="estado-check {{#if system.salud.debilitado}}activo{{/if}}">
-                <input type="checkbox" name="system.salud.debilitado" {{checked system.salud.debilitado}} />
-                Debilitado
-              </label>
-              <label class="estado-check {{#if system.salud.incapacitado}}activo{{/if}}">
-                <input type="checkbox" name="system.salud.incapacitado" {{checked system.salud.incapacitado}} />
-                Incapacitado
-              </label>
-              <label class="estado-check {{#if system.salud.sanando}}activo{{/if}}">
-                <input type="checkbox" name="system.salud.sanando" {{checked system.salud.sanando}} />
-                Sanando
-              </label>
-              <label class="estado-check estado-danger {{#if system.salud.desangre}}activo{{/if}}">
-                <input type="checkbox" name="system.salud.desangre" {{checked system.salud.desangre}} />
-                Desangre
-              </label>
-              <label class="estado-check estado-danger {{#if system.salud.dolorExtremo}}activo{{/if}}">
-                <input type="checkbox" name="system.salud.dolorExtremo" {{checked system.salud.dolorExtremo}} />
-                Dolor Extremo
-              </label>
-              <label class="estado-check {{#if system.salud.piernaInutilizada}}activo{{/if}}">
-                <input type="checkbox" name="system.salud.piernaInutilizada" {{checked system.salud.piernaInutilizada}} />
-                Pierna
-              </label>
-              <label class="estado-check {{#if system.salud.brazoInutilizado}}activo{{/if}}">
-                <input type="checkbox" name="system.salud.brazoInutilizado" {{checked system.salud.brazoInutilizado}} />
-                Brazo
-              </label>
+              <span class="estado-item">
+                <a class="skill-circle toggle-estado {{#if system.salud.debilitado}}marcado{{/if}}" data-campo="system.salud.debilitado" title="Debilitado"></a>
+                <span class="estado-label {{#if system.salud.debilitado}}activo{{/if}}">Debilitado</span>
+              </span>
+              <span class="estado-item">
+                <a class="skill-circle toggle-estado {{#if system.salud.incapacitado}}marcado{{/if}}" data-campo="system.salud.incapacitado" title="Incapacitado"></a>
+                <span class="estado-label {{#if system.salud.incapacitado}}activo{{/if}}">Incapacitado</span>
+              </span>
+              <span class="estado-item">
+                <a class="skill-circle toggle-estado {{#if system.salud.sanando}}marcado{{/if}}" data-campo="system.salud.sanando" title="Sanando"></a>
+                <span class="estado-label {{#if system.salud.sanando}}activo{{/if}}">Sanando</span>
+              </span>
+              <span class="estado-item">
+                <a class="skill-circle toggle-estado estado-peligro {{#if system.salud.desangre}}marcado{{/if}}" data-campo="system.salud.desangre" title="Desangre"></a>
+                <span class="estado-label estado-peligro-label {{#if system.salud.desangre}}activo{{/if}}">Desangre</span>
+              </span>
+              <span class="estado-item">
+                <a class="skill-circle toggle-estado estado-peligro {{#if system.salud.dolorExtremo}}marcado{{/if}}" data-campo="system.salud.dolorExtremo" title="Dolor Extremo"></a>
+                <span class="estado-label estado-peligro-label {{#if system.salud.dolorExtremo}}activo{{/if}}">Dolor Extremo</span>
+              </span>
+              <span class="estado-item">
+                <a class="skill-circle toggle-estado {{#if system.salud.piernaInutilizada}}marcado{{/if}}" data-campo="system.salud.piernaInutilizada" title="Pierna inutilizada"></a>
+                <span class="estado-label {{#if system.salud.piernaInutilizada}}activo{{/if}}">Pierna</span>
+              </span>
+              <span class="estado-item">
+                <a class="skill-circle toggle-estado {{#if system.salud.brazoInutilizado}}marcado{{/if}}" data-campo="system.salud.brazoInutilizado" title="Brazo inutilizado"></a>
+                <span class="estado-label {{#if system.salud.brazoInutilizado}}activo{{/if}}">Brazo</span>
+              </span>
             </span>
           </div>
         </div>
@@ -302,13 +321,13 @@
             </div>
             <div class="heridas-leves-check">
               <span class="heridas-leves-label">Heridas Leves</span>
-              <input type="checkbox" class="herida-leve-check" name="system.salud.heridasLeves1" {{checked system.salud.heridasLeves1}} />
-              <input type="checkbox" class="herida-leve-check" name="system.salud.heridasLeves2" {{checked system.salud.heridasLeves2}} />
+              <a class="skill-circle toggle-estado {{#if system.salud.heridasLeves1}}marcado{{/if}}" data-campo="system.salud.heridasLeves1" title="Herida leve 1"></a>
+              <a class="skill-circle toggle-estado {{#if system.salud.heridasLeves2}}marcado{{/if}}" data-campo="system.salud.heridasLeves2" title="Herida leve 2"></a>
             </div>
             <div class="heridas-leves-check">
               <span class="heridas-leves-label">Heridas Graves</span>
-              <input type="checkbox" class="herida-leve-check" name="system.salud.heridasGraves1" {{checked system.salud.heridasGraves1}} />
-              <input type="checkbox" class="herida-leve-check" name="system.salud.heridasGraves2" {{checked system.salud.heridasGraves2}} />
+              <a class="skill-circle toggle-estado {{#if system.salud.heridasGraves1}}marcado{{/if}}" data-campo="system.salud.heridasGraves1" title="Herida grave 1"></a>
+              <a class="skill-circle toggle-estado {{#if system.salud.heridasGraves2}}marcado{{/if}}" data-campo="system.salud.heridasGraves2" title="Herida grave 2"></a>
             </div>
           </div>
         </div>
@@ -426,12 +445,6 @@
     ══════════════════════════════════════════════════════════════ --}}
     <div class="tab" data-tab="combate">
 
-      {{!-- DINERO --}}
-      <div class="tq-dinero-row">
-        <label class="tq-dinero-label">Monedas de bronce (mb)</label>
-        <input type="number" name="system.dinero" value="{{system.dinero}}" min="0" class="tq-dinero-input" />
-      </div>
-
       {{!-- ARMAS --}}
       <div class="tq-section-box">
         <div class="tq-section-header">
@@ -462,7 +475,7 @@
                 </td>
                 <td>{{arma.item.name}}</td>
                 <td class="arma-hab">
-                  <span class="arma-hab-clave">{{arma.item.system.habilidad}}</span>
+                  <span class="arma-hab-clave">{{localize (concat "TQ.Habilidades." arma.item.system.habilidad)}}</span>
                   {{#if arma.habTotal}}<span class="arma-hab-total">({{arma.habTotal}})</span>{{/if}}
                 </td>
                 <td>{{arma.item.system.danoArma}}</td>
@@ -485,11 +498,17 @@
 
         {{!-- Protección --}}
         <div class="tq-section-box" style="flex:1;min-width:130px;">
-          <div class="tq-section-header">Protección</div>
+          <div class="tq-section-header">
+            <span>Protección</span>
+            <a class="item-create" data-tipo="armadura" title="Añadir protección"><i class="fas fa-plus"></i></a>
+          </div>
           <div class="tq-section-content">
             {{#each items.armaduras as |arm|}}
             <div class="prot-row" data-item-id="{{arm.id}}">
               <span style="flex:1;font-size:14px;">{{arm.name}}</span>
+              {{#if arm.system.esYelmo}}
+              <a class="toggle-visera {{#if arm.system.viseraBajada}}visera-bajada{{/if}}" data-item-id="{{arm.id}}" title="{{#if arm.system.viseraBajada}}Visera bajada (−2 Perc.) — clic para subir{{else}}Visera subida (−1 Perc.) — clic para bajar{{/if}}"><i class="fas fa-eye{{#unless arm.system.viseraBajada}}-slash{{/unless}}"></i></a>
+              {{/if}}
               <span class="prot-valor">{{arm.system.proteccion}}</span>
               <span class="item-controls" style="margin-left:4px;">
                 <a class="item-edit" data-item-id="{{arm.id}}"><i class="fas fa-edit"></i></a>
@@ -497,10 +516,6 @@
               </span>
             </div>
             {{/each}}
-            <a class="item-create" data-tipo="armadura"
-               style="font-size:10px;color:var(--tq-teal);cursor:pointer;">
-              <i class="fas fa-plus"></i> Añadir
-            </a>
           </div>
         </div>
 
@@ -530,6 +545,52 @@
               <i class="fas fa-dice-d20"></i> Tabla de Lesiones
             </a>
           </div>
+        </div>
+      </div>
+
+      {{!-- EQUIPO --}}
+      <div class="tq-section-box" style="margin-bottom:6px;">
+        <div class="tq-section-header">
+          <span>Equipo</span>
+          <a class="item-create" data-tipo="objeto" title="Añadir objeto"><i class="fas fa-plus"></i></a>
+        </div>
+        <div class="tq-section-content equipo-content">
+          {{#each items.objetos as |obj|}}
+          <div class="equipo-row" data-item-id="{{obj.id}}">
+            <span class="equipo-nombre">{{obj.name}}</span>
+            {{#if obj.system.categoria}}<span class="equipo-cat">{{obj.system.categoria}}</span>{{/if}}
+            <span class="equipo-carga">{{obj.system.carga}}</span>
+            <span class="item-controls">
+              <a class="item-edit" data-item-id="{{obj.id}}"><i class="fas fa-edit"></i></a>
+              <a class="item-delete" data-item-id="{{obj.id}}"><i class="fas fa-trash"></i></a>
+            </span>
+          </div>
+          {{/each}}
+          {{#each items.consumibles as |con|}}
+          <div class="equipo-row consumible-row" data-item-id="{{con.id}}">
+            <span class="equipo-nombre">{{con.name}}</span>
+            <span class="equipo-cat">×{{con.system.dosis}}</span>
+            {{#if con.system.efecto}}<span class="equipo-efecto">{{con.system.efecto}}</span>{{/if}}
+            <span class="equipo-carga">{{con.system.carga}}</span>
+            <span class="item-controls">
+              <a class="item-edit" data-item-id="{{con.id}}"><i class="fas fa-edit"></i></a>
+              <a class="item-delete" data-item-id="{{con.id}}"><i class="fas fa-trash"></i></a>
+            </span>
+          </div>
+          {{/each}}
+          {{#unless items.objetos.length}}{{#unless items.consumibles.length}}
+          <p class="equipo-vacio">Sin equipo. Arrastra objetos o consumibles aquí.</p>
+          {{/unless}}{{/unless}}
+        </div>
+      </div>
+
+      {{!-- DINERO --}}
+      <div class="tq-dinero-row">
+        <label class="tq-dinero-label">Monedas de bronce (mb)</label>
+        <input type="number" name="system.dinero" value="{{system.dinero}}" min="0" class="tq-dinero-input" />
+        <div class="tq-dinero-extra">
+          <span class="tq-dinero-stat"><label>Carga</label> <span class="estorbo-valor">{{system.carga.valor}}</span></span>
+          <span class="tq-dinero-stat"><label>Estorbo</label> <span class="estorbo-valor">{{system.estorbo.valor}}</span></span>
         </div>
       </div>
 
@@ -619,7 +680,10 @@
           {{#each items.hechizos as |hech|}}
           <li class="hechizo-item" data-item-id="{{hech.id}}">
             <div class="hechizo-main">
-              <span class="hechizo-nombre">{{hech.name}}</span>
+              <div class="hechizo-nombre-wrap">
+                <span class="skill-circle hechizo-permanent{{#if hech.system.permanent}} marcado{{/if}}" data-item-id="{{hech.id}}" title="Espíritu consagrado"></span>
+                <span class="hechizo-nombre">{{hech.name}}</span>
+              </div>
               <span class="item-controls">
                 <a class="tirar-hechizo btn-lanzar" data-item-id="{{hech.id}}">Lanzar</a>
                 <a class="item-edit" data-item-id="{{hech.id}}"><i class="fas fa-edit"></i></a>
@@ -632,7 +696,7 @@
               <span class="hechizo-sep">|</span>
               <span>PM {{hech.system.pmCoste}}{{#if (tq-gt hech.system.pmMax hech.system.pmCoste)}}-{{hech.system.pmMax}}{{/if}}</span>
               {{#if (tq-eq hech.system.duracion "instantaneo")}}<span class="hechizo-sep">|</span><span class="hechizo-badge">Inmediato</span>{{/if}}
-              {{#if hech.system.requiereTiradaEspiritu}}<span class="hechizo-sep">|</span><span class="hechizo-espiritu" title="Requiere tirada enfrentada de Espíritu">⚔</span>{{/if}}
+              {{#if hech.system.requiereTiradaEspiritu}}<span class="hechizo-sep">|</span><span class="hechizo-espiritu">Espíritu</span>{{/if}}
             </div>
           </li>
           {{/each}}
@@ -788,52 +852,56 @@
                   <label>{{localize "TQ.Creacion.religion"}}</label>
                   <input type="text" name="system.religion" value="{{system.religion}}" />
                 </div>
-                <div class="info-field full">
-                  <label>{{localize "TQ.Creacion.descripcionFisica"}}</label>
-                  <input type="text" name="system.descripcionFisica" value="{{system.descripcionFisica}}" />
+                <div class="info-field full info-fila-triple">
+                  <div class="info-field">
+                    <label>Entorno</label>
+                    {{#if items.entorno}}
+                    <span class="tq-origen-nombre">{{items.entorno.name}}</span>
+                    {{else}}
+                    <span class="tq-origen-vacio">—</span>
+                    {{/if}}
+                  </div>
+                  <div class="info-field">
+                    <label>Origen Étnico</label>
+                    {{#if items.origen}}
+                    <span class="tq-origen-nombre">{{items.origen.name}}</span>
+                    {{else}}
+                    <span class="tq-origen-vacio">—</span>
+                    {{/if}}
+                  </div>
+                  <div class="info-field">
+                    <label>Profesión</label>
+                    {{#if items.profesion}}
+                    <span class="tq-origen-nombre">{{items.profesion.name}}</span>
+                    {{else}}
+                    <span class="tq-origen-vacio">—</span>
+                    {{/if}}
+                  </div>
                 </div>
-                <div class="info-field">
-                  <label>Entorno</label>
-                  {{#if items.entorno}}
-                  <span class="tq-origen-nombre">{{items.entorno.name}}</span>
-                  {{else}}
-                  <span class="tq-origen-vacio">—</span>
-                  {{/if}}
-                </div>
-                <div class="info-field">
-                  <label>Origen Étnico</label>
-                  {{#if items.origen}}
-                  <span class="tq-origen-nombre">{{items.origen.name}}</span>
-                  {{else}}
-                  <span class="tq-origen-vacio">—</span>
-                  {{/if}}
-                </div>
-                <div class="info-field">
-                  <label>Profesión</label>
-                  {{#if items.profesion}}
-                  <span class="tq-origen-nombre">{{items.profesion.name}}</span>
-                  {{else}}
-                  <span class="tq-origen-vacio">—</span>
-                  {{/if}}
-                </div>
-                <div class="info-field">
-                  <label>Idioma nativo</label>
-                  <input type="text" name="system.habilidades.idioma1.nombre"
-                         value="{{system.habilidades.idioma1.nombre}}" placeholder="—" />
-                </div>
-                <div class="info-field">
-                  <label>Idioma 2</label>
-                  <input type="text" name="system.habilidades.idioma2.nombre"
-                         value="{{system.habilidades.idioma2.nombre}}" placeholder="—" />
-                </div>
-                <div class="info-field">
-                  <label>Idioma 3</label>
-                  <input type="text" name="system.habilidades.idioma3.nombre"
-                         value="{{system.habilidades.idioma3.nombre}}" placeholder="—" />
+                <div class="info-field full info-fila-triple">
+                  <div class="info-field">
+                    <label>Idioma nativo</label>
+                    <input type="text" name="system.habilidades.idioma1.nombre"
+                           value="{{system.habilidades.idioma1.nombre}}" placeholder="—" />
+                  </div>
+                  <div class="info-field">
+                    <label>Idioma 2</label>
+                    <input type="text" name="system.habilidades.idioma2.nombre"
+                           value="{{system.habilidades.idioma2.nombre}}" placeholder="—" />
+                  </div>
+                  <div class="info-field">
+                    <label>Idioma 3</label>
+                    <input type="text" name="system.habilidades.idioma3.nombre"
+                           value="{{system.habilidades.idioma3.nombre}}" placeholder="—" />
+                  </div>
                 </div>
                 <div class="info-field full">
                   <label>{{localize "TQ.Creacion.trasfondo"}}</label>
                   <textarea name="system.trasfondo" rows="4">{{system.trasfondo}}</textarea>
+                </div>
+                <div class="info-field full">
+                  <label>{{localize "TQ.Creacion.descripcionFisica"}}</label>
+                  <textarea name="system.descripcionFisica" rows="4">{{system.descripcionFisica}}</textarea>
                 </div>
               </div>
             </div>
@@ -925,16 +993,36 @@
                 <input type="text" name="system.motivacion" value="{{system.motivacion}}" />
               </div>
               <div class="guia-field full">
-                <label>{{localize "TQ.Creacion.tuMentira"}}</label>
+                <div style="display:flex;align-items:center;gap:6px;">
+                  <label>{{localize "TQ.Creacion.tuMentira"}}</label>
+                  <div class="mentira-marcas">
+                    <a class="skill-circle marcar-mentira {{#if (tq-gt system.tuMentiraMarcas 0)}}marcado{{/if}}" data-marca="1" title="Marca 1 de La Mentira"></a>
+                    <a class="skill-circle marcar-mentira {{#if (tq-gt system.tuMentiraMarcas 1)}}marcado{{/if}}" data-marca="2" title="Marca 2 de La Mentira"></a>
+                    <a class="skill-circle marcar-mentira {{#if (tq-gt system.tuMentiraMarcas 2)}}marcado{{/if}}" data-marca="3" title="Marca 3 de La Mentira"></a>
+                    <a class="skill-circle marcar-mentira {{#if (tq-gt system.tuMentiraMarcas 3)}}marcado{{/if}}" data-marca="4" title="Marca 4 de La Mentira"></a>
+                    <a class="skill-circle marcar-mentira {{#if (tq-gt system.tuMentiraMarcas 4)}}marcado{{/if}}" data-marca="5" title="Marca 5 → +1 Destino, +5 PX"></a>
+                  </div>
+                </div>
                 <input type="text" name="system.tuMentira" value="{{system.tuMentira}}" />
               </div>
               <div class="guia-field">
                 <label>{{localize "TQ.Creacion.pasionAmor"}}</label>
-                <input type="text" name="system.pasionAmor" value="{{system.pasionAmor}}" />
+                <div class="guia-pasion-fila">
+                  <input type="text" name="system.pasionAmor" value="{{system.pasionAmor}}" />
+                  <a class="activar-pasion {{#if pasionAmorActiva}}pasion-activa{{/if}} {{#if system.pasionAmorUsada}}pasion-usada{{/if}}" data-tipo="amor" title="{{#if system.pasionAmorUsada}}Pasión ya usada esta escena{{else}}Activar Pasión (Amor){{/if}}"><i class="fas fa-fire"></i></a>
+                  <a class="skill-circle toggle-pasion-usada {{#if system.pasionAmorUsada}}marcado{{/if}}" data-campo="pasionAmorUsada" title="Marcar/desmarcar uso de pasión"></a>
+                </div>
               </div>
               <div class="guia-field">
                 <label>{{localize "TQ.Creacion.pasionOdio"}}</label>
-                <input type="text" name="system.pasionOdio" value="{{system.pasionOdio}}" />
+                <div class="guia-pasion-fila">
+                  <input type="text" name="system.pasionOdio" value="{{system.pasionOdio}}" />
+                  <a class="activar-pasion {{#if pasionOdioActiva}}pasion-activa{{/if}} {{#if system.pasionOdioUsada}}pasion-usada{{/if}}" data-tipo="odio" title="{{#if system.pasionOdioUsada}}Pasión ya usada esta escena{{else}}Activar Pasión (Odio){{/if}}"><i class="fas fa-fire"></i></a>
+                  <a class="skill-circle toggle-pasion-usada {{#if system.pasionOdioUsada}}marcado{{/if}}" data-campo="pasionOdioUsada" title="Marcar/desmarcar uso de pasión"></a>
+                </div>
+              </div>
+              <div class="guia-field full">
+                <a class="resetear-pasiones" title="Resetear marcas de pasión (nueva escena)" style="visibility:hidden;"></a>
               </div>
             </div>
           </div>

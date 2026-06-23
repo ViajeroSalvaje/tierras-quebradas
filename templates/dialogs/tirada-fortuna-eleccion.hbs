@@ -1,0 +1,23 @@
+<div class="tq-tirada-resultado tq-fortuna-eleccion">
+  <div class="tq-chat-header">
+    <span class="tq-chat-etiqueta">{{etiqueta}} — Fortuna</span>
+  </div>
+  <div class="tq-fortuna-eleccion-grid">
+    <div class="tq-fortuna-col {{original.css}}">
+      <div class="tq-fortuna-col-titulo">Original</div>
+      <div class="tq-fortuna-col-dado">{{original.dadoDisplay}}</div>
+      <div class="tq-fortuna-col-total">→ {{original.total}}</div>
+      <div class="tq-fortuna-col-exitos">{{#if (tq-gt original.exitos 0)}}+{{/if}}{{original.exitos}} éxitos</div>
+      <div class="tq-fortuna-col-label">{{localize original.label}}</div>
+      <button class="tq-fortuna-elegir" type="button" data-eleccion="original">Mantener</button>
+    </div>
+    <div class="tq-fortuna-col {{nuevo.css}}">
+      <div class="tq-fortuna-col-titulo">Nuevo</div>
+      <div class="tq-fortuna-col-dado">{{nuevo.dadoDisplay}}</div>
+      <div class="tq-fortuna-col-total">→ {{nuevo.total}}</div>
+      <div class="tq-fortuna-col-exitos">{{#if (tq-gt nuevo.exitos 0)}}+{{/if}}{{nuevo.exitos}} éxitos</div>
+      <div class="tq-fortuna-col-label">{{localize nuevo.label}}</div>
+      <button class="tq-fortuna-elegir" type="button" data-eleccion="nuevo">Elegir</button>
+    </div>
+  </div>
+</div>

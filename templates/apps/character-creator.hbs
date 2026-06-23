@@ -457,6 +457,7 @@
           <div class="ventaja-card-header">
             <span class="ventaja-nombre">{{r.name}}</span>
             <span class="ventaja-pp {{#if (tq-gt 0 r.coste)}}coste{{else}}bonus{{/if}}">{{r.costeBadge}}</span>
+            {{#if r.esHechizos}}{{#if r.selected}}<span class="rasgo-cantidad">×{{r.cantidad}}</span><button class="rasgo-menos" type="button">−</button>{{/if}}{{/if}}
           </div>
           <p class="ventaja-efecto">{{r.efecto}}</p>
         </div>
@@ -475,6 +476,7 @@
           <div class="ventaja-card-header">
             <span class="ventaja-nombre">{{r.name}}</span>
             <span class="ventaja-pp {{#if (tq-gt 0 r.coste)}}coste{{else}}bonus{{/if}}">{{r.costeBadge}}</span>
+            {{#if r.esHechizos}}{{#if r.selected}}<span class="rasgo-cantidad">×{{r.cantidad}}</span><button class="rasgo-menos" type="button">−</button>{{/if}}{{/if}}
           </div>
           <p class="ventaja-efecto">{{r.efecto}}</p>
         </div>
@@ -629,9 +631,9 @@
     {{!-- ════════════════════════ PASO: HABILIDADES ════════════════════════ --}}
     {{else if (tq-eq stepId "habilidades")}}
     <div class="cc-section cc-hab-header">
-      <p class="cc-hint">Reparte tus puntos de habilidad libres. Cada punto sube el nivel de una habilidad en +1, hasta un máximo de 8.</p>
+      <span class="cc-hab-desc">Reparto de puntos de habilidad. Nivel máximo: 8</span>
       <div class="cc-hab-puntos-restantes {{#if (tq-eq habilidadesData.puntosRestantes 0)}}agotados{{/if}}">
-        Puntos libres: <strong>{{habilidadesData.puntosRestantes}}</strong> / {{habilidadesData.puntosTotal}}
+        Puntos: <strong>{{habilidadesData.puntosRestantes}}</strong> / {{habilidadesData.puntosTotal}}
       </div>
     </div>
     {{#each habilidadesData.grupos as |g|}}
@@ -652,6 +654,233 @@
       </div>
     </div>
     {{/each}}
+
+    {{!-- ════════════════════════ PASO: RELIGIÓN ════════════════════════ --}}
+    {{else if (tq-eq stepId "religion")}}
+    <div class="cc-section">
+      <h3 class="cc-section-title">Ideología religiosa</h3>
+      <div class="cc-ideologia-grid">
+        {{#each religionData.ideologias as |i|}}
+        <div class="cc-ideologia-card {{#if i.selected}}selected{{/if}}" data-ideologia-id="{{i.id}}">
+          <div class="cc-ideologia-header">
+            <span class="cc-ideologia-label">{{i.label}}</span>
+            {{#if i.ppBonus}}<span class="cc-ideologia-pp">+{{i.ppBonus}} PP</span>{{/if}}
+          </div>
+          <div class="cc-ideologia-desc">{{i.desc}}</div>
+        </div>
+        {{/each}}
+      </div>
+    </div>
+
+    {{#if religionData.hayDeidades}}
+    <div class="cc-section">
+      <h3 class="cc-section-title">Deidad tutelar <span class="cc-hint">(opcional)</span></h3>
+      <select class="cc-deidad-select" style="width:100%;">
+        <option value="">— Sin deidad específica —</option>
+        {{#each religionData.deidades as |d|}}
+        <option value="{{d.nombre}}" {{#if d.selected}}selected{{/if}}>{{d.nombre}}</option>
+        {{/each}}
+      </select>
+    </div>
+    {{/if}}
+
+    <div class="cc-section">
+      <h3 class="cc-section-title">Actitud ante lo divino</h3>
+      <div class="cc-actitud-grid">
+        {{#each religionData.actitudes as |a|}}
+        <div class="cc-actitud-card {{#if a.selected}}selected{{/if}}" data-actitud-id="{{a.id}}">
+          <div class="cc-actitud-label">{{a.label}}</div>
+          <div class="cc-actitud-desc">{{a.desc}}</div>
+        </div>
+        {{/each}}
+      </div>
+    </div>
+
+    {{#if religionData.ideologiaActiva}}
+    <div class="cc-section">
+      <div class="cc-pl-header">
+        <h3 class="cc-section-title" style="margin:0;">Puntos de Lealtad</h3>
+        <span class="cc-hint">Pool: {{religionData.plBase}} PL (Espíritu × 3)</span>
+        <span class="cc-pl-restante {{#unless religionData.plRestante}}agotados{{/unless}}">Restantes: {{religionData.plRestante}}</span>
+      </div>
+
+      {{#if religionData.hayBonus}}
+      <div class="cc-pl-bonuses">
+        {{#if religionData.esSacerdote}}<span class="cc-pl-bonus-badge">+10 auto (Sacerdote → {{religionData.lealtadClave}})</span>{{/if}}
+        {{#if religionData.tieneDevocion}}<span class="cc-pl-bonus-badge">+5 auto (Devoción → {{religionData.lealtadClave}})</span>{{/if}}
+        {{#if religionData.esPuritano}}<span class="cc-pl-bonus-badge">+5 auto (Puritano → ley)</span>{{/if}}
+      </div>
+      {{/if}}
+
+      <div class="cc-pl-grid">
+        {{#each religionData.plFilas as |fila|}}
+        <div class="cc-pl-fila {{#if fila.alineado}}pl-alineada{{/if}}">
+          <span class="cc-pl-label">{{fila.label}}</span>
+          <div class="cc-pl-spinner">
+            <button type="button" class="cc-pl-btn" data-religion="{{fila.key}}" data-delta="-1" {{#unless fila.puedeBajar}}disabled{{/unless}}>−</button>
+            <span class="cc-pl-valor">{{fila.repartidos}}</span>
+            <button type="button" class="cc-pl-btn" data-religion="{{fila.key}}" data-delta="1" {{#unless fila.puedeSubir}}disabled{{/unless}}>+</button>
+          </div>
+          {{#if fila.bonus}}<span class="cc-pl-bonus-auto">+{{fila.bonus}} auto</span>{{/if}}
+          <span class="cc-pl-total {{#if fila.alineado}}pl-alineado-valor{{/if}}">= {{fila.total}} PL{{#if fila.alineado}} ★{{/if}}</span>
+        </div>
+        {{/each}}
+      </div>
+    </div>
+    {{/if}}
+
+    {{!-- ════════════════════════ PASO: MAGIA ════════════════════════ --}}
+    {{else if (tq-eq stepId "magia")}}
+    {{#if magiaData}}
+
+    {{#if magiaData.esProfMagica}}
+    <div class="cc-magia-banner">
+      Tu profesión (<strong>{{magiaData.profesionNombre}}</strong>) incluye Hechicería sin coste adicional.
+    </div>
+    {{else if magiaData.rasgoMagia}}
+    <div class="cc-magia-banner">
+      Tienes el rasgo <strong>{{magiaData.rasgoMagia.nombre}}</strong> que otorga acceso a la magia. El coste ya está incluido en el rasgo.
+    </div>
+    {{/if}}
+
+    {{!-- Tipo de acceso --}}
+    {{#unless magiaData.accesoForzado}}
+    <div class="cc-section">
+      <h3 class="cc-section-title">Acceso a la magia</h3>
+      <div class="cc-magia-tipo-grid">
+        {{#each magiaData.opcTipos as |o|}}
+        <div class="cc-magia-tipo-card {{#if o.selected}}selected{{/if}}" data-tipo="{{o.id}}">
+          <div class="cc-magia-tipo-header">
+            <span class="cc-magia-tipo-label">{{o.label}}</span>
+            <span class="cc-magia-tipo-coste">{{o.costeStr}}</span>
+          </div>
+          <div class="cc-magia-tipo-desc">{{o.desc}}</div>
+        </div>
+        {{/each}}
+      </div>
+    </div>
+    {{/unless}}
+
+    {{#if (tq-eq magiaData.tipoActual "don")}}
+    <div class="cc-section">
+      <p class="cc-hint">El personaje posee el <strong>Don de la magia</strong>: tiene capacidad innata pero no ha sido entrenado. Puede aprender hechizos durante el juego. No empieza con hechizos, verbos ni esferas.</p>
+    </div>
+    {{/if}}
+
+    {{#if magiaData.tieneHechizos}}
+    {{!-- Hechizos --}}
+    <div class="cc-section">
+      <div class="cc-magia-hechizos-header">
+        <h3 class="cc-section-title" style="margin:0;">Hechizos iniciales</h3>
+        <div class="cc-magia-pool">
+          Base: <strong>{{magiaData.baseHechizos}}</strong>
+          &nbsp;·&nbsp; Elegidos: <strong>{{magiaData.elegidosCount}}</strong>
+        </div>
+      </div>
+      {{#if magiaData.esTeurgia}}
+      <p class="cc-hint">Teúrgia: solo hechizos de Esfera Ley. Límite estricto de {{magiaData.baseHechizos}} hechizos.</p>
+      {{else}}
+      <p class="cc-hint">Los hechizos de DIF 25 no están disponibles en creación. Hechizos adicionales cuestan −1 PP cada uno.</p>
+      {{/if}}
+      {{#each magiaData.listaHechizosAgrupada as |grupo|}}
+      <div class="cc-hechizo-grupo">
+        <div class="cc-hechizo-grupo-titulo">{{grupo.label}}</div>
+        <div class="cc-hechizo-lista">
+          {{#each grupo.hechizos as |h|}}
+          <div class="cc-hechizo-card {{#if h.selected}}selected{{/if}} {{#if h.bloqueado}}bloqueado{{/if}}"
+               data-hechizo-id="{{h.id}}">
+            <div class="cc-hechizo-nombre">{{h.name}}</div>
+            <div class="cc-hechizo-meta">
+              <span class="cc-hechizo-sintaxis">{{h.verbo}} {{h.esfera}}</span>
+              <span class="cc-hechizo-dif">DIF {{h.dificultad}}</span>
+              <span class="cc-hechizo-pm">PM {{h.pmStr}}</span>
+            </div>
+            {{#if h.selected}}
+            <div class="cc-hechizo-perm-row">
+              <a class="skill-circle cc-hechizo-perm {{#if h.permanent}}marcado{{/if}}" data-hechizo-id="{{h.id}}"></a>
+              Permanente (consagra {{h.pmCoste}} ESP)
+            </div>
+            {{/if}}
+          </div>
+          {{/each}}
+        </div>
+      </div>
+      {{/each}}
+    </div>
+
+    {{!-- Verbos y Esferas --}}
+    <div class="cc-section">
+      <div class="cc-magia-skills-header">
+        <h3 class="cc-section-title" style="margin:0;">Verbos y Esferas</h3>
+        <div class="cc-magia-pool">
+          Base: <strong>{{magiaData.baseHechiceria}}</strong>
+          &nbsp;·&nbsp; Pts. libres: <strong class="{{#unless magiaData.puntosRestantes}}cc-agotados{{/unless}}">{{magiaData.puntosRestantes}}</strong>
+        </div>
+      </div>
+      <p class="cc-hint">La puntuación de lanzamiento es el <em>menor</em> valor entre el Verbo y la Esfera del hechizo.</p>
+      <div class="cc-magia-dos-columnas">
+        <div class="cc-magia-col">
+          <h4 class="cc-magia-col-titulo">Verbos</h4>
+          <div class="cc-magia-skill-lista">
+            {{#each magiaData.verbos as |v|}}
+            <div class="cc-magia-skill-fila">
+              <span class="cc-magia-skill-nombre">{{v.label}}</span>
+              <div class="cc-magia-skill-controles">
+                <button type="button" class="cc-magia-btn" data-skill="{{v.key}}" data-delta="-1" {{#unless v.puedeBajar}}disabled{{/unless}}>−</button>
+                <span class="cc-magia-skill-total {{#if v.libre}}tiene-libre{{/if}}">{{v.total}}</span>
+                <button type="button" class="cc-magia-btn" data-skill="{{v.key}}" data-delta="1" {{#unless v.puedeSubir}}disabled{{/unless}}>+</button>
+              </div>
+              <span class="cc-magia-skill-base">(base {{v.base}})</span>
+            </div>
+            {{/each}}
+          </div>
+        </div>
+        <div class="cc-magia-col">
+          <h4 class="cc-magia-col-titulo">Esferas</h4>
+          <div class="cc-magia-skill-lista">
+            {{#each magiaData.esferas as |e|}}
+            <div class="cc-magia-skill-fila">
+              <span class="cc-magia-skill-nombre">{{e.label}}</span>
+              <div class="cc-magia-skill-controles">
+                <button type="button" class="cc-magia-btn" data-skill="{{e.key}}" data-delta="-1" {{#unless e.puedeBajar}}disabled{{/unless}}>−</button>
+                <span class="cc-magia-skill-total {{#if e.libre}}tiene-libre{{/if}}">{{e.total}}</span>
+                <button type="button" class="cc-magia-btn" data-skill="{{e.key}}" data-delta="1" {{#unless e.puedeSubir}}disabled{{/unless}}>+</button>
+              </div>
+              <span class="cc-magia-skill-base">(base {{e.base}})</span>
+            </div>
+            {{/each}}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {{!-- Recursos mágicos --}}
+    <div class="cc-section">
+      <h3 class="cc-section-title">Recursos mágicos</h3>
+      <div class="cc-magia-recursos">
+        <div class="cc-magia-recurso">
+          <span class="cc-magia-rec-label">PM máx.</span>
+          <span class="cc-magia-rec-valor">{{magiaData.pmMax}}</span>
+          <span class="cc-magia-rec-formula">Espíritu × 2</span>
+        </div>
+        <div class="cc-magia-recurso">
+          <span class="cc-magia-rec-label">Espíritu</span>
+          <span class="cc-magia-rec-valor">{{magiaData.espiritu}}</span>
+        </div>
+        <div class="cc-magia-recurso">
+          <span class="cc-magia-rec-label">Espíritu Consagrado</span>
+          <span class="cc-magia-rec-valor {{#if (tq-gt magiaData.espirituConsagrado magiaData.espiritu)}}cc-mb-deficit{{/if}}">{{magiaData.espirituConsagrado}}</span>
+          <span class="cc-magia-rec-formula">hechizos permanentes</span>
+        </div>
+        <div class="cc-magia-recurso">
+          <span class="cc-magia-rec-label">Espíritu libre</span>
+          <span class="cc-magia-rec-valor">{{magiaData.espirituLibre}}</span>
+        </div>
+      </div>
+    </div>
+    {{/if}}
+
+    {{/if}}
 
     {{else}}
     <div class="cc-placeholder">

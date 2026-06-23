@@ -1,4 +1,4 @@
-<form class="{{cssClass}} flexcol" autocomplete="off">
+<section class="{{cssClass}} flexcol" style="height:100%;width:100%;">
   <header class="sheet-header">
     <img class="profile-img" src="{{actor.img}}" data-edit="img" title="{{actor.name}}" />
     <div class="header-fields">
@@ -14,89 +14,157 @@
     </div>
   </header>
 
+  <nav class="sheet-tabs" data-group="primary">
+    <a class="item" data-tab="stats">Estadísticas</a>
+    <a class="item" data-tab="informacion">Combate e Información</a>
+  </nav>
+
   <div class="sheet-body">
-    <div class="caract-grid">
-      {{#each system.caracteristicas as |caract clave|}}
-      <div class="caract-item">
-        <span class="caract-etiqueta tirar-caracteristica" data-caracteristica="{{clave}}">
-          {{localize (concat "TQ.Caracteristicas." clave)}}
-        </span>
-        <div class="caract-circulo">
-          <input type="number" name="system.caracteristicas.{{clave}}.valor"
-                 value="{{caract.valor}}" min="-5" max="40" />
+    <div class="tab" data-tab="stats">
+      <div class="caract-grid">
+        {{#each caracteristicasOrdenadas as |caract|}}
+        <div class="caract-item">
+          <span class="caract-etiqueta tirar-caracteristica" data-caracteristica="{{caract.clave}}">
+            {{caract.label}}
+          </span>
+          <div class="caract-circulo">
+            <input type="number" name="system.caracteristicas.{{caract.clave}}.valor"
+                   value="{{caract.valor}}" min="-5" max="40" />
+          </div>
+        </div>
+        {{/each}}
+      </div>
+
+      <div class="combat-stats">
+        <div class="stat-item">
+          <label class="tirar-caracteristica" data-caracteristica="fuerza" title="Tirar Fuerza" style="cursor:pointer;">FUE</label>
+          <input type="number" name="system.derivadas.fuerza.valor" value="{{system.derivadas.fuerza.valor}}" style="width:48px" />
+        </div>
+        <div class="stat-item">
+          <label>Prot.</label>
+          <input type="number" name="system.proteccion.valor" value="{{system.proteccion.valor}}" style="width:40px" />
+          <select name="system.proteccion.tipo">
+            <option value="blanda" {{#if (eq system.proteccion.tipo "blanda")}}selected{{/if}}>Blanda</option>
+            <option value="dura" {{#if (eq system.proteccion.tipo "dura")}}selected{{/if}}>Dura</option>
+          </select>
+        </div>
+        <div class="stat-item">
+          <label>Al Impacto</label>
+          <input type="number" name="system.alImpacto" value="{{system.alImpacto}}" style="width:40px" />
+        </div>
+        <div class="stat-item">
+          <label>PM</label>
+          <input type="number" name="system.pm" value="{{system.pm}}" style="width:40px" />
         </div>
       </div>
-      {{/each}}
+
+      <div class="movimiento-row">
+        <label>Movimiento</label>
+        <input type="text" name="system.movimiento" value="{{system.movimiento}}" />
+      </div>
+
+      <div class="salud-simple">
+        <div class="salud-simple-fila">
+          <label>PV</label>
+          <input type="number" name="system.salud.pvActual.valor" value="{{system.salud.pvActual.valor}}" style="width:48px" />
+          <span>/</span>
+          <input type="number" name="system.salud.pvMax.valor" value="{{system.salud.pvMax.valor}}" style="width:48px" />
+        </div>
+        <span class="salud-threshold">(Deb: {{system.salud.pvLeve.valor}} · Inc: {{system.salud.pvGrave.valor}})</span>
+      </div>
+
+      <div class="section-header">
+        <span>Habilidades</span>
+        <a class="anadir-habilidad" title="Añadir habilidad"><i class="fas fa-plus"></i></a>
+      </div>
+      <div class="pnj-habilidades">
+        {{#each system.habilidades as |valor nombre|}}
+        <div class="pnj-hab" data-nombre="{{nombre}}">
+          <span class="hab-nombre">{{nombre}}</span>
+          <input type="number" name="system.habilidades.{{nombre}}"
+                 value="{{valor}}" min="0" style="width:48px" />
+          <a class="tirar-habilidad" data-nombre="{{nombre}}" data-valor="{{valor}}" title="Tirar">
+            <i class="fas fa-dice-d10"></i>
+          </a>
+          <a class="eliminar-habilidad" data-nombre="{{nombre}}" title="Eliminar">
+            <i class="fas fa-trash"></i>
+          </a>
+        </div>
+        {{/each}}
+      </div>
+
+      {{#if rasgos}}
+      <div class="section-header"><span>Rasgos</span></div>
+      <div class="pnj-items-lista">
+        {{#each rasgos as |r|}}
+        <div class="pnj-item-fila">
+          <a class="pnj-item-nombre" data-id="{{r.id}}">{{r.name}}</a>
+          <a class="pnj-item-borrar" data-id="{{r.id}}" title="Eliminar"><i class="fas fa-trash"></i></a>
+        </div>
+        {{/each}}
+      </div>
+      {{/if}}
+
+      {{#if ventajas}}
+      <div class="section-header"><span>Ventajas / Desventajas</span></div>
+      <div class="pnj-items-lista">
+        {{#each ventajas as |v|}}
+        <div class="pnj-item-fila">
+          <a class="pnj-item-nombre" data-id="{{v.id}}">{{v.name}}</a>
+          <a class="pnj-item-borrar" data-id="{{v.id}}" title="Eliminar"><i class="fas fa-trash"></i></a>
+        </div>
+        {{/each}}
+      </div>
+      {{/if}}
     </div>
 
-    <div class="combat-stats">
-      <div class="stat-item">
-        <label>FUE</label>
-        <input type="number" name="system.derivadas.fuerza.valor" value="{{system.derivadas.fuerza.valor}}" style="width:48px" />
+    <div class="tab" data-tab="informacion">
+      <div class="section-header">
+        <span>Armas</span>
+        <a class="anadir-arma" title="Añadir arma"><i class="fas fa-plus"></i></a>
       </div>
-      <div class="stat-item">
-        <label>Prot.</label>
-        <input type="number" name="system.proteccion.valor" value="{{system.proteccion.valor}}" style="width:40px" />
-        <select name="system.proteccion.tipo">
-          <option value="blanda" {{#if (eq system.proteccion.tipo "blanda")}}selected{{/if}}>Blanda</option>
-          <option value="dura" {{#if (eq system.proteccion.tipo "dura")}}selected{{/if}}>Dura</option>
-        </select>
+      {{#if armas}}
+      <div class="pnj-items-lista">
+        {{#each armas as |a|}}
+        <div class="pnj-item-fila">
+          <a class="pnj-item-nombre" data-id="{{a.id}}">{{a.name}}</a>
+          <span class="pnj-item-detalle">{{a.dano}}</span>
+          <a class="pnj-tirar-arma" data-id="{{a.id}}" title="Tirar"><i class="fas fa-dice-d10"></i></a>
+          <a class="pnj-item-borrar" data-id="{{a.id}}" title="Eliminar"><i class="fas fa-trash"></i></a>
+        </div>
+        {{/each}}
       </div>
-      <div class="stat-item">
-        <label>Al Impacto</label>
-        <input type="number" name="system.alImpacto" value="{{system.alImpacto}}" style="width:40px" />
-      </div>
-      <div class="stat-item">
-        <label>PM</label>
-        <input type="number" name="system.pm" value="{{system.pm}}" style="width:40px" />
-      </div>
-    </div>
+      {{/if}}
 
-    <div class="movimiento-row">
-      <label>Movimiento</label>
-      <input type="text" name="system.movimiento" value="{{system.movimiento}}" />
-    </div>
-
-    <div class="salud-simple">
-      <label>PV</label>
-      <input type="number" name="system.salud.pvActual.valor" value="{{system.salud.pvActual.valor}}" style="width:48px" />
-      <span>/</span>
-      <input type="number" name="system.salud.pvMax.valor" value="{{system.salud.pvMax.valor}}" style="width:48px" />
-      <span class="salud-threshold">(Deb: {{system.salud.pvLeve.valor}} · Inc: {{system.salud.pvGrave.valor}})</span>
-    </div>
-
-    <div class="section-header">
-      <span>Habilidades</span>
-      <a class="anadir-habilidad" title="Añadir habilidad"><i class="fas fa-plus"></i></a>
-    </div>
-    <div class="pnj-habilidades">
-      {{#each system.habilidades as |valor nombre|}}
-      <div class="pnj-hab" data-nombre="{{nombre}}">
-        <span class="hab-nombre">{{nombre}}</span>
-        <input type="number" name="system.habilidades.{{nombre}}"
-               value="{{valor}}" min="0" style="width:48px" />
-        <a class="tirar-habilidad" data-nombre="{{nombre}}" data-valor="{{valor}}" title="Tirar">
-          <i class="fas fa-dice-d10"></i>
-        </a>
-        <a class="eliminar-habilidad" data-nombre="{{nombre}}" title="Eliminar">
-          <i class="fas fa-trash"></i>
-        </a>
+      <div class="section-header">
+        <span>Protecciones</span>
+        <a class="anadir-armadura" title="Añadir protección"><i class="fas fa-plus"></i></a>
       </div>
-      {{/each}}
-    </div>
+      {{#if armaduras}}
+      <div class="pnj-items-lista">
+        {{#each armaduras as |a|}}
+        <div class="pnj-item-fila">
+          <a class="pnj-item-nombre" data-id="{{a.id}}">{{a.name}}</a>
+          <span class="pnj-item-detalle">PR {{a.proteccion}}</span>
+          <a class="pnj-item-borrar" data-id="{{a.id}}" title="Eliminar"><i class="fas fa-trash"></i></a>
+        </div>
+        {{/each}}
+      </div>
+      {{/if}}
 
-    <div class="field-group">
-      <label>Debilidades</label>
-      <textarea name="system.debilidades" rows="2">{{system.debilidades}}</textarea>
-    </div>
-    <div class="field-group">
-      <label>Poderes</label>
-      <textarea name="system.poderes" rows="4">{{system.poderes}}</textarea>
-    </div>
-    <div class="field-group">
-      <label>Notas</label>
-      <textarea name="system.notas" rows="4">{{system.notas}}</textarea>
+      <hr class="tab-separator" />
+      <div class="field-group">
+        <label>Debilidades</label>
+        <textarea name="system.debilidades" rows="2">{{system.debilidades}}</textarea>
+      </div>
+      <div class="field-group">
+        <label>Poderes</label>
+        <textarea name="system.poderes" rows="4">{{system.poderes}}</textarea>
+      </div>
+      <div class="field-group">
+        <label>Notas</label>
+        <textarea name="system.notas" rows="6">{{system.notas}}</textarea>
+      </div>
     </div>
   </div>
-</form>
-
+</section>

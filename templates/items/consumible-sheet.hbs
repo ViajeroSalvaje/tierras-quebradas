@@ -1,0 +1,37 @@
+<div class="{{cssClass}} flexcol" autocomplete="off" style="height:100%;width:100%;">
+  <section class="item-body">
+    <h1><input type="text" name="name" value="{{item.name}}" placeholder="Nombre" /></h1>
+    <div class="item-fila-triple">
+      <div class="field-group">
+        <label>Potencia (POT)</label>
+        <input type="number" name="system.potencia" value="{{system.potencia}}" min="0" />
+      </div>
+      <div class="field-group">
+        <label>Dosis</label>
+        <input type="number" name="system.dosis" value="{{system.dosis}}" min="0" />
+      </div>
+      <div class="field-group">
+        <label>Dificultad (DIF)</label>
+        <input type="number" name="system.dificultad" value="{{system.dificultad}}" min="0" />
+      </div>
+    </div>
+    <div class="item-fila-doble">
+      <div class="field-group">
+        <label>Carga</label>
+        <input type="number" name="system.carga" value="{{system.carga}}" step="0.1" min="0" />
+      </div>
+      <div class="field-group">
+        <label>Precio (mb)</label>
+        <input type="number" name="system.precio" value="{{system.precio}}" min="0" />
+      </div>
+    </div>
+    <div class="field-group full-width">
+      <label>Efecto</label>
+      <input type="text" name="system.efecto" value="{{system.efecto}}" placeholder="ej. +4 PV" />
+    </div>
+    <div class="field-group full-width">
+      <label>Descripción</label>
+      <textarea name="system.descripcion" rows="4">{{system.descripcion}}</textarea>
+    </div>
+  </section>
+</div>
