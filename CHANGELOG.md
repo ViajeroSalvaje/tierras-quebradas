@@ -1,18 +1,16 @@
-
-# Notas 10 de junio 2026
+# Notas 23 de junio 2026
 
 **Pendientes**
-- Pestañas de Magia y Religión del Creador de Personajes
-- Preguntar sobre el creador de objetos
-
+- Cambiar diálogos
+- Cambiar tarjetas de chat
+- 
 **Cambios**
 
-- Modo de presentación de los hechizos en la ficha de PNJ
-- Ventana de diálogo actualizada para lanzamiento de hechizos de PNJ
-- Solucionado NaN en cancelación hechizo de PNJ
-- Puntos de Magia de PNJ ya aparecen en el campo adecuado en la pestaña de Combate y Magia en lugar de en Notas.
-
-
+- Cambiada la base de pnj para solucionar los problemas en herencias
+- Solucionado fallo en hechizos consagrados en el Creador de PJ
+- Importadores de criaturas y demonios casi completados
+- solucionado el problema del tamaño en la importación de demonios
+  
 
 
 # Notas 10 de junio 2026
