@@ -336,9 +336,13 @@ export class TQRoll {
     const escalaDif = opciones.escalaDif ?? "habilidad";
     const fortunaActual = actor?.system?.fortuna?.actual ?? 0;
     const dosFortDisponible = fortunaActual >= 2;
+    const aliados = modo === "distancia"
+      ? game.actors.filter(a => a.type === "pj" && a.id !== actor?.id)
+          .map(a => ({ id: a.id, name: a.name }))
+      : [];
     const content = await foundry.applications.handlebars.renderTemplate(
       "systems/tierras-quebradas/templates/dialogs/tirada-dialogo.hbs",
-      { etiqueta, puntuacion, modo, longitudArma, jugadorDatos, rivalDatos, dificultadPorDefecto: String(dificultadPorDefecto), topesOpciones, escalaDif }
+      { etiqueta, puntuacion, modo, longitudArma, jugadorDatos, rivalDatos, dificultadPorDefecto: String(dificultadPorDefecto), topesOpciones, escalaDif, aliados }
     );
 
     const eleccion = await DialogV2.wait({
@@ -379,10 +383,13 @@ export class TQRoll {
             } else {
               dificultad = parseInt(campos.dificultad?.value) || 15;
             }
+            const bonApuntar = (modo === "distancia" && (campos.apuntando?.checked ?? false)) ? 2 : 0;
             return {
               dificultad,
-              bonificador: parseInt(campos.bonificador?.value) || 0,
-              topeClave
+              bonificador: (parseInt(campos.bonificador?.value) || 0) + bonApuntar,
+              topeClave,
+              enMelee: modo === "distancia" ? (campos.en_melee?.checked ?? false) : false,
+              aliadoId: modo === "distancia" ? (campos.aliado_id?.value ?? null) : null
             };
           }
         },
@@ -465,7 +472,7 @@ export class TQRoll {
       return TQRoll.tirarMelee(etiqueta, puntuacionFinal, longitudArma, eleccion, { ...opciones, targetActor, topeInfo, rollMode: rollModeEfectivo, dosFortuna: eleccion.dosFortuna ?? false });
     }
 
-    return TQRoll.tirar(etiqueta, puntuacionFinal, eleccion.dificultad, {
+    const resultado = await TQRoll.tirar(etiqueta, puntuacionFinal, eleccion.dificultad, {
       ...opciones,
       bonificador: eleccion.bonificador,
       topeInfo,
@@ -473,6 +480,8 @@ export class TQRoll {
       rollMode: rollModeEfectivo,
       dosFortuna: eleccion.dosFortuna ?? false
     });
+    if (!resultado) return null;
+    return { ...resultado, enMelee: eleccion.enMelee ?? false, aliadoId: eleccion.aliadoId ?? null };
   }
 
   /** Tirada enfrentada de melee: tira por ambos contendientes y muestra los dos resultados. */
@@ -522,6 +531,49 @@ export class TQRoll {
       pasionEfecto = TQRoll._aplicarPasion(resultado, exitos);
       if (pasionEfecto) resultado = pasionEfecto.resultado;
       await actor.update({ "system.pasionFlag": "" });
+    }
+
+    if (exitos === 0) {
+      const gmIds = game.users.filter(u => u.isGM).map(u => u.id);
+      const dadoDisplayJ = dadoDisplayJCustom ?? TQRoll._dadoDisplay(dadoTotalJ, tiradasJ);
+      const contenidoTablas = await foundry.applications.handlebars.renderTemplate(
+        "systems/tierras-quebradas/templates/dialogs/tablas-melee.hbs",
+        {
+          etiqueta,
+          puntuacion, bonificador: bonusJ, modLongitud: modJugador,
+          dadoDisplayJ, totalJugador,
+          puntuacionRival, bonificadorRival, modLongitudRival: modRival,
+          dadoDisplayR: TQRoll._dadoDisplay(dadoTotalR, tiradasR), totalRival,
+          rivalNombre: targetActor?.name ?? "Rival"
+        }
+      );
+      await ChatMessage.create({
+        speaker: actor ? ChatMessage.getSpeaker({ actor }) : ChatMessage.getSpeaker(),
+        content: contenidoTablas,
+        whisper: gmIds,
+        flags: {
+          "tierras-quebradas": {
+            esTablasMelee: true,
+            etiqueta,
+            puntuacion, bonificador: bonusJ, modLongitud: modJugador,
+            dadoDisplayJ, totalJugador,
+            dadoJ,
+            puntuacionRival, bonificadorRival, modLongitudRival: modRival,
+            dadoDisplayR: TQRoll._dadoDisplay(dadoTotalR, tiradasR), totalRival,
+            actorId: actor?.id ?? null,
+            targetActorId: targetActor?.id ?? null,
+            danoArma: danho?.danoArma ?? null,
+            danhoMd: danho?.md ?? 0,
+            danhoTipo: danho?.tipo ?? "cortante",
+            danhoNoLetal: danho?.noLetal ?? false,
+            danoRival, mdRival, tipoRival,
+            rollMode: modoTirada,
+            pasionEfecto: pasionEfecto?.texto ?? null,
+            topeInfo: topeInfo ?? null
+          }
+        }
+      });
+      return { total: totalJugador, exitos: 0, resultado };
     }
 
     let pd = null;
@@ -591,9 +643,9 @@ export class TQRoll {
     if (!isNaN(danoNum)) {
       let pdTotal = danoNum + md + exitosDanho;
       if (noLetal) pdTotal = Math.floor(pdTotal / 2);
-      return { formula: `${danoNum} ${mdStr}(MD) + ${exitosDanho}(éx.)`, total: pdTotal, noLetal };
+      return { formula: `${danoNum} ${mdStr}(MD) + ${exitosDanho} Éxitos`, total: pdTotal, noLetal };
     }
-    return { formula: `${danoArma} ${mdStr}(MD) + ${exitosDanho}(éx.)`, total: null, noLetal };
+    return { formula: `${danoArma} ${mdStr}(MD) + ${exitosDanho} Éxitos`, total: null, noLetal };
   }
 
   static _calcularModLongitud(miLongitud, suLongitud) {
@@ -613,6 +665,80 @@ export class TQRoll {
       total += prot;
     }
     return total;
+  }
+
+  static async resolverTablas(messageId, resolucion) {
+    const message = game.messages.get(messageId);
+    if (!message) return;
+    const flags = message.flags?.["tierras-quebradas"] ?? {};
+    if (!flags.esTablasMelee) return;
+
+    const actor = flags.actorId ? game.actors.get(flags.actorId) : null;
+    const targetActor = flags.targetActorId ? game.actors.get(flags.targetActorId) : null;
+    const resultado = TQRoll._clasificarResultado(flags.dadoJ, 0);
+
+    let pd = null, pdRival = null;
+    let danhoAplicado = null, proteccionTarget = 0;
+    let danhoRivalAplicado = null, proteccionJugador = 0;
+
+    if ((resolucion === "atacante" || resolucion === "ambos") && flags.danoArma !== null) {
+      pd = TQRoll.calcDanho(flags.danoArma, flags.danhoMd, 0, flags.danhoNoLetal);
+      if (pd?.total != null && targetActor) {
+        proteccionTarget = TQRoll._calcularProteccion(targetActor, flags.danhoTipo);
+        danhoAplicado = Math.max(0, pd.total - proteccionTarget);
+        await targetActor.recibirDanho(danhoAplicado, pd.total);
+      }
+    }
+
+    if ((resolucion === "rival" || resolucion === "ambos") && flags.danoRival) {
+      pdRival = TQRoll.calcDanho(flags.danoRival, flags.mdRival, 0, false);
+      if (pdRival?.total != null && actor) {
+        proteccionJugador = TQRoll._calcularProteccion(actor, flags.tipoRival ?? "cortante");
+        danhoRivalAplicado = Math.max(0, pdRival.total - proteccionJugador);
+        await actor.recibirDanho(danhoRivalAplicado, pdRival.total);
+      }
+    }
+
+    const resolucionTexto = {
+      atacante: "Tablas — el atacante impacta con 0 PE",
+      rival: "Tablas — el rival impacta con 0 PE",
+      ambos: "Tablas — ambos impactan con 0 PE",
+      nadie: "Tablas — nadie impacta"
+    }[resolucion];
+
+    const datosChat = {
+      etiqueta: flags.etiqueta,
+      esMelee: true,
+      puntuacion: flags.puntuacion, bonificador: flags.bonificador, modLongitud: flags.modLongitud,
+      dadoDisplay: flags.dadoDisplayJ, total: flags.totalJugador,
+      puntuacionRival: flags.puntuacionRival, bonificadorRival: flags.bonificadorRival, modLongitudRival: flags.modLongitudRival,
+      dadoDisplayRival: flags.dadoDisplayR, totalRival: flags.totalRival,
+      exitos: 0,
+      resultado, css: resultado.css,
+      criticos: null,
+      pd, danhoAplicado, proteccionTarget,
+      pdRival, danhoRivalAplicado, proteccionJugador,
+      pasionEfecto: flags.pasionEfecto ?? null,
+      actorImg: actor?.img ?? null,
+      rivalNombre: targetActor?.name ?? "Rival",
+      topeInfo: flags.topeInfo ?? null,
+      resolucionTablas: resolucionTexto
+    };
+
+    const contenido = await foundry.applications.handlebars.renderTemplate(
+      "systems/tierras-quebradas/templates/dialogs/tirada-resultado.hbs",
+      datosChat
+    );
+
+    await ChatMessage.create({
+      speaker: actor ? ChatMessage.getSpeaker({ actor }) : ChatMessage.getSpeaker(),
+      content: contenido,
+      ...TQRoll._rollModeData(flags.rollMode)
+    });
+
+    if (resultado.css.includes("complicacion")) {
+      await tirarComplicacion(TABLA_COMPLICACIONES_MELE, actor);
+    }
   }
 
   /** Pre-rellena los datos del rival a partir del actor objetivo (primer arma melee encontrada). */
