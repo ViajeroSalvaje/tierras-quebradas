@@ -20,11 +20,10 @@ export class TQActor extends Actor {
       if (this.system.caracteristicas) {
         this.updateFuerza();
         this.calcBases();
-        if (this.type === "pj" || this.type === "pnj") this.updateSalud();
-        else this._calcularUmbralesSalud();
+        this.updateSalud();
         this.calcMD();
         this._calcularEstorbo();
-        if (this.type === "pj") this._calcularTotalesHabilidades();
+        if (this.system.habilidades) this._calcularTotalesHabilidades();
       }
       if (this.system.hechiceria)          this.updatePM();
       if (this.system.fortuna !== undefined) this._calcularFortuna();
@@ -58,17 +57,19 @@ export class TQActor extends Actor {
   updateSalud() {
     const cuerpo = this.system.caracteristicas.cuerpo.valor;
     const tamano = this.system.caracteristicas.tamano.valor;
-    const pvMax = cuerpo + tamano + 10;
+    const pvMax = tamano === -5
+      ? this.system.derivadas.fuerza.valor
+      : cuerpo + tamano + 10;
     this.system.salud.pvMax.valor = pvMax;
     this.system.salud.pvRagunos.valor = Math.round(pvMax / 5);
-    this.system.salud.pvLeve.valor = Math.round(pvMax * 2 / 5);
+    this.system.salud.pvLeve.valor = Math.floor(Math.floor(pvMax / 2) / 2);
     this.system.salud.pvGrave.valor = Math.floor(pvMax / 2);
   }
 
   _calcularUmbralesSalud() {
     const pvMax = this.system.salud.pvMax?.valor ?? 0;
     this.system.salud.pvRagunos.valor = Math.round(pvMax / 5);
-    this.system.salud.pvLeve.valor = Math.round(pvMax * 2 / 5);
+    this.system.salud.pvLeve.valor = Math.floor(Math.floor(pvMax / 2) / 2);
     this.system.salud.pvGrave.valor = Math.floor(pvMax / 2);
   }
 
@@ -88,10 +89,11 @@ export class TQActor extends Actor {
   }
 
   _calcularEstorbo() {
-      const carga = this.items.reduce((total, item) => {
+      const cargaItems = this.items.reduce((total, item) => {
       const cargaItem = item.system.carga ?? 0;
       return total + (cargaItem >= 0.3 ? cargaItem : 0);
     }, 0);
+    const carga = cargaItems + Math.floor((this.system.dinero ?? 0) / 200);
     this.system.carga.valor = Math.round(carga * 10) / 10;
 
     const fuerza = this.system.derivadas.fuerza.valor;
@@ -106,17 +108,21 @@ export class TQActor extends Actor {
   _calcularTotalesHabilidades() {
     const habs = this.system.habilidades;
     const bases = this.system.bases;
-    const estorbo = this.system.estorbo?.valor ?? 0;
+    const actorEstorbo = this.type === "pj" ? (this.system.estorbo?.valor ?? 0) : 0;
     for (const [clave, hab] of Object.entries(habs)) {
       if (!hab || typeof hab !== "object") continue;
       const baseValor = bases[hab.base]?.valor ?? 0;
-      hab.total = baseValor + (hab.nivel ?? 0) + (hab.puntosFijos ?? 0) - estorbo;
+      const multiplicador = this.type === "pj" ? (hab.estorbo ?? 0) : 0;
+      hab.total = baseValor + (hab.nivel ?? 0) + (hab.puntosFijos ?? 0) - actorEstorbo * multiplicador;
     }
   }
 
   updatePM() {
     const espiritu = this.system.caracteristicas.espiritu.valor;
     this.system.hechiceria.pmMax = espiritu * 2;
+    this.system.hechiceria.espirituConsagrado = this.items
+      .filter(i => i.type === "hechizo" && i.system.permanent)
+      .reduce((s, i) => s + (i.system.pmCoste || 1), 0);
   }
 
   _calcularFortuna() {
@@ -175,7 +181,7 @@ export class TQActor extends Actor {
     const habClave = arma.system.habilidad;
     const manos = arma.system.manos ?? "1m";
 
-    const esMelee = arma.system.alcance === "contacto" || arma.system.alcance === "arrojadiza";
+    const esMelee = arma.system.alcance === "contacto";
     const modo = esMelee ? "melee" : "distancia";
     const sumaMD = esMelee;
     const md = !sumaMD ? 0
@@ -195,8 +201,8 @@ export class TQActor extends Actor {
       }
     } else {
       const habNombre = ARMA_A_HABILIDAD_PNJ[habClave] ?? habClave;
-      const valor = this.system.habilidades?.[habNombre];
-      puntuacion = typeof valor === "number" ? valor : 0;
+      const hab = this.system.habilidades?.[habNombre];
+      puntuacion = typeof hab === "number" ? hab : (hab?.total ?? 0);
     }
 
     const targetActor = game.user.targets.first()?.actor ?? null;
@@ -223,6 +229,53 @@ export class TQActor extends Actor {
       if (habilidad && !habilidad.exito) {
         await this.update({ [`system.habilidades.${habClave}.exito`]: true });
       }
+    }
+
+    if (resultado && resultado.enMelee && resultado.exitos >= 0 && resultado.exitos < 3) {
+      const aliadoActor = resultado.aliadoId ? game.actors.get(resultado.aliadoId) : null;
+      const pd = TQRoll.calcDanho(arma.system.danoArma ?? "0", 0, resultado.exitos, arma.system.noLetal ?? false);
+      const tipoArma = arma.system.tipo ?? "cortante";
+      let proteccion = 0;
+      let nombreProteccion = null;
+      if (aliadoActor) {
+        const armaduras = aliadoActor.items.filter(i => i.type === "armadura");
+        for (const arm of armaduras) {
+          let p = arm.system.proteccion ?? 0;
+          if (arm.system.tipo === "blanda" && tipoArma === "contundente") p = Math.floor(p / 2);
+          if (arm.system.esYelmo && !arm.system.viseraBajada) p = Math.max(0, p - 1);
+          proteccion += p;
+        }
+        if (armaduras.length === 1) nombreProteccion = armaduras[0].name;
+        else if (armaduras.length > 1) nombreProteccion = armaduras.map(a => a.name).join(", ");
+      }
+      const danhoNeto = pd.total !== null ? Math.max(0, pd.total - proteccion) : null;
+      const nombreAliado = aliadoActor?.name ?? "el aliado";
+
+      let cardContent = `<div class="tq-result-card complicacion">
+        <div style="font-weight:bold;font-size:calc(1em + 2px);text-align:center;">Fuego Amigo</div>
+        <hr style="width:70%;margin:4px auto;border:none;border-top:1px solid rgba(0,0,0,0.25);"/>
+        <p><strong>${nombreAliado}</strong> es alcanzado.</p>`;
+
+      if (pd.total !== null) {
+        cardContent += `<p>Daño: ${pd.formula} = <strong>${pd.total} PD</strong>`;
+        if (proteccion > 0) {
+          const labelProt = nombreProteccion ? `${proteccion} (${nombreProteccion})` : `${proteccion}`;
+          cardContent += ` − ${labelProt} → <strong>${danhoNeto} de daño aplicado</strong>`;
+        }
+        cardContent += `</p>`;
+        if (aliadoActor && danhoNeto !== null) {
+          cardContent += `<button class="tq-fuego-amigo-aplicar" data-actor-id="${aliadoActor.id}" data-danho="${danhoNeto}" data-danho-bruto="${pd.total}" style="margin-top:4px;background:#3a9aaa;color:#fff;border:none;border-radius:3px;padding:3px 8px;cursor:pointer;">Aplicar ${danhoNeto} PD a ${nombreAliado}</button>`;
+        }
+      } else {
+        cardContent += `<p>Daño: ${pd.formula} (aplica el daño del arma + ${resultado.exitos} éxitos, menos la protección de ${nombreAliado}).</p>`;
+      }
+
+      cardContent += `</div>`;
+      await ChatMessage.create({
+        speaker: ChatMessage.getSpeaker({ actor: this }),
+        content: cardContent,
+        ...TQRoll._rollModeData()
+      });
     }
 
     return resultado;
@@ -584,14 +637,20 @@ export class TQActor extends Actor {
     const esferas = this.system.hechiceria?.esferas ?? {};
     const norm = s => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
 
-    const claves = [];
-    if (hechizo.system.verbo)  claves.push(norm(hechizo.system.verbo));
-    if (hechizo.system.esfera) claves.push(norm(hechizo.system.esfera));
-    if (!claves.length && hechizo.system.sintaxis) {
-      claves.push(...hechizo.system.sintaxis.split(",").map(s => norm(s.trim())).filter(Boolean));
+    let puntuacion;
+    let claves = [];
+    let niveles = [];
+    if (this.type !== "pj") {
+      puntuacion = hechizo.system.nivelLanzamiento ?? 0;
+    } else {
+      if (hechizo.system.verbo)  claves.push(norm(hechizo.system.verbo));
+      if (hechizo.system.esfera) claves.push(norm(hechizo.system.esfera));
+      if (!claves.length && hechizo.system.sintaxis) {
+        claves.push(...hechizo.system.sintaxis.split(",").map(s => norm(s.trim())).filter(Boolean));
+      }
+      niveles = claves.map(c => verbos[c] ?? esferas[c] ?? 0);
+      puntuacion = niveles.length ? baseHech + Math.min(...niveles) : baseHech;
     }
-    const niveles = claves.map(c => verbos[c] ?? esferas[c] ?? 0);
-    const puntuacion = niveles.length ? baseHech + Math.min(...niveles) : baseHech;
 
     const dif = hechizo.system.dificultad ?? 15;
     let pmBase = 4;
@@ -955,6 +1014,14 @@ export class TQActor extends Actor {
     if (graves2)
       updates["system.salud.incapacitado"] = true;
 
+    const nuevaHeridaGrave = updates["system.salud.heridasGraves1"] || updates["system.salud.heridasGraves2"];
+    if (nuevaHeridaGrave && this.type === "pj") {
+      ChatMessage.create({
+        speaker: ChatMessage.getSpeaker({ actor: this }),
+        content: `<div class="tq-result-card complicacion"><div style="font-weight:bold;font-size:calc(1em + 2px);text-align:center;">Desgaste de Armadura</div><hr style="width:70%;margin:4px auto;border:none;border-top:1px solid rgba(0,0,0,0.25);"/><p><strong>${this.name}</strong> ha recibido una Herida Grave. Reduce en 1 la Protección de una de sus armaduras.</p></div>`
+      });
+    }
+
     if (pvResultante <= 0) {
       updates["system.salud.incapacitado"] = true;
       updates["system.salud.pvActual.valor"] = 0;
@@ -1065,7 +1132,7 @@ export class TQActor extends Actor {
         updates["system.salud.desangre"] = false;
         ui.notifications.info(`${targetActor.name}: desangre detenido.`);
       } else {
-        const pdCritico = Math.floor(exitos / 10);
+        const pdCritico = Math.min(Math.floor(exitos / 10), 3);
         const pdTotal = 1 + pdCritico;
         const pvActual = targetActor.system.salud?.pvActual?.valor ?? 0;
         const pvMax = targetActor.system.salud?.pvMax?.valor ?? 0;
@@ -1418,8 +1485,9 @@ export class TQActor extends Actor {
       if (habilidad.nombre && clave.startsWith("idioma")) etiqueta = habilidad.nombre;
       else etiqueta = game.i18n.localize(`TQ.Habilidades.${clave}`) || clave;
       const pxNeed = (habilidad.nivel ?? 0) + 1;
-      opcionesHTML += `<label style="display:flex;align-items:center;gap:6px;margin:1px 0;font-size:12px;">
-        <input type="checkbox" name="hab_${clave}" value="${clave}" />
+      opcionesHTML += `<label style="display:flex;align-items:center;gap:6px;margin:1px 0;font-size:12px;cursor:pointer;">
+        <input type="checkbox" id="hab_${clave}" name="hab_${clave}" value="${clave}" class="tq-apuntar-check" />
+        <label for="hab_${clave}" class="skill-circle tq-apuntar-circle" style="width:16px;height:16px;cursor:pointer;flex-shrink:0;"></label>
         <span style="flex:1;">${etiqueta}</span>
         <span style="font-size:10px;opacity:0.7;">Nv.${habilidad.nivel ?? 0} · ${habilidad.px ?? 0}/${pxNeed} PX</span>
       </label>`;
@@ -1554,6 +1622,13 @@ export class TQActor extends Actor {
     if (!saludCambiada) return;
     const camposHerida = ["heridasLeves1", "heridasLeves2", "heridasGraves1", "heridasGraves2"];
     if (!camposHerida.some(f => f in saludCambiada)) return;
+
+    if (this.type === "pj" && (saludCambiada.heridasGraves1 === true || saludCambiada.heridasGraves2 === true)) {
+      ChatMessage.create({
+        speaker: ChatMessage.getSpeaker({ actor: this }),
+        content: `<div class="tq-result-card complicacion"><div style="font-weight:bold;font-size:calc(1em + 2px);text-align:center;">Desgaste de Armadura</div><hr style="width:70%;margin:4px auto;border:none;border-top:1px solid rgba(0,0,0,0.25);"/><p><strong>${this.name}</strong> ha recibido una Herida Grave. Reduce en 1 la Protección de una de sus armaduras.</p></div>`
+      });
+    }
 
     const salud = this.system.salud;
     const carga = this.system.carga?.valor ?? 0;
