@@ -1,3 +1,25 @@
+# Notas 24 de junio 2026 
+
+**Pendientes**
+- Cambiar tarjetas de chat
+
+- 
+**Cambios**
+
+- Cambios diálogos de combate
+- Cambios interfaz de PJ
+- Cambios interfaz de PNJ
+- Se crea el compendio de habilidades. Las habilidades ahora son items arrastrables.
+- Cambios en los importadores de PNJ, Criaturas y Demonios.
+- Implentado correctamente los niveles de hechizo en los PJ.
+- Cambios en espíritu consagrado.
+- Cambios en interfaz de demonios y criaturas
+
+
+
+
+
+
 # Notas 23 de junio 2026
 
 **Pendientes**
