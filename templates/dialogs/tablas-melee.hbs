@@ -1,0 +1,35 @@
+<div class="tq-tirada-resultado parcial tq-tablas-card">
+  <div class="tq-chat-header">
+    <span class="tq-chat-etiqueta">{{etiqueta}}</span>
+  </div>
+  <div class="tq-chat-resultado">Tablas en melé</div>
+  <div class="tq-melee-grid">
+    <div class="tq-melee-col">
+      <div class="tq-melee-titulo">PJ</div>
+      <div class="tq-melee-nums">
+        <span><i class="fas fa-dice-d10"></i> <strong>{{dadoDisplayJ}}</strong></span>
+        <span>+ {{puntuacion}}</span>
+        {{#if bonificador}}<span>{{#if (tq-gt bonificador 0)}}+{{/if}}{{bonificador}}</span>{{/if}}
+        {{#if modLongitud}}<span>+{{modLongitud}} (long.)</span>{{/if}}
+        <span class="tq-melee-total">= <strong>{{totalJugador}}</strong></span>
+      </div>
+    </div>
+    <div class="tq-melee-col rival">
+      <div class="tq-melee-titulo">{{rivalNombre}}</div>
+      <div class="tq-melee-nums">
+        <span><i class="fas fa-dice-d10"></i> <strong>{{dadoDisplayR}}</strong></span>
+        <span>+ {{puntuacionRival}}</span>
+        {{#if bonificadorRival}}<span>{{#if (tq-gt bonificadorRival 0)}}+{{/if}}{{bonificadorRival}}</span>{{/if}}
+        {{#if modLongitudRival}}<span>+{{modLongitudRival}} (long.)</span>{{/if}}
+        <span class="tq-melee-total">= <strong>{{totalRival}}</strong></span>
+      </div>
+    </div>
+  </div>
+  <div class="tq-chat-exitos-row">0 éxitos — ¿Qué ocurre?</div>
+  <div class="tq-tablas-acciones">
+    <button class="tq-tablas-btn" type="button" data-resolucion="atacante">Atacante impacta</button>
+    <button class="tq-tablas-btn" type="button" data-resolucion="rival">Rival impacta</button>
+    <button class="tq-tablas-btn" type="button" data-resolucion="ambos">Ambos impactan</button>
+    <button class="tq-tablas-btn" type="button" data-resolucion="nadie">Nadie impacta</button>
+  </div>
+</div>

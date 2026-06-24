@@ -74,6 +74,9 @@
   <div class="tq-chat-exitos-row">
     {{#if (tq-gt exitos 0)}}+{{/if}}{{exitos}} éxitos
   </div>
+  {{#if resolucionTablas}}
+  <div class="tq-chat-tablas-nota">{{resolucionTablas}}</div>
+  {{/if}}
   {{else if desgloseHechizo}}
   {{!-- Hechizo: desglose vertical --}}
   <div class="tq-hechizo-desglose">

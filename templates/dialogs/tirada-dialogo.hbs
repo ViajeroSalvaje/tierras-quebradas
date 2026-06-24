@@ -49,6 +49,8 @@
         <label for="rival_bonificador">Bon. rival</label>
         <input type="number" name="rival_bonificador" id="rival_bonificador" value="0" step="1" />
       </div>
+    </div>
+    <div class="tq-melee-fila">
       <div class="campo-grupo">
         <label for="rival_danoArma">Daño rival</label>
         <input type="text" name="rival_danoArma" id="rival_danoArma" value="{{rivalDatos.danoArma}}" />
@@ -83,9 +85,33 @@
       <label for="esquivar_blanco" title="Si el blanco es consciente del disparo, se usa el mayor entre la distancia y su Esquivar">Esq. del blanco (?)</label>
       <input type="number" name="esquivar_blanco" id="esquivar_blanco" value="0" min="0" step="1" />
     </div>
-    <div class="campo-grupo">
-      <label for="bonificador">Bonificador</label>
-      <input type="number" name="bonificador" id="bonificador" value="0" step="1" />
+    <div class="tq-melee-fila">
+      <div class="campo-grupo">
+        <label for="bonificador">Bonificador</label>
+        <input type="number" name="bonificador" id="bonificador" value="0" step="1" />
+      </div>
+      <div class="campo-grupo" style="flex-direction:row;align-items:center;gap:4px;">
+        <label for="apuntando">Apuntando</label>
+        <input type="checkbox" name="apuntando" id="apuntando" class="tq-apuntar-check" />
+        <label for="apuntando" class="skill-circle tq-apuntar-circle" style="width:16px;height:16px;cursor:pointer;" title="+2 al ataque"></label>
+      </div>
+    </div>
+    <div class="tq-melee-fila">
+      <div class="campo-grupo" style="flex-direction:row;align-items:center;gap:4px;">
+        <label for="en_melee">En melé con aliado</label>
+        <input type="checkbox" name="en_melee" id="en_melee" class="tq-apuntar-check" />
+        <label for="en_melee" class="skill-circle tq-apuntar-circle" style="width:16px;height:16px;cursor:pointer;" title="El objetivo está trabado en melé con un aliado"></label>
+      </div>
+      {{#if aliados}}
+      <div class="campo-grupo">
+        <label for="aliado_id">Aliado</label>
+        <select name="aliado_id" id="aliado_id">
+          {{#each aliados}}
+          <option value="{{this.id}}">{{this.name}}</option>
+          {{/each}}
+        </select>
+      </div>
+      {{/if}}
     </div>
 
     {{else}}
