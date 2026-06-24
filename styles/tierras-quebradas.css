@@ -793,6 +793,51 @@
   white-space: nowrap;
 }
 
+/* ─── Armaduras (tabla en hoja1) ───────────────────────────────── */
+.armaduras-table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  font-size: 16px;
+}
+
+/* Nombre | Prot. | Zona | Tipo | Carga | controles */
+.armaduras-table th:nth-child(1), .armaduras-table td:nth-child(1) { width: 30%; }
+.armaduras-table th:nth-child(2), .armaduras-table td:nth-child(2) { width: 12%; text-align: center; }
+.armaduras-table th:nth-child(3), .armaduras-table td:nth-child(3) { width: 18%; }
+.armaduras-table th:nth-child(4), .armaduras-table td:nth-child(4) { width: 18%; }
+.armaduras-table th:nth-child(5), .armaduras-table td:nth-child(5) { width: 10%; text-align: center; }
+.armaduras-table th:nth-child(6), .armaduras-table td:nth-child(6) { width: 12%; }
+
+.armaduras-table thead th {
+  background: var(--tq-teal);
+  color: var(--tq-white);
+  padding: 2px 4px;
+  text-align: left;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.armaduras-table tbody tr {
+  border-bottom: 1px solid rgba(28,100,115,0.15);
+  background: var(--tq-parchment);
+}
+
+.armaduras-table tbody tr:hover {
+  background: rgba(28,100,115,0.08);
+}
+
+.armaduras-table th,
+.armaduras-table td {
+  padding: 2px 4px;
+  color: var(--tq-text);
+  vertical-align: middle;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 /* ─── Protección, MD, Fortuna (pequeños boxes en hoja1) ────────── */
 .tq-bottom-row {
   display: flex;
@@ -863,6 +908,7 @@
 .md-field {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 4px;
   margin-bottom: 2px;
   font-size: 14px;
@@ -889,6 +935,14 @@
   color: var(--tq-teal-dark);
   min-width: 20px;
   text-align: right;
+}
+
+.prot-zona,
+.prot-tipo,
+.prot-carga {
+  font-size: 13px;
+  color: var(--tq-text-muted, #888);
+  white-space: nowrap;
 }
 
 /* Estorbo y carga */
@@ -971,6 +1025,15 @@
 }
 
 .skill-circle.marcado:hover {
+  background: var(--tq-teal-dark);
+}
+
+.tq-apuntar-check { display: none; }
+.tq-apuntar-check:checked + .tq-apuntar-circle {
+  background: var(--tq-teal);
+  border-color: var(--tq-teal-dark);
+}
+.tq-apuntar-check:checked + .tq-apuntar-circle:hover {
   background: var(--tq-teal-dark);
 }
 
@@ -1374,7 +1437,7 @@
   display: flex;
   align-items: center;
   gap: 4px;
-  font-size: 14px;
+  font-size: 15px;
   border-bottom: 1px solid rgba(28,100,115,0.12);
   padding: 1px 2px;
 }
@@ -1494,6 +1557,36 @@
   font-size: 13px;
   font-weight: bold;
   color: var(--tq-text);
+  flex: 1;
+}
+
+.hechizo-nivel-wrap {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  flex-shrink: 0;
+}
+
+.hechizo-nivel-label {
+  font-size: 9px;
+  color: var(--tq-text-dim);
+}
+
+.hechizo-nivel-input {
+  width: 22px;
+  height: 16px;
+  text-align: center;
+  font-size: 9px;
+  border: 1px solid var(--tq-border);
+  background: var(--tq-input);
+  padding: 0;
+  -moz-appearance: textfield;
+}
+
+.hechizo-nivel-input::-webkit-outer-spin-button,
+.hechizo-nivel-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 .hechizo-meta {
@@ -1556,6 +1649,7 @@
 }
 
 .armas-table td.item-controls,
+.armaduras-table td.item-controls,
 .hechizos-table td.item-controls {
   overflow: visible;
 }
@@ -4977,6 +5071,8 @@ li.chat-message .message-delete:hover {
 
 /* ═══ PNJ Sheet — PV centrado ═══ */
 
+.pnj-salud-fila-wrap { display: flex; gap: 24px; justify-content: center; margin-bottom: 4px; }
+
 .pnj-salud-centrada {
   display: flex;
   flex-direction: column;
@@ -5075,4 +5171,39 @@ li.chat-message .message-delete:hover {
 
 .toggle-visera.visera-bajada {
   color: var(--tq-teal);
+}
+
+.tq-tablas-acciones {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  margin-top: 8px;
+}
+
+.tq-tablas-btn {
+  background: var(--tq-teal);
+  color: #fff;
+  border: 1px solid var(--tq-teal-dark);
+  border-radius: 3px;
+  font-size: 12px;
+  padding: 4px 6px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.tq-tablas-btn:hover:not(:disabled) {
+  background: var(--tq-teal-dark);
+}
+
+.tq-tablas-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.tq-chat-tablas-nota {
+  font-size: 0.85em;
+  font-style: italic;
+  text-align: center;
+  margin-top: 4px;
+  opacity: 0.8;
 }
