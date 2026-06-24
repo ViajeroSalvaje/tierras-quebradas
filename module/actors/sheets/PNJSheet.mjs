@@ -21,13 +21,19 @@ export class PNJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 
   async _prepareContext(options) {
     const items = this.actor.items;
+    const rawHabs = this.actor.system.habilidades ?? {};
+    const habilidades = Object.entries(rawHabs).map(([nombre, hab]) => {
+      if (typeof hab === "number") return { nombre, total: hab, nivel: hab, base: "" };
+      return { nombre, total: hab.total ?? 0, nivel: hab.nivel ?? 0, base: hab.base ?? "" };
+    });
     return {
       actor: this.actor,
       system: this.actor.system,
       cssClass: this.options.classes.join(" "),
       config: CONFIG.TQ,
-      armas: items.filter(i => i.type === "arma").map(i => ({ id: i.id, name: i.name, dano: i.system.danoArma, habilidad: i.system.habilidad })),
-      armaduras: items.filter(i => i.type === "armadura").map(i => ({ id: i.id, name: i.name, proteccion: i.system.proteccion, tipo: i.system.tipo })),
+      habilidades,
+      armas: items.filter(i => i.type === "arma").map(i => ({ id: i.id, name: i.name, dano: i.system.danoArma, habilidad: i.system.habilidad, alcance: i.system.alcance, carga: i.system.carga })),
+      armaduras: items.filter(i => i.type === "armadura").map(i => ({ id: i.id, name: i.name, proteccion: i.system.proteccion, tipo: i.system.tipo, zona: i.system.zona, carga: i.system.carga })),
       hechizos: items.filter(i => i.type === "hechizo"),
       rasgos: items.filter(i => i.type === "rasgo").map(i => ({ id: i.id, name: i.name })),
       ventajas: items.filter(i => i.type === "ventaja").map(i => ({ id: i.id, name: i.name })),
@@ -43,6 +49,16 @@ export class PNJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     if (data?.type !== "Item") return;
     const item = await fromUuid(data.uuid);
     if (!item) return;
+    if (item.type === "habilidad") {
+      if (this.actor.system.habilidades?.[item.name] !== undefined) return;
+      await this.actor.update({ [`system.habilidades.${item.name}`]: {
+        base: item.system.base,
+        nivel: 0,
+        puntosFijos: item.system.puntosFijos ?? 0,
+        estorbo: item.system.estorbo ?? 0
+      }});
+      return;
+    }
     await Item.create(item.toObject(), { parent: this.actor });
   }
 
@@ -70,17 +86,30 @@ export class PNJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       }).browse();
     });
 
+    el.querySelectorAll(".hab-nivel-input").forEach(input => {
+      input.addEventListener("change", async ev => {
+        const nombre = ev.currentTarget.dataset.nombre;
+        const nivel = parseInt(ev.currentTarget.value) || 0;
+        const hab = this.actor.system.habilidades?.[nombre];
+        if (hab && typeof hab === "object") {
+          await this.actor.update({ [`system.habilidades.${nombre}.nivel`]: nivel });
+        } else {
+          await this.actor.update({ [`system.habilidades.${nombre}`]: nivel });
+        }
+      });
+    });
+
     el.querySelectorAll(".tirar-habilidad").forEach(a => {
       a.addEventListener("click", async ev => {
         const nombre = ev.currentTarget.dataset.nombre;
         if (nombre === "primerosAuxilios") return this.actor.intentarPrimerosAuxilios();
-        const valor = parseInt(ev.currentTarget.dataset.valor) || 5;
+        const valor = parseInt(ev.currentTarget.dataset.total) || 5;
         TQRoll.dialogoTirada(nombre, valor, { actor: this.actor });
       });
       a.addEventListener("contextmenu", ev => {
         ev.preventDefault();
         const nombre = ev.currentTarget.dataset.nombre;
-        const valor = parseInt(ev.currentTarget.dataset.valor) || 0;
+        const valor = parseInt(ev.currentTarget.dataset.total) || 0;
         this.actor.abrirDialogoEnfrentada(nombre, valor);
       });
     });
@@ -98,7 +127,7 @@ export class PNJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
         ok: { label: "Añadir", callback: (_ev, button) => button.form.elements.nombre.value.trim() }
       }).catch(() => null);
       if (nombre) {
-        await this.actor.update({ [`system.habilidades.${nombre}`]: 5 });
+        await this.actor.update({ [`system.habilidades.${nombre}`]: { base: "cultura", nivel: 0, puntosFijos: 0, estorbo: 0 } });
       }
     });
 
@@ -140,6 +169,14 @@ export class PNJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     el.querySelectorAll(".pnj-tirar-arma").forEach(a => {
       a.addEventListener("click", ev => {
         this.actor.tirarArma(ev.currentTarget.dataset.id);
+      });
+    });
+
+    el.querySelectorAll(".hechizo-nivel-input").forEach(input => {
+      input.addEventListener("change", ev => {
+        const id = ev.currentTarget.dataset.itemId;
+        const nivel = parseInt(ev.currentTarget.value) || 0;
+        this.actor.items.get(id)?.update({ "system.nivelLanzamiento": nivel });
       });
     });
 

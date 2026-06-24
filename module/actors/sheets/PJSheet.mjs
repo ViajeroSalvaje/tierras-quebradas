@@ -144,6 +144,57 @@ export class PJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     };
   }
 
+  async _onDrop(event) {
+    let data;
+    try { data = JSON.parse(event.dataTransfer.getData("text/plain")); } catch { data = null; }
+    if (data?.type === "Item") {
+      const item = await fromUuid(data.uuid);
+      if (item?.type === "habilidad") {
+        const clave = item.system.clave;
+        if (!clave || this.actor.system.habilidades?.[clave] !== undefined) return;
+        await this.actor.update({
+          [`system.habilidades.${clave}`]: {
+            base: item.system.base,
+            nivel: 0,
+            puntosFijos: item.system.puntosFijos,
+            estorbo: item.system.estorbo,
+            marcado: false,
+            px: 0
+          }
+        });
+        return;
+      }
+
+      const cargaItem = item?.system?.carga ?? 0;
+      const esNuevo = !item?.parent || item.parent.id !== this.actor.id;
+      if (esNuevo && cargaItem >= 0.3) {
+        const cargaActual = this.actor.system.carga?.valor ?? 0;
+        const fuerza = this.actor.system.derivadas?.fuerza?.valor ?? 0;
+        const limite = fuerza * 4;
+        if (cargaActual + cargaItem > limite) {
+          if (!game.user.isGM) {
+            await ChatMessage.create({
+              speaker: ChatMessage.getSpeaker({ actor: this.actor }),
+              content: `<div class="tq-result-card complicacion"><div style="font-weight:bold;font-size:calc(1em + 2px);text-align:center;">Sobrepasa límite de carga</div><hr style="width:70%;margin:4px auto;border:none;border-top:1px solid rgba(0,0,0,0.25);"/><p>Límite de carga es 4 x FUERZA = <strong>${limite}</strong></p></div>`
+            });
+            return;
+          }
+          const confirmar = await DialogV2.wait({
+            window: { title: "Límite de Carga Superado" },
+            content: `<p>${this.actor.name} superaría el límite absoluto de 4×FUE (${limite} puntos). ¿Añadir igualmente?</p>`,
+            rejectClose: false,
+            buttons: [
+              { action: "si", label: "Sí, añadir", default: true },
+              { action: "no", label: "Cancelar" }
+            ]
+          });
+          if (confirmar !== "si") return;
+        }
+      }
+    }
+    return super._onDrop(event);
+  }
+
   _onRender(context, options) {
     super._onRender(context, options);
     const el = this.element;
