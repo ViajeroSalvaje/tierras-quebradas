@@ -18,8 +18,7 @@ for (const packId of packIds) {
     if (tamanyo === undefined) continue;
 
     await doc.update({
-      "system.caracteristicas.tamano.valor": tamanyo.valor ?? 0,
-      "system.caracteristicas.-=tamanyo": null
+      "system.caracteristicas.tamano.valor": tamanyo.valor ?? 0, "system.caracteristicas.-=tamanyo": null
     });
     count++;
     console.log(`[migración] ${doc.name}: tamanyo=${tamanyo.valor} → tamano`);
