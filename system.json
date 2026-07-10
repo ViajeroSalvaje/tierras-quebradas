@@ -2,13 +2,13 @@
   "id": "tierras-quebradas",
   "title": "Tierras Quebradas",
   "description": "Tierras Quebradas: Aventuras entre la Ley y el Caos — Edición Revisada",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "url": "https://github.com/ViajeroSalvaje/tierras-quebradas",
   "manifest": "https://raw.githubusercontent.com/ViajeroSalvaje/tierras-quebradas/main/system.json",
   "download": "https://github.com/ViajeroSalvaje/tierras-quebradas/releases/latest/download/tierras-quebradas.zip",
   "authors": [
     {
-      "name": "Carlos Ferrer",
+      "name": "Viajero Salvaje",
       "url": "https://github.com/ViajeroSalvaje"
     }
   ],
