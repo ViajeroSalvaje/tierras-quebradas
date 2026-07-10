@@ -2,10 +2,7 @@ const { HandlebarsApplicationMixin, ApplicationV2, DialogV2 } = foundry.applicat
 
 export class DirectorWidget extends HandlebarsApplicationMixin(ApplicationV2) {
   static DEFAULT_OPTIONS = {
-    id: "tq-director-widget",
-    classes: ["tierras-quebradas", "director-widget"],
-    position: { width: 230, height: "auto", top: 80, left: 5 },
-    window: { title: "Director", resizable: false, minimizable: true }
+    id: "tq-director-widget", classes: ["tierras-quebradas", "director-widget"], position: { width: 230, height: "auto", top: 80, left: 5 }, window: { title: "Director", resizable: false, minimizable: true }
   };
 
   static PARTS = {
@@ -16,8 +13,7 @@ export class DirectorWidget extends HandlebarsApplicationMixin(ApplicationV2) {
 
   async _prepareContext() {
     return {
-      infortunio: game.settings.get("tierras-quebradas", "infortunio"),
-      pxAventura: game.settings.get("tierras-quebradas", "pxAventura")
+      infortunio: game.settings.get("tierras-quebradas", "infortunio"), pxAventura: game.settings.get("tierras-quebradas", "pxAventura")
     };
   }
 
@@ -67,17 +63,18 @@ export class DirectorWidget extends HandlebarsApplicationMixin(ApplicationV2) {
       </div>
       <div>
         <label>Dificultad de resistencia (Espíritu)</label>
-        <input type="number" id="tq-dp-dif" value="15" min="1" style="width:100%;" />
+        <select id="tq-dp-dif" style="width:100%;">
+          <option value="9">Fácil (9)</option>
+          <option value="12" selected>Normal (12)</option>
+          <option value="15">Difícil (15)</option>
+          <option value="18">Muy Difícil (18)</option>
+        </select>
       </div>
     </div>`;
 
     const result = await DialogV2.prompt({
-      window: { title: "Despertar Pasión", width: 280 },
-      content: html,
-      ok: { label: "Despertar", callback: () => ({
-        actorId:    document.getElementById("tq-dp-pj").value,
-        tipo:       document.getElementById("tq-dp-tipo").value,
-        dificultad: parseInt(document.getElementById("tq-dp-dif").value) || 15
+      window: { title: "Despertar Pasión", width: 280 }, content: html, ok: { label: "Despertar", callback: () => ({
+        actorId: document.getElementById("tq-dp-pj").value, tipo: document.getElementById("tq-dp-tipo").value, dificultad: parseInt(document.getElementById("tq-dp-dif").value) || 15
       })}
     });
     if (!result) return;
@@ -89,14 +86,18 @@ export class DirectorWidget extends HandlebarsApplicationMixin(ApplicationV2) {
       : (actor.system.pasionOdio || "Odio");
 
     await ChatMessage.create({
-      content: `<div class="tq-pasion-forzada">
+      content: `<div class="tq-result-card complicacion">
+        <div class="tq-card-titulo">Despertar Pasión</div>
+        <hr/>
         <p><strong>${actor.name}</strong>: el Narrador despierta tu pasión de <em>${pasionNombre}</em>.</p>
         <p>Tira <strong>Espíritu</strong> vs <strong>${result.dificultad}</strong> para resistirte.</p>
-        <button class="tq-aplicar-pasion" style="display:none"
-                data-actor-id="${result.actorId}"
-                data-pasion-tipo="${result.tipo}">
-          ✓ Aplicar — el personaje no resistió
-        </button>
+        <div class="tq-card-botones">
+          <button class="tq-aplicar-pasion" style="display:none"
+                  data-actor-id="${result.actorId}"
+                  data-pasion-tipo="${result.tipo}">
+            Aplicar — el personaje no resistió
+          </button>
+        </div>
       </div>`
     });
   }

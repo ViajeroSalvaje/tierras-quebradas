@@ -4,10 +4,7 @@ const { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api;
 
 export class DemonioImporter extends HandlebarsApplicationMixin(ApplicationV2) {
   static DEFAULT_OPTIONS = {
-    id: "tq-demonio-importer",
-    classes: ["tierras-quebradas", "pnj-importer"],
-    position: { width: 560, height: 520 },
-    window: { title: "Importar Demonio", resizable: true }
+    id: "tq-demonio-importer", classes: ["tierras-quebradas", "pnj-importer"], position: { width: 560, height: 520 }, window: { title: "Importar Demonio", resizable: true }
   };
 
   static PARTS = {
@@ -49,34 +46,14 @@ Movimiento: Correr, rápido.`;
     if (!datos.nombre) return ui.notifications.warn("No se pudo detectar el nombre del demonio.");
 
     const actor = await Actor.create({
-      name: datos.nombre,
-      type: "demonio",
-      img: "icons/svg/mystery-man.svg",
-      system: {
+      name: datos.nombre, type: "demonio", img: "icons/svg/mystery-man.svg", system: {
         caracteristicas: {
-          cuerpo: { valor: datos.cuerpo },
-          mente: { valor: datos.mente },
-          espiritu: { valor: datos.espiritu },
-          atractivo: { valor: datos.atractivo },
-          tamano: { valor: datos.tamanyo }
-        },
-        derivadas: {
-          fuerza: { valor: datos.fuerza },
-          mDano1m: { valor: datos.mDano1m },
-          mDano2m: { valor: datos.mDano2m }
-        },
-        salud: {
-          pvMax: { valor: datos.pvMax },
-          pvActual: { valor: datos.pvMax },
-          pvGrave: { valor: datos.pvGrave },
-          pvLeve: { valor: datos.pvLeve }
-        },
-        proteccion: { valor: datos.proteccion, tipo: datos.proteccionTipo },
-        alImpacto: datos.alImpacto,
-        pm: datos.pm,
-        movimiento: datos.movimiento,
-        poderes: datos.poderes,
-        notas: datos.notas
+          cuerpo: { valor: datos.cuerpo }, mente: { valor: datos.mente }, espiritu: { valor: datos.espiritu }, atractivo: { valor: datos.atractivo }, tamano: { valor: datos.tamanyo }
+        }, derivadas: {
+          fuerza: { valor: datos.fuerza }, mDano1m: { valor: datos.mDano1m }, mDano2m: { valor: datos.mDano2m }
+        }, salud: {
+          pvMax: { valor: datos.pvMax }, pvActual: { valor: datos.pvMax }, pvGrave: { valor: datos.pvGrave }, pvLeve: { valor: datos.pvLeve }
+        }, proteccion: { valor: datos.proteccion, tipo: datos.proteccionTipo }, alImpacto: datos.alImpacto, pm: datos.pm, movimiento: datos.movimiento, poderes: datos.poderes, notas: datos.notas
       }
     });
     if (!actor) return;
@@ -90,10 +67,7 @@ Movimiento: Correr, rápido.`;
     }
 
     const packNombres = [
-      "tierras-quebradas.armamento-armas-cuerpo-a-cuerpo",
-      "tierras-quebradas.armamento-armas-proyectiles",
-      "tierras-quebradas.armamento-armas-arrojadizas",
-      "tierras-quebradas.armamento-armas-improvisadas"
+      "tierras-quebradas.armamento-armas-cuerpo-a-cuerpo", "tierras-quebradas.armamento-armas-proyectiles", "tierras-quebradas.armamento-armas-arrojadizas", "tierras-quebradas.armamento-armas-improvisadas"
     ];
     let catalogoArmas = null;
     const getCatalogo = async () => {
@@ -128,9 +102,7 @@ Movimiento: Correr, rápido.`;
         }
       } else {
         await Item.create({
-          name: a.nombre,
-          type: "arma",
-          system: { danoArma: a.dano, propiedades: a.propiedades }
+          name: a.nombre, type: "arma", system: { danoArma: a.dano, propiedades: a.propiedades }
         }, { parent: actor });
         if (a.nivel) {
           await actor.update({ [`system.habilidades.${a.nombre}`]: a.nivel });
@@ -210,10 +182,7 @@ Movimiento: Correr, rápido.`;
       let m;
       while ((m = re.exec(sec.armas)) !== null) {
         armas.push({
-          nombre: m[1].trim(),
-          nivel: parseInt(m[2]),
-          dano: m[3].trim(),
-          propiedades: m[4]?.trim() ?? ""
+          nombre: m[1].trim(), nivel: parseInt(m[2]), dano: m[3].trim(), propiedades: m[4]?.trim() ?? ""
         });
       }
     }

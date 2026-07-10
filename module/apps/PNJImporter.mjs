@@ -4,10 +4,7 @@ const { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api;
 
 export class PNJImporter extends HandlebarsApplicationMixin(ApplicationV2) {
   static DEFAULT_OPTIONS = {
-    id: "tq-pnj-importer",
-    classes: ["tierras-quebradas", "pnj-importer"],
-    position: { width: 560, height: 520 },
-    window: { title: "Importar PNJ", resizable: true }
+    id: "tq-pnj-importer", classes: ["tierras-quebradas", "pnj-importer"], position: { width: 560, height: 520 }, window: { title: "Importar PNJ", resizable: true }
   };
 
   static PARTS = {
@@ -48,55 +45,37 @@ Hechizos:`;
     const datos = PNJImporter._parsear(raw);
     if (!datos.nombre) return ui.notifications.warn("No se pudo detectar el nombre del PNJ.");
 
+    let updHabilidades = null;
+    if (Object.keys(datos.habilidades).length) {
+      updHabilidades = await PNJImporter._elegirHabilidadCorrecta(datos);
+      if (updHabilidades === null) return;
+    }
+
     const actor = await Actor.create({
-      name: datos.nombre,
-      type: "pnj",
-      img: "icons/svg/mystery-man.svg",
-      system: {
+      name: datos.nombre, type: "pnj", img: "icons/svg/mystery-man.svg", system: {
         caracteristicas: {
-          cuerpo: { valor: datos.cuerpo },
-          mente: { valor: datos.mente },
-          espiritu: { valor: datos.espiritu },
-          atractivo: { valor: datos.atractivo },
-          tamano: { valor: datos.tamano }
-        },
-        derivadas: {
-          mDano1m: { valor: datos.mDano1m },
-          mDano2m: { valor: datos.mDano2m }
-        },
-        salud: {
-          pvMax: { valor: datos.pvMax },
-          pvActual: { valor: datos.pvMax },
-          pvGrave: { valor: datos.pvGrave },
-          pvLeve: { valor: datos.pvLeve }
-        },
-        pm: datos.pm,
-        notas: datos.notas
+          cuerpo: { valor: datos.cuerpo }, mente: { valor: datos.mente }, espiritu: { valor: datos.espiritu }, atractivo: { valor: datos.atractivo }, tamano: { valor: datos.tamano }
+        }, derivadas: {
+          mDano1m: { valor: datos.mDano1m }, mDano2m: { valor: datos.mDano2m }
+        }, salud: {
+          pvMax: { valor: datos.pvMax }, pvActual: { valor: datos.pvMax }, pvGrave: { valor: datos.pvGrave }, pvLeve: { valor: datos.pvLeve }
+        }, pm: datos.pm, notas: datos.notas
       }
     });
     if (!actor) return;
 
-    if (Object.keys(datos.habilidades).length) {
-      const upd = {};
-      for (const [nombre, valor] of Object.entries(datos.habilidades)) {
-        upd[`system.habilidades.${nombre}`] = valor;
-      }
-      await actor.update(upd);
+    if (updHabilidades && Object.keys(updHabilidades).length) {
+      await actor.update(updHabilidades);
     }
 
     if (datos.proteccion > 0) {
       await Item.create({
-        name: "Protección",
-        type: "armadura",
-        system: { proteccion: datos.proteccion, tipo: "blanda" }
+        name: "Protección", type: "armadura", system: { proteccion: datos.proteccion, tipo: "blanda" }
       }, { parent: actor });
     }
 
     const packNombres = [
-      "tierras-quebradas.armamento-armas-cuerpo-a-cuerpo",
-      "tierras-quebradas.armamento-armas-proyectiles",
-      "tierras-quebradas.armamento-armas-arrojadizas",
-      "tierras-quebradas.armamento-armas-improvisadas"
+      "tierras-quebradas.armamento-armas-cuerpo-a-cuerpo", "tierras-quebradas.armamento-armas-proyectiles", "tierras-quebradas.armamento-armas-arrojadizas", "tierras-quebradas.armamento-armas-improvisadas"
     ];
     let catalogoArmas = null;
     const getCatalogo = async () => {
@@ -132,9 +111,7 @@ Hechizos:`;
         }
       } else {
         await Item.create({
-          name: a.nombre,
-          type: "arma",
-          system: { danoArma: a.dano }
+          name: a.nombre, type: "arma", system: { danoArma: a.dano }
         }, { parent: actor });
         if (a.nivel) {
           await actor.update({ [`system.habilidades.${a.nombre}`]: a.nivel });
@@ -142,17 +119,130 @@ Hechizos:`;
       }
     }
 
+    const packHechizos = game.packs.get("tierras-quebradas.hechizos");
+    const catalogoHechizos = packHechizos ? await packHechizos.getDocuments() : [];
+    const normH = s => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").trim();
+
     for (const h of datos.hechizos) {
-      await Item.create({
-        name: h.nombre,
-        type: "hechizo",
-        system: { dificultad: h.dificultad, pmCoste: h.pmCoste }
-      }, { parent: actor });
+      const doc = catalogoHechizos.find(d => normH(d.name) === normH(h.nombre));
+      if (doc) {
+        const itemData = doc.toObject();
+        itemData.system.nivelLanzamiento = h.nivel;
+        await Item.create(itemData, { parent: actor });
+      } else {
+        await Item.create({
+          name: h.nombre, type: "hechizo", system: { dificultad: h.dificultad, pmCoste: h.pmCoste, pmMax: h.pmMax, nivelLanzamiento: h.nivel }
+        }, { parent: actor });
+      }
     }
 
     ui.notifications.info(`PNJ "${datos.nombre}" importado.`);
     this.close();
     actor.sheet.render(true);
+  }
+
+  static async _elegirHabilidadCorrecta(datos) {
+    const { DialogV2 } = foundry.applications.api;
+    const cue = datos.cuerpo, men = datos.mente, esp = datos.espiritu;
+    const atr = datos.atractivo, tam = datos.tamano;
+    const bases = {
+      agilidad: cue - tam, comunicacion: esp + atr, cultura: men, hechiceria: Math.round((men + esp) / 3), percepcion: Math.floor((men + esp) / 2), vigor: cue, tecnica: Math.floor((men + cue) / 2)
+    };
+
+    const packHabs = game.packs.get("tierras-quebradas.habilidades");
+    const catalogoHabs = packHabs ? await packHabs.getDocuments() : [];
+    const norm = s => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").trim();
+    const palabras = s => norm(s).split(/\s+/).filter(w => w.length > 2);
+
+    const exactas = {};
+    const sinMatch = {};
+
+    for (const [nombre, total] of Object.entries(datos.habilidades)) {
+      const habItem = catalogoHabs.find(d => norm(d.name) === norm(nombre));
+      if (habItem) exactas[nombre] = { total, habItem };
+      else sinMatch[nombre] = total;
+    }
+
+    const conCandidatos = {};
+    for (const [nombre, total] of Object.entries(sinMatch)) {
+      const pals = new Set(palabras(nombre));
+      const candidatos = catalogoHabs
+        .map(d => ({ d, score: palabras(d.name).filter(w => pals.has(w)).length }))
+        .filter(x => x.score > 0)
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 5)
+        .map(x => x.d);
+      conCandidatos[nombre] = { total, candidatos };
+    }
+
+    const necesitaDialogo = Object.values(conCandidatos).some(v => v.candidatos.length > 0);
+
+    let resoluciones = {};
+    if (necesitaDialogo) {
+      const entradas = Object.entries(conCandidatos).filter(([, v]) => v.candidatos.length > 0);
+      const filas = entradas.map(([nombre, { total, candidatos }], i) => `
+        <tr>
+          <td style="padding:4px 8px;font-weight:bold;">${nombre} <span style="color:#888;font-weight:normal;">(${total})</span></td>
+          <td style="padding:4px 8px;">
+            <select name="h${i}" style="width:100%;">
+              <option value="">— Valor numérico —</option>
+              ${candidatos.map(c => `<option value="${c.name}">${c.name}</option>`).join("")}
+            </select>
+          </td>
+        </tr>`).join("");
+
+      const html = `
+        <p style="margin:0 0 8px;font-size:13px;color:#555;">
+          Estas habilidades no coinciden exactamente con el compendio. Elige a cuál corresponde cada una, o déjala como valor numérico.
+        </p>
+        <table style="width:100%;border-collapse:collapse;">
+          <thead><tr>
+            <th style="text-align:left;padding:4px 8px;border-bottom:1px solid #ccc;">Texto</th>
+            <th style="text-align:left;padding:4px 8px;border-bottom:1px solid #ccc;">Habilidad del compendio</th>
+          </tr></thead>
+          <tbody>${filas}</tbody>
+        </table>`;
+
+      const resultado = await DialogV2.prompt({
+        window: { title: "Resolver habilidades", resizable: true }, position: { width: 500 }, content: html, ok: { label: "Importar", callback: (_ev, button) => {
+          const form = button.form;
+          return Object.fromEntries(entradas.map(([nombre], i) => [nombre, form.elements[`h${i}`]?.value ?? ""]));
+        }}
+      }).catch(() => null);
+
+      if (resultado === null) return null;
+      resoluciones = resultado;
+    }
+
+    const upd = {};
+
+    const aplicar = (nombre, total, habItem) => {
+      const baseValor = bases[habItem.system.base] ?? 0;
+      const puntosFijos = habItem.system.puntosFijos ?? 0;
+      upd[`system.habilidades.${nombre}`] = {
+        base: habItem.system.base, nivel: Math.max(0, total - baseValor - puntosFijos), puntosFijos, estorbo: habItem.system.estorbo ?? 0
+      };
+    };
+
+    for (const [nombre, { total, habItem }] of Object.entries(exactas)) {
+      aplicar(nombre, total, habItem);
+    }
+
+    for (const [nombre, { total, candidatos }] of Object.entries(conCandidatos)) {
+      const seleccion = resoluciones[nombre] ?? "";
+      if (seleccion) {
+        const habItem = catalogoHabs.find(d => d.name === seleccion);
+        if (habItem) { aplicar(nombre, total, habItem); continue; }
+      }
+      upd[`system.habilidades.${nombre}`] = total;
+    }
+
+    for (const [nombre, total] of Object.entries(sinMatch)) {
+      if (conCandidatos[nombre]) continue;
+      upd[`system.habilidades.${nombre}`] = total;
+    }
+
+    return upd;
   }
 
   static _parsear(raw) {
@@ -229,19 +319,16 @@ Hechizos:`;
       }
     }
 
-    // Hechizos: "Nombre [nivel] (Dif. X | PM Y)"
+    // Hechizos: "Nombre [nivel] (Dif. X, PM Y)" o "(Dif. X | PM Y-Z)"
     const hechizos = [];
     if (sec.hechizos) {
-      const re = /(.+?)(?:\s+(\d+))?\s*\(Dif\.\s*(\d+)\s*[|]\s*PM\s*([\d]+)/g;
+      const re = /([A-Za-záéíóúñÁÉÍÓÚÑ][A-Za-záéíóúñÁÉÍÓÚÑ\s]*?)(?:\s+(\d+))?\s*\(Dif\.\s*(\d+)[,|]\s*PM\s*(\d+)(?:-(\d+))?/g;
       let m;
       while ((m = re.exec(sec.hechizos)) !== null) {
-        const nombreHechizo = m[1].trim().replace(/,\s*$/, "").replace(/^[^A-Za-záéíóúñÁÉÍÓÚÑ]+/, "");
+        const nombreHechizo = m[1].trim().replace(/,\s*$/, "");
         if (!nombreHechizo) continue;
         hechizos.push({
-          nombre: nombreHechizo,
-          nivel: parseInt(m[2]) || 0,
-          dificultad: parseInt(m[3]) || 15,
-          pmCoste: parseInt(m[4]) || 1
+          nombre: nombreHechizo, nivel: parseInt(m[2]) || 0, dificultad: parseInt(m[3]) || 15, pmCoste: parseInt(m[4]) || 1, pmMax: parseInt(m[5]) || 0
         });
       }
     }
