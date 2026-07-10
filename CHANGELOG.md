@@ -1,4 +1,4 @@
-# Notas 10 de juliioo 2026 
+# Notas 10 de julio 2026 
 
 **Pendientes**
 - Armaduras y armas con círculos verdes en lugar de checkboxes en el creador de personajes.
