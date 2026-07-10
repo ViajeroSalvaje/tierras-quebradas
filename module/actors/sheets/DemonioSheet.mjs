@@ -6,15 +6,22 @@ const { ActorSheetV2 } = foundry.applications.sheets;
 export class DemonioSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
   static DEFAULT_OPTIONS = {
     classes: ["tierras-quebradas", "sheet", "actor", "demonio"],
-    position: { width: 620, height: 560 },
-    window: { resizable: true },
-    form: { submitOnChange: true, closeOnSubmit: false }
+    position: {
+      width: 620,
+      height: 560,
+    },
+    window: {
+      resizable: true,
+    },
+    form: {
+      submitOnChange: true,
+      closeOnSubmit: false,
+    }
   };
 
   static PARTS = {
     form: {
-      template: "systems/tierras-quebradas/templates/actors/demonio-sheet.hbs",
-      scrollable: [".sheet-body"]
+      template: "systems/tierras-quebradas/templates/actors/demonio-sheet.hbs", scrollable: [".sheet-body"]
     }
   };
 
@@ -27,9 +34,7 @@ export class DemonioSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     const LABELS  = { cuerpo: "Cuerpo", mente: "Mente", espiritu: "Espíritu", atractivo: "Atractivo", tamano: "Tamaño" };
     const caracts = this.actor.system.caracteristicas;
     const caracteristicasOrdenadas = CARACTS.map(c => ({
-      clave: c,
-      label: LABELS[c],
-      valor: caracts[c]?.valor ?? 0
+      clave: c, label: LABELS[c], valor: caracts[c]?.valor ?? 0
     }));
     const items = this.actor.items;
     const rawHabs = this.actor.system.habilidades ?? {};
@@ -38,16 +43,7 @@ export class DemonioSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       return { nombre, total: hab.total ?? 0, nivel: hab.nivel ?? 0, base: hab.base ?? "" };
     });
     return {
-      actor: this.actor,
-      system: this.actor.system,
-      cssClass: this.options.classes.join(" "),
-      caracteristicasOrdenadas,
-      habilidades,
-      armas: items.filter(i => i.type === "arma").map(i => ({ id: i.id, name: i.name, dano: i.system.danoArma, habilidad: i.system.habilidad, alcance: i.system.alcance, carga: i.system.carga })),
-      armaduras: items.filter(i => i.type === "armadura").map(i => ({ id: i.id, name: i.name, proteccion: i.system.proteccion, zona: i.system.zona, tipo: i.system.tipo, carga: i.system.carga })),
-      rasgos: items.filter(i => i.type === "rasgo").map(i => ({ id: i.id, name: i.name })),
-      ventajas: items.filter(i => i.type === "ventaja").map(i => ({ id: i.id, name: i.name })),
-      hechizos: items.filter(i => i.type === "hechizo")
+      actor: this.actor, system: this.actor.system, cssClass: this.options.classes.join(" "), caracteristicasOrdenadas, habilidades, armas: items.filter(i => i.type === "arma").map(i => ({ id: i.id, name: i.name, dano: i.system.danoArma, habilidad: i.system.habilidad, alcance: i.system.alcance, carga: i.system.carga })), armaduras: items.filter(i => i.type === "armadura").map(i => ({ id: i.id, name: i.name, proteccion: i.system.proteccion, zona: i.system.zona, tipo: i.system.tipo, carga: i.system.carga })), rasgos: items.filter(i => i.type === "rasgo").map(i => ({ id: i.id, name: i.name })), ventajas: items.filter(i => i.type === "ventaja").map(i => ({ id: i.id, name: i.name })), hechizos: items.filter(i => i.type === "hechizo")
     };
   }
 
@@ -70,10 +66,7 @@ export class DemonioSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     if (item.type === "habilidad") {
       if (this.actor.system.habilidades?.[item.name] !== undefined) return;
       await this.actor.update({ [`system.habilidades.${item.name}`]: {
-        base: item.system.base,
-        nivel: 0,
-        puntosFijos: item.system.puntosFijos ?? 0,
-        estorbo: item.system.estorbo ?? 0
+        base: item.system.base, nivel: 0, puntosFijos: item.system.puntosFijos ?? 0, estorbo: item.system.estorbo ?? 0
       }});
       return;
     }
@@ -94,9 +87,7 @@ export class DemonioSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 
     el.querySelector(".profile-img[data-edit]")?.addEventListener("click", () => {
       new foundry.applications.apps.FilePicker.implementation({
-        type: "image",
-        current: this.actor.img,
-        callback: path => this.actor.update({ img: path })
+        type: "image", current: this.actor.img, callback: path => this.actor.update({ img: path })
       }).browse();
     });
 
@@ -135,9 +126,7 @@ export class DemonioSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 
     el.querySelector(".anadir-habilidad")?.addEventListener("click", async () => {
       const nombre = await DialogV2.prompt({
-        window: { title: "Añadir habilidad" },
-        content: `<input type="text" name="nombre" placeholder="Nombre de la habilidad" autofocus />`,
-        ok: { label: "Añadir", callback: (_ev, button) => button.form.elements.nombre.value.trim() }
+        window: { title: "Añadir habilidad" }, content: `<input type="text" name="nombre" placeholder="Nombre de la habilidad" autofocus />`, ok: { label: "Añadir", callback: (_ev, button) => button.form.elements.nombre.value.trim() }
       }).catch(() => null);
       if (nombre) {
         await this.actor.update({ [`system.habilidades.${nombre}`]: { base: "cultura", nivel: 0, puntosFijos: 0, estorbo: 0 } });

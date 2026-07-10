@@ -6,9 +6,17 @@ const { ActorSheetV2 } = foundry.applications.sheets;
 export class PNJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
   static DEFAULT_OPTIONS = {
     classes: ["tierras-quebradas", "sheet", "actor", "pnj"],
-    position: { width: 600, height: 540 },
-    window: { resizable: true },
-    form: { submitOnChange: true, closeOnSubmit: false }
+    position: {
+      width: 600,
+      height: 540,
+    },
+    window: {
+      resizable: true,
+    },
+    form: {
+      submitOnChange: true,
+      closeOnSubmit: false,
+    }
   };
 
   static PARTS = {
@@ -27,18 +35,7 @@ export class PNJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       return { nombre, total: hab.total ?? 0, nivel: hab.nivel ?? 0, base: hab.base ?? "" };
     });
     return {
-      actor: this.actor,
-      system: this.actor.system,
-      cssClass: this.options.classes.join(" "),
-      config: CONFIG.TQ,
-      habilidades,
-      armas: items.filter(i => i.type === "arma").map(i => ({ id: i.id, name: i.name, dano: i.system.danoArma, habilidad: i.system.habilidad, alcance: i.system.alcance, carga: i.system.carga })),
-      armaduras: items.filter(i => i.type === "armadura").map(i => ({ id: i.id, name: i.name, proteccion: i.system.proteccion, tipo: i.system.tipo, zona: i.system.zona, carga: i.system.carga })),
-      hechizos: items.filter(i => i.type === "hechizo"),
-      rasgos: items.filter(i => i.type === "rasgo").map(i => ({ id: i.id, name: i.name })),
-      ventajas: items.filter(i => i.type === "ventaja").map(i => ({ id: i.id, name: i.name })),
-      objetos: items.filter(i => i.type === "objeto").map(i => ({ id: i.id, name: i.name, categoria: i.system.categoria, carga: i.system.carga })),
-      consumibles: items.filter(i => i.type === "consumible").map(i => ({ id: i.id, name: i.name, dosis: i.system.dosis, efecto: i.system.efecto, carga: i.system.carga }))
+      actor: this.actor, system: this.actor.system, cssClass: this.options.classes.join(" "), config: CONFIG.TQ, habilidades, armas: items.filter(i => i.type === "arma").map(i => ({ id: i.id, name: i.name, dano: i.system.danoArma, habilidad: i.system.habilidad, alcance: i.system.alcance, carga: i.system.carga })), armaduras: items.filter(i => i.type === "armadura").map(i => ({ id: i.id, name: i.name, proteccion: i.system.proteccion, tipo: i.system.tipo, zona: i.system.zona, carga: i.system.carga })), hechizos: items.filter(i => i.type === "hechizo"), rasgos: items.filter(i => i.type === "rasgo").map(i => ({ id: i.id, name: i.name })), ventajas: items.filter(i => i.type === "ventaja").map(i => ({ id: i.id, name: i.name })), objetos: items.filter(i => i.type === "objeto").map(i => ({ id: i.id, name: i.name, categoria: i.system.categoria, carga: i.system.carga })), consumibles: items.filter(i => i.type === "consumible").map(i => ({ id: i.id, name: i.name, dosis: i.system.dosis, efecto: i.system.efecto, carga: i.system.carga }))
     };
   }
 
@@ -52,10 +49,7 @@ export class PNJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     if (item.type === "habilidad") {
       if (this.actor.system.habilidades?.[item.name] !== undefined) return;
       await this.actor.update({ [`system.habilidades.${item.name}`]: {
-        base: item.system.base,
-        nivel: 0,
-        puntosFijos: item.system.puntosFijos ?? 0,
-        estorbo: item.system.estorbo ?? 0
+        base: item.system.base, nivel: 0, puntosFijos: item.system.puntosFijos ?? 0, estorbo: item.system.estorbo ?? 0
       }});
       return;
     }
@@ -80,9 +74,7 @@ export class PNJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 
     el.querySelector(".profile-img[data-edit]")?.addEventListener("click", () => {
       new foundry.applications.apps.FilePicker.implementation({
-        type: "image",
-        current: this.actor.img,
-        callback: path => this.actor.update({ img: path })
+        type: "image", current: this.actor.img, callback: path => this.actor.update({ img: path })
       }).browse();
     });
 
@@ -122,9 +114,7 @@ export class PNJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 
     el.querySelector(".anadir-habilidad")?.addEventListener("click", async () => {
       const nombre = await DialogV2.prompt({
-        window: { title: "Añadir habilidad" },
-        content: `<input type="text" name="nombre" placeholder="Nombre de la habilidad" autofocus />`,
-        ok: { label: "Añadir", callback: (_ev, button) => button.form.elements.nombre.value.trim() }
+        window: { title: "Añadir habilidad" }, content: `<input type="text" name="nombre" placeholder="Nombre de la habilidad" autofocus />`, ok: { label: "Añadir", callback: (_ev, button) => button.form.elements.nombre.value.trim() }
       }).catch(() => null);
       if (nombre) {
         await this.actor.update({ [`system.habilidades.${nombre}`]: { base: "cultura", nivel: 0, puntosFijos: 0, estorbo: 0 } });

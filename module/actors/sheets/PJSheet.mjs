@@ -4,15 +4,22 @@ const { ActorSheetV2 } = foundry.applications.sheets;
 export class PJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
   static DEFAULT_OPTIONS = {
     classes: ["tierras-quebradas", "sheet", "actor", "pj"],
-    position: { width: 860, height: 950 },
-    window: { resizable: true },
-    form: { submitOnChange: true, closeOnSubmit: false }
+    position: {
+      width: 860,
+      height: 950,
+    },
+    window: {
+      resizable: true,
+    },
+    form: {
+      submitOnChange: true,
+      closeOnSubmit: false,
+    }
   };
 
   static PARTS = {
     form: {
-      template: "systems/tierras-quebradas/templates/actors/pj-sheet.hbs",
-      scrollable: [".sheet-body"]
+      template: "systems/tierras-quebradas/templates/actors/pj-sheet.hbs", scrollable: [".sheet-body"]
     }
   };
 
@@ -28,24 +35,13 @@ export class PJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 
     // Columnas de habilidades según orden de la hoja oficial
     const COL1 = [
-      "academia", "actuacion",
-      "armasAsta", "escudo", "armasEspada", "armasMangos", "armasPunhal",
-      "arco", "ballesta", "canonDeMano", "honda",
-      "artesania", "atletismo", "buscar", "callejeo",
-      "conocimientoMagico", "disfrazarse", "documentacion", "encanto", "esquivar"
+      "academia", "actuacion", "armasAsta", "escudo", "armasEspada", "armasMangos", "armasPunhal", "arco", "ballesta", "canonDeMano", "honda", "artesania", "atletismo", "buscar", "callejeo", "conocimientoMagico", "disfrazarse", "documentacion", "encanto", "esquivar"
     ];
     const COL2 = [
-      "estrategia", "forzarCerraduras", "hurtar",
-      "idioma1", "idioma2", "idioma3",
-      "imponerse", "instruir", "juego", "lanzar", "leyendas",
-      "manejarBotes", "manejarCarros", "manipulacion",
-      "medicina", "memorizar", "montar", "multiverso"
+      "estrategia", "forzarCerraduras", "hurtar", "idioma1", "idioma2", "idioma3", "imponerse", "instruir", "juego", "lanzar", "leyendas", "manejarBotes", "manejarCarros", "manipulacion", "medicina", "memorizar", "montar", "multiverso"
     ];
     const COL3 = [
-      "nadar", "naturaleza", "navegacion", "ocultar", "oratoria", "pelea",
-      "percatarse", "perspicacia", "pociones", "primerosAuxilios",
-      "rastrear", "seguir", "sigilo", "sueños",
-      "tierrasQuebradas", "tratarAnimales", "trepar"
+      "nadar", "naturaleza", "navegacion", "ocultar", "oratoria", "pelea", "percatarse", "perspicacia", "pociones", "primerosAuxilios", "rastrear", "seguir", "sigilo", "sueños", "tierrasQuebradas", "tratarAnimales", "trepar"
     ];
 
     const IDIOMAS = new Set(["idioma1", "idioma2", "idioma3"]);
@@ -55,13 +51,7 @@ export class PJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 
     // Fórmulas de bases para mostrar en tabla
     const basesFormulas = {
-      agilidad: "CUE − TAM",
-      comunicacion: "ESP + ATR",
-      cultura: "MEN",
-      hechiceria: "(MEN+ESP)/3",
-      percepcion: "(MEN+ESP)/2",
-      tecnica: "(MEN+CUE)/2",
-      vigor: "CUE"
+      agilidad: "CUE − TAM", comunicacion: "ESP + ATR", cultura: "MEN", hechiceria: "(MEN+ESP)/3", percepcion: "(MEN+ESP)/2", tecnica: "(MEN+CUE)/2", vigor: "CUE"
     };
 
     const armasEnriquecidas = this.actor.items
@@ -113,86 +103,49 @@ export class PJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       : null;
 
     return {
-      actor: this.actor,
-      system: this.actor.system,
-      cssClass: this.options.classes.join(" "),
-      activeTab: this._activeTab,
-      imagenLealtad,
-      items: {
-        armas: armasEnriquecidas,
-        armaduras: this.actor.items.filter(i => i.type === "armadura"),
-        hechizos: this.actor.items.filter(i => i.type === "hechizo"),
-        ventajas: this.actor.items.filter(i => i.type === "ventaja"),
-        rasgos: this.actor.items.filter(i => i.type === "rasgo"),
-        pactos: this.actor.items.filter(i => i.type === "pacto"),
-        bendiciones: this.actor.items.filter(i => i.type === "bendicion"),
-        especie: this.actor.items.find(i => i.type === "especie") ?? null,
-        entorno: this.actor.items.find(i => i.type === "entorno") ?? null,
-        origen: this.actor.items.find(i => i.type === "origen") ?? null,
-        profesion: this.actor.items.find(i => i.type === "profesion") ?? null,
-        objetos: this.actor.items.filter(i => i.type === "objeto"),
-        consumibles: this.actor.items.filter(i => i.type === "consumible")
-      },
-      lealtad: { alineado },
-      pasionAmorActiva: this.actor.system.pasionFlag === "amor",
-      pasionOdioActiva: this.actor.system.pasionFlag === "odio",
-      config: CONFIG.TQ,
-      col1: makeCol(COL1),
-      col2: makeCol(COL2),
-      col3: makeCol(COL3),
-      basesFormulas
+      actor: this.actor, system: this.actor.system, cssClass: this.options.classes.join(" "), activeTab: this._activeTab, imagenLealtad, items: {
+        armas: armasEnriquecidas, armaduras: this.actor.items.filter(i => i.type === "armadura"), hechizos: this.actor.items.filter(i => i.type === "hechizo"), ventajas: this.actor.items.filter(i => i.type === "ventaja"), rasgos: this.actor.items.filter(i => i.type === "rasgo"), pactos: this.actor.items.filter(i => i.type === "pacto"), bendiciones: this.actor.items.filter(i => i.type === "bendicion"), especie: this.actor.items.find(i => i.type === "especie") ?? null, entorno: this.actor.items.find(i => i.type === "entorno") ?? null, origen: this.actor.items.find(i => i.type === "origen") ?? null, profesion: this.actor.items.find(i => i.type === "profesion") ?? null, objetos: this.actor.items.filter(i => i.type === "objeto"), consumibles: this.actor.items.filter(i => i.type === "consumible")
+      }, lealtad: { alineado }, pasionAmorActiva: this.actor.system.pasionFlag === "amor", pasionOdioActiva: this.actor.system.pasionFlag === "odio", config: CONFIG.TQ, col1: makeCol(COL1), col2: makeCol(COL2), col3: makeCol(COL3), basesFormulas
     };
   }
 
-  async _onDrop(event) {
-    let data;
-    try { data = JSON.parse(event.dataTransfer.getData("text/plain")); } catch { data = null; }
-    if (data?.type === "Item") {
-      const item = await fromUuid(data.uuid);
-      if (item?.type === "habilidad") {
-        const clave = item.system.clave;
-        if (!clave || this.actor.system.habilidades?.[clave] !== undefined) return;
-        await this.actor.update({
-          [`system.habilidades.${clave}`]: {
-            base: item.system.base,
-            nivel: 0,
-            puntosFijos: item.system.puntosFijos,
-            estorbo: item.system.estorbo,
-            marcado: false,
-            px: 0
-          }
-        });
-        return;
-      }
+  async _onDropItem(event, data) {
+    const item = await fromUuid(data.uuid);
 
-      const cargaItem = item?.system?.carga ?? 0;
-      const esNuevo = !item?.parent || item.parent.id !== this.actor.id;
-      if (esNuevo && cargaItem >= 0.3) {
-        const cargaActual = this.actor.system.carga?.valor ?? 0;
-        const fuerza = this.actor.system.derivadas?.fuerza?.valor ?? 0;
-        const limite = fuerza * 4;
-        if (cargaActual + cargaItem > limite) {
-          if (!game.user.isGM) {
-            await ChatMessage.create({
-              speaker: ChatMessage.getSpeaker({ actor: this.actor }),
-              content: `<div class="tq-result-card complicacion"><div style="font-weight:bold;font-size:calc(1em + 2px);text-align:center;">Sobrepasa límite de carga</div><hr style="width:70%;margin:4px auto;border:none;border-top:1px solid rgba(0,0,0,0.25);"/><p>Límite de carga es 4 x FUERZA = <strong>${limite}</strong></p></div>`
-            });
-            return;
-          }
-          const confirmar = await DialogV2.wait({
-            window: { title: "Límite de Carga Superado" },
-            content: `<p>${this.actor.name} superaría el límite absoluto de 4×FUE (${limite} puntos). ¿Añadir igualmente?</p>`,
-            rejectClose: false,
-            buttons: [
-              { action: "si", label: "Sí, añadir", default: true },
-              { action: "no", label: "Cancelar" }
-            ]
-          });
-          if (confirmar !== "si") return;
+    if (item?.type === "habilidad") {
+      const clave = item.system.clave;
+      if (!clave || this.actor.system.habilidades?.[clave] !== undefined) return;
+      await this.actor.update({
+        [`system.habilidades.${clave}`]: {
+          base: item.system.base, nivel: 0, puntosFijos: item.system.puntosFijos, estorbo: item.system.estorbo, marcado: false, px: 0
         }
+      });
+      return;
+    }
+
+    const cargaItem = item?.system?.carga ?? 0;
+    const esNuevo = !item?.parent || item.parent.id !== this.actor.id;
+    if (esNuevo && cargaItem >= 0.3) {
+      const cargaActual = this.actor.system.carga?.valor ?? 0;
+      const fuerza = this.actor.system.derivadas?.fuerza?.valor ?? 0;
+      const limite = fuerza * 4;
+      if (cargaActual + cargaItem > limite) {
+        if (!game.user.isGM) {
+          await ChatMessage.create({
+            speaker: ChatMessage.getSpeaker({ actor: this.actor }), content: `<div class="tq-result-card complicacion"><div class="tq-card-titulo">Sobrepasa límite de carga</div><hr/><p>Límite de carga es 4 x FUERZA = <strong>${limite}</strong></p></div>`
+          });
+          return;
+        }
+        const confirmar = await DialogV2.wait({
+          window: { title: "Límite de Carga Superado" }, content: `<p>${this.actor.name} superaría el límite absoluto de 4×FUE (${limite} puntos). ¿Añadir igualmente?</p>`, rejectClose: false, buttons: [
+            { action: "si", label: "Sí, añadir", default: true }, { action: "no", label: "Cancelar" }
+          ]
+        });
+        if (confirmar !== "si") return;
       }
     }
-    return super._onDrop(event);
+
+    return super._onDropItem(event, data);
   }
 
   _onRender(context, options) {
@@ -203,9 +156,7 @@ export class PJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     // Imagen de perfil
     el.querySelector(".profile-img[data-edit]")?.addEventListener("click", () => {
       new foundry.applications.apps.FilePicker.implementation({
-        type: "image",
-        current: this.actor.img,
-        callback: path => this.actor.update({ img: path })
+        type: "image", current: this.actor.img, callback: path => this.actor.update({ img: path })
       }).browse();
     });
 
@@ -308,26 +259,19 @@ export class PJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     el.querySelector(".fin-aventura-px")?.addEventListener("click", () => this.actor.asignarPXHito());
 
     // PX editable al hacer clic sobre el texto "(n)"
-    el.querySelectorAll(".skill-px-display").forEach(span => {
+    el.querySelectorAll(".tq-habilidad-px").forEach(span => {
       span.addEventListener("click", async ev => {
         ev.preventDefault();
         const clave = ev.currentTarget.dataset.habilidad;
         const actual = this.actor.system.habilidades?.[clave]?.px ?? 0;
         const nuevo = await DialogV2.wait({
-          window: { title: "PX acumulados", width: 175 },
-          content: `<div style="display:flex;align-items:center;gap:8px;padding:4px;">
+          window: { title: "PX acumulados", width: 175 }, content: `<div style="display:flex;align-items:center;gap:8px;padding:4px;">
             <label>PX a añadir: </label>
             <input type="number" id="tq-px-val" value="0" style="width:60px;" />
-          </div>`,
-          rejectClose: false,
-          buttons: [
+          </div>`, rejectClose: false, buttons: [
             {
-              action: "ok",
-              label: "Guardar",
-              default: true,
-              callback: (_ev, btn) => parseInt(btn.form.elements["tq-px-val"]?.value) || 0
-            },
-            { action: "cancelar", label: "Cancelar", callback: () => 0 }
+              action: "ok", label: "Guardar", default: true, callback: (_ev, btn) => parseInt(btn.form.elements["tq-px-val"]?.value) || 0
+            }, { action: "cancelar", label: "Cancelar", callback: () => 0 }
           ]
         });
         if (nuevo == null || nuevo === 0) return;
