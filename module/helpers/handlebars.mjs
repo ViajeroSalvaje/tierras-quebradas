@@ -20,13 +20,7 @@ export function registerHandlebarsHelpers() {
 
   Handlebars.registerHelper("tq-base-abrev", function (base) {
     const map = {
-      agilidad:    "AGI",
-      comunicacion: "COM",
-      cultura:     "CUL",
-      hechiceria:  "HEC",
-      percepcion:  "PER",
-      tecnica:     "TEC",
-      vigor:       "VIG"
+      agilidad: "AGI", comunicacion: "COM", cultura: "CUL", hechiceria: "HEC", percepcion: "PER", tecnica: "TEC", vigor: "VIG"
     };
     return map[base] ?? (base ?? "").substring(0, 3).toUpperCase();
   });
