@@ -1,34 +1,27 @@
-/* ================================================================
-   Tierras Quebradas — Estilo pergamino/teal (hoja oficial)
-   Paleta: fondo crema #e4d5b3 | teal oscuro #1c6473 | texto #111111
-   ================================================================ */
+
 
 @import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&display=swap');
 
 :root {
-  --tq-parchment:    #e4d5b3;
+  --tq-parchment: #e4d5b3;
   --tq-parchment-lt: #eedfc0;
-  --tq-input:        #faf2e2;
-  --tq-teal:         #1c6473;
-  --tq-teal-dark:    #154e5a;
-  --tq-teal-light:   #2a8090;
-  --tq-text:         #111111;
-  --tq-text-dim:     #44677a;
-  --tq-white:        #ffffff;
-  --tq-red-dmg:      #a01010;
-  --tq-green:        #1a6a2a;
-  --tq-font:         'Josefin Sans', 'Segoe UI', sans-serif;
-  --tq-font-ui:      'Josefin Sans', 'Segoe UI', sans-serif;
+  --tq-input: #faf2e2;
+  --tq-teal: #1c6473;
+  --tq-teal-dark: #154e5a;
+  --tq-teal-light: #2a8090;
+  --tq-text: #111111;
+  --tq-text-dim: #44677a;
+  --tq-white: #ffffff;
+  --tq-red-dmg: #a01010;
+  --tq-green: #1a6a2a;
+  --tq-font: 'Josefin Sans', 'Segoe UI', sans-serif;
+  --tq-font-ui: 'Josefin Sans', 'Segoe UI', sans-serif;
 }
 
-/* ─── Handle de redimensión ────────────────────────────────────── */
 .application.tierras-quebradas .window-resize-handle {
   z-index: 100;
 }
 
-/* ─── Reset global ─────────────────────────────────────────────── */
-
-/* Aplicación exterior (div.application.tierras-quebradas) */
 .application.tierras-quebradas,
 .tierras-quebradas.sheet {
   background: var(--tq-parchment);
@@ -39,14 +32,12 @@
   box-shadow: 0 4px 16px rgba(0,0,0,0.35) !important;
 }
 
-/* PNJ, Criatura y Demonio: +2px respecto al PJ */
 .tierras-quebradas.sheet.pnj,
 .tierras-quebradas.sheet.criatura,
 .tierras-quebradas.sheet.demonio {
   font-size: 14px;
 }
 
-/* Capa intermedia window-content — aquí estaba el "inner box" */
 .application.tierras-quebradas .window-content,
 .tierras-quebradas.sheet .window-content {
   background: var(--tq-parchment) !important;
@@ -55,7 +46,6 @@
   box-shadow: none !important;
 }
 
-/* El formulario en sí */
 .tierras-quebradas.sheet form,
 .application.tierras-quebradas form {
   border: none !important;
@@ -74,7 +64,6 @@
   font-size: 13px;
 }
 
-/* ─── Inputs globales ──────────────────────────────────────────── */
 .tierras-quebradas input,
 .tierras-quebradas select,
 .tierras-quebradas textarea {
@@ -94,7 +83,6 @@
   outline: none;
 }
 
-/* ─── Cabecera de la hoja ──────────────────────────────────────── */
 .tierras-quebradas .sheet-header {
   background: var(--tq-parchment-lt);
   border-bottom: 2px solid var(--tq-teal);
@@ -146,7 +134,7 @@
   align-items: flex-end;
 }
 
-.tierras-quebradas .header-info .field-group {
+.tierras-quebradas .header-info .tq-field-group {
   display: flex;
   flex-direction: column;
   gap: 2px;
@@ -168,7 +156,6 @@
   width: 160px;
 }
 
-/* ─── Pestañas ─────────────────────────────────────────────────── */
 .tierras-quebradas .sheet-tabs {
   background: var(--tq-teal-dark);
   border-bottom: 2px solid var(--tq-teal);
@@ -202,7 +189,6 @@
   margin-bottom: -2px;
 }
 
-/* ─── Cuerpo de pestañas ───────────────────────────────────────── */
 .tierras-quebradas .sheet-body {
   flex: 1;
   min-height: 0;
@@ -214,14 +200,13 @@
 .tierras-quebradas .tab { display: none; }
 .tierras-quebradas .tab.active { display: block; }
 
-/* ─── Secciones: header teal + box con borde ───────────────────── */
 .equipo-content {
   display: flex;
   flex-direction: column;
   gap: 1px;
 }
 
-.equipo-row {
+.tq-equipo-fila {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -253,7 +238,7 @@
   text-align: right;
 }
 
-.consumible-row .equipo-nombre {
+.tq-consumible-fila .equipo-nombre {
   color: var(--tq-teal-dark);
 }
 
@@ -264,7 +249,7 @@
   padding: 4px 2px;
 }
 
-.tq-dinero-row {
+.tq-dinero-fila {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -349,8 +334,7 @@
   overflow: hidden;
 }
 
-/* ─── Layout principal hoja1 ───────────────────────────────────── */
-.tq-top-row {
+.tq-top-fila {
   display: flex;
   gap: 8px;
   margin-bottom: 6px;
@@ -378,7 +362,6 @@
   flex: 0 0 auto;
 }
 
-/* ─── Características: círculos grandes ────────────────────────── */
 .caract-grid {
   display: flex;
   flex-direction: row;
@@ -438,8 +421,7 @@
   margin: 0;
 }
 
-/* Características secundarias (ATR, TAM) — círculos medianos */
-.caract-sec-row {
+.tq-caract-sec-fila {
   display: flex;
   justify-content: center;
   gap: 12px;
@@ -461,7 +443,7 @@
   cursor: pointer;
 }
 
-.caract-sec-circle {
+.tq-caract-sec-circulo {
   width: 36px;
   height: 36px;
   border-radius: 50%;
@@ -472,7 +454,7 @@
   justify-content: center;
 }
 
-.caract-sec-circle input[type="number"] {
+.tq-caract-sec-circulo input[type="number"] {
   width: 28px;
   border: none;
   background: transparent;
@@ -484,14 +466,13 @@
   -moz-appearance: textfield;
 }
 
-.caract-sec-circle input[type="number"]::-webkit-outer-spin-button,
-.caract-sec-circle input[type="number"]::-webkit-inner-spin-button {
+.tq-caract-sec-circulo input[type="number"]::-webkit-outer-spin-button,
+.tq-caract-sec-circulo input[type="number"]::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
 
-/* ─── Derivadas (Fuerza, MD) ───────────────────────────────────── */
-.derivadas-row {
+.tq-derivadas-fila {
   display: flex;
   justify-content: center;
   gap: 10px;
@@ -519,7 +500,6 @@
   text-align: center;
 }
 
-/* ─── Bases de habilidades (tabla) ────────────────────────────── */
 .bases-table {
   width: 100%;
   border-collapse: collapse;
@@ -559,7 +539,6 @@
   font-style: italic;
 }
 
-/* ─── Destino box ──────────────────────────────────────────────── */
 .destino-box {
   display: flex;
   align-items: center;
@@ -587,7 +566,7 @@
   margin-top: -8px;
 }
 
-.destino-box .caract-sec-circle input[type="number"] {
+.destino-box .tq-caract-sec-circulo input[type="number"] {
   width: 28px;
   border: none;
   background: transparent;
@@ -599,13 +578,12 @@
   -moz-appearance: textfield;
 }
 
-.destino-box .caract-sec-circle input[type="number"]::-webkit-outer-spin-button,
-.destino-box .caract-sec-circle input[type="number"]::-webkit-inner-spin-button {
+.destino-box .tq-caract-sec-circulo input[type="number"]::-webkit-outer-spin-button,
+.destino-box .tq-caract-sec-circulo input[type="number"]::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
 
-/* ─── Puntos de Vida ───────────────────────────────────────────── */
 .pv-section-content {
   padding: 4px 6px;
   background: var(--tq-parchment-lt);
@@ -622,7 +600,7 @@
   margin-bottom: 0;
 }
 
-.pv-main-row {
+.tq-pv-main-fila {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -692,7 +670,7 @@
   gap: 6px;
 }
 
-.heridas-leves-check .skill-circle {
+.heridas-leves-check .tq-circulo {
   width: 13px;
   height: 13px;
 }
@@ -705,7 +683,7 @@
   letter-spacing: 0.05em;
 }
 
-.estados-row {
+.tq-estados-fila {
   display: flex;
   justify-content: space-evenly;
   align-items: center;
@@ -727,7 +705,7 @@
   user-select: none;
 }
 
-.estados-row .skill-circle {
+.tq-estados-fila .tq-circulo {
   width: 17px;
   height: 17px;
 }
@@ -746,18 +724,14 @@
   border-color: #c0392b;
 }
 
-/* ─── Armas (tabla en hoja1) ───────────────────────────────────── */
 .armas-table {
   width: 100%;
-  table-layout: fixed;
+  table-layout: auto;
   border-collapse: collapse;
   font-size: 16px;
 }
 
-/* [tirar] | Nombre | Hab(total) | Daño | MD | Alcance | Carga | controles */
 .armas-table th:nth-child(1), .armas-table td:nth-child(1) { width: 4%;  text-align: center; }
-.armas-table th:nth-child(2), .armas-table td:nth-child(2) { width: 22%; }
-.armas-table th:nth-child(3), .armas-table td:nth-child(3) { width: 22%; }
 .armas-table th:nth-child(4), .armas-table td:nth-child(4) { width: 8%;  text-align: center; }
 .armas-table th:nth-child(5), .armas-table td:nth-child(5) { width: 7%;  text-align: center; }
 .armas-table th:nth-child(6), .armas-table td:nth-child(6) { width: 13%; }
@@ -788,12 +762,8 @@
   padding: 2px 4px;
   color: var(--tq-text);
   vertical-align: middle;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
-/* ─── Armaduras (tabla en hoja1) ───────────────────────────────── */
 .armaduras-table {
   width: 100%;
   table-layout: fixed;
@@ -801,7 +771,6 @@
   font-size: 16px;
 }
 
-/* Nombre | Prot. | Zona | Tipo | Carga | controles */
 .armaduras-table th:nth-child(1), .armaduras-table td:nth-child(1) { width: 30%; }
 .armaduras-table th:nth-child(2), .armaduras-table td:nth-child(2) { width: 12%; text-align: center; }
 .armaduras-table th:nth-child(3), .armaduras-table td:nth-child(3) { width: 18%; }
@@ -838,8 +807,7 @@
   white-space: nowrap;
 }
 
-/* ─── Protección, MD, Fortuna (pequeños boxes en hoja1) ────────── */
-.tq-bottom-row {
+.tq-bottom-fila {
   display: flex;
   gap: 6px;
   flex-wrap: wrap;
@@ -861,8 +829,7 @@
   font-size: 10px;
 }
 
-/* Fortuna */
-.fortuna-row {
+.tq-fortuna-fila {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -885,7 +852,7 @@
   color: var(--tq-teal);
 }
 
-.fortuna-row button {
+.tq-fortuna-fila button {
   padding: 0 5px;
   height: 20px;
   font-size: 14px;
@@ -899,12 +866,11 @@
   transition: background 0.15s;
 }
 
-.fortuna-row button:hover {
+.tq-fortuna-fila button:hover {
   background: var(--tq-teal);
   color: var(--tq-white);
 }
 
-/* MD boxes */
 .md-field {
   display: flex;
   align-items: center;
@@ -920,7 +886,6 @@
   font-size: 18px;
 }
 
-/* Protección */
 .prot-row {
   display: flex;
   align-items: center;
@@ -945,8 +910,7 @@
   white-space: nowrap;
 }
 
-/* Estorbo y carga */
-.estorbo-row {
+.tq-estorbo-fila {
   display: flex;
   gap: 8px;
   align-items: center;
@@ -976,20 +940,19 @@
   text-align: center;
 }
 
-/* ─── Habilidades: 3 columnas ──────────────────────────────────── */
-.skills-grid {
+.tq-habilidades-grid {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   gap: 0 8px;
   padding: 4px;
 }
 
-.skills-col {
+.tq-habilidades-col {
   display: flex;
   flex-direction: column;
 }
 
-.skill-row {
+.tq-habilidad-fila {
   display: flex;
   align-items: center;
   gap: 3px;
@@ -999,11 +962,11 @@
   min-height: 18px;
 }
 
-.skill-row:last-child {
+.tq-habilidad-fila:last-child {
   border-bottom: none;
 }
 
-.skill-circle {
+.tq-circulo {
   width: 11px;
   height: 11px;
   border-radius: 50%;
@@ -1015,29 +978,29 @@
   display: inline-block;
 }
 
-.skill-circle:hover {
+.tq-circulo:hover {
   background: var(--tq-teal-light);
 }
 
-.skill-circle.marcado {
+.tq-circulo.marcado {
   background: var(--tq-teal);
   border-color: var(--tq-teal-dark);
 }
 
-.skill-circle.marcado:hover {
+.tq-circulo.marcado:hover {
   background: var(--tq-teal-dark);
 }
 
 .tq-apuntar-check { display: none; }
-.tq-apuntar-check:checked + .tq-apuntar-circle {
+.tq-apuntar-check:checked + .tq-apuntar-circulo {
   background: var(--tq-teal);
   border-color: var(--tq-teal-dark);
 }
-.tq-apuntar-check:checked + .tq-apuntar-circle:hover {
+.tq-apuntar-check:checked + .tq-apuntar-circulo:hover {
   background: var(--tq-teal-dark);
 }
 
-.skill-name {
+.tq-habilidad-nombre {
   flex: 0 1 auto;
   font-size: 13px;
   color: var(--tq-text);
@@ -1048,7 +1011,7 @@
   text-decoration: none;
 }
 
-.skill-name:hover {
+.tq-habilidad-nombre:hover {
   color: var(--tq-teal-dark);
   text-decoration: underline;
   text-shadow: none !important;
@@ -1056,7 +1019,7 @@
   box-shadow: none !important;
 }
 
-.skill-px-display {
+.tq-habilidad-px {
   flex-shrink: 0;
   font-size: 11px;
   color: var(--tq-text-dim);
@@ -1064,11 +1027,11 @@
   cursor: pointer;
 }
 
-.skill-px-display:hover {
+.tq-habilidad-px:hover {
   color: var(--tq-teal);
 }
 
-.skill-base-tag {
+.tq-habilidad-base-tag {
   margin-left: auto;
   font-size: 11px;
   color: var(--tq-teal);
@@ -1088,7 +1051,7 @@
   font-size: 12px;
 }
 
-.skill-total {
+.tq-habilidad-total {
   font-size: 13px;
   font-weight: bold;
   color: var(--tq-teal-dark);
@@ -1097,7 +1060,7 @@
   flex-shrink: 0;
 }
 
-.skill-nivel input {
+.tq-habilidad-nivel input {
   width: 22px;
   height: 16px;
   text-align: center;
@@ -1108,13 +1071,12 @@
   -moz-appearance: textfield;
 }
 
-.skill-nivel input::-webkit-outer-spin-button,
-.skill-nivel input::-webkit-inner-spin-button {
+.tq-habilidad-nivel input::-webkit-outer-spin-button,
+.tq-habilidad-nivel input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
 
-/* ─── HOJA 2 ───────────────────────────────────────────────────── */
 .hoja2-layout {
   display: flex;
   gap: 8px;
@@ -1134,7 +1096,6 @@
   gap: 6px;
 }
 
-/* Lealtad divina */
 .lealtad-divina-facciones {
   display: flex;
   justify-content: space-around;
@@ -1196,8 +1157,7 @@
   resize: vertical;
 }
 
-/* Lealtad */
-.lealtad-row {
+.tq-lealtad-fila {
   display: flex;
   gap: 10px;
   align-items: center;
@@ -1248,49 +1208,48 @@
   margin: 0;
 }
 
-/* Info personal */
-.info-grid {
+.tq-info-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 4px 8px;
   padding: 4px 6px;
 }
 
-.info-field {
+.tq-info-field {
   display: flex;
   flex-direction: column;
   gap: 1px;
 }
 
-.info-field label {
+.tq-info-field label {
   font-size: 8px;
   text-transform: uppercase;
   color: var(--tq-text-dim);
   letter-spacing: 0.07em;
 }
 
-.info-field input[type="text"],
-.info-field input[type="number"] {
+.tq-info-field input[type="text"],
+.tq-info-field input[type="number"] {
   width: 100%;
   padding: 2px 4px;
   font-size: 11px;
 }
 
-.info-field.full {
+.tq-info-field.full {
   grid-column: 1 / -1;
 }
 
-.info-fila-triple {
+.tq-info-fila-triple {
   display: flex;
   flex-direction: row;
   gap: 8px;
 }
 
-.info-fila-triple .info-field {
+.tq-info-fila-triple .tq-info-field {
   flex: 1;
 }
 
-.info-field textarea {
+.tq-info-field textarea {
   width: 100%;
   resize: vertical;
   padding: 3px 5px;
@@ -1298,7 +1257,6 @@
   min-height: 50px;
 }
 
-/* Guías interpretativas */
 .guias-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -1361,7 +1319,6 @@
   cursor: not-allowed;
 }
 
-
 .resetear-pasiones {
   cursor: pointer;
   color: var(--tq-text-dim);
@@ -1381,7 +1338,9 @@
   font-style: italic;
   color: #8b1a1a;
   margin-top: 3px;
+  margin-bottom: 6px;
   display: flex;
+  justify-content: center;
   align-items: center;
   gap: 4px;
 }
@@ -1425,7 +1384,6 @@
   min-height: 40px;
 }
 
-/* Hechicería verbos + esferas */
 .hechiceria-lista {
   display: flex;
   flex-direction: column;
@@ -1433,7 +1391,7 @@
   padding: 4px 6px;
 }
 
-.hechiceria-row {
+.tq-hechiceria-fila {
   display: flex;
   align-items: center;
   gap: 4px;
@@ -1442,7 +1400,7 @@
   padding: 1px 2px;
 }
 
-.hechiceria-circle {
+.tq-hechiceria-circulo {
   width: 10px;
   height: 10px;
   border-radius: 50%;
@@ -1473,7 +1431,6 @@
   margin: 0;
 }
 
-/* Slot de especie en la cabecera de la ficha */
 .especie-slot {
   display: flex;
   align-items: center;
@@ -1501,8 +1458,7 @@
   font-size: 11px;
 }
 
-/* PM (Puntos de Magia) */
-.pm-row {
+.tq-pm-fila {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -1511,7 +1467,7 @@
   color: var(--tq-text-dim);
 }
 
-.pm-row input {
+.tq-pm-fila input {
   width: 40px;
   height: 26px;
   text-align: center;
@@ -1519,7 +1475,6 @@
   font-weight: bold;
 }
 
-/* Hechizos en hoja2 */
 .hechizos-list {
   list-style: none;
   margin: 0;
@@ -1546,7 +1501,10 @@
   gap: 6px;
 }
 
-.hechizo-nombre-wrap .skill-circle {
+.hechizo-permanent { opacity: 0.4; }
+.hechizo-permanent.marcado { opacity: 1; }
+
+.hechizo-nombre-wrap .tq-circulo {
   width: 13px;
   height: 13px;
   flex-shrink: 0;
@@ -1610,7 +1568,6 @@
   font-size: 11px;
 }
 
-/* Equipamiento / Ventajas */
 .ventajas-list {
   list-style: none;
   margin: 0;
@@ -1642,7 +1599,6 @@
   font-style: italic;
 }
 
-/* Item controls */
 .item-controls {
   display: flex;
   gap: 2px;
@@ -1665,23 +1621,22 @@
 .item-controls a:hover { opacity: 1; }
 .item-controls .item-delete:hover { color: var(--tq-red-dmg); }
 
-.btn-lanzar {
+.tq-btn-lanzar {
   font-size: 10px;
   font-weight: bold;
   color: var(--tq-teal) !important;
   white-space: nowrap;
   opacity: 1 !important;
 }
-.btn-lanzar:hover { color: var(--tq-teal-dark) !important; }
+.tq-btn-lanzar:hover { color: var(--tq-teal-dark) !important; }
 
-/* Notas textarea */
 .tierras-quebradas .tab-separator {
   border: none;
   border-top: 1px solid rgba(28,100,115,0.35);
   margin: 10px 0;
 }
 
-.tierras-quebradas .notas-textarea {
+.tierras-quebradas .tq-notas {
   width: 100%;
   resize: vertical;
   background: var(--tq-input);
@@ -1693,7 +1648,6 @@
   min-height: 60px;
 }
 
-/* ─── Fichas de ítem ─────────────────────────────────────────────── */
 .tierras-quebradas.item .item-header {
   background: var(--tq-parchment-lt);
   border-bottom: 2px solid var(--tq-teal);
@@ -1735,7 +1689,7 @@
   background: var(--tq-parchment);
 }
 
-.tierras-quebradas .item-header-row {
+.tierras-quebradas .tq-item-header-fila {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -1759,13 +1713,13 @@
   margin-bottom: 10px;
 }
 
-.tierras-quebradas .field-group {
+.tierras-quebradas .tq-field-group {
   display: flex;
   flex-direction: column;
   gap: 3px;
 }
 
-.tierras-quebradas .field-group-check {
+.tierras-quebradas .tq-field-group-check {
   flex-direction: row;
   align-items: center;
   gap: 8px;
@@ -1780,7 +1734,7 @@
   gap: 16px;
   margin-bottom: 8px;
 }
-.tierras-quebradas .arma-fila-dano .field-group:first-child {
+.tierras-quebradas .arma-fila-dano .tq-field-group:first-child {
   width: 90px;
   flex-shrink: 0;
 }
@@ -1792,24 +1746,24 @@
   margin-bottom: 8px;
 }
 
-.tierras-quebradas .field-group label {
+.tierras-quebradas .tq-field-group label {
   font-size: 10px;
   color: var(--tq-text-dim);
   text-transform: uppercase;
   letter-spacing: 0.07em;
 }
 
-.tierras-quebradas .field-group.full-width { grid-column: 1 / -1; }
+.tierras-quebradas .tq-field-group.full-width { grid-column: 1 / -1; }
 
-.tierras-quebradas .field-group input[type="text"],
-.tierras-quebradas .field-group input[type="number"],
-.tierras-quebradas .field-group select,
-.tierras-quebradas .field-group textarea {
+.tierras-quebradas .tq-field-group input[type="text"],
+.tierras-quebradas .tq-field-group input[type="number"],
+.tierras-quebradas .tq-field-group select,
+.tierras-quebradas .tq-field-group textarea {
   padding: 3px 6px;
   font-size: 15px;
 }
 
-.tierras-quebradas .field-group input[type="number"] {
+.tierras-quebradas .tq-field-group input[type="number"] {
   text-align: center;
 }
 
@@ -1827,8 +1781,6 @@
   margin-bottom: 8px;
 }
 
-
-/* ─── Chat: resultado de tirada ──────────────────────────────────── */
 .tq-tirada-resultado {
   background: var(--tq-parchment);
   border: 1px solid rgba(28,100,115,0.4);
@@ -1889,7 +1841,6 @@
   font-style: italic;
 }
 
-/* ─── Diálogo Lanzar Hechizo ─────────────────────────────────────── */
 .lh-dialog {
   font-family: var(--tq-font);
   font-size: 15px;
@@ -2032,7 +1983,6 @@
   margin-top: 14px !important;
 }
 
-/* Fondo parchment para el diálogo de hechizo */
 .lh-dialog-window .window-content {
   background: var(--tq-parchment) !important;
 }
@@ -2043,7 +1993,6 @@
   padding: 8px !important;
 }
 
-/* ─── Estilo TQ para todos los diálogos y ventanas de Foundry ───── */
 .application:not(.tierras-quebradas) {
   background: var(--tq-parchment) !important;
   border: 1px solid var(--tq-teal) !important;
@@ -2080,8 +2029,6 @@
   background: var(--tq-teal-dark) !important;
 }
 
-/* ─── Diálogo de tirada ──────────────────────────────────────────── */
-
 .tirada-dialogo {
   font-family: var(--tq-font);
   padding: 6px;
@@ -2117,27 +2064,27 @@
   padding: 4px 0;
   border-bottom: 1px solid rgba(28,100,115,0.15);
 }
-.tirada-dialogo .tq-melee-fila .campo-grupo {
+.tirada-dialogo .tq-melee-fila .tq-campo-grupo {
   display: flex;
   flex-direction: row;
   align-items: center;
   gap: 4px;
   flex: 0 0 auto;
 }
-.tirada-dialogo .tq-melee-fila .campo-grupo label {
+.tirada-dialogo .tq-melee-fila .tq-campo-grupo label {
   white-space: nowrap;
 }
 .tirada-dialogo .tq-melee-fila input[type="number"] { width: 52px; }
 .tirada-dialogo .tq-melee-fila input[type="text"]   { width: 52px; }
 
-.tirada-dialogo .campo-grupo {
+.tirada-dialogo .tq-campo-grupo {
   display: flex;
   flex-direction: column;
   gap: 4px;
   flex: 1;
 }
 
-.tirada-dialogo .campo-grupo label {
+.tirada-dialogo .tq-campo-grupo label {
   font-size: 9px;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -2155,15 +2102,17 @@
   border-radius: 2px;
 }
 
-.tirada-dialogo .campo-tope {
+.tirada-dialogo .tq-campo-tope {
   display: flex;
   align-items: center;
   gap: 8px;
   border-top: 1px solid rgba(28,100,115,0.2);
   padding-top: 6px;
-  flex-wrap: wrap;
 }
-.tirada-dialogo .tope-label {
+.tirada-dialogo .tq-campo-tope select {
+  flex: 1;
+}
+.tirada-dialogo .tq-tope-label {
   display: flex;
   align-items: center;
   gap: 5px;
@@ -2199,7 +2148,6 @@
   font-style: italic;
 }
 
-/* ─── PNJ / Criatura / Demonio ───────────────────────────────────── */
 .tierras-quebradas .section-header {
   display: flex;
   align-items: center;
@@ -2221,7 +2169,12 @@
 }
 .tierras-quebradas .section-header a:hover { opacity: 1; }
 
-.tierras-quebradas .salud-simple {
+.tierras-quebradas .salud-simple { display: flex; justify-content: center; gap: 12px; margin: 8px 0; }
+.tierras-quebradas .tq-salud-fila-wrap { display: flex; gap: 20px; align-items: flex-start; }
+.tierras-quebradas .tq-salud-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--tq-text-dim); font-weight: bold; }
+.tierras-quebradas .tq-salud-sep { font-size: 14px; color: var(--tq-text-dim); }
+
+.tierras-quebradas .tq-salud-centrada {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -2231,13 +2184,13 @@
   color: var(--tq-text-dim);
 }
 
-.tierras-quebradas .salud-simple-fila {
+.tierras-quebradas .tq-salud-fila {
   display: flex;
   align-items: center;
   gap: 6px;
 }
 
-.tierras-quebradas .salud-simple input {
+.tierras-quebradas .tq-salud-centrada input {
   width: 48px;
   height: 30px;
   text-align: center;
@@ -2316,7 +2269,6 @@
   border-radius: 2px;
 }
 
-/* ─── Botón tirar arma ───────────────────────────────────────────── */
 .tirar-arma {
   display: inline-flex;
   align-items: center;
@@ -2332,10 +2284,11 @@
 }
 .tirar-arma:hover { background: var(--tq-teal-dark); }
 
+.arma-hab { display: flex; align-items: center; gap: 4px; }
 .arma-hab-clave { font-size: 12px; color: var(--tq-text-dim); }
 .arma-hab-total { font-size: 14px; font-weight: bold; color: var(--tq-teal-dark); margin-left: 3px; }
+.pm-sep { color: var(--tq-text-dim); margin: 0 2px; }
 
-/* ─── Daño en resultado de tirada ───────────────────────────────── */
 .tq-tirada-resultado .tirada-danho {
   margin-top: 5px;
   padding-top: 5px;
@@ -2350,7 +2303,6 @@
 .tq-tirada-resultado .danho-formula { color: var(--tq-text-dim); font-style: italic; }
 .tq-tirada-resultado .danho-total strong { color: var(--tq-red-dmg); font-size: 15px; }
 
-/* ─── Melee: dos columnas enfrentadas ───────────────────────────── */
 .tq-tirada-resultado .melee-desglose {
   display: flex;
   align-items: flex-start;
@@ -2389,7 +2341,6 @@
 .tq-tirada-resultado .tirada-danho.rival .danho-total strong { color: var(--tq-red-dmg); }
 .tq-tirada-resultado .tirada-danho.rival { border-top: 1px solid var(--tq-border); margin-top: 4px; padding-top: 4px; }
 
-/* ─── Lealtad: alineamiento e hitos ─────────────────────────────── */
 .lealtad-item.lealtad-alineada .lealtad-circulo {
   border-color: var(--tq-red-dmg);
 }
@@ -2399,7 +2350,6 @@
   font-weight: bold;
 }
 
-/* ─── Character Creator: paso Religión ─────────────────────────── */
 .cc-ideologia-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -2575,7 +2525,6 @@
   color: #c4961a;
 }
 
-/* ─── Actitud divina: efecto y botón fin de sesión ───────────────── */
 .actitud-efecto {
   padding: 5px 6px;
   border-top: 1px solid rgba(28,100,115,0.15);
@@ -2591,7 +2540,6 @@
   line-height: 1.4;
 }
 
-/* ─── Botón genérico TQ ──────────────────────────────────────────── */
 .tq-btn {
   display: inline-flex;
   align-items: center;
@@ -2631,7 +2579,6 @@
   color: var(--tq-white);
 }
 
-/* ─── Pactos ─────────────────────────────────────────────────────── */
 .pactos-list {
   list-style: none;
   margin: 0;
@@ -2679,7 +2626,6 @@
   text-align: right;
 }
 
-/* ─── Bendiciones ────────────────────────────────────────────────── */
 .bendiciones-list {
   list-style: none;
   margin: 0;
@@ -2727,7 +2673,6 @@
   text-align: right;
 }
 
-/* ─── Criatura / Demonio: fila de stats de combate ──────────────── */
 .tierras-quebradas .combat-stats {
   display: flex;
   flex-wrap: wrap;
@@ -2771,7 +2716,7 @@
   font-size: 11px;
 }
 
-.tierras-quebradas .movimiento-row {
+.tierras-quebradas .tq-movimiento-fila {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -2779,7 +2724,7 @@
   margin: 2px 0;
 }
 
-.tierras-quebradas .movimiento-row label {
+.tierras-quebradas .tq-movimiento-fila label {
   font-size: 9px;
   text-transform: uppercase;
   color: var(--tq-text-dim);
@@ -2789,7 +2734,7 @@
   flex-shrink: 0;
 }
 
-.tierras-quebradas .movimiento-row input {
+.tierras-quebradas .tq-movimiento-fila input {
   flex: 1;
   padding: 2px 5px;
   font-size: 12px;
@@ -2800,14 +2745,11 @@
   color: var(--tq-text-dim);
 }
 
-/* ─── Scrollbar ──────────────────────────────────────────────────── */
 .tierras-quebradas ::-webkit-scrollbar { width: 5px; }
 .tierras-quebradas ::-webkit-scrollbar-track { background: var(--tq-parchment); }
 .tierras-quebradas ::-webkit-scrollbar-thumb { background: rgba(28,100,115,0.4); border-radius: 3px; }
 .tierras-quebradas ::-webkit-scrollbar-thumb:hover { background: var(--tq-teal); }
 
-
-/* ─── Combat Tracker ─────────────────────────────────────────────── */
 .tq-tracker-pv {
   font-size: 11px;
   color: var(--tq-gold, #c4961a);
@@ -2815,7 +2757,6 @@
   white-space: nowrap;
 }
 
-/* ─── Tabla de Lesiones (chat) ───────────────────────────────────── */
 .tq-lesion-msg h3 {
   margin: 0 0 4px;
   color: var(--tq-teal-dark, #0f3540);
@@ -2839,10 +2780,6 @@
   font-size: 0.95em;
 }
 
-
-/* ═══════════════════════════════════════════════════════════════════
-   CHAT CARDS — Tiradas
-   ═══════════════════════════════════════════════════════════════════ */
 .tq-tirada-resultado {
   --acc: #4a6070;
   border: 2px solid var(--acc);
@@ -2859,12 +2796,10 @@
 .tq-tirada-resultado.fallo        { --acc: #7a1a1a; }
 .tq-tirada-resultado.complicacion { --acc: #7a1a1a; }
 
-/* Color del jugador en la cabecera del mensaje TQ */
 .chat-message:has(.tq-tirada-resultado) .message-header {
   background: var(--tq-player-color, var(--tq-teal)) !important;
 }
 
-/* Retrato del actor en la cabecera nativa de mensajes TQ */
 .tq-actor-avatar {
   width: 36px;
   height: 36px;
@@ -2874,7 +2809,6 @@
   margin-right: 6px;
 }
 
-/* Cabecera */
 .tq-chat-header {
   background: var(--acc);
   color: #fff;
@@ -2897,7 +2831,6 @@
   font-weight: bold;
 }
 
-/* Resultado grande */
 .tq-chat-resultado {
   text-align: center;
   font-size: 1.25em;
@@ -2920,7 +2853,6 @@
   margin: 2px 8px 4px;
 }
 
-/* Fila de cálculo (tirada normal) */
 .tq-chat-desglose {
   display: flex;
   justify-content: center;
@@ -2940,7 +2872,6 @@
 .tq-chat-desglose .tq-desglose-comp { color: #555; }
 .tq-chat-desglose .tq-desglose-min  { color: var(--acc); font-weight: bold; }
 
-/* Hechizo: desglose vertical */
 .tq-hechizo-desglose {
   display: flex;
   flex-direction: column;
@@ -2951,11 +2882,12 @@
 .tq-hechizo-fila {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
   padding: 0 6px;
 }
 .tq-hechizo-etiq { color: #555; }
-.tq-hechizo-val  { font-weight: bold; color: var(--acc); min-width: 28px; text-align: right; }
+.tq-hechizo-val  { font-weight: bold; color: var(--acc); }
 .tq-hechizo-vs {
   display: flex;
   align-items: center;
@@ -2974,7 +2906,6 @@
   font-size: 14px;
 }
 
-/* Melé: dos columnas */
 .tq-melee-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -3016,7 +2947,7 @@
   font-size: calc(0.85em + 2px);
   opacity: 0.7;
 }
-.tq-chat-exitos-row {
+.tq-chat-exitos-fila {
   text-align: center;
   font-size: calc(0.82em + 2px);
   font-weight: bold;
@@ -3025,14 +2956,13 @@
 }
 .tq-enfrentada-hab { font-size: 0.85em; color: #aaa; font-weight: normal; }
 
-/* Diálogo tirada enfrentada */
 .tq-enfrentada-dialog { display: flex; flex-direction: column; gap: 10px; padding: 6px 2px; }
 .tq-enfrentada-iniciador { display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; background: var(--tq-teal); color: var(--tq-white); border-radius: 4px; }
 .tq-enfrentada-quien { font-weight: bold; }
 .tq-enfrentada-valor { font-size: 1.3em; font-weight: bold; }
 .tq-enfrentada-oponente { display: flex; flex-direction: column; gap: 4px; }
+.tq-enfrentada-no-target { opacity: 0.5; font-style: italic; }
 
-/* Daño */
 .tq-chat-danho {
   border-top: 1px solid var(--acc);
   padding: 3px 8px;
@@ -3042,7 +2972,7 @@
   color: #333;
 }
 .tq-chat-danho.rival { color: #666; font-style: italic; }
-.tq-chat-danho strong { color: var(--acc); }
+.tq-chat-danho strong { color: var(--acc); white-space: nowrap; }
 .tq-blind-oculto { text-align: center; font-size: 20px; letter-spacing: 6px; color: #aaa; padding: 6px 0; }
 
 .tq-fortuna-actions { padding: 4px 8px 6px; border-top: 1px solid rgba(0,0,0,0.1); margin-top: 2px; }
@@ -3050,6 +2980,7 @@
 .tq-fortuna-repetir:hover:not(:disabled) { background: rgba(180,140,20,0.25); }
 .tq-fortuna-repetir:disabled { opacity: 0.4; cursor: not-allowed; }
 
+.tq-fortuna-eleccion { display: flex; flex-direction: column; gap: 6px; }
 .tq-fortuna-eleccion-grid { display: flex; gap: 8px; padding: 6px 8px; }
 .tq-fortuna-col { flex: 1; text-align: center; padding: 8px 6px; border-radius: 4px; border: 1px solid rgba(0,0,0,0.2); background: rgba(255,255,255,0.4); }
 .tq-fortuna-col-titulo { font-size: 10px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
@@ -3060,7 +2991,6 @@
 .tq-fortuna-elegir { width: 100%; font-size: 11px; padding: 3px 0; cursor: pointer; background: rgba(0,0,0,0.06); border: 1px solid rgba(0,0,0,0.2); border-radius: 3px; }
 .tq-fortuna-elegir:hover { background: rgba(0,0,0,0.12); }
 
-/* ─── Complicación ───────────────────────────────────────────────── */
 .tq-complicacion-msg {
   border: 2px solid #b85c00;
   border-radius: 4px;
@@ -3081,7 +3011,6 @@
 .tq-complicacion-msg .tq-roll-num { font-size: 1.15em; font-weight: bold; }
 .tq-complicacion-msg p { margin: 5px 8px; font-size: 0.9em; color: #333; }
 
-/* ─── Lesiones ───────────────────────────────────────────────────── */
 .tq-lesion-msg {
   border: 2px solid #7a1a1a;
   border-radius: 4px;
@@ -3104,11 +3033,6 @@
 .tq-lesion-tipo    { font-style: italic; font-size: 0.85em; color: #666; }
 .tq-lesion-efecto  { padding: 3px 8px 6px; font-size: 0.9em; color: #333; }
 
-/* ═══════════════════════════════════════════════════════════════════
-   ROLL TABLES — Ficha y chat
-   ═══════════════════════════════════════════════════════════════════ */
-
-/* ─── Sheet (RollTableSheet — v13) ──────────────────────────────── */
 [id^="RollTableSheet"],
 .roll-table-sheet {
   font-family: var(--tq-font) !important;
@@ -3122,7 +3046,6 @@
   color: var(--tq-text) !important;
 }
 
-/* Cabecera */
 [id^="RollTableSheet"] .sheet-header,
 [id^="RollTableSheet"] header,
 .roll-table-sheet .sheet-header,
@@ -3141,7 +3064,6 @@
   border: none !important;
 }
 
-/* Inputs y selects */
 [id^="RollTableSheet"] input,
 [id^="RollTableSheet"] select,
 [id^="RollTableSheet"] textarea,
@@ -3154,14 +3076,12 @@
   font-family: var(--tq-font) !important;
 }
 
-/* Cabecera de columnas */
 [id^="RollTableSheet"] .results-header,
 .roll-table-sheet .results-header {
   background: var(--tq-teal) !important;
   color: #fff !important;
 }
 
-/* Filas de resultados */
 [id^="RollTableSheet"] .table-result,
 .roll-table-sheet .table-result {
   background: var(--tq-parchment) !important;
@@ -3174,15 +3094,12 @@
   background: var(--tq-parchment-lt) !important;
 }
 
-/* Botones */
 [id^="RollTableSheet"] button,
 .roll-table-sheet button {
   background: var(--tq-teal) !important;
   color: #fff !important;
   border: none !important;
 }
-
-/* ─── WIDGET DIRECTOR ───────────────────────────────────────────── */
 
 .director-widget {
   --dw-accent: var(--tq-teal-dark);
@@ -3218,7 +3135,6 @@
   margin-bottom: 6px;
 }
 
-/* Contador infortunio */
 .director-infortunio {
   text-align: center;
 }
@@ -3262,7 +3178,6 @@
   line-height: 1;
 }
 
-/* Botones de fin */
 .director-btn {
   display: block;
   width: 100%;
@@ -3283,7 +3198,6 @@
   background: var(--dw-accent-hover);
 }
 
-/* Fin de Aventura */
 .aventura-px {
   display: flex;
   flex-direction: column;
@@ -3305,7 +3219,38 @@
   font-weight: bold;
 }
 
-/* ─── CREADOR DE PERSONAJE ──────────────────────────────────────── */
+.tq-pnj-importer {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 10px;
+  gap: 8px;
+}
+
+.tq-pnj-importer-hint {
+  margin: 0;
+  font-size: 12px;
+  color: var(--tq-text-dim);
+}
+
+.pnj-raw-text {
+  flex: 1;
+  resize: none;
+  font-size: 12px;
+  font-family: monospace;
+}
+
+.tq-pnj-importer-acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.pnj-import-btn,
+.criatura-import-btn,
+.demonio-import-btn {
+  padding: 4px 16px;
+}
 
 .character-creator .window-content {
   padding: 0;
@@ -3321,8 +3266,7 @@
   background: var(--tq-parchment);
 }
 
-/* ── Barra de pasos ── */
-.cc-steps-bar {
+.cc-pasos-barra {
   display: flex;
   align-items: center;
   padding: 8px 12px 0;
@@ -3331,7 +3275,7 @@
   flex-shrink: 0;
 }
 
-.cc-step {
+.cc-paso {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -3339,7 +3283,7 @@
   flex-shrink: 0;
 }
 
-.cc-step-circle {
+.cc-paso-circulo {
   width: 24px;
   height: 24px;
   border-radius: 50%;
@@ -3353,35 +3297,35 @@
   font-weight: bold;
 }
 
-.cc-step.active .cc-step-circle {
+.cc-paso.active .cc-paso-circulo {
   border-color: var(--tq-teal);
   background: var(--tq-teal);
   color: var(--tq-white);
 }
 
-.cc-step.done .cc-step-circle {
+.cc-paso.done .cc-paso-circulo {
   border-color: var(--tq-teal-dark);
   background: var(--tq-teal-dark);
   color: var(--tq-white);
 }
 
-.cc-step-label {
+.cc-paso-label {
   font-size: 10px;
   color: var(--tq-text-dim);
   white-space: nowrap;
   padding-bottom: 4px;
 }
 
-.cc-step.active .cc-step-label {
+.cc-paso.active .cc-paso-label {
   color: var(--tq-teal-dark);
   font-weight: bold;
 }
 
-.cc-step.done .cc-step-label {
+.cc-paso.done .cc-paso-label {
   color: var(--tq-teal-dark);
 }
 
-.cc-step-line {
+.cc-paso-line {
   flex: 1;
   height: 2px;
   background: rgba(28,100,115,0.2);
@@ -3389,11 +3333,10 @@
   min-width: 6px;
 }
 
-.cc-step-line.done {
+.cc-paso-line.done {
   background: var(--tq-teal-dark);
 }
 
-/* ── Contenido ── */
 .cc-content {
   flex: 1;
   overflow-y: auto;
@@ -3433,7 +3376,6 @@
   border-color: var(--tq-teal);
 }
 
-/* ── Cards de edad ── */
 .edad-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -3514,8 +3456,7 @@
   color: var(--tq-teal-dark);
 }
 
-/* ── Edad numérica ── */
-.cc-edad-num-row {
+.cc-edad-num-fila {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -3523,11 +3464,11 @@
   font-size: 13px;
 }
 
-.cc-edad-num-row label {
+.cc-edad-num-fila label {
   color: var(--tq-text);
 }
 
-.cc-edad-num-row input {
+.cc-edad-num-fila input {
   width: 70px;
   padding: 3px 6px;
   border: 1px solid rgba(28,100,115,0.4);
@@ -3538,8 +3479,8 @@
   -moz-appearance: textfield;
 }
 
-.cc-edad-num-row input::-webkit-outer-spin-button,
-.cc-edad-num-row input::-webkit-inner-spin-button {
+.cc-edad-num-fila input::-webkit-outer-spin-button,
+.cc-edad-num-fila input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
@@ -3549,7 +3490,6 @@
   font-size: 11px;
 }
 
-/* ── Barra de características ── */
 .cc-caract-bar {
   display: flex;
   align-items: center;
@@ -3587,7 +3527,6 @@
   font-size: 14px;
 }
 
-/* ── Selector de método ── */
 .cc-metodo-toggle {
   display: flex;
   gap: 0;
@@ -3619,14 +3558,13 @@
   background: rgba(28,100,115,0.1);
 }
 
-/* ── Grid de características ── */
 .cc-caract-grid {
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
 
-.cc-caract-row {
+.cc-caract-fila {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -3698,7 +3636,6 @@
   color: var(--tq-red-dmg);
 }
 
-/* ── Atractivo / PP ── */
 .cc-atr-tam-section {
   border-top: 1px solid rgba(28,100,115,0.2);
   padding-top: 10px;
@@ -3729,7 +3666,6 @@
   color: var(--tq-red-dmg);
 }
 
-/* ── Al aleatorio ── */
 .cc-aleatorio-hint {
   font-size: 12px;
   color: var(--tq-text-dim);
@@ -3816,7 +3752,6 @@
   cursor: pointer;
 }
 
-/* ── Preview reducciones aleatorio ── */
 .cc-aleatorio-reduccion-panel {
   background: rgba(28,100,115,0.06);
   border: 1.5px solid var(--tq-teal);
@@ -3848,7 +3783,6 @@
 .cc-aleatorio-red-arrow { color: var(--tq-text-dim); }
 .cc-aleatorio-red-final { color: var(--tq-teal-dark); font-weight: bold; font-size: 15px; }
 
-/* ── Panel conflicto edad / características ── */
 .cc-conflicto-panel {
   background: rgba(160,16,16,0.06);
   border: 1.5px solid var(--tq-red-dmg);
@@ -3870,7 +3804,6 @@
   margin: 0 0 4px;
 }
 
-/* ── Cards de especie ── */
 .especie-grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -3963,7 +3896,6 @@
   overflow: visible;
 }
 
-/* ── Cards de origen ── */
 .origen-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -4011,7 +3943,6 @@
   font-style: italic;
 }
 
-/* ── Elecciones de arma ── */
 .cc-elecciones-armas {
   background: rgba(28,100,115,0.05);
   border: 1px solid rgba(28,100,115,0.25);
@@ -4020,7 +3951,7 @@
   margin-top: 8px;
 }
 
-.cc-eleccion-row {
+.cc-eleccion-fila {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -4028,7 +3959,7 @@
   padding: 5px 0;
   border-bottom: 1px solid rgba(28,100,115,0.12);
 }
-.cc-eleccion-row:last-child { border-bottom: none; }
+.cc-eleccion-fila:last-child { border-bottom: none; }
 
 .cc-eleccion-nombre {
   font-size: 12px;
@@ -4057,7 +3988,6 @@
   border-color: var(--tq-teal);
 }
 
-/* ── Paso Ventajas ── */
 .cc-ventajas-info {
   font-size: 12px;
   color: var(--tq-text-dim);
@@ -4121,10 +4051,9 @@
   overflow: hidden;
 }
 
-/* ── Rasgos — wizard ── */
 .cc-rasgos-grid { display: flex; flex-direction: column; gap: 8px; }
 
-.cc-rasgo-row {
+.cc-rasgo-fila {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -4148,7 +4077,6 @@
 }
 .cc-rasgo-input:focus { outline: none; border-color: var(--tq-teal); }
 
-/* ── Rasgos — hoja de personaje ── */
 .rasgos-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -4167,6 +4095,8 @@
 }
 .rasgo-pos-title { color: #2a7a3a; }
 .rasgo-neg-title { color: #a03c28; }
+.rasgo-pos { border-left: 2px solid #2a7a3a; }
+.rasgo-neg { border-left: 2px solid #a03c28; }
 
 .rasgo-input {
   font-size: 11px;
@@ -4182,8 +4112,6 @@
 
 .rasgo-extra::placeholder { opacity: 0.3; }
 
-/* ── Placeholder pasos pendientes ── */
-/* ── Paso Equipo ── */
 .cc-nivel-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -4321,7 +4249,6 @@
   margin: 0;
 }
 
-/* ── Paso: Magia ── */
 .cc-magia-banner {
   background: rgba(28,100,115,0.08);
   border: 1.5px solid var(--tq-teal-light);
@@ -4361,7 +4288,7 @@
 .cc-magia-tipo-desc  { font-size: 11px; color: var(--tq-text-dim); line-height: 1.4; }
 
 .cc-magia-hechizos-header,
-.cc-magia-skills-header {
+.cc-magia-hab-header {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
@@ -4413,13 +4340,16 @@
 .cc-hechizo-sintaxis { flex: 1; }
 .cc-hechizo-dif, .cc-hechizo-pm { white-space: nowrap; }
 
-.cc-hechizo-perm-row {
+.cc-hechizo-perm { width: 14px; height: 14px; flex-shrink: 0; cursor: pointer; opacity: 0.35; }
+.cc-hechizo-perm.marcado { opacity: 1; }
+
+.cc-hechizo-perm-fila {
   margin-top: 5px;
   font-size: 11px;
   color: var(--tq-text-dim);
   cursor: default;
 }
-.cc-hechizo-perm-row label { display: flex; align-items: center; gap: 5px; cursor: pointer; }
+.cc-hechizo-perm-fila label { display: flex; align-items: center; gap: 5px; cursor: pointer; }
 
 .cc-magia-dos-columnas {
   display: grid;
@@ -4427,6 +4357,8 @@
   gap: 16px;
   margin-top: 8px;
 }
+.cc-magia-col { display: flex; flex-direction: column; gap: 4px; }
+
 .cc-magia-col-titulo {
   font-size: 14px;
   font-weight: bold;
@@ -4435,20 +4367,22 @@
   margin: 0 0 6px;
 }
 
-.cc-magia-skill-lista { display: flex; flex-direction: column; gap: 3px; }
-.cc-magia-skill-fila {
+.cc-magia-hab-lista { display: flex; flex-direction: column; gap: 3px; }
+.cc-magia-hab-fila {
   display: flex;
   align-items: center;
   gap: 6px;
   padding: 3px 6px;
   border-radius: 3px;
 }
-.cc-magia-skill-fila:hover { background: rgba(28,100,115,0.04); }
+.cc-magia-hab-fila:hover { background: rgba(28,100,115,0.04); }
 
-.cc-magia-skill-nombre { flex: 1; font-size: 14px; color: var(--tq-text); }
-.cc-magia-skill-base   { font-size: 12px; color: var(--tq-text-dim); min-width: 52px; text-align: right; }
+.cc-magia-hab-nombre { flex: 1; font-size: 14px; color: var(--tq-text); }
+.cc-magia-hab-total  { font-size: 16px; font-weight: bold; color: var(--tq-teal-dark); min-width: 28px; text-align: center; }
+.cc-magia-hab-total.tiene-libre { color: var(--tq-gold, #a07020); }
+.cc-magia-hab-base   { font-size: 12px; color: var(--tq-text-dim); min-width: 52px; text-align: right; }
 
-.cc-magia-skill-controles { display: flex; align-items: center; gap: 4px; }
+.cc-magia-hab-controles { display: flex; align-items: center; gap: 4px; }
 .cc-magia-btn {
   width: 20px;
   height: 20px;
@@ -4464,14 +4398,14 @@
 .cc-magia-btn:hover:not(:disabled) { background: rgba(28,100,115,0.12); }
 .cc-magia-btn:disabled { opacity: 0.3; cursor: not-allowed; }
 
-.cc-magia-skill-total {
+.cc-magia-tq-habilidad-total {
   width: 26px;
   text-align: center;
   font-size: 16px;
   font-weight: bold;
   color: var(--tq-text);
 }
-.cc-magia-skill-total.tiene-libre { color: var(--tq-teal-dark); }
+.cc-magia-tq-habilidad-total.tiene-libre { color: var(--tq-teal-dark); }
 
 .cc-magia-recursos {
   display: grid;
@@ -4492,7 +4426,6 @@
 .cc-magia-rec-valor  { font-size: 20px; font-weight: bold; color: var(--tq-teal-dark); line-height: 1; }
 .cc-magia-rec-formula { font-size: 10px; color: var(--tq-text-dim); }
 
-/* ── Pie ── */
 .cc-footer {
   display: flex;
   align-items: center;
@@ -4566,7 +4499,6 @@
   background: var(--tq-teal-dark) !important;
 }
 
-/* ─── Chat — resultado de tabla ──────────────────────────────────── */
 .chat-message .table-draw {
   background: var(--tq-parchment) !important;
   border: 2px solid var(--tq-teal) !important;
@@ -4596,10 +4528,6 @@
   font-weight: bold;
 }
 
-/* ═══════════════════════════════════════════════════════════════════
-   COMBAT TRACKER (#combat .combat-tracker)
-   ═══════════════════════════════════════════════════════════════════ */
-
 #combat,
 #combat-popout {
   font-family: var(--tq-font) !important;
@@ -4607,7 +4535,6 @@
   background: var(--tq-parchment) !important;
 }
 
-/* Cabecera con ronda y controles */
 #combat .combat-tracker-header,
 #combat .directory-header {
   background: var(--tq-teal-dark) !important;
@@ -4627,7 +4554,6 @@
   border: 1px solid rgba(255,255,255,0.3) !important;
 }
 
-/* Lista de combatientes */
 #combat .combatants {
   background: var(--tq-parchment) !important;
 }
@@ -4648,13 +4574,11 @@
   outline: 1px solid var(--tq-teal) !important;
 }
 
-/* Turno activo */
 #combat .combatant.active {
   background: rgba(28,100,115,0.15) !important;
   border-left: 3px solid var(--tq-teal) !important;
 }
 
-/* Nombre e iniciativa */
 #combat .token-name h3,
 #combat .token-name {
   color: var(--tq-text) !important;
@@ -4680,7 +4604,6 @@
   font-weight: bold !important;
 }
 
-/* Botones de control de combatiente */
 #combat .combatant-control {
   color: var(--tq-teal) !important;
 }
@@ -4689,7 +4612,6 @@
   color: var(--tq-teal-dark) !important;
 }
 
-/* Controles generales (iniciar/fin de combate, turno siguiente) */
 #combat .encounter-controls button,
 #combat .combat-control {
   background: var(--tq-teal) !important;
@@ -4702,14 +4624,6 @@
   background: var(--tq-teal-dark) !important;
 }
 
-/* ═══════════════════════════════════════════════════════════════════
-   CHAT — Mensajes genéricos de Foundry
-   (tiradas de iniciativa, mensajes del sistema, /r desde el chat…)
-   No afecta a tarjetas TQ ya definidas (.tq-result-card, .tq-chat-*,
-   .table-draw, .tq-lesion-msg, .tq-bendicion-msg)
-   ═══════════════════════════════════════════════════════════════════ */
-
-/* Wrapper de cada mensaje */
 li.chat-message {
   background: var(--tq-parchment) !important;
   border: 1px solid rgba(28,100,115,0.35) !important;
@@ -4720,7 +4634,6 @@ li.chat-message {
   overflow: hidden !important;
 }
 
-/* Cabecera del mensaje */
 li.chat-message .message-header {
   background: var(--tq-teal-dark) !important;
   color: #fff !important;
@@ -4754,7 +4667,6 @@ li.chat-message .whisper-to {
   font-style: italic !important;
 }
 
-/* Contenido del mensaje */
 li.chat-message .message-content {
   background: var(--tq-parchment) !important;
   color: var(--tq-text) !important;
@@ -4769,8 +4681,6 @@ li.chat-message .message-content h4 {
   color: var(--tq-text) !important;
 }
 
-/* Texto de sabor en la cabecera → blanco (ya cubierto por .message-header *)  */
-/* Texto de sabor en el contenido → color atenuado */
 li.chat-message .message-content .flavor-text,
 li.chat-message .message-content em.flavor {
   color: var(--tq-text-dim) !important;
@@ -4780,8 +4690,6 @@ li.chat-message .message-content em.flavor {
   margin-bottom: 4px !important;
   display: block !important;
 }
-
-/* ── Tiradas de dados ────────────────────────────────────────────── */
 
 li.chat-message .dice-roll {
   background: transparent !important;
@@ -4815,7 +4723,6 @@ li.chat-message .dice-total.failure {
   color: var(--tq-red-dmg) !important;
 }
 
-/* Tooltip expandible de dados */
 li.chat-message .dice-tooltip {
   background: var(--tq-parchment-lt) !important;
   border: 1px solid rgba(28,100,115,0.25) !important;
@@ -4858,7 +4765,6 @@ li.chat-message .dice-tooltip ol.part-rolls .roll.min {
   color: var(--tq-red-dmg) !important;
 }
 
-/* Botón de eliminar mensaje */
 li.chat-message .message-delete {
   color: rgba(255,255,255,0.6) !important;
 }
@@ -4867,7 +4773,6 @@ li.chat-message .message-delete:hover {
   color: #fff !important;
 }
 
-/* ─── Barras laterales ───────────────────────────────────────────── */
 #sidebar section.tab,
 #sidebar .directory-header,
 #sidebar .directory-footer {
@@ -4962,9 +4867,6 @@ li.chat-message .message-delete:hover {
 #compendium li.directory-item i {
   color: var(--tq-white) !important;
 }
-
-
-/* ═══ Paso Habilidades (Character Creator) ═══ */
 
 .cc-hab-header {
   display: flex;
@@ -5069,8 +4971,6 @@ li.chat-message .message-delete:hover {
   visibility: hidden;
 }
 
-/* ═══ PNJ Sheet — PV centrado ═══ */
-
 .pnj-salud-fila-wrap { display: flex; gap: 24px; justify-content: center; margin-bottom: 4px; }
 
 .pnj-salud-centrada {
@@ -5113,7 +5013,6 @@ li.chat-message .message-delete:hover {
   color: var(--tq-text-dim);
 }
 
-/* ─── Símbolo de lealtad ─────────────────────────────────────────── */
 .lealtad-fondo {
   position: absolute;
   inset: 0;
@@ -5137,7 +5036,6 @@ li.chat-message .message-delete:hover {
   z-index: 1;
 }
 
-/* ─── Aviso en chat ─────────────────────────────────────────────── */
 .tq-aviso {
   color: #8b4a00;
   font-style: italic;
@@ -5147,7 +5045,6 @@ li.chat-message .message-delete:hover {
   gap: 5px;
 }
 
-/* ─── La Mentira — 5 marcas ──────────────────────────────────────── */
 .mentira-marcas {
   display: flex;
   align-items: center;
@@ -5155,7 +5052,6 @@ li.chat-message .message-delete:hover {
   flex-shrink: 0;
 }
 
-/* ─── Yelmo — toggle visera ──────────────────────────────────────── */
 .toggle-visera {
   cursor: pointer;
   color: var(--tq-text-dim);
@@ -5172,6 +5068,8 @@ li.chat-message .message-delete:hover {
 .toggle-visera.visera-bajada {
   color: var(--tq-teal);
 }
+
+.tq-tablas-card { display: flex; flex-direction: column; gap: 8px; padding: 8px; }
 
 .tq-tablas-acciones {
   display: grid;
@@ -5206,4 +5104,57 @@ li.chat-message .message-delete:hover {
   text-align: center;
   margin-top: 4px;
   opacity: 0.8;
+}
+
+.tq-result-card {
+  padding: 8px 12px;
+  background: var(--tq-parchment);
+  border: 1px solid rgba(28,100,115,0.25);
+  border-radius: 4px;
+}
+
+.tq-result-card .tq-card-titulo {
+  font-size: 1.2em;
+  font-weight: bold;
+  text-align: center;
+  color: var(--tq-teal-dark);
+}
+
+.tq-result-card hr {
+  width: 70%;
+  margin: 6px auto;
+  border: none;
+  border-top: 1px solid rgba(28,100,115,0.4);
+}
+
+.tq-result-card p {
+  margin: 4px 0;
+  font-size: 0.95em;
+}
+
+.tq-result-card .tq-card-botones {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.tq-result-card button {
+  background: var(--tq-teal);
+  color: var(--tq-white);
+  border: none;
+  border-radius: 3px;
+  padding: 4px 10px;
+  cursor: pointer;
+  font-size: 0.9em;
+}
+
+.tq-result-card button:hover {
+  background: var(--tq-teal-dark);
+}
+
+.tq-result-card button:disabled {
+  background: var(--tq-text-dim);
+  cursor: not-allowed;
+  opacity: 0.6;
 }
