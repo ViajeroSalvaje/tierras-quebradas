@@ -4,15 +4,22 @@ const { ItemSheetV2 } = foundry.applications.sheets;
 export class ArmaSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
   static DEFAULT_OPTIONS = {
     classes: ["tierras-quebradas", "sheet", "item", "arma"],
-    position: { width: 460, height: 500 },
-    window: { resizable: true },
-    form: { submitOnChange: true, closeOnSubmit: false }
+    position: {
+      width: 460,
+      height: 500,
+    },
+    window: {
+      resizable: true,
+    },
+    form: {
+      submitOnChange: true,
+      closeOnSubmit: false,
+    }
   };
 
   static PARTS = {
     form: {
-      template: "systems/tierras-quebradas/templates/items/arma-sheet.hbs",
-      scrollable: [".item-body"]
+      template: "systems/tierras-quebradas/templates/items/arma-sheet.hbs", scrollable: [".item-body"]
     }
   };
 
@@ -20,18 +27,14 @@ export class ArmaSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
 
   async _prepareContext(options) {
     return {
-      item: this.item,
-      system: this.item.system,
-      cssClass: this.options.classes.join(" ")
+      item: this.item, system: this.item.system, cssClass: this.options.classes.join(" ")
     };
   }
 
   _onRender(context, options) {
     this.element.querySelector(".item-img")?.addEventListener("click", () => {
       new foundry.applications.apps.FilePicker.implementation({
-        type: "image",
-        current: this.item.img,
-        callback: path => this.item.update({ img: path })
+        type: "image", current: this.item.img, callback: path => this.item.update({ img: path })
       }).browse();
     });
   }

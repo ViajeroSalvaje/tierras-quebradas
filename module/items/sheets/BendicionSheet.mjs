@@ -3,9 +3,17 @@ import { BaseItemSheet } from "./BaseItemSheet.mjs";
 export class BendicionSheet extends BaseItemSheet {
   static DEFAULT_OPTIONS = {
     classes: ["tierras-quebradas", "sheet", "item", "bendicion"],
-    position: { width: 400, height: 320 },
-    window: { resizable: true },
-    form: { submitOnChange: true, closeOnSubmit: false }
+    position: {
+      width: 400,
+      height: 320,
+    },
+    window: {
+      resizable: true,
+    },
+    form: {
+      submitOnChange: true,
+      closeOnSubmit: false,
+    }
   };
 
   static PARTS = {

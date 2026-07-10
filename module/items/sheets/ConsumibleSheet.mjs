@@ -3,9 +3,17 @@ import { BaseItemSheet } from "./BaseItemSheet.mjs";
 export class ConsumibleSheet extends BaseItemSheet {
   static DEFAULT_OPTIONS = {
     classes: ["tierras-quebradas", "sheet", "item", "consumible"],
-    position: { width: 420, height: 360 },
-    window: { resizable: true },
-    form: { submitOnChange: true, closeOnSubmit: false }
+    position: {
+      width: 420,
+      height: 360,
+    },
+    window: {
+      resizable: true,
+    },
+    form: {
+      submitOnChange: true,
+      closeOnSubmit: false,
+    }
   };
 
   static PARTS = {

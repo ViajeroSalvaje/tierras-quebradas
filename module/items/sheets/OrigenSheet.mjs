@@ -5,25 +5,29 @@ const { ItemSheetV2 } = foundry.applications.sheets;
 export class OrigenSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
   static DEFAULT_OPTIONS = {
     classes: ["tierras-quebradas", "sheet", "item", "origen"],
-    position: { width: 480, height: 520 },
-    window: { resizable: true },
-    form: { submitOnChange: true, closeOnSubmit: false }
+    position: {
+      width: 480,
+      height: 520,
+    },
+    window: {
+      resizable: true,
+    },
+    form: {
+      submitOnChange: true,
+      closeOnSubmit: false,
+    }
   };
 
   static PARTS = {
     form: {
-      template: "systems/tierras-quebradas/templates/items/origen-sheet.hbs",
-      scrollable: [".item-body"]
+      template: "systems/tierras-quebradas/templates/items/origen-sheet.hbs", scrollable: [".item-body"]
     }
   };
 
   async _prepareContext(options) {
     return {
-      item:   this.item,
-      system: this.item.system,
-      habilidadesLista: (this.item.system.habilidades ?? []).map((h, i) => ({
-        ...h, index: i,
-        opciones: HABILIDADES_OPCIONES.map(op => ({ ...op, selected: op.clave === h.clave }))
+      item: this.item, system: this.item.system, habilidadesLista: (this.item.system.habilidades ?? []).map((h, i) => ({
+        ...h, index: i, opciones: HABILIDADES_OPCIONES.map(op => ({ ...op, selected: op.clave === h.clave }))
       }))
     };
   }
