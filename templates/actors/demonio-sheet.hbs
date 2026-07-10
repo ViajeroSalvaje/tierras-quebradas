@@ -6,11 +6,11 @@
         <input name="name" type="text" value="{{actor.name}}" placeholder="Nombre" />
       </h1>
       <div class="header-info">
-        <div class="field-group inline">
+        <div class="tq-field-group inline">
           <label>Tipo</label>
           <input type="text" name="system.tipo" value="{{system.tipo}}" />
         </div>
-        <div class="field-group inline">
+        <div class="tq-field-group inline">
           <label>Valor Mágico</label>
           <input type="number" name="system.valorMagico" value="{{system.valorMagico}}" min="0" style="width:52px" />
         </div>
@@ -20,7 +20,8 @@
 
   <nav class="sheet-tabs" data-group="primary">
     <a class="item" data-tab="stats">Estadísticas</a>
-    <a class="item" data-tab="informacion">Combate e Información</a>
+    <a class="item" data-tab="combate">Combate y Magia</a>
+    <a class="item" data-tab="informacion">Información</a>
   </nav>
 
   <div class="sheet-body">
@@ -56,120 +57,73 @@
           <label>Al Impacto</label>
           <input type="number" name="system.alImpacto" value="{{system.alImpacto}}" style="width:40px" />
         </div>
-        <div class="stat-item">
-          <label>PM</label>
-          <input type="number" name="system.pm" value="{{system.pm}}" style="width:40px" />
-        </div>
       </div>
 
-      <div class="movimiento-row">
+      <div class="tq-movimiento-fila">
         <label>Movimiento</label>
         <input type="text" name="system.movimiento" value="{{system.movimiento}}" />
       </div>
 
       <div class="salud-simple">
-        <div class="salud-simple-fila">
-          <label>PV</label>
-          <input type="number" name="system.salud.pvActual.valor" value="{{system.salud.pvActual.valor}}" style="width:48px" />
-          <span>/</span>
-          <input type="number" name="system.salud.pvMax.valor" value="{{system.salud.pvMax.valor}}" style="width:48px" />
+        <div class="tq-salud-fila-wrap">
+          <div class="tq-salud-centrada">
+            <label class="tq-salud-label">PV</label>
+            <div class="tq-salud-fila">
+              <input type="number" name="system.salud.pvActual.valor" value="{{system.salud.pvActual.valor}}" class="pnj-pv-input" />
+              <span class="tq-salud-sep">/</span>
+              <input type="number" name="system.salud.pvMax.valor" value="{{system.salud.pvMax.valor}}" class="pnj-pv-input" />
+            </div>
+          </div>
+          <div class="tq-salud-centrada">
+            <label class="tq-salud-label">PM</label>
+            <div class="tq-salud-fila">
+              <input type="number" name="system.pm" value="{{system.pm}}" class="pnj-pv-input" min="0" />
+            </div>
+          </div>
         </div>
         <span class="salud-threshold">(Deb: {{system.salud.pvLeve.valor}} · Inc: {{system.salud.pvGrave.valor}})</span>
       </div>
 
-      <div class="section-header">
+      <div class="tq-section-header">
         <span>Habilidades</span>
         <a class="anadir-habilidad" title="Añadir habilidad"><i class="fas fa-plus"></i></a>
       </div>
       <div class="pnj-habilidades">
-        {{#each system.habilidades as |valor nombre|}}
-        <div class="pnj-hab" data-nombre="{{nombre}}">
-          <span class="hab-nombre">{{nombre}}</span>
-          <input type="number" name="system.habilidades.{{nombre}}"
-                 value="{{valor}}" min="0" style="width:48px" />
-          <a class="tirar-habilidad" data-nombre="{{nombre}}" data-valor="{{valor}}" title="Tirar">
-            <i class="fas fa-dice-d10"></i>
-          </a>
-          <a class="eliminar-habilidad" data-nombre="{{nombre}}" title="Eliminar">
+        {{#each habilidades as |hab|}}
+        <div class="pnj-hab" data-nombre="{{hab.nombre}}">
+          <span class="hab-nombre tirar-habilidad" data-nombre="{{hab.nombre}}" data-total="{{hab.total}}" title="Tirar {{hab.nombre}}">{{hab.nombre}}</span>
+          <span class="tq-habilidad-total">{{hab.total}}</span>
+          <span class="tq-habilidad-nivel">
+            <input type="number" class="hab-nivel-input" data-nombre="{{hab.nombre}}"
+                   value="{{hab.nivel}}" min="0" />
+          </span>
+          <a class="eliminar-habilidad" data-nombre="{{hab.nombre}}" title="Eliminar">
             <i class="fas fa-trash"></i>
           </a>
         </div>
         {{/each}}
       </div>
 
-      {{#if rasgos}}
-      <div class="section-header"><span>Rasgos</span></div>
-      <div class="pnj-items-lista">
-        {{#each rasgos as |r|}}
-        <div class="pnj-item-fila">
-          <a class="pnj-item-nombre" data-id="{{r.id}}">{{r.name}}</a>
-          <a class="pnj-item-borrar" data-id="{{r.id}}" title="Eliminar"><i class="fas fa-trash"></i></a>
-        </div>
-        {{/each}}
-      </div>
-      {{/if}}
+    </div>
 
-      {{#if ventajas}}
-      <div class="section-header"><span>Ventajas / Desventajas</span></div>
-      <div class="pnj-items-lista">
-        {{#each ventajas as |v|}}
-        <div class="pnj-item-fila">
-          <a class="pnj-item-nombre" data-id="{{v.id}}">{{v.name}}</a>
-          <a class="pnj-item-borrar" data-id="{{v.id}}" title="Eliminar"><i class="fas fa-trash"></i></a>
-        </div>
-        {{/each}}
-      </div>
-      {{/if}}
+    <div class="tab" data-tab="combate">
+      {{> "systems/tierras-quebradas/templates/partials/_tab-combate-magia.hbs"}}
     </div>
 
     <div class="tab" data-tab="informacion">
-      <div class="section-header">
-        <span>Armas</span>
-        <a class="anadir-arma" title="Añadir arma"><i class="fas fa-plus"></i></a>
-      </div>
-      {{#if armas}}
-      <div class="pnj-items-lista">
-        {{#each armas as |a|}}
-        <div class="pnj-item-fila">
-          <a class="pnj-item-nombre" data-id="{{a.id}}">{{a.name}}</a>
-          <span class="pnj-item-detalle">{{a.dano}}</span>
-          <a class="pnj-tirar-arma" data-id="{{a.id}}" title="Tirar"><i class="fas fa-dice-d10"></i></a>
-          <a class="pnj-item-borrar" data-id="{{a.id}}" title="Eliminar"><i class="fas fa-trash"></i></a>
-        </div>
-        {{/each}}
-      </div>
-      {{/if}}
-
-      <div class="section-header">
-        <span>Protecciones</span>
-        <a class="anadir-armadura" title="Añadir protección"><i class="fas fa-plus"></i></a>
-      </div>
-      {{#if armaduras}}
-      <div class="pnj-items-lista">
-        {{#each armaduras as |a|}}
-        <div class="pnj-item-fila">
-          <a class="pnj-item-nombre" data-id="{{a.id}}">{{a.name}}</a>
-          <span class="pnj-item-detalle">PR {{a.proteccion}}</span>
-          <a class="pnj-item-borrar" data-id="{{a.id}}" title="Eliminar"><i class="fas fa-trash"></i></a>
-        </div>
-        {{/each}}
-      </div>
-      {{/if}}
-
-      <hr class="tab-separator" />
-      <div class="field-group">
+      <div class="tq-field-group">
         <label>Vínculo</label>
         <input type="text" name="system.vinculo" value="{{system.vinculo}}" />
       </div>
-      <div class="field-group">
+      <div class="tq-field-group">
         <label>Debilidades</label>
         <textarea name="system.debilidades" rows="2">{{system.debilidades}}</textarea>
       </div>
-      <div class="field-group">
+      <div class="tq-field-group">
         <label>Poderes</label>
         <textarea name="system.poderes" rows="4">{{system.poderes}}</textarea>
       </div>
-      <div class="field-group">
+      <div class="tq-field-group">
         <label>Notas</label>
         <textarea name="system.notas" rows="6">{{system.notas}}</textarea>
       </div>

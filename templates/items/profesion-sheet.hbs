@@ -3,13 +3,13 @@
 
     <h1><input type="text" name="name" value="{{item.name}}" placeholder="Nombre de la profesión" /></h1>
 
-    <div class="field-group full">
+    <div class="tq-field-group full">
       <label>Descripción</label>
       <textarea name="system.descripcion" rows="4">{{system.descripcion}}</textarea>
     </div>
 
     {{!-- Habilidades --}}
-    <div class="field-group full">
+    <div class="tq-field-group full">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
         <label>Modificadores de Habilidades</label>
         <a class="prof-hab-add" style="font-size:11px;color:var(--tq-teal);cursor:pointer;"><i class="fas fa-plus"></i> Añadir</a>
@@ -33,8 +33,42 @@
       </table>
     </div>
 
+    {{!-- Especializaciones --}}
+    <div class="tq-field-group full">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+        <label>Especializaciones</label>
+        <a class="prof-esp-add" style="font-size:11px;color:var(--tq-teal);cursor:pointer;"><i class="fas fa-plus"></i> Añadir</a>
+      </div>
+      {{#each especializaciones as |esp|}}
+      <div style="border:1px solid rgba(28,100,115,0.3);border-radius:4px;padding:6px 8px;margin-bottom:6px;">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
+          <input type="text" class="prof-esp-nombre" data-esp-idx="{{esp.espIdx}}" value="{{esp.nombre}}" placeholder="Nombre especialización" style="flex:1;font-size:12px;font-weight:bold;" />
+          <a class="prof-esp-del" data-esp-idx="{{esp.espIdx}}" style="color:var(--tq-red-dmg);cursor:pointer;font-size:12px;"><i class="fas fa-trash"></i></a>
+        </div>
+        <table style="width:100%;font-size:11px;">
+          <thead><tr><th style="text-align:left;">Habilidad</th><th style="width:60px;text-align:center;">Bonus</th><th style="width:30px;"></th></tr></thead>
+          <tbody>
+            {{#each esp.habilidades as |h|}}
+            <tr>
+              <td>
+                <select class="prof-esp-hab-clave" data-esp-idx="{{h.espIdx}}" data-hab-idx="{{h.habIdx}}" data-field="clave" style="width:100%;">
+                  <option value="">— Seleccionar —</option>
+                  {{#each h.opciones as |op|}}<option value="{{op.clave}}" {{#if op.selected}}selected{{/if}}>{{op.label}}</option>{{/each}}
+                </select>
+              </td>
+              <td><input type="number" class="prof-esp-hab-bonus" data-esp-idx="{{h.espIdx}}" data-hab-idx="{{h.habIdx}}" data-field="bonus" value="{{h.bonus}}" style="width:55px;text-align:center;" /></td>
+              <td><a class="prof-esp-hab-del" data-esp-idx="{{h.espIdx}}" data-hab-idx="{{h.habIdx}}" style="color:var(--tq-red-dmg);cursor:pointer;"><i class="fas fa-trash"></i></a></td>
+            </tr>
+            {{/each}}
+          </tbody>
+        </table>
+        <a class="prof-esp-hab-add" data-esp-idx="{{esp.espIdx}}" style="font-size:11px;color:var(--tq-teal);cursor:pointer;display:inline-block;margin-top:4px;"><i class="fas fa-plus"></i> Añadir habilidad</a>
+      </div>
+      {{/each}}
+    </div>
+
     {{!-- Ventajas --}}
-    <div class="field-group full prof-vent-section">
+    <div class="tq-field-group full prof-vent-section">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
         <label>Ventajas otorgadas <span style="font-size:10px;color:var(--tq-text-dim);font-weight:normal;">(arrastra o añade manualmente)</span></label>
         <a class="prof-vent-add" style="font-size:11px;color:var(--tq-teal);cursor:pointer;"><i class="fas fa-plus"></i> Añadir</a>

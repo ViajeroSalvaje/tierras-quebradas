@@ -2,20 +2,20 @@
   <section class="item-body">
     <h1><input type="text" name="name" value="{{item.name}}" placeholder="Nombre" /></h1>
     <div class="item-grid">
-      <div class="field-group">
+      <div class="tq-field-group">
         <label>Carga</label>
         <input type="number" name="system.carga" value="{{system.carga}}" step="0.1" min="0" />
       </div>
-      <div class="field-group">
+      <div class="tq-field-group">
         <label>Precio (mb)</label>
         <input type="number" name="system.precio" value="{{system.precio}}" min="0" />
       </div>
-      <div class="field-group full-width">
+      <div class="tq-field-group full-width">
         <label>Categoría</label>
         <input type="text" name="system.categoria" value="{{system.categoria}}" placeholder="Aventura, Herramientas, Lujo…" />
       </div>
     </div>
-    <div class="field-group full-width">
+    <div class="tq-field-group full-width">
       <label>Descripción</label>
       <textarea name="system.descripcion" rows="5">{{system.descripcion}}</textarea>
     </div>

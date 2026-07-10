@@ -1,0 +1,105 @@
+<div class="cc-section">
+  <h3 class="cc-section-title">Fondos iniciales</h3>
+  <p class="cc-hint">Salvo indicación del director, o justificación narrativa, escoge el adecuado a tu profesión.{{#if data.profesionNombre}} ({{data.profesionNombre}}){{/if}}</p>
+  <div class="cc-nivel-grid">
+    {{#each equipoData.niveles as |n|}}
+    <div class="cc-nivel-adquisitivo-card {{#if n.selected}}selected{{/if}}"
+         data-nivel-id="{{n.id}}">
+      <div class="cc-nivel-header">
+        <span class="cc-nivel-nombre">{{n.label}}</span>
+        <span class="cc-nivel-mb">{{n.mb}} mb</span>
+      </div>
+      <p class="cc-nivel-desc">{{n.desc}}</p>
+    </div>
+    {{/each}}
+  </div>
+  {{#if data.nivelAdquisitivo}}
+  <p class="cc-equipo-fondos-total">
+    Fondos disponibles: <strong>{{data.fondosIniciales}} mb</strong>
+    {{#if equipoData.mbGastado}}
+      &nbsp;·&nbsp; Gastado: <strong>{{equipoData.mbGastado}} mb</strong>
+      &nbsp;·&nbsp; Restante: <strong class="{{#if equipoData.mbNegativo}}cc-mb-deficit{{/if}}">{{equipoData.mbRestantes}} mb</strong>
+    {{/if}}
+  </p>
+  {{/if}}
+</div>
+
+{{#if armadurasData}}
+<div class="cc-section">
+  <h3 class="cc-section-title">Armadura</h3>
+  <p class="cc-hint">Selecciona las piezas que equipa tu personaje. El coste se descuenta de los fondos iniciales.</p>
+  <div class="cc-armadura-lista">
+    {{#each armadurasData as |a|}}
+    <label class="cc-armadura-fila {{#if a.selected}}selected{{/if}}">
+      <input type="checkbox" class="cc-armadura-check"
+             data-armadura-id="{{a.id}}"
+             data-nombre="{{a.name}}"
+             data-precio="{{a.precio}}"
+             data-carga="{{a.carga}}"
+             {{#if a.selected}}checked{{/if}} />
+      <span class="cc-armadura-nombre">{{a.name}} <span class="cc-armadura-precio">({{a.precio}} mb)</span></span>
+    </label>
+    {{/each}}
+  </div>
+</div>
+{{/if}}
+
+{{#if armasCaCData}}
+<div class="cc-section">
+  <h3 class="cc-section-title">Armas cuerpo a cuerpo</h3>
+  <p class="cc-hint">Selecciona las armas que porta tu personaje. El coste se descuenta de los fondos iniciales.</p>
+  <div class="cc-armadura-lista">
+    {{#each armasCaCData as |a|}}
+    <label class="cc-armadura-fila {{#if a.selected}}selected{{/if}}">
+      <input type="checkbox" class="cc-armacac-check"
+             data-arma-id="{{a.id}}"
+             data-nombre="{{a.name}}"
+             data-precio="{{a.precio}}"
+             data-carga="{{a.carga}}"
+             {{#if a.selected}}checked{{/if}} />
+      <span class="cc-armadura-nombre">{{a.name}} <span class="cc-armadura-precio">({{a.precio}} mb)</span></span>
+    </label>
+    {{/each}}
+  </div>
+</div>
+{{/if}}
+
+{{#if armasProyData}}
+<div class="cc-section">
+  <h3 class="cc-section-title">Armas de proyectiles</h3>
+  <p class="cc-hint">Selecciona las armas que porta tu personaje. El coste se descuenta de los fondos iniciales.</p>
+  <div class="cc-armadura-lista">
+    {{#each armasProyData as |a|}}
+    <label class="cc-armadura-fila {{#if a.selected}}selected{{/if}}">
+      <input type="checkbox" class="cc-armaproy-check"
+             data-arma-id="{{a.id}}"
+             data-nombre="{{a.name}}"
+             data-precio="{{a.precio}}"
+             data-carga="{{a.carga}}"
+             {{#if a.selected}}checked{{/if}} />
+      <span class="cc-armadura-nombre">{{a.name}} <span class="cc-armadura-precio">({{a.precio}} mb)</span></span>
+    </label>
+    {{/each}}
+  </div>
+</div>
+{{/if}}
+
+{{#if armasArrData}}
+<div class="cc-section">
+  <h3 class="cc-section-title">Armas arrojadizas</h3>
+  <p class="cc-hint">Selecciona las armas que porta tu personaje. El coste se descuenta de los fondos iniciales.</p>
+  <div class="cc-armadura-lista">
+    {{#each armasArrData as |a|}}
+    <label class="cc-armadura-fila {{#if a.selected}}selected{{/if}}">
+      <input type="checkbox" class="cc-armaArr-check"
+             data-arma-id="{{a.id}}"
+             data-nombre="{{a.name}}"
+             data-precio="{{a.precio}}"
+             data-carga="{{a.carga}}"
+             {{#if a.selected}}checked{{/if}} />
+      <span class="cc-armadura-nombre">{{a.name}} <span class="cc-armadura-precio">({{a.precio}} mb)</span></span>
+    </label>
+    {{/each}}
+  </div>
+</div>
+{{/if}}

@@ -1,0 +1,24 @@
+<div class="cc-section cc-hab-header">
+  <span class="cc-hab-desc">Reparto de puntos de habilidad. Nivel máximo: 8</span>
+  <div class="cc-hab-puntos-restantes {{#if (tq-eq habilidadesData.puntosRestantes 0)}}agotados{{/if}}">
+    Puntos: <strong>{{habilidadesData.puntosRestantes}}</strong> / {{habilidadesData.puntosTotal}}
+  </div>
+</div>
+{{#each habilidadesData.grupos as |g|}}
+<div class="cc-section cc-hab-grupo">
+  <h3 class="cc-section-title">{{g.label}}</h3>
+  <div class="cc-hab-lista">
+    {{#each g.habs as |h|}}
+    <div class="cc-hab-fila">
+      <span class="cc-hab-nombre">{{h.label}}</span>
+      <div class="cc-hab-controles">
+        <button type="button" class="cc-hab-btn" data-clave="{{h.clave}}" data-delta="-1" {{#unless h.puedeBajar}}disabled{{/unless}}>−</button>
+        <span class="cc-hab-total {{#if h.libre}}tiene-libre{{/if}}">{{h.total}}</span>
+        <button type="button" class="cc-hab-btn" data-clave="{{h.clave}}" data-delta="1" {{#unless h.puedeSubir}}disabled{{/unless}}>+</button>
+      </div>
+      <span class="cc-hab-base{{#if (tq-eq h.base 0)}} cc-hab-base-oculto{{/if}}">(base {{h.base}})</span>
+    </div>
+    {{/each}}
+  </div>
+</div>
+{{/each}}

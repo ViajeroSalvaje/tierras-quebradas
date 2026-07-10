@@ -19,7 +19,7 @@
   <div class="tq-chat-criticos">{{criticos}}</div>
   {{/if}}
   {{#if pasionEfecto}}
-  <div class="tq-chat-pasion"><i class="fas fa-fire"></i> {{pasionEfecto}}</div>
+  <div class="tq-chat-pasion" style="font-size:calc(1em + 1px);">{{pasionEfecto}}</div>
   {{/if}}
 
   {{#if esEnfrentada}}
@@ -43,7 +43,7 @@
       </div>
     </div>
   </div>
-  <div class="tq-chat-exitos-row">
+  <div class="tq-chat-exitos-fila">
     {{#if (tq-gt exitos 0)}}+{{/if}}{{exitos}} éxitos
   </div>
 
@@ -54,7 +54,8 @@
       <div class="tq-melee-titulo">PJ</div>
       <div class="tq-melee-nums">
         <span><i class="fas fa-dice-d10"></i> <strong>{{dadoDisplay}}</strong></span>
-        <span>+ {{puntuacion}}</span>
+        <span>+ {{#if puntuacionMostrada}}{{puntuacionMostrada}}{{else}}{{puntuacion}}{{/if}}</span>
+        {{#each modDesglose as |m|}}<span>{{m.signo}} {{m.valorAbs}} ({{m.label}})</span>{{/each}}
         {{#if bonificador}}<span>{{#if (tq-gt bonificador 0)}}+{{/if}}{{bonificador}}</span>{{/if}}
         {{#if modLongitud}}<span>+{{modLongitud}} (long.)</span>{{/if}}
         <span class="tq-melee-total">= <strong>{{total}}</strong></span>
@@ -71,7 +72,7 @@
       </div>
     </div>
   </div>
-  <div class="tq-chat-exitos-row">
+  <div class="tq-chat-exitos-fila">
     {{#if (tq-gt exitos 0)}}+{{/if}}{{exitos}} éxitos
   </div>
   {{#if resolucionTablas}}
@@ -80,24 +81,19 @@
   {{else if desgloseHechizo}}
   {{!-- Hechizo: desglose vertical --}}
   <div class="tq-hechizo-desglose">
-    <div class="tq-hechizo-fila">
-      <span class="tq-hechizo-etiq"><i class="fas fa-dice-d10"></i></span>
-      <span class="tq-hechizo-val">{{dadoDisplay}}</span>
-    </div>
-    {{#each desgloseHechizo.skills as |sk|}}
-    {{#if sk.esMinimo}}
-    <div class="tq-hechizo-fila">
+    <div class="tq-hechizo-fila" style="flex-wrap:wrap;">
+      <span class="tq-hechizo-etiq"><i class="fas fa-dice-d10"></i> {{dadoDisplay}}</span>
+      {{#each desgloseHechizo.habilidades as |sk|}}{{#if sk.esMinimo}}
+      <span class="tq-hechizo-etiq">+</span>
       <span class="tq-hechizo-etiq">{{sk.nombre}}</span>
       <span class="tq-hechizo-val">{{sk.puntuacion}}</span>
+      {{/if}}{{/each}}
+      {{#each modDesglose as |m|}}
+      <span class="tq-hechizo-val">{{m.signo}} {{m.valorAbs}} ({{m.label}})</span>
+      {{/each}}
+      <span class="tq-hechizo-etiq">=</span>
+      <span class="tq-hechizo-val"><strong>{{total}}</strong></span>
     </div>
-    {{/if}}
-    {{/each}}
-    {{#each modDesglose as |m|}}
-    <div class="tq-hechizo-fila">
-      <span class="tq-hechizo-etiq">{{m.label}}</span>
-      <span class="tq-hechizo-val">{{#if (tq-gt m.valor 0)}}+{{/if}}{{m.valor}}</span>
-    </div>
-    {{/each}}
     <div class="tq-hechizo-vs">
       <span class="tq-hechizo-vs-texto">vs</span>
       <span class="tq-hechizo-dif">{{dificultad}}</span>
@@ -112,7 +108,11 @@
   <div class="tq-chat-desglose">
     <span class="tq-dado"><i class="fas fa-dice-d10"></i> {{dadoDisplay}}</span>
     <span class="tq-sep">+</span>
-    <span>{{puntuacion}}</span>
+    <span>{{#if puntuacionMostrada}}{{puntuacionMostrada}}{{else}}{{puntuacion}}{{/if}}{{#if etiquetaEnDesglose}} ({{etiqueta}}){{/if}}</span>
+    {{#each modDesglose as |m|}}
+    <span class="tq-sep">{{m.signo}}</span>
+    <span>{{m.valorAbs}} ({{m.label}})</span>
+    {{/each}}
     {{#if bonificador}}
     <span class="tq-sep">{{#if (tq-gt bonificador 0)}}+{{/if}}</span>
     <span>{{bonificador}}</span>

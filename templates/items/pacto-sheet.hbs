@@ -3,7 +3,7 @@
   <section class="item-body">
     <h1><input type="text" name="name" value="{{item.name}}" placeholder="Nombre del dios" /></h1>
     <div class="item-grid">
-      <div class="field-group">
+      <div class="tq-field-group">
         <label>Religión</label>
         <select name="system.religion">
           <option value="caos"        {{selected system.religion "caos"}}>Caos</option>
@@ -12,12 +12,12 @@
           <option value="antepasados" {{selected system.religion "antepasados"}}>Antepasados</option>
         </select>
       </div>
-      <div class="field-group">
+      <div class="tq-field-group">
         <label>Espíritu Consagrado</label>
         <input type="number" name="system.espirituConsagrado" value="{{system.espirituConsagrado}}" min="0" />
       </div>
     </div>
-    <div class="field-group full-width">
+    <div class="tq-field-group full-width">
       <label>Notas</label>
       <textarea name="system.notas" rows="5">{{system.notas}}</textarea>
     </div>

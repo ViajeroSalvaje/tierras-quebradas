@@ -3,11 +3,11 @@
   <section class="item-body">
     <h1><input type="text" name="name" value="{{item.name}}" placeholder="Nombre de la bendición" /></h1>
     <div class="item-grid">
-      <div class="field-group">
+      <div class="tq-field-group">
         <label>Coste (ESP)</label>
         <input type="number" name="system.coste" value="{{system.coste}}" min="0" />
       </div>
-      <div class="field-group">
+      <div class="tq-field-group">
         <label>Tipo</label>
         <select name="system.tipo">
           <option value="pasiva"  {{selected system.tipo "pasiva"}}>Pasiva</option>
@@ -15,13 +15,13 @@
         </select>
       </div>
       {{#if (tq-eq system.tipo "activa")}}
-      <div class="field-group">
+      <div class="tq-field-group">
         <label>Coste PM</label>
         <input type="number" name="system.pmCoste" value="{{system.pmCoste}}" min="0" />
       </div>
       {{/if}}
     </div>
-    <div class="field-group full-width">
+    <div class="tq-field-group full-width">
       <label>Efecto</label>
       <textarea name="system.efecto" rows="5">{{system.efecto}}</textarea>
     </div>

@@ -1,0 +1,40 @@
+<div class="cc-section">
+  <div class="cc-ventajas-info">
+    Seleccionadas: <strong>{{ventajasConteo}}/4</strong>
+    <span class="cc-hint">(no es obligatorio elegir)</span>
+  </div>
+
+  <h3 class="cc-section-title">Ventajas</h3>
+  {{#if ventajasLista}}
+  <div class="ventaja-grid">
+    {{#each ventajasLista as |v|}}
+    <div class="ventaja-card {{#if v.selected}}selected{{/if}} {{#if v.deshabilitada}}disabled{{/if}}"
+         data-ventaja-id="{{v.id}}">
+      <div class="ventaja-card-header">
+        <span class="ventaja-nombre">{{v.name}}</span>
+        <span class="ventaja-pp coste">{{v.costeBadge}}</span>
+      </div>
+      <p class="ventaja-efecto">{{v.efecto}}</p>
+    </div>
+    {{/each}}
+  </div>
+  {{else}}
+  <p style="color:var(--tq-text-dim);font-size:13px;">Recarga el sistema para cargar el compendio de ventajas.</p>
+  {{/if}}
+
+  <h3 class="cc-section-title cc-desventajas-title">Desventajas</h3>
+  {{#if desventajasLista}}
+  <div class="ventaja-grid">
+    {{#each desventajasLista as |v|}}
+    <div class="ventaja-card desventaja {{#if v.selected}}selected{{/if}} {{#if v.deshabilitada}}disabled{{/if}}"
+         data-ventaja-id="{{v.id}}">
+      <div class="ventaja-card-header">
+        <span class="ventaja-nombre">{{v.name}}</span>
+        <span class="ventaja-pp bonus">{{v.costeBadge}}</span>
+      </div>
+      <p class="ventaja-efecto">{{v.efecto}}</p>
+    </div>
+    {{/each}}
+  </div>
+  {{/if}}
+</div>

@@ -1,0 +1,44 @@
+<div class="cc-section">
+  <h3 class="cc-section-title">Especie</h3>
+  <div class="especie-grid">
+    {{#each especies as |e|}}
+    <div class="especie-card {{#if e.selected}}selected{{/if}}"
+         data-especie-id="{{e.id}}" data-coste-pp="{{e.costePP}}"
+         data-bonus-mente="{{e.bonusMente}}" data-bonus-esp="{{e.bonusEspiritu}}"
+         data-bonus-puntos="{{e.bonusPuntos}}">
+      <div class="especie-card-header">
+        <span class="especie-nombre">{{e.name}}</span>
+        <span class="especie-pp-badge {{#if (tq-gt e.costePP 0)}}coste{{/if}}">{{e.ppCostStr}}</span>
+      </div>
+      {{#if e.bonusPuntosStr}}<div class="especie-bonus-puntos">{{e.bonusPuntosStr}}</div>{{/if}}
+      {{#if e.bonusCaract}}<div class="especie-bonus-caract">{{e.bonusCaract}}</div>{{/if}}
+      {{#if (tq-gt e.tamanoMax 0)}}<div class="especie-bonus-caract">TAM máx. +{{e.tamanoMax}}</div>{{/if}}
+      <p class="especie-desc">{{e.descripcion}}</p>
+    </div>
+    {{/each}}
+  </div>
+</div>
+
+{{#if (tq-eq data.metodoCaract "distribuir")}}
+<div class="cc-section cc-atr-tam-section">
+  <h3 class="cc-section-title">
+    Características
+    <span class="cc-pts-badge {{#if (tq-gt ptsRestantes 0)}}pendiente{{else if (tq-gt 0 ptsRestantes)}}exceso{{/if}}">
+      {{#if (tq-gt ptsRestantes 0)}}Faltan {{ptsRestantes}} pts.
+      {{else if (tq-gt 0 ptsRestantes)}}Exceso {{ptsRestantes}} pts.
+      {{else}}✓ Repartidos{{/if}}
+    </span>
+  </h3>
+  <div class="cc-caract-grid">
+    {{#each caractLista as |c|}}
+    <div class="cc-caract-fila">
+      <span class="cc-caract-etiqueta">{{c.label}}</span>
+      <button type="button" class="cc-caract-btn" data-caract="{{c.key}}" data-delta="-1">−</button>
+      <span class="cc-caract-val">{{c.valor}}</span>
+      <button type="button" class="cc-caract-btn" data-caract="{{c.key}}" data-delta="1">+</button>
+      <span class="cc-caract-range">{{c.min}} – {{c.max}}</span>
+    </div>
+    {{/each}}
+  </div>
+</div>
+{{/if}}

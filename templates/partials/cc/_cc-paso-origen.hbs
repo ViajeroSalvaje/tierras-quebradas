@@ -1,0 +1,44 @@
+<div class="cc-section">
+  <h3 class="cc-section-title">Origen Étnico</h3>
+  {{#if origenes}}
+  <div class="origen-grid">
+    {{#each origenes as |o|}}
+    <div class="origen-card {{#if o.selected}}selected{{/if}}" data-origen-id="{{o.id}}">
+      <div class="origen-card-header">
+        <span class="origen-nombre">{{o.name}}</span>
+        {{#if o.ppStr}}<span class="especie-pp-badge coste">{{o.ppStr}}</span>{{/if}}
+      </div>
+      <div class="origen-meta">
+        <span><strong>Idioma:</strong> {{o.idiomaNoativo}}</span>
+        <span><strong>Religión:</strong> {{o.religion}}</span>
+      </div>
+      {{#if o.habStr}}
+      <div class="origen-habs">{{o.habStr}}</div>
+      {{/if}}
+      {{#if o.selected}}
+      <p class="especie-desc" style="-webkit-line-clamp:unset;overflow:visible;">{{o.descripcion}}</p>
+      {{/if}}
+    </div>
+    {{/each}}
+  </div>
+  {{else}}
+  <p style="color:var(--tq-text-dim);font-size:13px;">Recarga el sistema para cargar el compendio de orígenes.</p>
+  {{/if}}
+</div>
+
+{{#if eleccionesIdiomaOrigen}}
+<div class="cc-section cc-elecciones-armas">
+  <h3 class="cc-section-title">Elige el idioma adicional</h3>
+  {{#each eleccionesIdiomaOrigen as |e|}}
+  <div class="cc-eleccion-fila">
+    <span class="cc-eleccion-nombre">Idioma <span class="cc-eleccion-bonus">+{{e.bonus}}</span></span>
+    <select class="cc-idioma-origen-select" data-idx="{{e.idx}}">
+      <option value="">— Elige un idioma —</option>
+      {{#each e.opciones as |op|}}
+      <option value="{{op.nombre}}" {{#if op.selected}}selected{{/if}}>{{op.nombre}}</option>
+      {{/each}}
+    </select>
+  </div>
+  {{/each}}
+</div>
+{{/if}}

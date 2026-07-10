@@ -1,0 +1,179 @@
+
+      <div class="tq-section-box">
+        <div class="tq-section-header">
+          <span>Armas</span>
+          <a class="anadir-arma" title="Añadir arma"><i class="fas fa-plus"></i></a>
+        </div>
+        <div class="tq-section-content" style="padding:2px;">
+          <table class="armas-table" style="table-layout:auto;">
+            <thead>
+              <tr>
+                <th></th>
+                <th>Nombre</th>
+                <th>Daño</th>
+                <th>Alcance</th>
+                <th>Carga</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {{#each armas as |a|}}
+              <tr>
+                <td style="text-align:center;">
+                  <a class="pnj-tirar-arma" data-id="{{a.id}}" title="Tirar {{a.name}}"><i class="fas fa-dice-d10"></i></a>
+                </td>
+                <td>{{a.name}}</td>
+                <td>{{a.dano}}</td>
+                <td>{{a.alcance}}</td>
+                <td style="text-align:center;">{{a.carga}}</td>
+                <td class="item-controls">
+                  <a class="item-edit" data-item-id="{{a.id}}" title="Editar"><i class="fas fa-edit"></i></a>
+                  <a class="pnj-item-borrar" data-id="{{a.id}}" title="Eliminar"><i class="fas fa-trash"></i></a>
+                </td>
+              </tr>
+              {{/each}}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="tq-section-box">
+        <div class="tq-section-header">
+          <span>Protecciones</span>
+          <a class="anadir-armadura" title="Añadir protección"><i class="fas fa-plus"></i></a>
+        </div>
+        <div class="tq-section-content" style="padding:2px;">
+          <table class="armaduras-table">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Prot.</th>
+                <th>Zona</th>
+                <th>Tipo</th>
+                <th>Carga</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {{#each armaduras as |a|}}
+              <tr>
+                <td>{{a.name}}</td>
+                <td>{{a.proteccion}}</td>
+                <td>{{a.zona}}</td>
+                <td>{{a.tipo}}</td>
+                <td style="text-align:center;">{{a.carga}}</td>
+                <td class="item-controls">
+                  <a class="item-edit" data-item-id="{{a.id}}" title="Editar"><i class="fas fa-edit"></i></a>
+                  <a class="pnj-item-borrar" data-id="{{a.id}}" title="Eliminar"><i class="fas fa-trash"></i></a>
+                </td>
+              </tr>
+              {{/each}}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {{#if rasgos}}
+      <div class="tq-section-box">
+        <div class="tq-section-header"><span>Rasgos</span></div>
+        <div class="tq-section-content">
+          <div class="pnj-items-lista">
+            {{#each rasgos as |r|}}
+            <div class="pnj-item-fila">
+              <a class="pnj-item-nombre" data-id="{{r.id}}">{{r.name}}</a>
+              <a class="pnj-item-borrar" data-id="{{r.id}}" title="Eliminar"><i class="fas fa-trash"></i></a>
+            </div>
+            {{/each}}
+          </div>
+        </div>
+      </div>
+      {{/if}}
+
+      {{#if ventajas}}
+      <div class="tq-section-box">
+        <div class="tq-section-header"><span>Ventajas / Desventajas</span></div>
+        <div class="tq-section-content">
+          <div class="pnj-items-lista">
+            {{#each ventajas as |v|}}
+            <div class="pnj-item-fila">
+              <a class="pnj-item-nombre" data-id="{{v.id}}">{{v.name}}</a>
+              <a class="pnj-item-borrar" data-id="{{v.id}}" title="Eliminar"><i class="fas fa-trash"></i></a>
+            </div>
+            {{/each}}
+          </div>
+        </div>
+      </div>
+      {{/if}}
+
+      {{#if objetos}}
+      <div class="tq-section-box">
+        <div class="tq-section-header"><span>Equipo</span></div>
+        <div class="tq-section-content">
+          <div class="pnj-items-lista">
+            {{#each objetos as |o|}}
+            <div class="pnj-item-fila">
+              <a class="pnj-item-nombre" data-id="{{o.id}}">{{o.name}}</a>
+              {{#if o.categoria}}<span class="pnj-item-detalle">{{o.categoria}}</span>{{/if}}
+              <a class="pnj-item-borrar" data-id="{{o.id}}" title="Eliminar"><i class="fas fa-trash"></i></a>
+            </div>
+            {{/each}}
+          </div>
+        </div>
+      </div>
+      {{/if}}
+
+      {{#if consumibles}}
+      <div class="tq-section-box">
+        <div class="tq-section-header"><span>Consumibles</span></div>
+        <div class="tq-section-content">
+          <div class="pnj-items-lista">
+            {{#each consumibles as |c|}}
+            <div class="pnj-item-fila">
+              <a class="pnj-item-nombre" data-id="{{c.id}}">{{c.name}}</a>
+              <span class="pnj-item-detalle">×{{c.dosis}}{{#if c.efecto}} · {{c.efecto}}{{/if}}</span>
+              <a class="pnj-item-borrar" data-id="{{c.id}}" title="Eliminar"><i class="fas fa-trash"></i></a>
+            </div>
+            {{/each}}
+          </div>
+        </div>
+      </div>
+      {{/if}}
+
+      {{#if hechizos}}
+      <div class="tq-section-box">
+        <div class="tq-section-header"><span>Hechizos</span></div>
+        <div class="tq-section-content" style="padding:2px 4px;">
+          <ul class="hechizos-list">
+            {{#each hechizos as |hech|}}
+            <li class="hechizo-item" data-item-id="{{hech.id}}">
+              <div class="hechizo-main">
+                <span class="hechizo-nombre">{{hech.name}}</span>
+                <span class="hechizo-nivel-wrap">
+                  <label class="hechizo-nivel-label">Nv.</label>
+                  <input type="number" class="hechizo-nivel-input" data-item-id="{{hech.id}}"
+                         value="{{hech.system.nivelLanzamiento}}" min="0" />
+                </span>
+                <span class="item-controls">
+                  <a class="pnj-tirar-hechizo" data-id="{{hech.id}}">Lanzar</a>
+                  <a class="item-edit" data-item-id="{{hech.id}}"><i class="fas fa-edit"></i></a>
+                  <a class="pnj-item-borrar" data-id="{{hech.id}}"><i class="fas fa-trash"></i></a>
+                </span>
+              </div>
+              <div class="hechizo-meta">
+                {{#if hech.system.verbo}}<span>{{hech.system.verbo}}{{#if hech.system.esfera}} {{hech.system.esfera}}{{/if}}</span><span class="hechizo-sep">|</span>{{/if}}
+                <span>DIF. {{hech.system.dificultad}}</span>
+                <span class="hechizo-sep">|</span>
+                <span>PM {{hech.system.pmCoste}}{{#if (tq-gt hech.system.pmMax hech.system.pmCoste)}}-{{hech.system.pmMax}}{{/if}}</span>
+                {{#if (tq-eq hech.system.duracion "instantaneo")}}<span class="hechizo-sep">|</span><span class="hechizo-badge">Inmediato</span>{{/if}}
+                {{#if hech.system.requiereTiradaEspiritu}}<span class="hechizo-sep">|</span><span class="hechizo-espiritu" title="Requiere tirada enfrentada de Espíritu">ESPÍRITU</span>{{/if}}
+              </div>
+            </li>
+            {{/each}}
+          </ul>
+        </div>
+      </div>
+      {{/if}}
+
+      {{#unless armas}}{{#unless armaduras}}{{#unless hechizos}}
+      <p style="color:var(--tq-text-dim);font-size:13px;padding:8px;">Sin items de combate. Arrastra armas, armaduras o hechizos aquí.</p>
+      {{/unless}}{{/unless}}{{/unless}}

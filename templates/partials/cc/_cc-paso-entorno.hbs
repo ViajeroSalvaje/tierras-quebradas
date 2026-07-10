@@ -1,0 +1,38 @@
+<div class="cc-section">
+  <h3 class="cc-section-title">Entorno</h3>
+  {{#if entornos}}
+  <div class="origen-grid">
+    {{#each entornos as |e|}}
+    <div class="entorno-card origen-card {{#if e.selected}}selected{{/if}}" data-entorno-id="{{e.id}}">
+      <div class="origen-card-header">
+        <span class="origen-nombre">{{e.name}}</span>
+      </div>
+      {{#if e.habStr}}
+      <div class="origen-habs">{{e.habStr}}</div>
+      {{/if}}
+      {{#if e.selected}}
+      <p class="especie-desc" style="-webkit-line-clamp:unset;overflow:visible;">{{e.descripcion}}</p>
+      {{/if}}
+    </div>
+    {{/each}}
+  </div>
+  {{else}}
+  <p style="color:var(--tq-text-dim);font-size:13px;">Recarga el sistema para cargar el compendio de entornos.</p>
+  {{/if}}
+</div>
+
+{{#if eleccionesEntorno}}
+<div class="cc-section cc-elecciones-armas">
+  <h3 class="cc-section-title">Elige tu arma</h3>
+  {{#each eleccionesEntorno as |e|}}
+  <div class="cc-eleccion-fila">
+    <span class="cc-eleccion-nombre">{{e.nombre}} <span class="cc-eleccion-bonus">+{{e.bonus}}</span></span>
+    <select class="cc-arma-select" data-idx="{{e.idx}}" data-tipo="entorno">
+      {{#each e.opciones as |op|}}
+      <option value="{{op.clave}}" {{#if op.selected}}selected{{/if}}>{{op.label}}</option>
+      {{/each}}
+    </select>
+  </div>
+  {{/each}}
+</div>
+{{/if}}

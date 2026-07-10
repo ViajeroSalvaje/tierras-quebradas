@@ -9,34 +9,34 @@
     {{#if (tq-eq modo "melee")}}
     {{!-- Tirada enfrentada: fila del jugador --}}
     <div class="tq-melee-fila">
-      <div class="campo-grupo">
+      <div class="tq-campo-grupo">
         <label>Tu arma</label>
         <span class="longitud-jugador">{{longitudArma}}</span>
       </div>
-      <div class="campo-grupo">
+      <div class="tq-campo-grupo">
         <label>Daño</label>
         <span>{{jugadorDatos.danoArma}}</span>
       </div>
-      <div class="campo-grupo">
+      <div class="tq-campo-grupo">
         <label>MD</label>
         <span>{{jugadorDatos.md}}</span>
       </div>
-      <div class="campo-grupo">
+      <div class="tq-campo-grupo">
         <label>Tipo</label>
         <span>{{jugadorDatos.tipo}}</span>
       </div>
-      <div class="campo-grupo">
+      <div class="tq-campo-grupo">
         <label for="bonificador">Bonificador</label>
         <input type="number" name="bonificador" id="bonificador" value="0" step="1" />
       </div>
     </div>
     {{!-- Fila del rival --}}
     <div class="tq-melee-fila">
-      <div class="campo-grupo">
+      <div class="tq-campo-grupo">
         <label for="rival_puntuacion">Punt. rival</label>
         <input type="number" name="rival_puntuacion" id="rival_puntuacion" value="{{rivalDatos.puntuacion}}" min="0" step="1" />
       </div>
-      <div class="campo-grupo">
+      <div class="tq-campo-grupo">
         <label for="rival_longitud">Arma rival</label>
         <select name="rival_longitud" id="rival_longitud">
           <option value="corta"     {{#if (tq-eq rivalDatos.longitud "corta")}}selected{{/if}}>Corta</option>
@@ -45,21 +45,21 @@
           <option value="muy larga" {{#if (tq-eq rivalDatos.longitud "muy larga")}}selected{{/if}}>Muy larga</option>
         </select>
       </div>
-      <div class="campo-grupo">
+      <div class="tq-campo-grupo">
         <label for="rival_bonificador">Bon. rival</label>
         <input type="number" name="rival_bonificador" id="rival_bonificador" value="0" step="1" />
       </div>
     </div>
     <div class="tq-melee-fila">
-      <div class="campo-grupo">
+      <div class="tq-campo-grupo">
         <label for="rival_danoArma">Daño rival</label>
         <input type="text" name="rival_danoArma" id="rival_danoArma" value="{{rivalDatos.danoArma}}" />
       </div>
-      <div class="campo-grupo">
+      <div class="tq-campo-grupo">
         <label for="rival_md">MD rival</label>
         <input type="number" name="rival_md" id="rival_md" value="{{rivalDatos.md}}" step="1" />
       </div>
-      <div class="campo-grupo">
+      <div class="tq-campo-grupo">
         <label for="rival_tipo">Tipo rival</label>
         <select name="rival_tipo" id="rival_tipo">
           <option value="cortante"     {{#if (tq-eq rivalDatos.tipo "cortante")}}selected{{/if}}>Cortante</option>
@@ -72,7 +72,7 @@
 
     {{else if (tq-eq modo "distancia")}}
     {{!-- Tirada a distancia --}}
-    <div class="campo-grupo">
+    <div class="tq-campo-grupo">
       <label for="distancia">Distancia</label>
       <select name="distancia" id="distancia">
         <option value="10">Corta — 0-14 m (10)</option>
@@ -81,29 +81,29 @@
         <option value="25">Muy larga — 100+ m (25)</option>
       </select>
     </div>
-    <div class="campo-grupo">
-      <label for="esquivar_blanco" title="Si el blanco es consciente del disparo, se usa el mayor entre la distancia y su Esquivar">Esq. del blanco (?)</label>
-      <input type="number" name="esquivar_blanco" id="esquivar_blanco" value="0" min="0" step="1" />
-    </div>
     <div class="tq-melee-fila">
-      <div class="campo-grupo">
+      <div class="tq-campo-grupo">
+        <label for="esquivar_blanco" title="Si el objetivo es consciente de que le están apuntando utiliza lo que sea más alto, la dificultad o la esquiva del objetivo">Objetivo Alerta</label>
+        <input type="number" name="esquivar_blanco" id="esquivar_blanco" value="0" min="0" step="1" />
+      </div>
+      <div class="tq-campo-grupo">
         <label for="bonificador">Bonificador</label>
         <input type="number" name="bonificador" id="bonificador" value="0" step="1" />
       </div>
-      <div class="campo-grupo" style="flex-direction:row;align-items:center;gap:4px;">
+      <div class="tq-campo-grupo" style="flex-direction:row;align-items:center;gap:4px;">
         <label for="apuntando">Apuntando</label>
         <input type="checkbox" name="apuntando" id="apuntando" class="tq-apuntar-check" />
-        <label for="apuntando" class="skill-circle tq-apuntar-circle" style="width:16px;height:16px;cursor:pointer;" title="+2 al ataque"></label>
+        <label for="apuntando" class="tq-circulo tq-apuntar-circulo" style="width:16px;height:16px;cursor:pointer;" title="+2 al ataque"></label>
       </div>
     </div>
     <div class="tq-melee-fila">
-      <div class="campo-grupo" style="flex-direction:row;align-items:center;gap:4px;">
+      <div class="tq-campo-grupo" style="flex-direction:row;align-items:center;gap:4px;">
         <label for="en_melee">En melé con aliado</label>
         <input type="checkbox" name="en_melee" id="en_melee" class="tq-apuntar-check" />
-        <label for="en_melee" class="skill-circle tq-apuntar-circle" style="width:16px;height:16px;cursor:pointer;" title="El objetivo está trabado en melé con un aliado"></label>
+        <label for="en_melee" class="tq-circulo tq-apuntar-circulo" style="width:16px;height:16px;cursor:pointer;" title="El objetivo está trabado en melé con un aliado"></label>
       </div>
       {{#if aliados}}
-      <div class="campo-grupo">
+      <div class="tq-campo-grupo">
         <label for="aliado_id">Aliado</label>
         <select name="aliado_id" id="aliado_id">
           {{#each aliados}}
@@ -116,7 +116,7 @@
 
     {{else}}
     {{!-- Tirada genérica de habilidad --}}
-    <div class="campo-grupo">
+    <div class="tq-campo-grupo">
       <label for="dificultad">Dificultad</label>
       <select name="dificultad" id="dificultad">
         {{#if (tq-eq escalaDif "caracteristica")}}
@@ -132,17 +132,17 @@
         {{/if}}
       </select>
     </div>
-    <div class="campo-grupo">
+    <div class="tq-campo-grupo">
       <label for="bonificador">Bonificador</label>
       <input type="number" name="bonificador" id="bonificador" value="0" step="1" />
     </div>
     {{/if}}
 
     {{#if topesOpciones}}
-    <div class="campo-tope">
-      <label class="tope-label">
-        <input type="checkbox" name="tope_activo" id="tope_activo"> Aplicar Tope
-      </label>
+    <div class="tq-campo-tope">
+      <input type="checkbox" name="tope_activo" id="tope_activo" class="tq-apuntar-check" />
+      <label for="tope_activo" class="tq-circulo tq-apuntar-circulo" style="width:16px;height:16px;cursor:pointer;flex-shrink:0;"></label>
+      <span class="tq-tope-label">Aplicar Tope</span>
       <select name="tope_habilidad" id="tope_habilidad">
         {{#each topesOpciones as |t|}}
         <option value="{{t.clave}}">{{t.label}} ({{t.valor}})</option>

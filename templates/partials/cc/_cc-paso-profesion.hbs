@@ -1,0 +1,61 @@
+<div class="cc-section">
+  <h3 class="cc-section-title">Profesión</h3>
+  {{#if profesiones}}
+  <div class="origen-grid">
+    {{#each profesiones as |p|}}
+    <div class="profesion-card origen-card {{#if p.selected}}selected{{/if}}" data-profesion-id="{{p.id}}">
+      <div class="origen-card-header">
+        <span class="origen-nombre">{{p.name}}</span>
+      </div>
+      {{#if p.habStr}}
+      <div class="origen-habs">{{p.habStr}}</div>
+      {{/if}}
+      {{#if p.ventajas.length}}
+      <div class="origen-habs" style="color:var(--tq-green);">
+        Ventajas: {{#each p.ventajas as |v|}}{{v.nombre}}{{#unless @last}}, {{/unless}}{{/each}}
+      </div>
+      {{/if}}
+      {{#if p.selected}}
+      <p class="especie-desc" style="-webkit-line-clamp:unset;overflow:visible;">{{p.descripcion}}</p>
+      {{/if}}
+    </div>
+    {{/each}}
+  </div>
+  {{else}}
+  <p style="color:var(--tq-text-dim);font-size:13px;">Recarga el sistema para cargar el compendio de profesiones.</p>
+  {{/if}}
+</div>
+
+{{#if eleccionesProfesion}}
+<div class="cc-section cc-elecciones-armas">
+  <h3 class="cc-section-title">Elige tus armas</h3>
+  {{#each eleccionesProfesion as |e|}}
+  <div class="cc-eleccion-fila">
+    <span class="cc-eleccion-nombre">{{e.nombre}} <span class="cc-eleccion-bonus">+{{e.bonus}}</span></span>
+    <select class="cc-arma-select" data-idx="{{e.idx}}" data-tipo="profesion">
+      {{#each e.opciones as |op|}}
+      <option value="{{op.clave}}" {{#if op.selected}}selected{{/if}}>{{op.label}}</option>
+      {{/each}}
+    </select>
+  </div>
+  {{/each}}
+</div>
+{{/if}}
+
+{{#if especializaciones}}
+<div class="cc-section">
+  <h3 class="cc-section-title">Especialización</h3>
+  <div class="origen-grid">
+    {{#each especializaciones as |e|}}
+    <div class="cc-especializacion-card origen-card {{#if e.selected}}selected{{/if}}" data-idx="{{e.idx}}">
+      <div class="origen-card-header">
+        <span class="origen-nombre">{{e.nombre}}</span>
+      </div>
+      {{#if e.habStr}}
+      <div class="origen-habs">{{e.habStr}}</div>
+      {{/if}}
+    </div>
+    {{/each}}
+  </div>
+</div>
+{{/if}}

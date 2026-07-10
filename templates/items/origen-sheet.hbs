@@ -3,27 +3,27 @@
 
     <h1><input type="text" name="name" value="{{item.name}}" placeholder="Nombre del origen" /></h1>
 
-    <div class="field-group full">
+    <div class="tq-field-group full">
       <label>Descripción</label>
       <textarea name="system.descripcion" rows="4">{{system.descripcion}}</textarea>
     </div>
 
     <div style="display:flex;gap:10px;">
-      <div class="field-group" style="flex:1;">
+      <div class="tq-field-group" style="flex:1;">
         <label>Idioma Nativo</label>
         <input type="text" name="system.idiomaNoativo" value="{{system.idiomaNoativo}}" />
       </div>
-      <div class="field-group" style="flex:1;">
+      <div class="tq-field-group" style="flex:1;">
         <label>Religión</label>
         <input type="text" name="system.religion" value="{{system.religion}}" />
       </div>
-      <div class="field-group" style="width:80px;">
+      <div class="tq-field-group" style="width:80px;">
         <label>Bonus PP</label>
         <input type="number" name="system.ppBonus" value="{{system.ppBonus}}" />
       </div>
     </div>
 
-    <div class="field-group full">
+    <div class="tq-field-group full">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
         <label>Modificadores de Habilidades</label>
         <a class="origen-hab-add" style="font-size:11px;color:var(--tq-teal);cursor:pointer;">

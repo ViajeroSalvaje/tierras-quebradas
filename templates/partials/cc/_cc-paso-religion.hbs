@@ -1,0 +1,71 @@
+<div class="cc-section">
+  <h3 class="cc-section-title">Ideología religiosa</h3>
+  <div class="cc-ideologia-grid">
+    {{#each religionData.ideologias as |i|}}
+    <div class="cc-ideologia-card {{#if i.selected}}selected{{/if}}" data-ideologia-id="{{i.id}}">
+      <div class="cc-ideologia-header">
+        <span class="cc-ideologia-label">{{i.label}}</span>
+        {{#if i.ppBonus}}<span class="cc-ideologia-pp">+{{i.ppBonus}} PP</span>{{/if}}
+      </div>
+      <div class="cc-ideologia-desc">{{i.desc}}</div>
+    </div>
+    {{/each}}
+  </div>
+</div>
+
+{{#if religionData.hayDeidades}}
+<div class="cc-section">
+  <h3 class="cc-section-title">Deidad tutelar <span class="cc-hint">(opcional)</span></h3>
+  <select class="cc-deidad-select" style="width:100%;">
+    <option value="">— Sin deidad específica —</option>
+    {{#each religionData.deidades as |d|}}
+    <option value="{{d.nombre}}" {{#if d.selected}}selected{{/if}}>{{d.nombre}}</option>
+    {{/each}}
+  </select>
+</div>
+{{/if}}
+
+<div class="cc-section">
+  <h3 class="cc-section-title">Actitud ante lo divino</h3>
+  <div class="cc-actitud-grid">
+    {{#each religionData.actitudes as |a|}}
+    <div class="cc-actitud-card {{#if a.selected}}selected{{/if}}" data-actitud-id="{{a.id}}">
+      <div class="cc-actitud-label">{{a.label}}</div>
+      <div class="cc-actitud-desc">{{a.desc}}</div>
+    </div>
+    {{/each}}
+  </div>
+</div>
+
+{{#if religionData.ideologiaActiva}}
+<div class="cc-section">
+  <div class="cc-pl-header">
+    <h3 class="cc-section-title" style="margin:0;">Puntos de Lealtad</h3>
+    <span class="cc-hint">Pool: {{religionData.plBase}} PL (Espíritu × 3)</span>
+    <span class="cc-pl-restante {{#unless religionData.plRestante}}agotados{{/unless}}">Restantes: {{religionData.plRestante}}</span>
+  </div>
+
+  {{#if religionData.hayBonus}}
+  <div class="cc-pl-bonuses">
+    {{#if religionData.esSacerdote}}<span class="cc-pl-bonus-badge">+10 auto (Sacerdote → {{religionData.lealtadClave}})</span>{{/if}}
+    {{#if religionData.tieneDevocion}}<span class="cc-pl-bonus-badge">+5 auto (Devoción → {{religionData.lealtadClave}})</span>{{/if}}
+    {{#if religionData.esPuritano}}<span class="cc-pl-bonus-badge">+5 auto (Puritano → ley)</span>{{/if}}
+  </div>
+  {{/if}}
+
+  <div class="cc-pl-grid">
+    {{#each religionData.plFilas as |fila|}}
+    <div class="cc-pl-fila {{#if fila.alineado}}pl-alineada{{/if}}">
+      <span class="cc-pl-label">{{fila.label}}</span>
+      <div class="cc-pl-spinner">
+        <button type="button" class="cc-pl-btn" data-religion="{{fila.key}}" data-delta="-1" {{#unless fila.puedeBajar}}disabled{{/unless}}>−</button>
+        <span class="cc-pl-valor">{{fila.repartidos}}</span>
+        <button type="button" class="cc-pl-btn" data-religion="{{fila.key}}" data-delta="1" {{#unless fila.puedeSubir}}disabled{{/unless}}>+</button>
+      </div>
+      {{#if fila.bonus}}<span class="cc-pl-bonus-auto">+{{fila.bonus}} auto</span>{{/if}}
+      <span class="cc-pl-total {{#if fila.alineado}}pl-alineado-valor{{/if}}">= {{fila.total}} PL{{#if fila.alineado}} ★{{/if}}</span>
+    </div>
+    {{/each}}
+  </div>
+</div>
+{{/if}}

@@ -1,0 +1,84 @@
+<div class="cc-metodo-toggle">
+  <button type="button" class="cc-metodo-btn {{#if (tq-eq data.metodoCaract 'distribuir')}}active{{/if}}" data-metodo="distribuir">Repartir valores</button>
+  <button type="button" class="cc-metodo-btn {{#if (tq-eq data.metodoCaract 'aleatorio')}}active{{/if}}" data-metodo="aleatorio">Aleatorio</button>
+</div>
+
+{{#if (tq-eq data.metodoCaract "distribuir")}}
+<div class="cc-section">
+  <h3 class="cc-section-title">
+    Características
+    <span class="cc-pts-badge {{#if (tq-gt ptsRestantes 0)}}pendiente{{else if (tq-gt 0 ptsRestantes)}}exceso{{/if}}">
+      {{#if (tq-gt ptsRestantes 0)}}Faltan {{ptsRestantes}} pts.
+      {{else if (tq-gt 0 ptsRestantes)}}Exceso {{ptsRestantes}} pts.
+      {{else}}19 / 19 ✓{{/if}}
+    </span>
+  </h3>
+  <div class="cc-caract-grid">
+    {{#each caractLista as |c|}}
+    <div class="cc-caract-fila">
+      <span class="cc-caract-etiqueta">{{c.label}}</span>
+      <button type="button" class="cc-caract-btn" data-caract="{{c.key}}" data-delta="-1">−</button>
+      <span class="cc-caract-val">{{c.valor}}</span>
+      <button type="button" class="cc-caract-btn" data-caract="{{c.key}}" data-delta="1">+</button>
+      <span class="cc-caract-range">{{c.min}} – {{c.max}}</span>
+    </div>
+    {{/each}}
+  </div>
+</div>
+{{/if}}
+
+{{#if (tq-eq data.metodoCaract "aleatorio")}}
+<div class="cc-section">
+  <h3 class="cc-section-title">Características — aleatorio</h3>
+  {{#if asignacionAleatoria}}
+  <p class="cc-aleatorio-hint">Asigna los 3 valores obtenidos libremente.</p>
+  <div class="cc-aleatorio-layout">
+    <div class="cc-aleatorio-asignacion">
+      <div class="cc-caract-grid cc-aleatorio-grid">
+        {{#each asignacionAleatoria as |c|}}
+        <div class="cc-caract-fila">
+          <span class="cc-caract-etiqueta">{{c.label}}</span>
+          <select class="cc-aleatorio-select" data-caract="{{c.key}}">
+            {{#each c.opciones as |op|}}
+            <option value="{{op.valor}}" {{#if op.seleccionado}}selected{{/if}}>{{op.valor}}</option>
+            {{/each}}
+          </select>
+        </div>
+        {{/each}}
+      </div>
+    </div>
+    {{#if tiradaBruta}}
+    <div class="cc-aleatorio-resultados">
+      <p class="cc-aleatorio-resultados-titulo">Resultados obtenidos</p>
+      {{#each tiradaBruta as |v i|}}
+      <div class="cc-aleatorio-dado {{#if v.descartado}}descartado{{/if}}">{{v.valor}}</div>
+      {{/each}}
+      <p class="cc-aleatorio-resultados-nota">El 2.º valor por abajo se descarta</p>
+    </div>
+    {{/if}}
+  </div>
+  <button type="button" class="cc-tirar-aleatorio cc-tirar-de-nuevo">Volver a tirar</button>
+  {{else}}
+  <p class="cc-aleatorio-hint">Tira 4 veces 1d6+3, descarta el 2.º valor por abajo y asigna los 3 restantes.</p>
+  <button type="button" class="cc-tirar-aleatorio">Tirar dados</button>
+  {{/if}}
+</div>
+{{/if}}
+
+<div class="cc-section cc-atr-tam-section">
+  <h3 class="cc-section-title">Atractivo y Tamaño</h3>
+  <div class="cc-atr-tam-grid">
+    {{#each atrTamLista as |c|}}
+    <div class="cc-caract-fila">
+      <span class="cc-caract-etiqueta">{{c.label}}</span>
+      <button type="button" class="cc-caract-btn" data-caract="{{c.key}}" data-delta="-1">−</button>
+      <span class="cc-caract-val">{{c.valor}}</span>
+      <button type="button" class="cc-caract-btn" data-caract="{{c.key}}" data-delta="1">+</button>
+      <span class="cc-caract-range">{{c.min}} – +{{c.max}}</span>
+      {{#if c.ppStr}}
+      <span class="cc-atr-pp {{#if (tq-gt c.ppMod 0)}}bonus{{else if (tq-gt 0 c.ppMod)}}coste{{/if}}">{{c.ppStr}}</span>
+      {{/if}}
+    </div>
+    {{/each}}
+  </div>
+</div>
