@@ -1,3 +1,20 @@
+# Notas 10 de juliioo 2026 
+
+**Pendientes**
+- Armaduras y armas con círculos verdes en lugar de checkboxes en el creador de personajes.
+
+- 
+**Cambios**
+
+- Cambios en la mecánica de tiradas enfrentadas.
+- Solucionados problema de necesidad de doble arrastres de items.
+- Implementada penalización por ceguera.
+- Implementada la posibilidad de especialidades en profesiones.
+
+
+
+
+
 # Notas 24 de junio 2026 
 
 **Pendientes**
