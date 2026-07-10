@@ -40,6 +40,7 @@
           "sanando": false,
           "desangre": false,
           "dolorExtremo": false,
+          "ceguera": false,
           "piernaInutilizada": false,
           "brazoInutilizado": false,
           "agonia": false
@@ -215,7 +216,7 @@
     }
   },
   "Item": {
-    "types": ["arma", "armadura", "hechizo", "ventaja", "rasgo", "pacto", "bendicion", "especie", "entorno", "origen", "profesion", "idioma", "objeto", "consumible"],
+    "types": ["arma", "armadura", "hechizo", "ventaja", "rasgo", "pacto", "bendicion", "especie", "entorno", "origen", "profesion", "idioma", "objeto", "consumible", "habilidad"],
     "templates": {
       "base": {
         "descripcion": "",
@@ -259,7 +260,8 @@
       "alcance": "toque",
       "requiereTiradaEspiritu": false,
       "escola": "",
-      "sintaxis": ""
+      "sintaxis": "",
+      "nivelLanzamiento": 0
     },
     "ventaja": {
       "templates": ["base"],
@@ -294,7 +296,8 @@
     "profesion": {
       "descripcion": "",
       "habilidades": [],
-      "ventajas": []
+      "ventajas": [],
+      "especializaciones": []
     },
     "rasgo": {
       "coste": 0,
@@ -336,6 +339,14 @@
       "dosis": 1,
       "carga": 0,
       "efecto": "",
+      "descripcion": ""
+    },
+    "habilidad": {
+      "clave": "",
+      "base": "cultura",
+      "puntosFijos": 0,
+      "estorbo": 0,
+      "especializada": false,
       "descripcion": ""
     }
   }

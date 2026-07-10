@@ -41,17 +41,11 @@ Hooks.once("init", () => {
   console.log("Tierras Quebradas | Inicializando sistema");
 
   game.settings.register("tierras-quebradas", "infortunio", {
-    scope: "world",
-    config: false,
-    type: Number,
-    default: 0
+    scope: "world", config: false, type: Number, default: 0
   });
 
   game.settings.register("tierras-quebradas", "pxAventura", {
-    scope: "world",
-    config: false,
-    type: Number,
-    default: 3
+    scope: "world", config: false, type: Number, default: 3
   });
 
   const reRenderPJSheets = () => {
@@ -61,59 +55,30 @@ Hooks.once("init", () => {
   };
 
   game.settings.register("tierras-quebradas", "blindRollHabilidades", {
-    name: "Activar tiradas ciegas",
-    hint: "Buscar, Disfrazarse, Documentación, Imponerse, Manipular, Ocultar, Percatarse, Perspicacia, Rastrear y Sigilo se lanzan automáticamente en modo tirada ciega cuando las hacen los jugadores.",
-    scope: "world",
-    config: true,
-    type: Boolean,
-    default: false
+    name: "Activar tiradas ciegas", hint: "Buscar, Disfrazarse, Documentación, Imponerse, Manipular, Ocultar, Percatarse, Perspicacia, Rastrear y Sigilo se lanzan automáticamente en modo tirada ciega cuando las hacen los jugadores.", scope: "world", config: true, type: Boolean, default: false
   });
 
   game.settings.register("tierras-quebradas", "mostrarSimboloLealtad", {
-    name: "Lealtad en ficha (general)",
-    hint: "Muestra el símbolo de la lealtad dominante del personaje en la cabecera de su ficha.",
-    scope: "world",
-    config: true,
-    type: Boolean,
-    default: true,
-    onChange: reRenderPJSheets
+    name: "Lealtad en ficha (general)", hint: "Muestra el símbolo de la lealtad dominante del personaje en la cabecera de su ficha.", scope: "world", config: true, type: Boolean, default: true, onChange: reRenderPJSheets
   });
 
   game.settings.register("tierras-quebradas", "mostrarSimboloLealtadJugador", {
-    name: "Lealtad en ficha (personal)",
-    hint: "Activa o desactiva el símbolo de lealtad en las fichas para el jugador.",
-    scope: "client",
-    config: true,
-    type: Boolean,
-    default: true,
-    onChange: reRenderPJSheets
+    name: "Lealtad en ficha (personal)", hint: "Activa o desactiva el símbolo de lealtad en las fichas para el jugador.", scope: "client", config: true, type: Boolean, default: true, onChange: reRenderPJSheets
   });
 
   CONFIG.TQ = {
     dificultades: {
-      10: "TQ.Tirada.Facil",
-      15: "TQ.Tirada.Normal",
-      20: "TQ.Tirada.Dificil",
-      25: "TQ.Tirada.MuyDificil"
+      10: "TQ.Tirada.Facil", 15: "TQ.Tirada.Normal", 20: "TQ.Tirada.Dificil", 25: "TQ.Tirada.MuyDificil"
     }
   };
 
   CONFIG.Combat.initiative = {
-    formula: "@caracteristicas.mente.valor",
-    decimals: 0
+    formula: "@caracteristicas.mente.valor", decimals: 0
   };
 
   // Estados de combate
   CONFIG.statusEffects = [
-    { id: "debilitado", name: "TQ.Salud.debilitado", icon: "icons/svg/downgrade.svg" },
-    { id: "incapacitado", name: "TQ.Salud.incapacitado", icon: "icons/svg/daze.svg" },
-    { id: "sanando", name: "TQ.Salud.sanando", icon: "icons/svg/regen.svg" },
-    { id: "desangre", name: "TQ.Salud.desangre", icon: "icons/svg/blood.svg" },
-    { id: "dolorExtremo", name: "TQ.Salud.dolorExtremo", icon: "icons/svg/paralysis.svg" },
-    { id: "piernaInutilizada", name: "TQ.Salud.piernaInutilizada", icon: "icons/svg/falling.svg" },
-    { id: "brazoInutilizado", name: "TQ.Salud.brazoInutilizado", icon: "icons/svg/arm.svg" },
-    { id: "agonia", name: "TQ.Salud.agonia", icon: "icons/svg/stoned.svg" },
-    { id: "dead", name: "TQ.Salud.muerto", icon: "icons/svg/skull.svg" }
+    { id: "debilitado", name: "TQ.Salud.debilitado", icon: "icons/svg/downgrade.svg" }, { id: "incapacitado", name: "TQ.Salud.incapacitado", icon: "icons/svg/daze.svg" }, { id: "sanando", name: "TQ.Salud.sanando", icon: "icons/svg/regen.svg" }, { id: "desangre", name: "TQ.Salud.desangre", icon: "icons/svg/blood.svg" }, { id: "dolorExtremo", name: "TQ.Salud.dolorExtremo", icon: "icons/svg/paralysis.svg" }, { id: "piernaInutilizada", name: "TQ.Salud.piernaInutilizada", icon: "icons/svg/falling.svg" }, { id: "brazoInutilizado", name: "TQ.Salud.brazoInutilizado", icon: "icons/svg/arm.svg" }, { id: "agonia", name: "TQ.Salud.agonia", icon: "icons/svg/stoned.svg" }, { id: "dead", name: "TQ.Salud.muerto", icon: "icons/svg/skull.svg" }
   ];
 
   CONFIG.Actor.documentClass = TQActor;
@@ -144,36 +109,11 @@ Hooks.once("init", () => {
 
   loadTemplates([
     // Partials
-    "systems/tierras-quebradas/templates/partials/_tab-combate-magia.hbs",
-    // Apps
-    "systems/tierras-quebradas/templates/apps/character-creator.hbs",
-    "systems/tierras-quebradas/templates/apps/pnj-importer.hbs",
-    "systems/tierras-quebradas/templates/apps/demonio-importer.hbs",
-    "systems/tierras-quebradas/templates/apps/criatura-importer.hbs",
-    "systems/tierras-quebradas/templates/apps/director-widget.hbs",
-    // Actors
-    "systems/tierras-quebradas/templates/actors/pj-sheet.hbs",
-    "systems/tierras-quebradas/templates/actors/pnj-sheet.hbs",
-    "systems/tierras-quebradas/templates/actors/criatura-sheet.hbs",
-    "systems/tierras-quebradas/templates/actors/demonio-sheet.hbs",
-    // Items
-    "systems/tierras-quebradas/templates/items/arma-sheet.hbs",
-    "systems/tierras-quebradas/templates/items/armadura-sheet.hbs",
-    "systems/tierras-quebradas/templates/items/hechizo-sheet.hbs",
-    "systems/tierras-quebradas/templates/items/ventaja-sheet.hbs",
-    "systems/tierras-quebradas/templates/items/especie-sheet.hbs",
-    "systems/tierras-quebradas/templates/items/idioma-sheet.hbs",
-    "systems/tierras-quebradas/templates/items/objeto-sheet.hbs",
-    "systems/tierras-quebradas/templates/items/consumible-sheet.hbs",
-    "systems/tierras-quebradas/templates/items/habilidad-sheet.hbs",
-    "systems/tierras-quebradas/templates/items/entorno-sheet.hbs",
-    "systems/tierras-quebradas/templates/items/origen-sheet.hbs",
-    "systems/tierras-quebradas/templates/items/profesion-sheet.hbs",
-    // Dialogs
-    "systems/tierras-quebradas/templates/dialogs/tirada-dialogo.hbs",
-    "systems/tierras-quebradas/templates/dialogs/tirada-resultado.hbs",
-    "systems/tierras-quebradas/templates/dialogs/tirada-fortuna-eleccion.hbs",
-    "systems/tierras-quebradas/templates/dialogs/tablas-melee.hbs"
+    "systems/tierras-quebradas/templates/partials/_tab-combate-magia.hbs", "systems/tierras-quebradas/templates/partials/cc/_cc-paso-caracteristicas.hbs", "systems/tierras-quebradas/templates/partials/cc/_cc-paso-edad.hbs", "systems/tierras-quebradas/templates/partials/cc/_cc-paso-origen.hbs", "systems/tierras-quebradas/templates/partials/cc/_cc-paso-especie.hbs", "systems/tierras-quebradas/templates/partials/cc/_cc-paso-entorno.hbs", "systems/tierras-quebradas/templates/partials/cc/_cc-paso-profesion.hbs", "systems/tierras-quebradas/templates/partials/cc/_cc-paso-ventajas.hbs", "systems/tierras-quebradas/templates/partials/cc/_cc-paso-rasgos.hbs", "systems/tierras-quebradas/templates/partials/cc/_cc-paso-equipo.hbs", "systems/tierras-quebradas/templates/partials/cc/_cc-paso-habilidades.hbs", "systems/tierras-quebradas/templates/partials/cc/_cc-paso-religion.hbs", "systems/tierras-quebradas/templates/partials/cc/_cc-paso-magia.hbs", // Apps
+    "systems/tierras-quebradas/templates/apps/character-creator.hbs", "systems/tierras-quebradas/templates/apps/pnj-importer.hbs", "systems/tierras-quebradas/templates/apps/demonio-importer.hbs", "systems/tierras-quebradas/templates/apps/criatura-importer.hbs", "systems/tierras-quebradas/templates/apps/director-widget.hbs", // Actors
+    "systems/tierras-quebradas/templates/actors/pj-sheet.hbs", "systems/tierras-quebradas/templates/actors/pnj-sheet.hbs", "systems/tierras-quebradas/templates/actors/criatura-sheet.hbs", "systems/tierras-quebradas/templates/actors/demonio-sheet.hbs", // Items
+    "systems/tierras-quebradas/templates/items/arma-sheet.hbs", "systems/tierras-quebradas/templates/items/armadura-sheet.hbs", "systems/tierras-quebradas/templates/items/hechizo-sheet.hbs", "systems/tierras-quebradas/templates/items/ventaja-sheet.hbs", "systems/tierras-quebradas/templates/items/especie-sheet.hbs", "systems/tierras-quebradas/templates/items/idioma-sheet.hbs", "systems/tierras-quebradas/templates/items/objeto-sheet.hbs", "systems/tierras-quebradas/templates/items/consumible-sheet.hbs", "systems/tierras-quebradas/templates/items/habilidad-sheet.hbs", "systems/tierras-quebradas/templates/items/entorno-sheet.hbs", "systems/tierras-quebradas/templates/items/origen-sheet.hbs", "systems/tierras-quebradas/templates/items/profesion-sheet.hbs", // Dialogs
+    "systems/tierras-quebradas/templates/dialogs/tirada-dialogo.hbs", "systems/tierras-quebradas/templates/dialogs/tirada-resultado.hbs", "systems/tierras-quebradas/templates/dialogs/tirada-fortuna-eleccion.hbs", "systems/tierras-quebradas/templates/dialogs/tablas-melee.hbs"
   ]);
 });
 
@@ -196,61 +136,7 @@ async function _poblarHabilidades() {
   if (existentes.length > 0) return;
 
   const HABILIDADES = [
-    { name: "Academia",            system: { clave: "academia",          base: "cultura",      puntosFijos: 0, estorbo: 0, especializada: true } },
-    { name: "Actuación",           system: { clave: "actuacion",         base: "comunicacion", puntosFijos: 0, estorbo: 0, especializada: false } },
-    { name: "Arco",                system: { clave: "arco",              base: "tecnica",      puntosFijos: 0, estorbo: 0, especializada: false } },
-    { name: "Armas de Asta",       system: { clave: "armasAsta",         base: "vigor",        puntosFijos: 0, estorbo: 0, especializada: false } },
-    { name: "Armas de Espada",     system: { clave: "armasEspada",       base: "vigor",        puntosFijos: 0, estorbo: 0, especializada: false } },
-    { name: "Armas de Mango",      system: { clave: "armasMangos",       base: "vigor",        puntosFijos: 0, estorbo: 0, especializada: false } },
-    { name: "Armas de Puñal",      system: { clave: "armasPunhal",       base: "vigor",        puntosFijos: 0, estorbo: 0, especializada: false } },
-    { name: "Artesanía",           system: { clave: "artesania",         base: "tecnica",      puntosFijos: 0, estorbo: 0, especializada: true } },
-    { name: "Atletismo",           system: { clave: "atletismo",         base: "agilidad",     puntosFijos: 2, estorbo: 1, especializada: false } },
-    { name: "Ballesta",            system: { clave: "ballesta",          base: "tecnica",      puntosFijos: 0, estorbo: 0, especializada: false } },
-    { name: "Buscar",              system: { clave: "buscar",            base: "percepcion",   puntosFijos: 1, estorbo: 0, especializada: false } },
-    { name: "Callejeo",            system: { clave: "callejeo",          base: "comunicacion", puntosFijos: 0, estorbo: 0, especializada: false } },
-    { name: "Cañón de Mano",       system: { clave: "canonDeMano",       base: "tecnica",      puntosFijos: 0, estorbo: 0, especializada: false } },
-    { name: "Conocimiento Mágico", system: { clave: "conocimientoMagico",base: "cultura",      puntosFijos: 0, estorbo: 0, especializada: true } },
-    { name: "Disfrazarse",         system: { clave: "disfrazarse",       base: "comunicacion", puntosFijos: 0, estorbo: 0, especializada: false } },
-    { name: "Documentación",       system: { clave: "documentacion",     base: "percepcion",   puntosFijos: 0, estorbo: 0, especializada: false } },
-    { name: "Encanto",             system: { clave: "encanto",           base: "comunicacion", puntosFijos: 2, estorbo: 0, especializada: false } },
-    { name: "Escudo",              system: { clave: "escudo",            base: "vigor",        puntosFijos: 0, estorbo: 0, especializada: false } },
-    { name: "Esquivar",            system: { clave: "esquivar",          base: "agilidad",     puntosFijos: 1, estorbo: 1, especializada: false } },
-    { name: "Estrategia",          system: { clave: "estrategia",        base: "cultura",      puntosFijos: 0, estorbo: 0, especializada: true } },
-    { name: "Forzar Cerraduras",   system: { clave: "forzarCerraduras",  base: "tecnica",      puntosFijos: 0, estorbo: 0, especializada: true } },
-    { name: "Honda",               system: { clave: "honda",             base: "tecnica",      puntosFijos: 0, estorbo: 0, especializada: false } },
-    { name: "Hurtar",              system: { clave: "hurtar",            base: "tecnica",      puntosFijos: 0, estorbo: 1, especializada: false } },
-    { name: "Idioma 1 (nativo)",   system: { clave: "idioma1",           base: "cultura",      puntosFijos: 0, estorbo: 0, especializada: false } },
-    { name: "Idioma 2",            system: { clave: "idioma2",           base: "cultura",      puntosFijos: 0, estorbo: 0, especializada: false } },
-    { name: "Idioma 3",            system: { clave: "idioma3",           base: "cultura",      puntosFijos: 0, estorbo: 0, especializada: false } },
-    { name: "Imponerse",           system: { clave: "imponerse",         base: "comunicacion", puntosFijos: 1, estorbo: 0, especializada: false } },
-    { name: "Instruir",            system: { clave: "instruir",          base: "comunicacion", puntosFijos: 0, estorbo: 0, especializada: false } },
-    { name: "Juego",               system: { clave: "juego",             base: "percepcion",   puntosFijos: 0, estorbo: 0, especializada: false } },
-    { name: "Lanzar",              system: { clave: "lanzar",            base: "vigor",        puntosFijos: 2, estorbo: 0, especializada: false } },
-    { name: "Leyendas",            system: { clave: "leyendas",          base: "cultura",      puntosFijos: 2, estorbo: 0, especializada: false } },
-    { name: "Manejar Botes",       system: { clave: "manejarBotes",      base: "vigor",        puntosFijos: 0, estorbo: 0, especializada: false } },
-    { name: "Manejar Carros",      system: { clave: "manejarCarros",     base: "tecnica",      puntosFijos: 0, estorbo: 0, especializada: false } },
-    { name: "Manipulación",        system: { clave: "manipulacion",      base: "comunicacion", puntosFijos: 2, estorbo: 0, especializada: false } },
-    { name: "Medicina",            system: { clave: "medicina",          base: "cultura",      puntosFijos: 0, estorbo: 0, especializada: false } },
-    { name: "Memorizar",           system: { clave: "memorizar",         base: "cultura",      puntosFijos: 1, estorbo: 0, especializada: false } },
-    { name: "Montar",              system: { clave: "montar",            base: "vigor",        puntosFijos: 0, estorbo: 0, especializada: false } },
-    { name: "Multiverso",          system: { clave: "multiverso",        base: "cultura",      puntosFijos: 0, estorbo: 0, especializada: true } },
-    { name: "Nadar",               system: { clave: "nadar",             base: "agilidad",     puntosFijos: 0, estorbo: 2, especializada: false } },
-    { name: "Naturaleza",          system: { clave: "naturaleza",        base: "cultura",      puntosFijos: 1, estorbo: 0, especializada: false } },
-    { name: "Navegación",          system: { clave: "navegacion",        base: "cultura",      puntosFijos: 0, estorbo: 0, especializada: false } },
-    { name: "Ocultar",             system: { clave: "ocultar",           base: "tecnica",      puntosFijos: 0, estorbo: 0, especializada: false } },
-    { name: "Oratoria",            system: { clave: "oratoria",          base: "comunicacion", puntosFijos: 0, estorbo: 0, especializada: false } },
-    { name: "Pelea",               system: { clave: "pelea",             base: "vigor",        puntosFijos: 0, estorbo: 0, especializada: false } },
-    { name: "Percatarse",          system: { clave: "percatarse",        base: "percepcion",   puntosFijos: 0, estorbo: 0, especializada: false } },
-    { name: "Perspicacia",         system: { clave: "perspicacia",       base: "percepcion",   puntosFijos: 0, estorbo: 0, especializada: false } },
-    { name: "Pociones",            system: { clave: "pociones",          base: "cultura",      puntosFijos: 0, estorbo: 0, especializada: true } },
-    { name: "Primeros Auxilios",   system: { clave: "primerosAuxilios",  base: "tecnica",      puntosFijos: 0, estorbo: 0, especializada: false } },
-    { name: "Rastrear",            system: { clave: "rastrear",          base: "percepcion",   puntosFijos: 0, estorbo: 0, especializada: false } },
-    { name: "Seguir",              system: { clave: "seguir",            base: "percepcion",   puntosFijos: 0, estorbo: 0, especializada: false } },
-    { name: "Sigilo",              system: { clave: "sigilo",            base: "agilidad",     puntosFijos: 1, estorbo: 1, especializada: false } },
-    { name: "Sueños",              system: { clave: "sueños",            base: "cultura",      puntosFijos: 0, estorbo: 0, especializada: true } },
-    { name: "Tierras Quebradas",   system: { clave: "tierrasQuebradas",  base: "cultura",      puntosFijos: 0, estorbo: 0, especializada: false } },
-    { name: "Tratar Animales",     system: { clave: "tratarAnimales",    base: "comunicacion", puntosFijos: 0, estorbo: 0, especializada: false } },
-    { name: "Trepar",              system: { clave: "trepar",            base: "agilidad",     puntosFijos: 0, estorbo: 1, especializada: false } }
+    { name: "Academia", system: { clave: "academia", base: "cultura", puntosFijos: 0, estorbo: 0, especializada: true } }, { name: "Actuación", system: { clave: "actuacion", base: "comunicacion", puntosFijos: 0, estorbo: 0, especializada: false } }, { name: "Arco", system: { clave: "arco", base: "tecnica", puntosFijos: 0, estorbo: 0, especializada: false } }, { name: "Armas de Asta", system: { clave: "armasAsta", base: "vigor", puntosFijos: 0, estorbo: 0, especializada: false } }, { name: "Armas de Espada", system: { clave: "armasEspada", base: "vigor", puntosFijos: 0, estorbo: 0, especializada: false } }, { name: "Armas de Mango", system: { clave: "armasMangos", base: "vigor", puntosFijos: 0, estorbo: 0, especializada: false } }, { name: "Armas de Puñal", system: { clave: "armasPunhal", base: "vigor", puntosFijos: 0, estorbo: 0, especializada: false } }, { name: "Artesanía", system: { clave: "artesania", base: "tecnica", puntosFijos: 0, estorbo: 0, especializada: true } }, { name: "Atletismo", system: { clave: "atletismo", base: "agilidad", puntosFijos: 2, estorbo: 1, especializada: false } }, { name: "Ballesta", system: { clave: "ballesta", base: "tecnica", puntosFijos: 0, estorbo: 0, especializada: false } }, { name: "Buscar", system: { clave: "buscar", base: "percepcion", puntosFijos: 1, estorbo: 0, especializada: false } }, { name: "Callejeo", system: { clave: "callejeo", base: "comunicacion", puntosFijos: 0, estorbo: 0, especializada: false } }, { name: "Cañón de Mano", system: { clave: "canonDeMano", base: "tecnica", puntosFijos: 0, estorbo: 0, especializada: false } }, { name: "Conocimiento Mágico", system: { clave: "conocimientoMagico",base: "cultura", puntosFijos: 0, estorbo: 0, especializada: true } }, { name: "Disfrazarse", system: { clave: "disfrazarse", base: "comunicacion", puntosFijos: 0, estorbo: 0, especializada: false } }, { name: "Documentación", system: { clave: "documentacion", base: "percepcion", puntosFijos: 0, estorbo: 0, especializada: false } }, { name: "Encanto", system: { clave: "encanto", base: "comunicacion", puntosFijos: 2, estorbo: 0, especializada: false } }, { name: "Escudo", system: { clave: "escudo", base: "vigor", puntosFijos: 0, estorbo: 0, especializada: false } }, { name: "Esquivar", system: { clave: "esquivar", base: "agilidad", puntosFijos: 1, estorbo: 1, especializada: false } }, { name: "Estrategia", system: { clave: "estrategia", base: "cultura", puntosFijos: 0, estorbo: 0, especializada: true } }, { name: "Forzar Cerraduras", system: { clave: "forzarCerraduras", base: "tecnica", puntosFijos: 0, estorbo: 0, especializada: true } }, { name: "Honda", system: { clave: "honda", base: "tecnica", puntosFijos: 0, estorbo: 0, especializada: false } }, { name: "Hurtar", system: { clave: "hurtar", base: "tecnica", puntosFijos: 0, estorbo: 1, especializada: false } }, { name: "Idioma 1 (nativo)", system: { clave: "idioma1", base: "cultura", puntosFijos: 0, estorbo: 0, especializada: false } }, { name: "Idioma 2", system: { clave: "idioma2", base: "cultura", puntosFijos: 0, estorbo: 0, especializada: false } }, { name: "Idioma 3", system: { clave: "idioma3", base: "cultura", puntosFijos: 0, estorbo: 0, especializada: false } }, { name: "Imponerse", system: { clave: "imponerse", base: "comunicacion", puntosFijos: 1, estorbo: 0, especializada: false } }, { name: "Instruir", system: { clave: "instruir", base: "comunicacion", puntosFijos: 0, estorbo: 0, especializada: false } }, { name: "Juego", system: { clave: "juego", base: "percepcion", puntosFijos: 0, estorbo: 0, especializada: false } }, { name: "Lanzar", system: { clave: "lanzar", base: "vigor", puntosFijos: 2, estorbo: 0, especializada: false } }, { name: "Leyendas", system: { clave: "leyendas", base: "cultura", puntosFijos: 2, estorbo: 0, especializada: false } }, { name: "Manejar Botes", system: { clave: "manejarBotes", base: "vigor", puntosFijos: 0, estorbo: 0, especializada: false } }, { name: "Manejar Carros", system: { clave: "manejarCarros", base: "tecnica", puntosFijos: 0, estorbo: 0, especializada: false } }, { name: "Manipulación", system: { clave: "manipulacion", base: "comunicacion", puntosFijos: 2, estorbo: 0, especializada: false } }, { name: "Medicina", system: { clave: "medicina", base: "cultura", puntosFijos: 0, estorbo: 0, especializada: false } }, { name: "Memorizar", system: { clave: "memorizar", base: "cultura", puntosFijos: 1, estorbo: 0, especializada: false } }, { name: "Montar", system: { clave: "montar", base: "vigor", puntosFijos: 0, estorbo: 0, especializada: false } }, { name: "Multiverso", system: { clave: "multiverso", base: "cultura", puntosFijos: 0, estorbo: 0, especializada: true } }, { name: "Nadar", system: { clave: "nadar", base: "agilidad", puntosFijos: 0, estorbo: 2, especializada: false } }, { name: "Naturaleza", system: { clave: "naturaleza", base: "cultura", puntosFijos: 1, estorbo: 0, especializada: false } }, { name: "Navegación", system: { clave: "navegacion", base: "cultura", puntosFijos: 0, estorbo: 0, especializada: false } }, { name: "Ocultar", system: { clave: "ocultar", base: "tecnica", puntosFijos: 0, estorbo: 0, especializada: false } }, { name: "Oratoria", system: { clave: "oratoria", base: "comunicacion", puntosFijos: 0, estorbo: 0, especializada: false } }, { name: "Pelea", system: { clave: "pelea", base: "vigor", puntosFijos: 0, estorbo: 0, especializada: false } }, { name: "Percatarse", system: { clave: "percatarse", base: "percepcion", puntosFijos: 0, estorbo: 0, especializada: false } }, { name: "Perspicacia", system: { clave: "perspicacia", base: "percepcion", puntosFijos: 0, estorbo: 0, especializada: false } }, { name: "Pociones", system: { clave: "pociones", base: "cultura", puntosFijos: 0, estorbo: 0, especializada: true } }, { name: "Primeros Auxilios", system: { clave: "primerosAuxilios", base: "tecnica", puntosFijos: 0, estorbo: 0, especializada: false } }, { name: "Rastrear", system: { clave: "rastrear", base: "percepcion", puntosFijos: 0, estorbo: 0, especializada: false } }, { name: "Seguir", system: { clave: "seguir", base: "percepcion", puntosFijos: 0, estorbo: 0, especializada: false } }, { name: "Sigilo", system: { clave: "sigilo", base: "agilidad", puntosFijos: 1, estorbo: 1, especializada: false } }, { name: "Sueños", system: { clave: "sueños", base: "cultura", puntosFijos: 0, estorbo: 0, especializada: true } }, { name: "Tierras Quebradas", system: { clave: "tierrasQuebradas", base: "cultura", puntosFijos: 0, estorbo: 0, especializada: false } }, { name: "Tratar Animales", system: { clave: "tratarAnimales", base: "comunicacion", puntosFijos: 0, estorbo: 0, especializada: false } }, { name: "Trepar", system: { clave: "trepar", base: "agilidad", puntosFijos: 0, estorbo: 1, especializada: false } }
   ];
 
   for (const h of HABILIDADES) {
@@ -295,14 +181,12 @@ Hooks.on("renderActorDirectory", (_app, html) => {
     wrapper.style.cssText = "grid-column: 1 / -1; display: flex; flex-direction: column; gap: 4px;";
 
     for (const [label, title, Class] of [
-      ["PNJ", "Importar PNJ desde texto", PNJImporter],
-      ["Criatura", "Importar Criatura desde texto", CriaturaImporter],
-      ["Demonio", "Importar Demonio desde texto", DemonioImporter]
+      ["PNJ", "Importar PNJ desde texto", PNJImporter], ["Criatura", "Importar Criatura desde texto", CriaturaImporter], ["Demonio", "Importar Demonio desde texto", DemonioImporter]
     ]) {
       const btn = document.createElement("button");
       btn.type = "button";
       btn.title = title;
-      btn.innerHTML = `<i class="fas fa-file-import"></i> Importar ${label}`;
+      btn.innerHTML = `Importar ${label}`;
       btn.addEventListener("click", () => Class.open());
       wrapper.appendChild(btn);
     }
@@ -327,21 +211,15 @@ Hooks.on("preCreateActor", (actor, data, options, userId) => {
   const { DialogV2 } = foundry.applications.api;
   setTimeout(async () => {
     const choice = await DialogV2.wait({
-      window: { title: "Nuevo Personaje Jugador" },
-      content: `<p style="padding:6px 0;">¿Cómo quieres crear el personaje?</p>`,
-      rejectClose: false,
-      buttons: [
-        { action: "wizard", label: "Creador de Personaje", default: true },
-        { action: "blank",  label: "Ficha en Blanco" }
+      window: { title: "Nuevo Personaje Jugador" }, content: `<p style="padding:6px 0;">¿Cómo quieres crear el personaje?</p>`, rejectClose: false, buttons: [
+        { action: "wizard", label: "Creador de Personaje", default: true }, { action: "blank", label: "Ficha en Blanco" }
       ]
     });
     if (choice === "wizard") {
       CharacterCreator.open(data.name ?? "");
     } else if (choice === "blank") {
       Actor.create({
-        name: data.name ?? "Personaje",
-        type: "pj",
-        img:  "icons/svg/mystery-man.svg"
+        name: data.name ?? "Personaje", type: "pj", img: "icons/svg/mystery-man.svg"
       }, { tqBlank: true });
     }
   }, 0);
@@ -473,6 +351,19 @@ Hooks.on("renderChatMessageHTML", (message, html) => {
     btnFortuna.addEventListener("click", () => TQRoll.repetirConFortuna(message.id));
   }
 
+  const flags = message.flags?.["tierras-quebradas"] ?? {};
+  if (flags.esEnfrentadaPendiente) {
+    const btnNormal = html.querySelector(".tq-enfrentada-normal");
+    const btnFortunaEnfr = html.querySelector(".tq-enfrentada-fortuna");
+    if (flags.enfrentadaCompletada) {
+      if (btnNormal) btnNormal.disabled = true;
+      if (btnFortunaEnfr) btnFortunaEnfr.disabled = true;
+    } else {
+      if (btnNormal) btnNormal.addEventListener("click", () => TQRoll.completarEnfrentada(message.id, false));
+      if (btnFortunaEnfr) btnFortunaEnfr.addEventListener("click", () => TQRoll.completarEnfrentada(message.id, true));
+    }
+  }
+
   const btnFuegoAmigo = html.querySelector(".tq-fuego-amigo-aplicar");
   if (btnFuegoAmigo) {
     btnFuegoAmigo.addEventListener("click", async () => {
@@ -483,6 +374,8 @@ Hooks.on("renderChatMessageHTML", (message, html) => {
       await actor.recibirDanho(danho, danhoBruto);
       btnFuegoAmigo.disabled = true;
       btnFuegoAmigo.textContent = "Daño aplicado";
+      btnFuegoAmigo.style.display = "block";
+      btnFuegoAmigo.style.textAlign = "center";
     });
   }
 
@@ -527,8 +420,7 @@ Hooks.on("updateCombat", async (combat, changes) => {
     const pvActual = actor.system.salud.pvActual?.valor ?? 0;
     await actor.update({ "system.salud.pvActual.valor": pvActual - 1 });
     ChatMessage.create({
-      speaker: ChatMessage.getSpeaker({ actor }),
-      content: `<p><strong>${actor.name}</strong> pierde 1 PV por <em>Desangre</em> (total: ${pvActual - 1} PV).</p>`
+      speaker: ChatMessage.getSpeaker({ actor }), content: `<p><strong>${actor.name}</strong> pierde 1 PV por <em>Desangre</em> (total: ${pvActual - 1} PV).</p>`
     });
   }
 });
