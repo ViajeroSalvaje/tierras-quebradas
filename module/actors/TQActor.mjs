@@ -7,11 +7,11 @@ const { DialogV2 } = foundry.applications.api;
 export class TQActor extends Actor {
   // Habilidades especializadas
   static HABILIDADES_ESPECIALIZADAS = new Set([
-    "academia", "conocimientoMagico", "estrategia", "multiverso", "pociones", "sueños",
-    "artesania", "forzarCerraduras",
-    "arco", "honda",
-    "nadar", "navegacion", "manejarBotes",
-    "actuacion", "idioma1", "idioma2", "idioma3"
+    "academia", "conocimientoMagico", "estrategia", "multiverso", "pociones", "sueños", "artesania", "forzarCerraduras", "arco", "honda", "nadar", "navegacion", "manejarBotes", "actuacion", "idioma1", "idioma2", "idioma3"
+  ]);
+  static HABILIDADES_CEGUERA = new Set([
+    "artesania", "forzarCerraduras", "hurtar", "manejarCarros", "ocultar",
+    "primerosAuxilios", "atletismo", "esquivar", "nadar", "sigilo", "trepar"
   ]);
   prepareDerivedData() {
     super.prepareDerivedData();
@@ -137,9 +137,8 @@ export class TQActor extends Actor {
     const habilidad = this.system.habilidades?.[clave];
     if (!habilidad) return;
 
-
     if (TQActor.HABILIDADES_ESPECIALIZADAS.has(clave) && (habilidad.nivel ?? 0) === 0) {  //  Examinar que pasa con las que no me lo muestra
-           const etiqueta = habilidad.nombre && clave.startsWith("idioma")
+      const etiqueta = habilidad.nombre && clave.startsWith("idioma")
         ? habilidad.nombre
         : (game.i18n.localize(`TQ.Habilidades.${clave}`) || clave);
       return ui.notifications.warn(`${etiqueta} es una habilidad especializada (E). Necesitas al menos Nivel 1 para intentarla.`);
@@ -154,7 +153,10 @@ export class TQActor extends Actor {
       ? habilidad.nombre
       : game.i18n.localize(`TQ.Habilidades.${clave}`);
 
-    const resultado = await TQRoll.dialogoTirada(etiqueta, total, { actor: this, habClave: clave });
+    const modDesglose = (this.system.salud?.ceguera && TQActor.HABILIDADES_CEGUERA.has(clave))
+      ? [{ label: "Ceguera", valor: -4, signo: "−", valorAbs: 4 }]
+      : null;
+    const resultado = await TQRoll.dialogoTirada(etiqueta, total, { actor: this, habClave: clave, modDesglose });
     if (resultado && resultado.exitos >= 0 && !resultado.autoExito && !habilidad.exito) {
       await this.update({ [`system.habilidades.${clave}.exito`]: true });
     }
@@ -183,7 +185,7 @@ export class TQActor extends Actor {
 
     const esMelee = arma.system.alcance === "contacto";
     const modo = esMelee ? "melee" : "distancia";
-    const sumaMD = esMelee;
+    const sumaMD = esMelee || arma.system.alcance === "arrojadiza";
     const md = !sumaMD ? 0
       : (manos === "2m") ? (this.system.derivadas?.mDano2m?.valor ?? 0)
       : (this.system.derivadas?.mDano1m?.valor ?? 0);
@@ -205,22 +207,21 @@ export class TQActor extends Actor {
       puntuacion = typeof hab === "number" ? hab : (hab?.total ?? 0);
     }
 
+    const modDesglose = [];
+    const fueMinimaArma = arma.system.fue ?? 0;
+    if (fueMinimaArma > 0 && this.type === "pj") {
+      const fuerzaActor = this.system.derivadas?.fuerza?.valor ?? 0;
+      if (fuerzaActor < fueMinimaArma) {
+        modDesglose.push({ label: "Fuerza", valor: -2, signo: "−", valorAbs: 2 });
+        ui.notifications.warn(`FUE insuficiente para ${arma.name} (FUE ${fuerzaActor} < mín. ${fueMinimaArma}): −2 a la tirada.`);
+      }
+    }
+
     const targetActor = game.user.targets.first()?.actor ?? null;
 
     const resultado = await TQRoll.dialogoTirada(arma.name, puntuacion, {
-      actor: this,
-      targetActor,
-      modo,
-      esCombate: true,
-      longitudArma: arma.system.longitud ?? "media",
-      habClave,
-      extraTopes: arma.system.alcance === "arrojadiza" ? ["lanzar"] : [],
-      danho: {
-        danoArma: arma.system.danoArma ?? "0",
-        tipo: arma.system.tipo ?? "cortante",
-        md,
-        manos,
-        noLetal: arma.system.noLetal ?? false
+      actor: this, targetActor, modo, esCombate: true, longitudArma: arma.system.longitud ?? "media", habClave, extraTopes: arma.system.alcance === "arrojadiza" ? ["lanzar"] : [], modDesglose: modDesglose.length ? modDesglose : null, danho: {
+        danoArma: arma.system.danoArma ?? "0", tipo: arma.system.tipo ?? "cortante", md, manos, noLetal: arma.system.noLetal ?? false
       }
     });
 
@@ -228,6 +229,15 @@ export class TQActor extends Actor {
       const habilidad = this.system.habilidades?.[habClave];
       if (habilidad && !habilidad.exito) {
         await this.update({ [`system.habilidades.${habClave}.exito`]: true });
+      }
+    }
+
+    if (resultado && !resultado.enMelee && resultado.exitos >= 0 && targetActor && modo === "distancia") {
+      const pd = TQRoll.calcDanho(arma.system.danoArma ?? "0", md, resultado.exitos, arma.system.noLetal ?? false);
+      if (pd.total != null) {
+        const proteccion = TQRoll._calcularProteccion(targetActor, arma.system.tipo ?? "cortante");
+        const danhoNeto = Math.max(0, pd.total - proteccion);
+        await targetActor.recibirDanho(danhoNeto, pd.total);
       }
     }
 
@@ -252,8 +262,8 @@ export class TQActor extends Actor {
       const nombreAliado = aliadoActor?.name ?? "el aliado";
 
       let cardContent = `<div class="tq-result-card complicacion">
-        <div style="font-weight:bold;font-size:calc(1em + 2px);text-align:center;">Fuego Amigo</div>
-        <hr style="width:70%;margin:4px auto;border:none;border-top:1px solid rgba(0,0,0,0.25);"/>
+        <div class="tq-card-titulo">Fuego Amigo</div>
+        <hr/>
         <p><strong>${nombreAliado}</strong> es alcanzado.</p>`;
 
       if (pd.total !== null) {
@@ -264,7 +274,7 @@ export class TQActor extends Actor {
         }
         cardContent += `</p>`;
         if (aliadoActor && danhoNeto !== null) {
-          cardContent += `<button class="tq-fuego-amigo-aplicar" data-actor-id="${aliadoActor.id}" data-danho="${danhoNeto}" data-danho-bruto="${pd.total}" style="margin-top:4px;background:#3a9aaa;color:#fff;border:none;border-radius:3px;padding:3px 8px;cursor:pointer;">Aplicar ${danhoNeto} PD a ${nombreAliado}</button>`;
+          cardContent += `<div class="tq-card-botones"><button class="tq-fuego-amigo-aplicar" data-actor-id="${aliadoActor.id}" data-danho="${danhoNeto}" data-danho-bruto="${pd.total}">Aplicar ${danhoNeto} PD a ${nombreAliado}</button></div>`;
         }
       } else {
         cardContent += `<p>Daño: ${pd.formula} (aplica el daño del arma + ${resultado.exitos} éxitos, menos la protección de ${nombreAliado}).</p>`;
@@ -272,9 +282,7 @@ export class TQActor extends Actor {
 
       cardContent += `</div>`;
       await ChatMessage.create({
-        speaker: ChatMessage.getSpeaker({ actor: this }),
-        content: cardContent,
-        ...TQRoll._rollModeData()
+        speaker: ChatMessage.getSpeaker({ actor: this }), content: cardContent, ...TQRoll._rollModeData()
       });
     }
 
@@ -300,7 +308,13 @@ export class TQActor extends Actor {
     const coste = exito ? 20 : 10;
     const nuevoPL = Math.max(0, plealtad - coste);
     await this.update({ [`system.lealtad.${religion}`]: nuevoPL });
-    ui.notifications.info(`Intervención ${exito ? "exitosa" : "fallida"}: −${coste} PL en ${religion} (quedan ${nuevoPL}).`);
+    await ChatMessage.create({
+      speaker: ChatMessage.getSpeaker({ actor: this }), content: `<div class="tq-result-card complicacion">
+        <div class="tq-card-titulo">Intervención Divina — ${pacto.name}</div>
+        <hr/>
+        <p>Intervención ${exito ? "exitosa" : "fallida"}: −${coste} PL en ${religion} (quedan ${nuevoPL}).</p>
+      </div>`, ...TQRoll._rollModeData()
+    });
   }
 
   async aplicarFinSesion() { // Los efectos de fin de sesión ¿sea plican así?
@@ -315,57 +329,83 @@ export class TQActor extends Actor {
 
     if (actitud === "servicial") {
       await this.update({ [`system.lealtad.${mayorReligion}`]: plActual + 2 });
-      ui.notifications.info(`Servicial: +2 PL en ${mayorReligion} (total: ${plActual + 2}).`);
+      await ChatMessage.create({
+        speaker: ChatMessage.getSpeaker({ actor: this }), content: `<div class="tq-result-card complicacion">
+          <div class="tq-card-titulo">Fin de Sesión</div>
+          <hr/>
+          <p>Servicial: +2 PL en ${mayorReligion} (total: ${plActual + 2}).</p>
+        </div>`, ...TQRoll._rollModeData()
+      });
 
     } else if (actitud === "atemorizado") {
       const fortuna = this.system.fortuna;
 
       const dir = await DialogV2.confirm({
-        window: { title: "Atemorizado — Fin de sesión" },
-        content: `<p>¿Canjear 3 PL por 1 Fortuna, o 1 Fortuna por 3 PL?</p>`,
-        yes: { label: "3 PL → 1 Fortuna", icon: "" },
-        no:  { label: "1 Fortuna → 3 PL", icon: "" }
+        window: { title: "Atemorizado — Fin de sesión" }, content: `<p>¿Canjear 3 PL por 1 Fortuna, o 1 Fortuna por 3 PL?</p>`, yes: { label: "3 PL → 1 Fortuna", icon: "" }, no: { label: "1 Fortuna → 3 PL", icon: "" }
       });
       if (dir === true && plActual >= 3) {
         await this.update({
-          [`system.lealtad.${mayorReligion}`]: plActual - 3,
-          "system.fortuna.actual": Math.min(fortuna.actual + 1, fortuna.max)
+          [`system.lealtad.${mayorReligion}`]: plActual - 3, "system.fortuna.actual": Math.min(fortuna.actual + 1, fortuna.max)
         });
-        ui.notifications.info("Atemorizado: −3 PL, +1 Fortuna.");
+        await ChatMessage.create({
+          speaker: ChatMessage.getSpeaker({ actor: this }), content: `<div class="tq-result-card complicacion">
+            <div class="tq-card-titulo">Fin de Sesión</div>
+            <hr/>
+            <p>Atemorizado: −3 PL, +1 Fortuna.</p>
+          </div>`, ...TQRoll._rollModeData()
+        });
       } else if (dir === false && fortuna.actual >= 1) {
         await this.update({
-          [`system.lealtad.${mayorReligion}`]: plActual + 3,
-          "system.fortuna.actual": fortuna.actual - 1
+          [`system.lealtad.${mayorReligion}`]: plActual + 3, "system.fortuna.actual": fortuna.actual - 1
         });
-        ui.notifications.info("Atemorizado: −1 Fortuna, +3 PL.");
+        await ChatMessage.create({
+          speaker: ChatMessage.getSpeaker({ actor: this }), content: `<div class="tq-result-card complicacion">
+            <div class="tq-card-titulo">Fin de Sesión</div>
+            <hr/>
+            <p>Atemorizado: −1 Fortuna, +3 PL.</p>
+          </div>`, ...TQRoll._rollModeData()
+        });
       }
 
     } else if (actitud === "pragmatico") {
       if (plActual < 3) return ui.notifications.warn("No tienes 3 PL para gastar.");
       await this.update({ [`system.lealtad.${mayorReligion}`]: plActual - 3 });
-      ui.notifications.info("Pragmático: −3 PL. Anota +1 PE extra en una habilidad marcada.");
+      await ChatMessage.create({
+        speaker: ChatMessage.getSpeaker({ actor: this }), content: `<div class="tq-result-card complicacion">
+          <div class="tq-card-titulo">Fin de Sesión</div>
+          <hr/>
+          <p>Pragmático: −3 PL. Anota +1 PE extra en una habilidad marcada.</p>
+        </div>`, ...TQRoll._rollModeData()
+      });
 
     } else if (actitud === "rebelde") {
 
       const dir = await DialogV2.confirm({
-        window: { title: "Rebelde — Fin de sesión" },
-        content: `<p>¿Reducir 20 PL para ganar 1 Destino, o gastar 1 Destino para ganar 20 PL?</p>`,
-        yes: { label: "20 PL → 1 Destino", icon: "" },
-        no:  { label: "1 Destino → 20 PL", icon: "" }
+        window: { title: "Rebelde — Fin de sesión" }, content: `<p>¿Reducir 20 PL para ganar 1 Destino, o gastar 1 Destino para ganar 20 PL?</p>`, yes: { label: "20 PL → 1 Destino", icon: "" }, no: { label: "1 Destino → 20 PL", icon: "" }
       });
       const destino = this.system.destino;
       if (dir === true && plActual >= 20) {
         await this.update({
-          [`system.lealtad.${mayorReligion}`]: plActual - 20,
-          "system.destino.actual": Math.min(destino.actual + 1, destino.max)
+          [`system.lealtad.${mayorReligion}`]: plActual - 20, "system.destino.actual": Math.min(destino.actual + 1, destino.max)
         });
-        ui.notifications.info("Rebelde: −20 PL, +1 Destino.");
+        await ChatMessage.create({
+          speaker: ChatMessage.getSpeaker({ actor: this }), content: `<div class="tq-result-card complicacion">
+            <div class="tq-card-titulo">Fin de Sesión</div>
+            <hr/>
+            <p>Rebelde: −20 PL, +1 Destino.</p>
+          </div>`, ...TQRoll._rollModeData()
+        });
       } else if (dir === false && destino.actual >= 1) {
         await this.update({
-          [`system.lealtad.${mayorReligion}`]: plActual + 20,
-          "system.destino.actual": destino.actual - 1
+          [`system.lealtad.${mayorReligion}`]: plActual + 20, "system.destino.actual": destino.actual - 1
         });
-        ui.notifications.info("Rebelde: −1 Destino, +20 PL.");
+        await ChatMessage.create({
+          speaker: ChatMessage.getSpeaker({ actor: this }), content: `<div class="tq-result-card complicacion">
+            <div class="tq-card-titulo">Fin de Sesión</div>
+            <hr/>
+            <p>Rebelde: −1 Destino, +20 PL.</p>
+          </div>`, ...TQRoll._rollModeData()
+        });
       }
 
     } else if (actitud === "indiferente") {
@@ -384,14 +424,10 @@ export class TQActor extends Actor {
             <input type="number" id="tq-id-cantidad" value="1" min="1" max="3" /></div> 
         </div>`;           // ¿Qué cojones?¿Seguro?
       const result = await DialogV2.prompt({
-        window: { title: "Indiferente — Transferir PL" },
-        content: html,
-        ok: { label: "Transferir", callback: (_ev, btn) => {
+        window: { title: "Indiferente — Transferir PL" }, content: html, ok: { label: "Transferir", callback: (_ev, btn) => {
           const campos = btn.form ?? btn.closest("form");
           return {
-            origen:   document.getElementById("tq-id-origen").value,
-            destino:  document.getElementById("tq-id-destino").value,
-            cantidad: Math.min(3, Math.max(1, parseInt(document.getElementById("tq-id-cantidad").value) || 1))
+            origen: document.getElementById("tq-id-origen").value, destino: document.getElementById("tq-id-destino").value, cantidad: Math.min(3, Math.max(1, parseInt(document.getElementById("tq-id-cantidad").value) || 1))
           };
         }}
       });
@@ -399,10 +435,15 @@ export class TQActor extends Actor {
       const plOrigen = lealtad[result.origen] ?? 0;
       const cant = Math.min(result.cantidad, plOrigen);
       await this.update({
-        [`system.lealtad.${result.origen}`]:  plOrigen - cant,
-        [`system.lealtad.${result.destino}`]: (lealtad[result.destino] ?? 0) + cant
+        [`system.lealtad.${result.origen}`]: plOrigen - cant, [`system.lealtad.${result.destino}`]: (lealtad[result.destino] ?? 0) + cant
       });
-      ui.notifications.info(`Indiferente: transferidos ${cant} PL de ${result.origen} a ${result.destino}.`);
+      await ChatMessage.create({
+        speaker: ChatMessage.getSpeaker({ actor: this }), content: `<div class="tq-result-card complicacion">
+          <div class="tq-card-titulo">Fin de Sesión</div>
+          <hr/>
+          <p>Indiferente: transferidos ${cant} PL de ${result.origen} a ${result.destino}.</p>
+        </div>`, ...TQRoll._rollModeData()
+      });
     }
 
     const fortuna = this.system.fortuna;
@@ -415,7 +456,13 @@ export class TQActor extends Actor {
       guiasUpdates["system.fortuna.actual"] = Math.min(fortuna.actual + fortunaBonus, fortuna.max);
     }
     await this.update(guiasUpdates);
-    if (fortunaBonus > 0) ui.notifications.info(`Guías interpretativas: +${fortunaBonus} Fortuna.`);
+    if (fortunaBonus > 0) await ChatMessage.create({
+      speaker: ChatMessage.getSpeaker({ actor: this }), content: `<div class="tq-result-card complicacion">
+        <div class="tq-card-titulo">Fin de Sesión</div>
+        <hr/>
+        <p>Guías interpretativas: +${fortunaBonus} Fortuna.</p>
+      </div>`, ...TQRoll._rollModeData()
+    });
   }
 
   async activarPasion(tipo) {
@@ -442,9 +489,7 @@ export class TQActor extends Actor {
 
   async resetearPasiones() {
     await this.update({
-      "system.pasionAmorUsada": false,
-      "system.pasionOdioUsada": false,
-      "system.pasionFlag": ""
+      "system.pasionAmorUsada": false, "system.pasionOdioUsada": false, "system.pasionFlag": ""
     });
     ui.notifications.info("Marcas de pasión reseteadas (nueva escena).");
   }
@@ -464,9 +509,7 @@ export class TQActor extends Actor {
     if (nuevo >= 5) {
       const destino = this.system.destino;
       await this.update({
-        "system.tuMentiraMarcas": 0,
-        "system.destino.actual": Math.min(destino.actual + 1, destino.max + 1),
-        "system.destino.max": destino.max + 1
+        "system.tuMentiraMarcas": 0, "system.destino.actual": Math.min(destino.actual + 1, destino.max + 1), "system.destino.max": destino.max + 1
       });
       ui.notifications.info(`¡5ª marca de La Mentira! +1 Destino. Anota +5 PX en una habilidad marcada.`);
     } else {
@@ -492,59 +535,47 @@ export class TQActor extends Actor {
     const half = Math.floor(espiritu / 2);
 
     const chat = async (desc) => ChatMessage.create({
-      speaker: ChatMessage.getSpeaker({ actor: this }),
-      content: `<div class="tq-bendicion-msg"><strong>${bend.name}</strong><p>${desc}</p></div>`
+      speaker: ChatMessage.getSpeaker({ actor: this }), content: `<div class="tq-bendicion-msg"><strong>${bend.name}</strong><p>${desc}</p></div>`
     });
 
     switch (bend.name) {
-      case "Afinidad con el Mar":
-        await chat(`Tirada de Nadar o Navegar superada automáticamente. <strong>${espiritu} puntos de éxito</strong>.`);
+      case "Afinidad con el Mar": await chat(`Tirada de Nadar o Navegar superada automáticamente. <strong>${espiritu} puntos de éxito</strong>.`);
         break;
 
-      case "Aura de Santidad":
-        await chat(`Aura activa durante esta conversación. <strong>+3 a todas las habilidades de Comunicación</strong> para convencer a los presentes.`);
+      case "Aura de Santidad": await chat(`Aura activa durante esta conversación. <strong>+3 a todas las habilidades de Comunicación</strong> para convencer a los presentes.`);
         break;
 
-      case "Aura de Sexualidad":
-        await chat(`Aura de sexualidad activa durante esta escena. Quienes sean susceptibles de sentirse atraídos quedarán influenciados.`);
+      case "Aura de Sexualidad": await chat(`Aura de sexualidad activa durante esta escena. Quienes sean susceptibles de sentirse atraídos quedarán influenciados.`);
         break;
 
-      case "Esquiva Milagrosa":
-        await chat(`Bono a Esquivar activo durante este turno: <strong>+${half}</strong>.`);
+      case "Esquiva Milagrosa": await chat(`Bono a Esquivar activo durante este turno: <strong>+${half}</strong>.`);
         break;
 
-      case "Golpe Poderoso":
-        await chat(`¡Invoca el poder de su dios! Si el próximo golpe conecta, el daño se incrementa en <strong>+${half}</strong>.`);
+      case "Golpe Poderoso": await chat(`¡Invoca el poder de su dios! Si el próximo golpe conecta, el daño se incrementa en <strong>+${half}</strong>.`);
         break;
 
-      case "Infundir Calma":
-        await chat(`Calma infundida. El objetivo queda libre de terror, furia o estado mental alterado.`);
+      case "Infundir Calma": await chat(`Calma infundida. El objetivo queda libre de terror, furia o estado mental alterado.`);
         break;
 
-      case "Inspiración":
-        await chat(`Inspiración divina. Bono de <strong>+${espiritu}</strong> a la tirada de artesanía, arte u obra de creación.`);
+      case "Inspiración": await chat(`Inspiración divina. Bono de <strong>+${espiritu}</strong> a la tirada de artesanía, arte u obra de creación.`);
         break;
 
       case "Invocar Horda": {
         const roll = await new Roll("1d6").evaluate();
         await roll.toMessage({
-          speaker: ChatMessage.getSpeaker({ actor: this }),
-          flavor: `${bend.name} — criaturas extra`
+          speaker: ChatMessage.getSpeaker({ actor: this }), flavor: `${bend.name} — criaturas extra`
         });
         break;
       }
 
-      case "Letalidad":
-        await chat(`Letalidad activa. La próxima herida grave infligida <strong>mata al enemigo</strong>. Declarar antes de la tirada.`);
+      case "Letalidad": await chat(`Letalidad activa. La próxima herida grave infligida <strong>mata al enemigo</strong>. Declarar antes de la tirada.`);
         break;
 
       case "Respeto de los Demonios": {
   
         const espirituDemonio = await DialogV2.prompt({
-          window: { title: "Respeto de los Demonios" },
-          content: `<p>Espíritu del demonio (= dificultad de la tirada):</p>
-                    <input type="number" id="tq-rd-esp" value="5" min="1" style="width:60px;"/>`,
-          ok: { label: "Tirar Imponerse", callback: () =>
+          window: { title: "Respeto de los Demonios" }, content: `<p>Espíritu del demonio (= dificultad de la tirada):</p>
+                    <input type="number" id="tq-rd-esp" value="5" min="1" style="width:60px;"/>`, ok: { label: "Tirar Imponerse", callback: () =>
             parseInt(document.getElementById("tq-rd-esp").value) || 5
           }
         });
@@ -566,8 +597,7 @@ export class TQActor extends Actor {
         break;
       }
 
-      case "Sentir Adversario":
-        await chat(`Percibes el alineamiento espiritual del objetivo. Sabrás si está alineado con la Ley o el Caos, o cuál de las dos fuerzas predomina en él.`);
+      case "Sentir Adversario": await chat(`Percibes el alineamiento espiritual del objetivo. Sabrás si está alineado con la Ley o el Caos, o cuál de las dos fuerzas predomina en él.`);
         break;
 
       case "Sentir Millón de Mundos": {
@@ -581,12 +611,10 @@ export class TQActor extends Actor {
         break;
       }
 
-      case "Verdad Incuestionable":
-        await chat(`La verdad ha sido pronunciada. Todos los presentes que la hayan oído la creerán a pies juntillas durante <strong>una hora</strong>.`);
+      case "Verdad Incuestionable": await chat(`La verdad ha sido pronunciada. Todos los presentes que la hayan oído la creerán a pies juntillas durante <strong>una hora</strong>.`);
         break;
 
-      default:
-        await chat(bend.system.efecto);
+      default: await chat(bend.system.efecto);
         break;
     }
   }
@@ -605,11 +633,8 @@ export class TQActor extends Actor {
           <input type="number" id="tq-lpm-cantidad" value="1" min="1" /></div>
       </div>`;
     const result = await DialogV2.prompt({
-      window: { title: "Cambiar Lealtad por PM" },
-      content: html,
-      ok: { label: "Convertir", callback: () => ({
-        religion: document.getElementById("tq-lpm-religion").value,
-        cantidad: Math.max(1, parseInt(document.getElementById("tq-lpm-cantidad").value) || 1)
+      window: { title: "Cambiar Lealtad por PM" }, content: html, ok: { label: "Convertir", callback: () => ({
+        religion: document.getElementById("tq-lpm-religion").value, cantidad: Math.max(1, parseInt(document.getElementById("tq-lpm-cantidad").value) || 1)
       })}
     });
     if (!result) return;
@@ -619,10 +644,15 @@ export class TQActor extends Actor {
     const pmMax = this.system.hechiceria?.pmMax ?? 0;
     const pmNuevo = Math.min(pmActual + cant, pmMax);
     await this.update({
-      [`system.lealtad.${result.religion}`]: plActual - cant,
-      "system.hechiceria.pmActual": pmNuevo
+      [`system.lealtad.${result.religion}`]: plActual - cant, "system.hechiceria.pmActual": pmNuevo
     });
-    ui.notifications.info(`Convertidos ${cant} PL de ${result.religion} en ${pmNuevo - pmActual} PM.`);
+    await ChatMessage.create({
+      speaker: ChatMessage.getSpeaker({ actor: this }), content: `<div class="tq-result-card complicacion">
+        <div class="tq-card-titulo">Lealtad → PM</div>
+        <hr/>
+        <p>Convertidos ${cant} PL de ${result.religion} en ${pmNuevo - pmActual} PM.</p>
+      </div>`, ...TQRoll._rollModeData()
+    });
   }
 
   async lanzarHechizo(itemId) {
@@ -664,48 +694,26 @@ export class TQActor extends Actor {
     const pmMaxTotal = esPJ ? (this.system.hechiceria.pmMax ?? 0) : (this.system.pm ?? 0);
 
     const contenidoDialogo = await foundry.applications.handlebars.renderTemplate(
-      "systems/tierras-quebradas/templates/dialogs/lanzar-hechizo.hbs",
-      { hechizo, puntuacion, dif, pmBase, pmMin, pmMax, pmVariable: pmMax > 0, pmActual, pmMaxTotal }
+      "systems/tierras-quebradas/templates/dialogs/lanzar-hechizo.hbs", { hechizo, puntuacion, dif, pmBase, pmMin, pmMax, pmVariable: pmMax > 0, pmActual, pmMaxTotal }
     );
 
     const fortunaActual = this.system.fortuna?.actual ?? 0;
     const leerCamposHechizo = campos => ({
-      pmElegido: parseInt(campos.pmElegido?.value) || pmMin,
-      blancos:   Math.max(1, parseInt(campos.blancos?.value) || 1),
-      duracion:  campos.duracion?.value   || "standard",
-      ceremonia: campos.ceremonia?.checked ?? false,
-      grimorio:  campos.grimorio?.checked ?? false,
-      acelerar:  campos.acelerar?.checked ?? false,
-      limFisica: parseInt(campos.limFisica?.value) || 0
+      pmElegido: parseInt(campos.pmElegido?.value) || pmMin, blancos: Math.max(1, parseInt(campos.blancos?.value) || 1), duracion: campos.duracion?.value   || "standard", ceremonia: campos.ceremonia?.checked ?? false, grimorio: campos.grimorio?.checked ?? false, acelerar: campos.acelerar?.checked ?? false, limFisica: parseInt(campos.limFisica?.value) || 0
     });
     const config = await DialogV2.wait({
-      window: { title: `Lanzar: ${hechizo.name}`, width: 420 },
-      classes: [
-        "lh-dialog-window", "tq-tirada-dialog",
-        ...(fortunaActual < 2 ? ["tq-fort-insuf"] : [])
-      ],
-      content: contenidoDialogo,
-      rejectClose: false,
-      buttons: [
+      window: { title: `Lanzar: ${hechizo.name}`, width: 420 }, classes: [
+        "lh-dialog-window", "tq-tirada-dialog", ...(fortunaActual < 2 ? ["tq-fort-insuf"] : [])
+      ], content: contenidoDialogo, rejectClose: false, buttons: [
         {
-          action: "lanzar",
-          label: "Lanzar hechizo",
-          default: true,
-          callback: (_ev, button) => leerCamposHechizo(button.form.elements)
-        },
-        {
-          action: "dos-fortuna",
-          label: "Usar 2 Fortuna",
-          callback: (_ev, button) => {
+          action: "lanzar", label: "Lanzar hechizo", default: true, callback: (_ev, button) => leerCamposHechizo(button.form.elements)
+        }, {
+          action: "dos-fortuna", label: "Usar 2 Fortuna", callback: (_ev, button) => {
             if (fortunaActual < 2) return null;
             return { ...leerCamposHechizo(button.form.elements), dosFortuna: true };
           }
-        },
-        { action: "cancelar", label: "Cancelar" },
-        {
-          action: "auto",
-          label: "Éxito Automático",
-          callback: (_ev, button) => ({ ...leerCamposHechizo(button.form.elements), autoExito: true })
+        }, { action: "cancelar", label: "Cancelar" }, {
+          action: "auto", label: "Éxito Automático", callback: (_ev, button) => ({ ...leerCamposHechizo(button.form.elements), autoExito: true })
         }
       ]
     });
@@ -755,18 +763,14 @@ export class TQActor extends Actor {
     let bonusEspiritu = 0;
     if (!fallo && exitos >= 10) {
       const beneficio = await DialogV2.wait({
-        window: { title: "¡Éxito crítico! — Elige beneficio", width: 360 },
-        content: `<p style="margin-bottom:8px;">Has obtenido <strong>${exitos} puntos de éxito</strong>. Elige un beneficio:</p>
+        window: { title: "¡Éxito crítico! — Elige beneficio", width: 360 }, content: `<p style="margin-bottom:8px;">Has obtenido <strong>${exitos} puntos de éxito</strong>. Elige un beneficio:</p>
           <select name="beneficio" style="width:100%;font-size:12px;">
             <option value="ahorrar">Ahorrarse 1 PM</option>
             <option value="blanco">Añadir un blanco extra gratis</option>
             <option value="potencia">Aumentar potencia o duración</option>
             <option value="espiritu">+2 a la Lucha de Espíritu</option>
-          </select>`,
-        rejectClose: false,
-        buttons: [{
-          action: "elegir", label: "Confirmar", default: true,
-          callback: (_ev, b) => b.form.elements.beneficio.value
+          </select>`, rejectClose: false, buttons: [{
+          action: "elegir", label: "Confirmar", default: true, callback: (_ev, b) => b.form.elements.beneficio.value
         }]
       });
       if (beneficio === "ahorrar") costePM = Math.max(1, costePM - 1);
@@ -776,21 +780,21 @@ export class TQActor extends Actor {
     const minVal = niveles.length ? Math.min(...niveles) : 0;
     let desgloseHechizo = null;
     if (niveles.length) {
-      const skills = [];
+      const habilidades = [];
       for (let i = 0; i < claves.length; i++) {
         const claveHabilidad = claves[i];
         let display;
         if (hechizo.system.verbo && norm(hechizo.system.verbo) === claveHabilidad) display = hechizo.system.verbo;
         else if (hechizo.system.esfera && norm(hechizo.system.esfera) === claveHabilidad) display = hechizo.system.esfera;
         else display = claveHabilidad;
-        skills.push({ nombre: display, valor: niveles[i], esMinimo: niveles[i] === minVal, puntuacion: baseHech + niveles[i] });
+        habilidades.push({ nombre: display, valor: niveles[i], esMinimo: niveles[i] === minVal, puntuacion: baseHech + niveles[i] });
       }
-      // Si varios skills empatan en el mínimo, mostrar solo la esfera (último con esMinimo)
-      const minimoIdxs = skills.map((s, i) => s.esMinimo ? i : -1).filter(i => i >= 0);
+      // Si varias habilidades empatan en el mínimo, mostrar solo la esfera (último con esMinimo)
+      const minimoIdxs = habilidades.map((s, i) => s.esMinimo ? i : -1).filter(i => i >= 0);
       if (minimoIdxs.length > 1) {
-        for (const i of minimoIdxs.slice(0, -1)) skills[i].esMinimo = false;
+        for (const i of minimoIdxs.slice(0, -1)) habilidades[i].esMinimo = false;
       }
-      desgloseHechizo = { base: baseHech, skills };
+      desgloseHechizo = { base: baseHech, habilidades };
     }
 
     const modDesglose = [];
@@ -799,42 +803,18 @@ export class TQActor extends Actor {
     if (config.acelerar) modDesglose.push({ label: "Acelerar", valor: -2 });
     if (config.limFisica < 0) modDesglose.push({ label: "Lim. física", valor: config.limFisica });
     if (dolorExtremo) modDesglose.push({ label: "Dolor extremo", valor: -2 });
+    modDesglose.forEach(m => { m.signo = m.valor >= 0 ? "+" : "−"; m.valorAbs = Math.abs(m.valor); });
 
     const datosChat = {
-      etiqueta: hechizo.name,
-      puntuacion, bonificador: mod, dificultad: dif,
-      debilitado, dolorExtremo,
-      dado: dadoTotal, dadoDisplay: config.autoExito ? "—" : (dadoDisplayCustom ?? TQRoll._dadoDisplay(dadoTotal, tiradas)),
-      total, exitos, resultado, css: resultado.css,
-      pd: null,
-      desgloseHechizo, modDesglose,
-      mostrarFortuna: !config.autoExito && !config.dosFortuna,
-      actorId: this.id
+      etiqueta: hechizo.name, puntuacion, bonificador: mod, dificultad: dif, debilitado, dolorExtremo, dado: dadoTotal, dadoDisplay: config.autoExito ? "—" : (dadoDisplayCustom ?? TQRoll._dadoDisplay(dadoTotal, tiradas)), total, exitos, resultado, css: resultado.css, pd: null, desgloseHechizo, modDesglose, mostrarFortuna: !config.autoExito && !config.dosFortuna, actorId: this.id
     };
     const contenido = await foundry.applications.handlebars.renderTemplate(
-      "systems/tierras-quebradas/templates/dialogs/tirada-resultado.hbs",
-      datosChat
+      "systems/tierras-quebradas/templates/dialogs/tirada-resultado.hbs", datosChat
     );
     await ChatMessage.create({
-      speaker: ChatMessage.getSpeaker({ actor: this }),
-      content: contenido,
-      ...TQRoll._rollModeData(modoTirada),
-      flags: {
+      speaker: ChatMessage.getSpeaker({ actor: this }), content: contenido, ...TQRoll._rollModeData(modoTirada), flags: {
         "tierras-quebradas": {
-          etiqueta: hechizo.name, puntuacion, dificultad: dif,
-          bonificador: mod, rollMode: modoTirada,
-          bonusFinalOriginal: mod,
-          actorId: this.id,
-          habClave: null,
-          tablaComplicacion: "magia",
-          esRepeticion: false,
-          totalOriginal: total,
-          exitosOriginales: exitos,
-          resultadoCssOriginal: resultado.css,
-          resultadoLabelOriginal: resultado.label,
-          dadoDisplayOriginal: config.autoExito ? "—" : (dadoDisplayCustom ?? TQRoll._dadoDisplay(dadoTotal, tiradas)),
-          debilitadoOriginal: debilitado,
-          dolorExtremoOriginal: dolorExtremo
+          etiqueta: hechizo.name, puntuacion, dificultad: dif, bonificador: mod, rollMode: modoTirada, bonusFinalOriginal: mod, actorId: this.id, habClave: null, tablaComplicacion: "magia", esRepeticion: false, totalOriginal: total, exitosOriginales: exitos, resultadoCssOriginal: resultado.css, resultadoLabelOriginal: resultado.label, dadoDisplayOriginal: config.autoExito ? "—" : (dadoDisplayCustom ?? TQRoll._dadoDisplay(dadoTotal, tiradas)), debilitadoOriginal: debilitado, dolorExtremoOriginal: dolorExtremo
         }
       }
     });
@@ -884,11 +864,10 @@ export class TQActor extends Actor {
     const gana = totalAtacante > totalObjetivo;
 
     await ChatMessage.create({
-      speaker: ChatMessage.getSpeaker({ actor: this }),
-      flavor: `Lucha de Espíritu — ${nombreHechizo} vs ${targetActor.name}`,
-      content: `<div class="tq-result-card ${gana ? "exito" : "fallo"}">
-        <div class="tq-resultado-label">${gana ? "Hechizo surte efecto" : "Objetivo resiste"}</div>
-        <div class="tq-desglose">
+      speaker: ChatMessage.getSpeaker({ actor: this }), flavor: `Lucha de Espíritu — ${nombreHechizo} vs ${targetActor.name}`, content: `<div class="tq-result-card ${gana ? "exito" : "fallo"}">
+        <div class="tq-card-titulo">${gana ? "Hechizo surte efecto" : "Objetivo resiste"}</div>
+        <hr/>
+        <div class="tq-desglose" style="text-align:center;">
           ${this.name}: ${dadoAtacante} + ${espirituAtacante}(Esp)${bonusCaster ? ` + ${bonusCaster}(crít.)` : ""} = <strong>${totalAtacante}</strong><br>
           ${targetActor.name}: ${dadoObjetivo} + ${espirituObjetivo}(Esp) = <strong>${totalObjetivo}</strong>
         </div>
@@ -903,8 +882,7 @@ export class TQActor extends Actor {
 
 
     const result = await DialogV2.wait({
-      window: { title: "Recuperar Puntos de Magia" },
-      content: `<div style="display:grid;gap:8px;padding:4px;">
+      window: { title: "Recuperar Puntos de Magia" }, content: `<div style="display:grid;gap:8px;padding:4px;">
         <div style="display:flex;align-items:center;gap:8px;">
           <label>Horas de sueño</label>
           <input type="number" name="horas" value="8" min="1" style="width:60px;" />
@@ -913,22 +891,15 @@ export class TQActor extends Actor {
           <input type="checkbox" name="lanzarSuenos" id="tq-tirar-suenos" />
           <label for="tq-tirar-suenos">Intentar tirada de Sueños (Dif 15)</label>
         </div>
-      </div>`,
-      rejectClose: false,
-      buttons: [
+      </div>`, rejectClose: false, buttons: [
         {
-          action: "ok",
-          label: "Recuperar",
-          default: true,
-          callback: (_ev, btn) => {
+          action: "ok", label: "Recuperar", default: true, callback: (_ev, btn) => {
             const campos = btn.form.elements;
             return {
-              horas: parseInt(campos.horas?.value) || 1,
-              lanzarSuenos: campos.lanzarSuenos?.checked ?? false
+              horas: parseInt(campos.horas?.value) || 1, lanzarSuenos: campos.lanzarSuenos?.checked ?? false
             };
           }
-        },
-        { action: "cancelar", label: "Cancelar" }
+        }, { action: "cancelar", label: "Cancelar" }
       ]
     });
     if (!result) return;
@@ -940,19 +911,28 @@ export class TQActor extends Actor {
     let pmRecuperado = Math.floor(horas / 2);
 
     if (lanzarSuenos) {
-        const habilidad = this.system.habilidades?.suenos;
+        const habilidad = this.system.habilidades?.["sueños"];
       let base = 0, puntuacion = 0;
       if (habilidad) {
         base = this.system.bases[habilidad.base]?.valor ?? 0;
         puntuacion = base + (habilidad.nivel ?? 0) + (habilidad.puntosFijos ?? 0);
       }
-      const resultado = await TQRoll.tirar("Sueños", puntuacion, 15, { actor: this, flavor: "Recuperación de PM" });
+      const resultado = await TQRoll.tirar("Sueños", puntuacion, 15, { actor: this, flavor: "Recuperación de PM", etiquetaEnDesglose: true });
       if (resultado.exitos >= 0) pmRecuperado = horas;
     }
 
+    const pmBase = Math.floor(horas / 2);
     const pmNuevo = Math.min(pmActual + pmRecuperado, pmMax);
+    const pmGanado = pmNuevo - pmActual;
+    const pmExtra = lanzarSuenos && pmRecuperado > pmBase ? pmRecuperado - pmBase : 0;
     await this.update({ "system.hechiceria.pmActual": pmNuevo });
-    ui.notifications.info(`Recuperados ${pmNuevo - pmActual} PM tras ${horas}h de sueño (quedan ${pmNuevo}/${pmMax}).`);
+    await ChatMessage.create({
+      speaker: ChatMessage.getSpeaker({ actor: this }), content: `<div class="tq-result-card exito">
+        <div class="tq-card-titulo">Recuperación de PM</div>
+        <hr/>
+        <p>${this.name} descansa <strong>${horas}h</strong> y recupera <strong>+${pmGanado} PM</strong>${pmExtra > 0 ? ` <em>(+${pmExtra} PM extra recuperados)</em>` : ""}.<br>PM actuales: <strong>${pmNuevo} / ${pmMax}</strong></p>
+      </div>`
+    });
   }
 
 
@@ -966,10 +946,7 @@ export class TQActor extends Actor {
     let pdFinal = pd;
     if ((fortuna?.actual ?? 0) >= 2) {
       const gastar = await DialogV2.confirm({
-        window: { title: "¿Gastar Fortuna?" },
-        content: `<p><strong>${this.name}</strong> recibe <strong>${pd} PD</strong>. ¿Gastar 2 Fortuna para reducir el daño a la mitad?</p>`,
-        yes: { label: "Sí — gastar 2 Fortuna", icon: "" },
-        no:  { label: "No", icon: "" }
+        window: { title: "¿Gastar Fortuna?" }, content: `<p><strong>${this.name}</strong> recibe <strong>${pd} PD</strong>. ¿Gastar 2 Fortuna para reducir el daño a la mitad?</p>`, yes: { label: "Sí — gastar 2 Fortuna", icon: "" }, no: { label: "No", icon: "" }
       });
       if (gastar) {
         pdFinal = Math.ceil(pd / 2);
@@ -987,8 +964,7 @@ export class TQActor extends Actor {
       updates["system.salud.incapacitado"] = true;
       await this.update(updates);
       ChatMessage.create({
-        speaker: ChatMessage.getSpeaker({ actor: this }),
-        content: `<div class="tq-result-card fallo"><div class="tq-resultado-label">☠ Herida Mortal</div><p>${this.name} ha sufrido una herida mortal (${pdBruto} PD vs ${pvMax} PV máx). Muere en el acto.</p></div>`
+        speaker: ChatMessage.getSpeaker({ actor: this }), content: `<div class="tq-result-card fallo"><div class="tq-card-titulo">Herida Mortal</div><hr/><p>${this.name} ha sufrido una herida mortal (${pdBruto} PD vs ${pvMax} PV máx). Muere en el acto.</p></div>`
       });
       return;
     }
@@ -1017,8 +993,7 @@ export class TQActor extends Actor {
     const nuevaHeridaGrave = updates["system.salud.heridasGraves1"] || updates["system.salud.heridasGraves2"];
     if (nuevaHeridaGrave && this.type === "pj") {
       ChatMessage.create({
-        speaker: ChatMessage.getSpeaker({ actor: this }),
-        content: `<div class="tq-result-card complicacion"><div style="font-weight:bold;font-size:calc(1em + 2px);text-align:center;">Desgaste de Armadura</div><hr style="width:70%;margin:4px auto;border:none;border-top:1px solid rgba(0,0,0,0.25);"/><p><strong>${this.name}</strong> ha recibido una Herida Grave. Reduce en 1 la Protección de una de sus armaduras.</p></div>`
+        speaker: ChatMessage.getSpeaker({ actor: this }), content: `<div class="tq-result-card complicacion"><div class="tq-card-titulo">Desgaste de Armadura</div><hr/><p><strong>${this.name}</strong> ha recibido una Herida Grave. Reduce en 1 la Protección de una de sus armaduras.</p></div>`
       });
     }
 
@@ -1029,13 +1004,11 @@ export class TQActor extends Actor {
       if (pdFinal >= umbralHeridaGrave) {
         updates["system.salud.agonia"] = true;
         ChatMessage.create({
-          speaker: ChatMessage.getSpeaker({ actor: this }),
-          content: `<div class="tq-result-card complicacion"><div class="tq-resultado-label">⚠ Agonía</div><p>${this.name} está en agonía. Pierde 1 PD por minuto hasta ser estabilizado (Primeros Auxilios Dif 20). Morirá cuando los PD acumulados igualen sus PV máximos (${pvMax}).</p></div>`
+          speaker: ChatMessage.getSpeaker({ actor: this }), content: `<div class="tq-result-card complicacion"><div class="tq-card-titulo">Agonía</div><hr/><p>${this.name} está en agonía. Pierde 1 PD por minuto hasta ser estabilizado (Primeros Auxilios Dif 20). Morirá cuando los PD acumulados igualen sus PV máximos (${pvMax}).</p></div>`
         });
       } else {
         ChatMessage.create({
-          speaker: ChatMessage.getSpeaker({ actor: this }),
-          content: `<p><strong>${this.name}</strong> queda <em>Incapacitado</em> (0 PV).</p>`
+          speaker: ChatMessage.getSpeaker({ actor: this }), content: `<p><strong>${this.name}</strong> queda <em>Incapacitado</em> (0 PV).</p>`
         });
       }
     }
@@ -1085,20 +1058,13 @@ export class TQActor extends Actor {
       </div>`;
 
     const config = await DialogV2.wait({
-      window: { title: "Primeros Auxilios", width: 380 },
-      content: html,
-      rejectClose: false,
-      buttons: [
+      window: { title: "Primeros Auxilios", width: 380 }, content: html, rejectClose: false, buttons: [
         {
-          action: "tirar",
-          label: "Tirar",
-          default: true,
-          callback: (_ev, button) => {
+          action: "tirar", label: "Tirar", default: true, callback: (_ev, button) => {
             const campos = button.form.elements;
             return { tipo: campos.tipo.value, autocuracion: campos.autocuracion.checked };
           }
-        },
-        { action: "cancelar", label: "Cancelar" }
+        }, { action: "cancelar", label: "Cancelar" }
       ]
     });
     if (!config || config === "cancelar") return;
@@ -1118,7 +1084,14 @@ export class TQActor extends Actor {
     }
     const bonificador = config.autocuracion ? -2 : 0;
 
-    const resultado = await TQRoll.tirar(etiqueta, total, dificultad, { actor: this, bonificador });
+    const modDesglose = this.system.salud?.ceguera
+      ? [{ label: "Ceguera", valor: -4, signo: "−", valorAbs: 4 }]
+      : null;
+    const puntuacionMostrada = modDesglose ? total : null;
+    if (modDesglose) total -= 4;
+    const resultado = await TQRoll.tirar(etiqueta, total, dificultad, {
+      actor: this, bonificador, modDesglose, puntuacionMostrada
+    });
     if (!resultado) return;
 
     const exitos = resultado.exitos;
@@ -1198,13 +1171,32 @@ export class TQActor extends Actor {
         updates[`system.habilidades.${clave}.nivel`] = (habilidad.nivel ?? 0) + bonus;
       }
     }
+
+    const especializaciones = profesion.system.especializaciones ?? [];
+    if (especializaciones.length) {
+      const opciones = especializaciones.map((e, i) => `<option value="${i}">${e.nombre}</option>`).join("");
+      const idxStr = await DialogV2.prompt({
+        window: { title: `Especialización — ${profesion.name}`, width: 320 },
+        content: `<p>Elige una especialización:</p><select id="tq-esp-sel" style="width:100%;margin-top:4px;">${opciones}</select>`,
+        ok: { label: "Confirmar", callback: () => document.getElementById("tq-esp-sel").value }
+      });
+      if (idxStr !== null && idxStr !== undefined) {
+        for (const { clave, bonus } of (especializaciones[parseInt(idxStr)]?.habilidades ?? [])) {
+          if (!clave || !bonus) continue;
+          const habilidad = this.system.habilidades?.[clave];
+          if (habilidad !== undefined) {
+            const existing = updates[`system.habilidades.${clave}.nivel`] ?? (habilidad.nivel ?? 0);
+            updates[`system.habilidades.${clave}.nivel`] = existing + bonus;
+          }
+        }
+      }
+    }
+
     await this.update(updates);
 
     for (const v of (profesion.system.ventajas ?? [])) {
       await Item.create({
-        name: v.nombre,
-        type: "ventaja",
-        system: { coste: v.coste ?? 0, tipo: v.tipo ?? "ventaja", efecto: v.efecto ?? "", fuente: "profesion" }
+        name: v.nombre, type: "ventaja", system: { coste: v.coste ?? 0, tipo: v.tipo ?? "ventaja", efecto: v.efecto ?? "", fuente: "profesion" }
       }, { parent: this });
     }
   }
@@ -1320,39 +1312,21 @@ export class TQActor extends Actor {
   async tirarLesion() {
     const LESIONES = [
       null, // índice 0 no usado
-      { min: 1, max: 4, titulo: "Pierna o pata inutilizada", tipos: "todas",
-        efecto: "La pierna queda inutilizada. El herido cae al suelo y solo puede desplazarse arrastrándose. Si el arma es <em>cortante</em>, añade efecto de <strong>Desangre</strong>." },
-      { min: 5, max: 8, titulo: "Brazo o miembro inutilizado", tipos: "todas",
-        efecto: "El brazo queda inutilizado y suelta lo que sostenía. Si el arma es <em>cortante</em>, añade efecto de <strong>Desangre</strong>." },
-      { min: 9, max: 10, titulo: "Conmoción cerebral", tipos: "contundentes y cortantes",
-        efecto: "Hemorragia interna en el cerebro. El herido tira <strong>Cuerpo</strong> a dificultad igual a la magnitud de la herida para no quedar <strong>Incapacitado</strong>." },
-      { min: 11, max: 12, titulo: "Herida profunda", tipos: "penetrantes y cortantes",
-        efecto: "El arma se hunde alcanzando órganos internos. Suma <strong>1d3</strong> al daño. Si el arma es <em>penetrante</em>, queda clavada." },
-      { min: 13, max: 14, titulo: "Deformación facial", tipos: "todas",
-        efecto: "El arma quiebra la mandíbula, cercena la nariz o marca el rostro. La víctima pierde <strong>1 punto de Atractivo</strong> (mínimo −3)." },
-      { min: 15, max: 17, titulo: "Desangre", tipos: "cortantes y desgarradoras",
-        efecto: "El arma alcanza las vísceras o un vaso sanguíneo importante. La víctima recibe una herida de <strong>Desangre</strong> (1 PD/turno hasta ser tratada con Primeros Auxilios dif. 15)." },
-      { min: 18, max: 19, titulo: "Dolor extremo", tipos: "todas",
-        efecto: "El golpe es tan doloroso que el herido sufre <strong>−2</strong> a cualquier tirada durante el resto del combate." },
-      { min: 20, max: 20, titulo: "Pérdida de un ojo", tipos: "penetrantes, cortantes y desgarradoras",
-        efecto: "El herido pierde un ojo: <strong>−2</strong> al uso de armas a distancia. Si ya era tuerto, queda ciego." }
+      { min: 1, max: 4, titulo: "Pierna o pata inutilizada", tipos: "todas", efecto: "La pierna queda inutilizada. El herido cae al suelo y solo puede desplazarse arrastrándose. Si el arma es <em>cortante</em>, añade efecto de <strong>Desangre</strong>." }, { min: 5, max: 8, titulo: "Brazo o miembro inutilizado", tipos: "todas", efecto: "El brazo queda inutilizado y suelta lo que sostenía. Si el arma es <em>cortante</em>, añade efecto de <strong>Desangre</strong>." }, { min: 9, max: 10, titulo: "Conmoción cerebral", tipos: "contundentes y cortantes", efecto: "Hemorragia interna en el cerebro. El herido tira <strong>Cuerpo</strong> a dificultad igual a la magnitud de la herida para no quedar <strong>Incapacitado</strong>." }, { min: 11, max: 12, titulo: "Herida profunda", tipos: "penetrantes y cortantes", efecto: "El arma se hunde alcanzando órganos internos. Suma <strong>1d3</strong> al daño. Si el arma es <em>penetrante</em>, queda clavada." }, { min: 13, max: 14, titulo: "Deformación facial", tipos: "todas", efecto: "El arma quiebra la mandíbula, cercena la nariz o marca el rostro. La víctima pierde <strong>1 punto de Atractivo</strong> (mínimo −3)." }, { min: 15, max: 17, titulo: "Desangre", tipos: "cortantes y desgarradoras", efecto: "El arma alcanza las vísceras o un vaso sanguíneo importante. La víctima recibe una herida de <strong>Desangre</strong> (1 PD/turno hasta ser tratada con Primeros Auxilios dif. 15)." }, { min: 18, max: 19, titulo: "Dolor extremo", tipos: "todas", efecto: "El golpe es tan doloroso que el herido sufre <strong>−2</strong> a cualquier tirada durante el resto del combate." }, { min: 20, max: 20, titulo: "Pérdida de un ojo", tipos: "penetrantes, cortantes y desgarradoras", efecto: "El herido pierde un ojo: <strong>−2</strong> al uso de armas a distancia. Si ya era tuerto, queda ciego." }
     ];
 
     const roll = await new Roll("1d20").evaluate();
     const resultadoRoll = roll.total;
     const entrada = LESIONES.find(e => e && resultadoRoll >= e.min && resultadoRoll <= e.max);
 
-    const content = `
-      <div class="tq-lesion-msg">
-        <h3>Tabla de Lesiones — <span class="tq-roll-num">${resultadoRoll}</span></h3>
-        <p class="tq-lesion-titulo">${entrada.titulo} <em class="tq-lesion-tipo">(${entrada.tipos})</em></p>
-        <p class="tq-lesion-efecto">${entrada.efecto}</p>
-      </div>`;
-
-    await roll.toMessage({
-      speaker: ChatMessage.getSpeaker({ actor: this }),
-      flavor: `<strong>${this.name}</strong> tira en la Tabla de Lesiones`,
-      content
+    if (game.dice3d) await game.dice3d.showForRoll(roll, game.user, true, null, false);
+    await ChatMessage.create({
+      speaker: ChatMessage.getSpeaker({ actor: this }), content: `<div class="tq-result-card complicacion">
+        <div class="tq-card-titulo">Tabla de Lesiones — ${resultadoRoll}</div>
+        <hr/>
+        <p><strong>${entrada.titulo}</strong> <em>(${entrada.tipos})</em></p>
+        <p>${entrada.efecto}</p>
+      </div>`, ...TQRoll._rollModeData()
     });
 
     if (resultadoRoll >= 1 && resultadoRoll <= 4) {
@@ -1384,12 +1358,10 @@ export class TQActor extends Actor {
 
     if (resultadoRoll >= 9 && resultadoRoll <= 10) {
       const magnitud = await DialogV2.prompt({
-        window: { title: "Conmoción cerebral — magnitud de la herida" },
-        content: `<div style="padding:8px">
+        window: { title: "Conmoción cerebral — magnitud de la herida" }, content: `<div style="padding:8px">
           <label>Magnitud de la herida (PD recibidos)</label>
           <input type="number" id="tq-conmocion-mag" value="1" min="1" style="width:80px;margin-left:8px;" />
-        </div>`,
-        ok: { label: "Tirar Cuerpo", callback: () => parseInt(document.getElementById("tq-conmocion-mag").value) || 1 }
+        </div>`, ok: { label: "Tirar Cuerpo", callback: () => parseInt(document.getElementById("tq-conmocion-mag").value) || 1 }
       });
       if (magnitud) {
     
@@ -1409,9 +1381,7 @@ export class TQActor extends Actor {
 
     if (cantidad < 0) {
       return {
-        updates: { [`system.habilidades.${clave}.px`]: Math.max(0, pxActual + cantidad) },
-        subio: false,
-        nivelNuevo: nivel
+        updates: { [`system.habilidades.${clave}.px`]: Math.max(0, pxActual + cantidad) }, subio: false, nivelNuevo: nivel
       };
     }
 
@@ -1419,11 +1389,8 @@ export class TQActor extends Actor {
     const subio = px > nivel;
     return {
       updates: {
-        [`system.habilidades.${clave}.nivel`]: subio ? nivel + 1 : nivel,
-        [`system.habilidades.${clave}.px`]:    subio ? px - (nivel + 1) : px
-      },
-      subio,
-      nivelNuevo: subio ? nivel + 1 : nivel
+        [`system.habilidades.${clave}.nivel`]: subio ? nivel + 1 : nivel, [`system.habilidades.${clave}.px`]: subio ? px - (nivel + 1) : px
+      }, subio, nivelNuevo: subio ? nivel + 1 : nivel
     };
   }
 
@@ -1466,10 +1433,10 @@ export class TQActor extends Actor {
 
     await this.update(updates);
 
-    let msg = `<div class="tq-bendicion-msg"><strong>Fin de Sesión — ${this.name}</strong>`;
-    msg += `<p>+1 PX: ${conPX.join(", ")}</p>`;
+    let msg = `<div class="tq-result-card complicacion"><div class="tq-card-titulo">Fin de Sesión — ${this.name}</div><hr/>`;
+    msg += `<p><strong>+1 PX:</strong> ${conPX.join(", ")}</p>`;
     if (subidas.length) {
-      msg += `<p><strong>¡Subida de nivel!</strong> ${subidas.map(s => `${s.etiqueta} → Nv. ${s.nivelNuevo}`).join(", ")}</p>`;
+      msg += `<p><strong>Subida de nivel:</strong> ${subidas.map(s => `${s.etiqueta} → Nv. ${s.nivelNuevo}`).join(", ")}</p>`;
     }
     msg += `</div>`;
     await ChatMessage.create({ speaker: ChatMessage.getSpeaker({ actor: this }), content: msg });
@@ -1487,7 +1454,7 @@ export class TQActor extends Actor {
       const pxNeed = (habilidad.nivel ?? 0) + 1;
       opcionesHTML += `<label style="display:flex;align-items:center;gap:6px;margin:1px 0;font-size:12px;cursor:pointer;">
         <input type="checkbox" id="hab_${clave}" name="hab_${clave}" value="${clave}" class="tq-apuntar-check" />
-        <label for="hab_${clave}" class="skill-circle tq-apuntar-circle" style="width:16px;height:16px;cursor:pointer;flex-shrink:0;"></label>
+        <label for="hab_${clave}" class="tq-circulo tq-apuntar-circulo" style="width:16px;height:16px;cursor:pointer;flex-shrink:0;"></label>
         <span style="flex:1;">${etiqueta}</span>
         <span style="font-size:10px;opacity:0.7;">Nv.${habilidad.nivel ?? 0} · ${habilidad.px ?? 0}/${pxNeed} PX</span>
       </label>`;
@@ -1506,22 +1473,15 @@ export class TQActor extends Actor {
       </div>`;
 
     const config = await DialogV2.wait({
-      window: { title: `Fin de Aventura — ${this.name}`, width: 420 },
-      content: html,
-      rejectClose: false,
-      buttons: [
+      window: { title: `Fin de Aventura — ${this.name}`, width: 420 }, content: html, rejectClose: false, buttons: [
         {
-          action: "asignar",
-          label: "Asignar",
-          default: true,
-          callback: (_ev, button) => {
+          action: "asignar", label: "Asignar", default: true, callback: (_ev, button) => {
             const campos = button.form;
             const totalPX = parseInt(campos.elements.totalPX?.value) || 3;
             const seleccionadas = [...campos.querySelectorAll("input[type=checkbox]:checked")].map(cb => cb.value);
             return { totalPX, seleccionadas };
           }
-        },
-        { action: "cancelar", label: "Cancelar" }
+        }, { action: "cancelar", label: "Cancelar" }
       ]
     });
     if (!config || config === "cancelar") return;
@@ -1556,10 +1516,10 @@ export class TQActor extends Actor {
       if (habilidadBucle.nombre && claveHabilidad.startsWith("idioma")) nombres.push(habilidadBucle.nombre);
       else nombres.push(game.i18n.localize(`TQ.Habilidades.${claveHabilidad}`) || claveHabilidad);
     }
-    let msg = `<div class="tq-bendicion-msg"><strong>Fin de Aventura — ${this.name}</strong>`;
-    msg += `<p>+1 PX: ${nombres.join(", ")}</p>`;
+    let msg = `<div class="tq-result-card complicacion"><div class="tq-card-titulo">Fin de Aventura — ${this.name}</div><hr/>`;
+    msg += `<p><strong>+1 PX:</strong> ${nombres.join(", ")}</p>`;
     if (subidas.length) {
-      msg += `<p><strong>¡Subida de nivel!</strong> ${subidas.map(s => `${s.etiqueta} → Nv. ${s.nivelNuevo}`).join(", ")}</p>`;
+      msg += `<p><strong>Subida de nivel:</strong> ${subidas.map(s => `${s.etiqueta} → Nv. ${s.nivelNuevo}`).join(", ")}</p>`;
     }
     msg += `</div>`;
     await ChatMessage.create({ speaker: ChatMessage.getSpeaker({ actor: this }), content: msg });
@@ -1604,14 +1564,12 @@ export class TQActor extends Actor {
         await this.update(hitoUpdates);
         if (msg50.length) {
           ChatMessage.create({
-            speaker: ChatMessage.getSpeaker({ actor: this }),
-            content: `<div class="tq-bendicion-msg"><strong>Hito de Lealtad — ${msg50.join(", ")}</strong><p>${this.name} alcanza 50 PL y gana <strong>+1 Espíritu</strong> permanente.</p></div>`
+            speaker: ChatMessage.getSpeaker({ actor: this }), content: `<div class="tq-bendicion-msg"><strong>Hito de Lealtad — ${msg50.join(", ")}</strong><p>${this.name} alcanza 50 PL y gana <strong>+1 Espíritu</strong> permanente.</p></div>`
           });
         }
         if (msg100.length) {
           ChatMessage.create({
-            speaker: ChatMessage.getSpeaker({ actor: this }),
-            content: `<div class="tq-bendicion-msg"><strong>Apoteosis — ${msg100.join(", ")}</strong><p>${this.name} alcanza 100 PL y gana <strong>+1 Destino</strong> permanente. La deidad se manifiesta.</p></div>`
+            speaker: ChatMessage.getSpeaker({ actor: this }), content: `<div class="tq-bendicion-msg"><strong>Apoteosis — ${msg100.join(", ")}</strong><p>${this.name} alcanza 100 PL y gana <strong>+1 Destino</strong> permanente. La deidad se manifiesta.</p></div>`
           });
         }
       }
@@ -1625,8 +1583,7 @@ export class TQActor extends Actor {
 
     if (this.type === "pj" && (saludCambiada.heridasGraves1 === true || saludCambiada.heridasGraves2 === true)) {
       ChatMessage.create({
-        speaker: ChatMessage.getSpeaker({ actor: this }),
-        content: `<div class="tq-result-card complicacion"><div style="font-weight:bold;font-size:calc(1em + 2px);text-align:center;">Desgaste de Armadura</div><hr style="width:70%;margin:4px auto;border:none;border-top:1px solid rgba(0,0,0,0.25);"/><p><strong>${this.name}</strong> ha recibido una Herida Grave. Reduce en 1 la Protección de una de sus armaduras.</p></div>`
+        speaker: ChatMessage.getSpeaker({ actor: this }), content: `<div class="tq-result-card complicacion"><div class="tq-card-titulo">Desgaste de Armadura</div><hr/><p><strong>${this.name}</strong> ha recibido una Herida Grave. Reduce en 1 la Protección de una de sus armaduras.</p></div>`
       });
     }
 
@@ -1659,8 +1616,7 @@ export class TQActor extends Actor {
         return Object.entries(actor.system.habilidades ?? {})
           .filter(([, h]) => h && typeof h === "object")
           .map(([clave, h]) => ({
-            nombre: game.i18n.localize(`TQ.Habilidades.${clave}`) || clave,
-            total: h.total ?? 0
+            nombre: game.i18n.localize(`TQ.Habilidades.${clave}`) || clave, total: h.total ?? 0
           }))
           .sort((a, b) => a.nombre.localeCompare(b.nombre));
       }
@@ -1683,14 +1639,8 @@ export class TQActor extends Actor {
     }
 
     const contenido = await foundry.applications.handlebars.renderTemplate(
-      "systems/tierras-quebradas/templates/dialogs/tirada-enfrentada.hbs",
-      {
-        habNombreA: habNombreDisplay,
-        habTotalA: habTotal,
-        tieneTarget: !!targetActor,
-        nombreTarget: targetActor?.name ?? "",
-        habsTarget: _getHabs(targetActor),
-        actoresEscena
+      "systems/tierras-quebradas/templates/dialogs/tirada-enfrentada.hbs", {
+        habNombreA: habNombreDisplay, habTotalA: habTotal, tieneTarget: !!targetActor, nombreTarget: targetActor?.name ?? "", habsTarget: _getHabs(targetActor), actoresEscena
       }
     );
 
@@ -1713,27 +1663,18 @@ export class TQActor extends Actor {
     }
 
     const config = await DialogV2.wait({
-      window: { title: "Tirada Enfrentada", width: 380 },
-      content: contenido,
-      rejectClose: false,
-      buttons: [
+      window: { title: "Tirada Enfrentada", width: 380 }, content: contenido, rejectClose: false, buttons: [
         {
-          action: "lanzar",
-          label: "Lanzar",
-          default: true,
-          callback: (_ev, button) => {
+          action: "lanzar", label: "Lanzar", default: true, callback: (_ev, button) => {
             const campos = button.form.elements;
             const habVal = campos.habOponente?.value;
             if (!habVal) return null;
             const sep = habVal.indexOf("|");
             return {
-              habTotalB: parseInt(habVal.substring(0, sep)),
-              habNombreB: habVal.substring(sep + 1),
-              actorUuid: campos.actorUuid?.value ?? null
+              habTotalB: parseInt(habVal.substring(0, sep)), habNombreB: habVal.substring(sep + 1), actorUuid: campos.actorUuid?.value ?? null
             };
           }
-        },
-        { action: "cancelar", label: "Cancelar" }
+        }, { action: "cancelar", label: "Cancelar" }
       ]
     });
 
@@ -1742,9 +1683,7 @@ export class TQActor extends Actor {
     const oponenteActor = targetActor ?? actoresMap.get(config.actorUuid) ?? null;
 
     await TQRoll.tirarEnfrentada(
-      this, habNombreDisplay, habTotal,
-      oponenteActor, config.habNombreB, config.habTotalB,
-      { habClave }
+      this, habNombreDisplay, habTotal, oponenteActor, config.habNombreB, config.habTotalB, { habClave }
     );
   }
 }
