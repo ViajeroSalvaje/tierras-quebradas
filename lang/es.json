@@ -179,7 +179,7 @@
       "notas": "Notas"
     },
     "Tirada": {
-      "Label": "Tirada de",
+      "Label": "Tirada de {habilidad}",
       "Dificultad": "Dificultad",
       "Facil": "Fácil (10)",
       "Normal": "Normal (15)",
