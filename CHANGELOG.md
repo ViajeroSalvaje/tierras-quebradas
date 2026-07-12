@@ -1,3 +1,21 @@
+# Notas 12 de julio 2026 
+
+**Pendientes**
+- Agrupación de hechizos
+
+- 
+**Cambios**
+
+- Cambios en hojas de PNJ, Criaturas y Demonios
+- Resubidos los compendios de Criaturas, Demonios y Animales
+- Correcciones en cálculos de habilidades
+- Cambios en colores de diarios
+- Añadidos campos para anotación de heridas
+- Añadidos campos para anotaciones de uso de puntos de destino.
+
+
+
+
 # Notas 10 de julio 2026 
 
 **Pendientes**
