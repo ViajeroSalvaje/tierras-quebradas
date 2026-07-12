@@ -243,7 +243,7 @@ export class TQRoll {
       if (!hab) return 0;
       const base = actor.system.bases?.[hab.base]?.valor ?? 0;
       const penalizacion = (actor.system.estorbo?.valor ?? 0) * (hab.estorbo ?? 0);
-      return base + (hab.nivel ?? 0) + (hab.puntosFijos ?? 0) - penalizacion;
+      return base + (hab.nivel ?? 0)  - penalizacion;
     };
     const habLabel = (clave) => {
       if ((clave === "idioma2" || clave === "idioma3") && actor) {
@@ -575,7 +575,7 @@ export class TQRoll {
       const habilidad = targetActor.system.habilidades?.[habKey];
       if (habilidad) {
         const base = targetActor.system.bases?.[habilidad.base]?.valor ?? 0;
-        puntuacion = base + (habilidad.nivel ?? 0) + (habilidad.puntosFijos ?? 0) - (targetActor.system.estorbo?.valor ?? 0);
+        puntuacion = base + (habilidad.nivel ?? 0)  - (targetActor.system.estorbo?.valor ?? 0);
       }
     } else {
       const habNombre = ARMA_A_HABILIDAD_PNJ[habKey] ?? habKey;
