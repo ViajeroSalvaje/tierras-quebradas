@@ -1,4 +1,4 @@
-<section class="{{cssClass}} flexcol" style="height:100%;width:100%;">
+<section class="{{cssClass}} flexcol" style="display:flex;flex-direction:column;height:100%;width:100%;overflow:hidden;">
   <header class="sheet-header">
     <img class="profile-img" src="{{actor.img}}" data-edit="img" title="{{actor.name}}" />
     <div class="header-fields">
@@ -40,11 +40,50 @@
         {{/each}}
       </div>
 
-      <div class="combat-stats">
-        <div class="stat-item">
-          <label class="tirar-caracteristica" data-caracteristica="fuerza" title="Tirar Fuerza" style="cursor:pointer;">FUE</label>
-          <span style="width:48px;display:inline-block;text-align:center;">{{system.derivadas.fuerza.valor}}</span>
+      <div class="tq-derivadas-fila">
+        <div class="derivada-item">
+          <span class="derivada-label tirar-caracteristica" data-caracteristica="fuerza" title="Tirar Fuerza" style="cursor:pointer;">FUE</span>
+          <div class="tq-caract-sec-circulo"><span class="derivada-value">{{system.derivadas.fuerza.valor}}</span></div>
         </div>
+        <div class="derivada-item">
+          <span class="derivada-label">MD 1M</span>
+          <div class="tq-caract-sec-circulo"><span class="derivada-value">{{system.derivadas.mDano1m.valor}}</span></div>
+        </div>
+        <div class="derivada-item">
+          <span class="derivada-label">MD 2M</span>
+          <div class="tq-caract-sec-circulo"><span class="derivada-value">{{system.derivadas.mDano2m.valor}}</span></div>
+        </div>
+        <div class="derivada-item tirar-base" data-nombre="Vigor" data-base="vigor" style="margin-left:24px">
+          <span class="derivada-label">VIG</span>
+          <div class="tq-caract-sec-circulo"><span>{{system.bases.vigor.valor}}</span></div>
+        </div>
+        <div class="derivada-item tirar-base" data-nombre="Agilidad" data-base="agilidad">
+          <span class="derivada-label">AGI</span>
+          <div class="tq-caract-sec-circulo"><span>{{system.bases.agilidad.valor}}</span></div>
+        </div>
+        <div class="derivada-item tirar-base" data-nombre="Comunicación" data-base="comunicacion">
+          <span class="derivada-label">COM</span>
+          <div class="tq-caract-sec-circulo"><span>{{system.bases.comunicacion.valor}}</span></div>
+        </div>
+        <div class="derivada-item tirar-base" data-nombre="Cultura" data-base="cultura">
+          <span class="derivada-label">CUL</span>
+          <div class="tq-caract-sec-circulo"><span>{{system.bases.cultura.valor}}</span></div>
+        </div>
+        <div class="derivada-item tirar-base" data-nombre="Hechicería" data-base="hechiceria">
+          <span class="derivada-label">HEC</span>
+          <div class="tq-caract-sec-circulo"><span>{{system.bases.hechiceria.valor}}</span></div>
+        </div>
+        <div class="derivada-item tirar-base" data-nombre="Percepción" data-base="percepcion">
+          <span class="derivada-label">PER</span>
+          <div class="tq-caract-sec-circulo"><span>{{system.bases.percepcion.valor}}</span></div>
+        </div>
+        <div class="derivada-item tirar-base" data-nombre="Técnica" data-base="tecnica">
+          <span class="derivada-label">TEC</span>
+          <div class="tq-caract-sec-circulo"><span>{{system.bases.tecnica.valor}}</span></div>
+        </div>
+      </div>
+
+      <div class="combat-stats">
         <div class="stat-item">
           <label>Prot.</label>
           <input type="number" name="system.proteccion.valor" value="{{system.proteccion.valor}}" style="width:40px" />
@@ -115,13 +154,44 @@
         <label>Vínculo</label>
         <input type="text" name="system.vinculo" value="{{system.vinculo}}" />
       </div>
-      <div class="tq-field-group">
-        <label>Debilidades</label>
-        <textarea name="system.debilidades" rows="2">{{system.debilidades}}</textarea>
+      <div class="tq-section-header" style="margin-top:6px;">
+        <span>Poderes y Rasgos</span>
+        <a class="demonio-anadir-poder" title="Añadir poder"><i class="fas fa-plus"></i></a>
       </div>
-      <div class="tq-field-group">
-        <label>Poderes</label>
-        <textarea name="system.poderes" rows="4">{{system.poderes}}</textarea>
+      <ul class="ventajas-list">
+        {{#each poderes as |p|}}
+        <li data-item-id="{{p.id}}" class="ventaja-item">
+          <strong>{{p.name}}</strong>
+          <span class="item-controls">
+            <a class="item-edit" data-item-id="{{p.id}}"><i class="fas fa-edit"></i></a>
+            <a class="pnj-item-borrar" data-id="{{p.id}}"><i class="fas fa-trash"></i></a>
+          </span>
+        </li>
+        {{/each}}
+      </ul>
+      <div class="tq-field-group" style="margin-top:4px;">
+        <label>Notas de poderes</label>
+        <textarea name="system.poderes" rows="3">{{system.poderes}}</textarea>
+      </div>
+
+      <div class="tq-section-header" style="margin-top:6px;">
+        <span>Debilidades</span>
+        <a class="demonio-anadir-debilidad" title="Añadir debilidad"><i class="fas fa-plus"></i></a>
+      </div>
+      <ul class="ventajas-list">
+        {{#each debilidades as |d|}}
+        <li data-item-id="{{d.id}}" class="ventaja-item">
+          <strong>{{d.name}}</strong>
+          <span class="item-controls">
+            <a class="item-edit" data-item-id="{{d.id}}"><i class="fas fa-edit"></i></a>
+            <a class="pnj-item-borrar" data-id="{{d.id}}"><i class="fas fa-trash"></i></a>
+          </span>
+        </li>
+        {{/each}}
+      </ul>
+      <div class="tq-field-group" style="margin-top:4px;">
+        <label>Notas de debilidades</label>
+        <textarea name="system.debilidades" rows="2">{{system.debilidades}}</textarea>
       </div>
       <div class="tq-field-group">
         <label>Notas</label>

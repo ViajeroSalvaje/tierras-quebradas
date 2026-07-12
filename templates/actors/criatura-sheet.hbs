@@ -1,4 +1,4 @@
-<section class="{{cssClass}} flexcol" style="height:100%;width:100%;">
+<section class="{{cssClass}} flexcol" style="display:flex;flex-direction:column;height:100%;width:100%;overflow:hidden;">
   <header class="sheet-header">
     <img class="profile-img" src="{{actor.img}}" data-edit="img" title="{{actor.name}}" />
     <div class="header-fields">
@@ -36,11 +36,50 @@
         {{/each}}
       </div>
 
-      <div class="combat-stats">
-        <div class="stat-item">
-          <label class="tirar-caracteristica" data-caracteristica="fuerza" title="Tirar Fuerza" style="cursor:pointer;">FUE</label>
-          <span class="derivada-value">{{system.derivadas.fuerza.valor}}</span>
+      <div class="tq-derivadas-fila">
+        <div class="derivada-item">
+          <span class="derivada-label tirar-caracteristica" data-caracteristica="fuerza" title="Tirar Fuerza" style="cursor:pointer;">FUE</span>
+          <div class="tq-caract-sec-circulo"><span class="derivada-value">{{system.derivadas.fuerza.valor}}</span></div>
         </div>
+        <div class="derivada-item">
+          <span class="derivada-label">MD 1M</span>
+          <div class="tq-caract-sec-circulo"><span class="derivada-value">{{system.derivadas.mDano1m.valor}}</span></div>
+        </div>
+        <div class="derivada-item">
+          <span class="derivada-label">MD 2M</span>
+          <div class="tq-caract-sec-circulo"><span class="derivada-value">{{system.derivadas.mDano2m.valor}}</span></div>
+        </div>
+        <div class="derivada-item tirar-base" data-nombre="Vigor" data-base="vigor" style="margin-left:24px">
+          <span class="derivada-label">VIG</span>
+          <div class="tq-caract-sec-circulo"><span>{{system.bases.vigor.valor}}</span></div>
+        </div>
+        <div class="derivada-item tirar-base" data-nombre="Agilidad" data-base="agilidad">
+          <span class="derivada-label">AGI</span>
+          <div class="tq-caract-sec-circulo"><span>{{system.bases.agilidad.valor}}</span></div>
+        </div>
+        <div class="derivada-item tirar-base" data-nombre="Comunicación" data-base="comunicacion">
+          <span class="derivada-label">COM</span>
+          <div class="tq-caract-sec-circulo"><span>{{system.bases.comunicacion.valor}}</span></div>
+        </div>
+        <div class="derivada-item tirar-base" data-nombre="Cultura" data-base="cultura">
+          <span class="derivada-label">CUL</span>
+          <div class="tq-caract-sec-circulo"><span>{{system.bases.cultura.valor}}</span></div>
+        </div>
+        <div class="derivada-item tirar-base" data-nombre="Hechicería" data-base="hechiceria">
+          <span class="derivada-label">HEC</span>
+          <div class="tq-caract-sec-circulo"><span>{{system.bases.hechiceria.valor}}</span></div>
+        </div>
+        <div class="derivada-item tirar-base" data-nombre="Percepción" data-base="percepcion">
+          <span class="derivada-label">PER</span>
+          <div class="tq-caract-sec-circulo"><span>{{system.bases.percepcion.valor}}</span></div>
+        </div>
+        <div class="derivada-item tirar-base" data-nombre="Técnica" data-base="tecnica">
+          <span class="derivada-label">TEC</span>
+          <div class="tq-caract-sec-circulo"><span>{{system.bases.tecnica.valor}}</span></div>
+        </div>
+      </div>
+
+      <div class="combat-stats">
         <div class="stat-item">
           <label>Prot.</label>
           <input type="number" name="system.proteccion.valor" value="{{system.proteccion.valor}}" style="width:40px" />
@@ -107,17 +146,69 @@
     </div>
 
     <div class="tab" data-tab="informacion">
-      <div class="tq-field-group">
-        <label>Debilidades</label>
-        <textarea name="system.debilidades" rows="2">{{system.debilidades}}</textarea>
+      <div class="tq-section-header" style="margin-top:6px;">
+        <span>Poderes e Inmunidades</span>
+        <a class="criatura-anadir-poder" title="Añadir poder"><i class="fas fa-plus"></i></a>
       </div>
-      <div class="tq-field-group">
-        <label>Poderes</label>
-        <textarea name="system.poderes" rows="4">{{system.poderes}}</textarea>
+      <ul class="ventajas-list">
+        {{#each poderes as |p|}}
+        <li data-item-id="{{p.id}}" class="ventaja-item">
+          <strong>{{p.name}}</strong>
+          <span class="item-controls">
+            <a class="item-edit" data-item-id="{{p.id}}"><i class="fas fa-edit"></i></a>
+            <a class="pnj-item-borrar" data-id="{{p.id}}"><i class="fas fa-trash"></i></a>
+          </span>
+        </li>
+        {{/each}}
+      </ul>
+      <div class="tq-field-group" style="margin-top:4px;">
+        <label>Notas de poderes</label>
+        <textarea name="system.poderes" rows="3">{{system.poderes}}</textarea>
       </div>
-      <div class="tq-field-group">
+
+      <div class="tq-section-header" style="margin-top:6px;">
+        <span>Habilidades Especiales</span>
+        <a class="criatura-anadir-habilidad-especial" title="Añadir habilidad especial"><i class="fas fa-plus"></i></a>
+      </div>
+      <ul class="ventajas-list">
+        {{#each habilidadesEspeciales as |h|}}
+        <li data-item-id="{{h.id}}" class="ventaja-item">
+          <strong>{{h.name}}</strong>
+          <span class="item-controls">
+            <a class="item-edit" data-item-id="{{h.id}}"><i class="fas fa-edit"></i></a>
+            <a class="pnj-item-borrar" data-id="{{h.id}}"><i class="fas fa-trash"></i></a>
+          </span>
+        </li>
+        {{/each}}
+      </ul>
+      <div class="tq-field-group" style="margin-top:4px;">
         <label>Notas</label>
-        <textarea name="system.notas" rows="6">{{system.notas}}</textarea>
+        <textarea name="system.habilidadesEspeciales" rows="2">{{system.habilidadesEspeciales}}</textarea>
+      </div>
+
+      <div class="tq-section-header" style="margin-top:6px;">
+        <span>Personalidad</span>
+        <a class="criatura-anadir-personalidad" title="Añadir rasgo de personalidad"><i class="fas fa-plus"></i></a>
+      </div>
+      <ul class="ventajas-list">
+        {{#each personalidad as |p|}}
+        <li data-item-id="{{p.id}}" class="ventaja-item">
+          <strong>{{p.name}}</strong>
+          <span class="item-controls">
+            <a class="item-edit" data-item-id="{{p.id}}"><i class="fas fa-edit"></i></a>
+            <a class="pnj-item-borrar" data-id="{{p.id}}"><i class="fas fa-trash"></i></a>
+          </span>
+        </li>
+        {{/each}}
+      </ul>
+      <div class="tq-field-group" style="margin-top:4px;">
+        <label>Notas</label>
+        <textarea name="system.personalidad" rows="2">{{system.personalidad}}</textarea>
+      </div>
+
+      <div class="tq-field-group" style="margin-top:6px;">
+        <label>Notas</label>
+        <textarea name="system.notas" rows="4">{{system.notas}}</textarea>
       </div>
     </div>
   </div>

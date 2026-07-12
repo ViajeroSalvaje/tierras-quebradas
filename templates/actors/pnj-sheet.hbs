@@ -1,4 +1,4 @@
-<section class="{{cssClass}} flexcol" style="height:100%;width:100%;">
+<section class="{{cssClass}} flexcol" style="display:flex;flex-direction:column;height:100%;width:100%;overflow:hidden;">
   <header class="sheet-header">
     <img class="profile-img" src="{{actor.img}}" data-edit="img" title="{{actor.name}}" />
     <div class="header-fields pnj-header-fields">
@@ -49,6 +49,34 @@
             <span class="derivada-value">{{system.derivadas.mDano2m.valor}}</span>
           </div>
         </div>
+        <div class="derivada-item tirar-base" data-nombre="Vigor" data-base="vigor" style="margin-left:24px">
+          <span class="derivada-label">VIG</span>
+          <div class="tq-caract-sec-circulo"><span>{{system.bases.vigor.valor}}</span></div>
+        </div>
+        <div class="derivada-item tirar-base" data-nombre="Agilidad" data-base="agilidad">
+          <span class="derivada-label">AGI</span>
+          <div class="tq-caract-sec-circulo"><span>{{system.bases.agilidad.valor}}</span></div>
+        </div>
+        <div class="derivada-item tirar-base" data-nombre="Comunicación" data-base="comunicacion">
+          <span class="derivada-label">COM</span>
+          <div class="tq-caract-sec-circulo"><span>{{system.bases.comunicacion.valor}}</span></div>
+        </div>
+        <div class="derivada-item tirar-base" data-nombre="Cultura" data-base="cultura">
+          <span class="derivada-label">CUL</span>
+          <div class="tq-caract-sec-circulo"><span>{{system.bases.cultura.valor}}</span></div>
+        </div>
+        <div class="derivada-item tirar-base" data-nombre="Hechicería" data-base="hechiceria">
+          <span class="derivada-label">HEC</span>
+          <div class="tq-caract-sec-circulo"><span>{{system.bases.hechiceria.valor}}</span></div>
+        </div>
+        <div class="derivada-item tirar-base" data-nombre="Percepción" data-base="percepcion">
+          <span class="derivada-label">PER</span>
+          <div class="tq-caract-sec-circulo"><span>{{system.bases.percepcion.valor}}</span></div>
+        </div>
+        <div class="derivada-item tirar-base" data-nombre="Técnica" data-base="tecnica">
+          <span class="derivada-label">TEC</span>
+          <div class="tq-caract-sec-circulo"><span>{{system.bases.tecnica.valor}}</span></div>
+        </div>
       </div>
 
       <div class="tq-salud-fila-wrap">
@@ -87,6 +115,59 @@
         </div>
         {{/each}}
       </div>
+
+      <div class="tq-section-header">
+        <span>Bendiciones</span>
+        <a class="pnj-anadir-bendicion" title="Añadir bendición"><i class="fas fa-plus"></i></a>
+      </div>
+      <ul class="bendiciones-list">
+        {{#each bendiciones as |bend|}}
+        <li class="bendicion-item tipo-{{bend.system.tipo}}">
+          <span class="bend-nombre">{{bend.name}}</span>
+          <span class="bend-coste">{{bend.system.coste}} ESP</span>
+          {{#if (tq-eq bend.system.tipo "activa")}}
+          <span class="bend-pm">{{bend.system.pmCoste}} PM</span>
+          <a class="pnj-activar-bendicion" data-id="{{bend.id}}" title="Activar">Activar</a>
+          {{/if}}
+          <span class="item-controls">
+            <a class="item-edit" data-item-id="{{bend.id}}"><i class="fas fa-edit"></i></a>
+            <a class="pnj-item-borrar" data-id="{{bend.id}}"><i class="fas fa-trash"></i></a>
+          </span>
+        </li>
+        {{/each}}
+      </ul>
+
+      <div class="tq-section-header" style="margin-top:6px;">
+        <span>Ventajas y Desventajas</span>
+        <a class="pnj-anadir-ventaja" title="Añadir ventaja"><i class="fas fa-plus"></i></a>
+      </div>
+      <ul class="ventajas-list">
+        {{#each ventajas as |vent|}}
+        <li data-item-id="{{vent.id}}" class="ventaja-item">
+          <strong>{{vent.name}}</strong>
+          <span class="item-controls">
+            <a class="item-edit" data-item-id="{{vent.id}}"><i class="fas fa-edit"></i></a>
+            <a class="pnj-item-borrar" data-id="{{vent.id}}"><i class="fas fa-trash"></i></a>
+          </span>
+        </li>
+        {{/each}}
+      </ul>
+
+      <div class="tq-section-header" style="margin-top:6px;">
+        <span>Rasgos</span>
+        <a class="pnj-anadir-rasgo" title="Añadir rasgo"><i class="fas fa-plus"></i></a>
+      </div>
+      <ul class="ventajas-list">
+        {{#each rasgos as |r|}}
+        <li data-item-id="{{r.id}}" class="ventaja-item">
+          <strong>{{r.name}}</strong>
+          <span class="item-controls">
+            <a class="item-edit" data-item-id="{{r.id}}"><i class="fas fa-edit"></i></a>
+            <a class="pnj-item-borrar" data-id="{{r.id}}"><i class="fas fa-trash"></i></a>
+          </span>
+        </li>
+        {{/each}}
+      </ul>
     </div>
 
     <div class="tab" data-tab="combate">

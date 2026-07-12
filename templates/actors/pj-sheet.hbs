@@ -163,37 +163,37 @@
               <table class="bases-table">
                 <tbody>
                   <tr>
-                    <td class="base-nombre">Agilidad</td>
+                    <td class="base-nombre tirar-base" data-nombre="Agilidad" data-valor="{{system.bases.agilidad.valor}}">Agilidad</td>
                     <td class="base-valor">{{system.bases.agilidad.valor}}</td>
                     <td class="base-formula">CUE − TAM</td>
                   </tr>
                   <tr>
-                    <td class="base-nombre">Comunicación</td>
+                    <td class="base-nombre tirar-base" data-nombre="Comunicación" data-valor="{{system.bases.comunicacion.valor}}">Comunicación</td>
                     <td class="base-valor">{{system.bases.comunicacion.valor}}</td>
                     <td class="base-formula">ESP + ATR</td>
                   </tr>
                   <tr>
-                    <td class="base-nombre">Cultura</td>
+                    <td class="base-nombre tirar-base" data-nombre="Cultura" data-valor="{{system.bases.cultura.valor}}">Cultura</td>
                     <td class="base-valor">{{system.bases.cultura.valor}}</td>
                     <td class="base-formula">MEN</td>
                   </tr>
                   <tr>
-                    <td class="base-nombre">Hechicería</td>
+                    <td class="base-nombre tirar-base" data-nombre="Hechicería" data-valor="{{system.bases.hechiceria.valor}}">Hechicería</td>
                     <td class="base-valor">{{system.bases.hechiceria.valor}}</td>
                     <td class="base-formula">(MEN+ESP)/3</td>
                   </tr>
                   <tr>
-                    <td class="base-nombre">Percepción</td>
+                    <td class="base-nombre tirar-base" data-nombre="Percepción" data-valor="{{system.bases.percepcion.valor}}">Percepción</td>
                     <td class="base-valor">{{system.bases.percepcion.valor}}</td>
                     <td class="base-formula">(MEN+ESP)/2</td>
                   </tr>
                   <tr>
-                    <td class="base-nombre">Técnica</td>
+                    <td class="base-nombre tirar-base" data-nombre="Técnica" data-valor="{{system.bases.tecnica.valor}}">Técnica</td>
                     <td class="base-valor">{{system.bases.tecnica.valor}}</td>
                     <td class="base-formula">(MEN+CUE)/2</td>
                   </tr>
                   <tr>
-                    <td class="base-nombre">Vigor</td>
+                    <td class="base-nombre tirar-base" data-nombre="Vigor" data-valor="{{system.bases.vigor.valor}}">Vigor</td>
                     <td class="base-valor">{{system.bases.vigor.valor}}</td>
                     <td class="base-formula">CUE</td>
                   </tr>
@@ -449,89 +449,48 @@
     ══════════════════════════════════════════════════════════════ --}}
     <div class="tab {{#if (tq-eq activeTab 'combate')}}active{{/if}}" data-tab="combate">
 
-      {{!-- ARMAS --}}
-      <div class="tq-section-box">
-        <div class="tq-section-header">
-          <span>Armas</span>
-          <a class="item-create" data-tipo="arma" title="Añadir arma"><i class="fas fa-plus"></i></a>
-        </div>
-        <div class="tq-section-content" style="padding:2px;">
-          <table class="armas-table">
-            <thead>
-              <tr>
-                <th></th>
-                <th>Nombre</th>
-                <th>Hab. (total)</th>
-                <th>Daño</th>
-                <th>MD</th>
-                <th>Alcance</th>
-                <th>Carga</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {{#each items.armas as |arma|}}
-              <tr data-item-id="{{arma.item.id}}">
-                <td>
-                  <a class="tirar-arma" data-item-id="{{arma.item.id}}" title="Tirar {{arma.item.name}}">
-                    <i class="fas fa-dice-d10"></i>
-                  </a>
-                </td>
-                <td>{{arma.item.name}}</td>
-                <td class="arma-hab">
-                  <span class="arma-hab-clave" title="{{localize (concat "TQ.Habilidades." arma.item.system.habilidad)}}">{{localize (concat "TQ.Habilidades." arma.item.system.habilidad)}}</span>
-                  {{#if arma.habTotal}}<span class="arma-hab-total">({{arma.habTotal}})</span>{{/if}}
-                </td>
-                <td>{{arma.item.system.danoArma}}</td>
-                <td>{{arma.mdStr}}</td>
-                <td>{{arma.item.system.alcance}}</td>
-                <td>{{arma.item.system.carga}}</td>
-                <td class="item-controls">
-                  <a class="item-edit" data-item-id="{{arma.item.id}}" title="Editar"><i class="fas fa-edit"></i></a>
-                  <a class="item-delete" data-item-id="{{arma.item.id}}" title="Eliminar"><i class="fas fa-trash"></i></a>
-                </td>
-              </tr>
-              {{/each}}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {{!-- PROTECCIÓN + MD --}}
+      {{!-- ARMAS + MD --}}
       <div class="tq-bottom-fila">
 
-        {{!-- Protección --}}
-        <div class="tq-section-box" style="flex:1;min-width:130px;">
+        <div class="tq-section-box" style="flex:1;">
           <div class="tq-section-header">
-            <span>Protección</span>
-            <a class="item-create" data-tipo="armadura" title="Añadir protección"><i class="fas fa-plus"></i></a>
+            <span>Armas</span>
+            <a class="item-create" data-tipo="arma" title="Añadir arma"><i class="fas fa-plus"></i></a>
           </div>
           <div class="tq-section-content" style="padding:2px;">
-            <table class="armaduras-table">
+            <table class="armas-table">
               <thead>
                 <tr>
+                  <th></th>
                   <th>Nombre</th>
-                  <th>Prot.</th>
-                  <th>Zona</th>
-                  <th>Tipo</th>
+                  <th>Hab. (total)</th>
+                  <th>Daño</th>
+                  <th>MD</th>
+                  <th>Alcance</th>
                   <th>Carga</th>
                   <th></th>
                 </tr>
               </thead>
               <tbody>
-                {{#each items.armaduras as |arm|}}
-                <tr data-item-id="{{arm.id}}">
-                  <td>{{arm.name}}</td>
-                  <td>{{arm.system.proteccion}}</td>
-                  <td>{{arm.system.zona}}</td>
-                  <td>{{arm.system.tipo}}</td>
-                  <td>{{arm.system.carga}}</td>
+                {{#each items.armas as |arma|}}
+                <tr data-item-id="{{arma.item.id}}">
+                  <td>
+                    <a class="tirar-arma" data-item-id="{{arma.item.id}}" title="Tirar {{arma.item.name}}">
+                      <i class="fas fa-dice-d10"></i>
+                    </a>
+                  </td>
+                  <td>{{arma.item.name}}</td>
+                  <td class="arma-hab">
+                    <span class="arma-hab-clave" title="{{localize (concat "TQ.Habilidades." arma.item.system.habilidad)}}">{{localize (concat "TQ.Habilidades." arma.item.system.habilidad)}}</span>
+                    {{#if arma.habTotal}}<span class="arma-hab-total">({{arma.habTotal}})</span>{{/if}}
+                  </td>
+                  <td>{{arma.item.system.danoArma}}</td>
+                  <td>{{arma.mdStr}}</td>
+                  <td>{{arma.item.system.alcance}}</td>
+                  <td>{{arma.item.system.carga}}</td>
                   <td class="item-controls">
-                    {{#if arm.system.esYelmo}}
-                    <a class="toggle-visera {{#if arm.system.viseraBajada}}visera-bajada{{/if}}" data-item-id="{{arm.id}}" title="{{#if arm.system.viseraBajada}}Visera bajada (−2 Perc.) — clic para subir{{else}}Visera subida (−1 Perc.) — clic para bajar{{/if}}">{{#if arm.system.viseraBajada}}Bajada{{else}}Subida{{/if}}</a>
-                    {{/if}}
-                    <a class="item-edit" data-item-id="{{arm.id}}" title="Editar"><i class="fas fa-edit"></i></a>
-                    <a class="item-delete" data-item-id="{{arm.id}}" title="Eliminar"><i class="fas fa-trash"></i></a>
+                    <a class="item-edit" data-item-id="{{arma.item.id}}" title="Editar"><i class="fas fa-edit"></i></a>
+                    <a class="item-delete" data-item-id="{{arma.item.id}}" title="Eliminar"><i class="fas fa-trash"></i></a>
                   </td>
                 </tr>
                 {{/each}}
@@ -557,14 +516,87 @@
 
       </div>{{!-- /tq-bottom-fila --}}
 
+      {{!-- PROTECCIÓN --}}
+      <div class="tq-section-box">
+        <div class="tq-section-header">
+          <span>Protección</span>
+          <a class="item-create" data-tipo="armadura" title="Añadir protección"><i class="fas fa-plus"></i></a>
+        </div>
+        <div class="tq-section-content" style="padding:2px;">
+          <table class="armaduras-table">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Prot.</th>
+                <th>Zona</th>
+                <th>Tipo</th>
+                <th>Carga</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {{#each items.armaduras as |arm|}}
+              <tr data-item-id="{{arm.id}}">
+                <td>{{arm.name}}</td>
+                <td>{{arm.system.proteccion}}</td>
+                <td>{{arm.system.zona}}</td>
+                <td>{{arm.system.tipo}}</td>
+                <td>{{arm.system.carga}}</td>
+                <td class="item-controls">
+                  {{#if arm.system.esYelmo}}
+                  <a class="toggle-visera {{#if arm.system.viseraBajada}}visera-bajada{{/if}}" data-item-id="{{arm.id}}" title="{{#if arm.system.viseraBajada}}Visera bajada (−2 Perc.) — clic para subir{{else}}Visera subida (−1 Perc.) — clic para bajar{{/if}}">{{#if arm.system.viseraBajada}}Bajada{{else}}Subida{{/if}}</a>
+                  {{/if}}
+                  <a class="item-edit" data-item-id="{{arm.id}}" title="Editar"><i class="fas fa-edit"></i></a>
+                  <a class="item-delete" data-item-id="{{arm.id}}" title="Eliminar"><i class="fas fa-trash"></i></a>
+                </td>
+              </tr>
+              {{/each}}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
       {{!-- Tabla de Lesiones --}}
       <div class="tq-bottom-fila" style="margin-top:6px;">
         <div class="tq-section-box" style="flex:1;">
-          <div class="tq-section-header">Herida Grave</div>
-          <div class="tq-section-content" style="padding:6px 8px;">
-            <a class="tirar-lesion tq-btn-lanzar" title="Tirar en la Tabla de Lesiones (1d20)">
-              <i class="fas fa-dice-d20"></i> Tabla de Lesiones
-            </a>
+          <div class="tq-section-header">
+            <span>Heridas</span>
+            <a class="herida-add" title="Añadir herida"><i class="fas fa-plus"></i></a>
+          </div>
+          <div class="tq-section-content" style="padding:2px;">
+            <table class="heridas-table">
+              <thead>
+                <tr>
+                  <th>Tipo</th>
+                  <th>Descripción</th>
+                  <th>Sanando</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {{#each system.heridas as |herida idx|}}
+                <tr data-idx="{{idx}}">
+                  <td>
+                    <select name="system.heridas.{{idx}}.tipo">
+                      <option value="rasguño" {{selected herida.tipo "rasguño"}}>Rasguño</option>
+                      <option value="leve" {{selected herida.tipo "leve"}}>Leve</option>
+                      <option value="grave" {{selected herida.tipo "grave"}}>Grave</option>
+                    </select>
+                  </td>
+                  <td><input type="text" name="system.heridas.{{idx}}.descripcion" value="{{herida.descripcion}}" /></td>
+                  <td class="herida-sanando">
+                    <a class="tq-circulo toggle-herida-sanando {{#if herida.sanando}}marcado{{/if}}" data-idx="{{idx}}" title="Sanando"></a>
+                  </td>
+                  <td class="item-controls">
+                    <a class="herida-delete" data-idx="{{idx}}" title="Eliminar"><i class="fas fa-trash"></i></a>
+                  </td>
+                </tr>
+                {{/each}}
+              </tbody>
+            </table>
+            <div class="heridas-actions">
+              <a class="tirar-lesion tq-btn-lanzar" title="Tirar en la Tabla de Lesiones (1d20)"><i class="fas fa-dice-d20"></i> Tabla de Lesiones</a>
+            </div>
           </div>
         </div>
       </div>
@@ -853,6 +885,34 @@
               </li>
               {{/each}}
             </ul>
+          </div>
+
+          <div class="tq-section-box" style="margin-bottom:0;">
+            <div class="tq-section-header">Destino</div>
+            <div class="tq-section-content">
+              <div class="destino-gastado-grid">
+                <div class="destino-gastado-campo">
+                  <label>Objeto</label>
+                  <input type="number" name="system.destino.gastado.objeto" value="{{system.destino.gastado.objeto}}" min="0" />
+                </div>
+                <div class="destino-gastado-campo">
+                  <label>Persona</label>
+                  <input type="number" name="system.destino.gastado.persona" value="{{system.destino.gastado.persona}}" min="0" />
+                </div>
+                <div class="destino-gastado-campo">
+                  <label>Secreto</label>
+                  <input type="number" name="system.destino.gastado.secreto" value="{{system.destino.gastado.secreto}}" min="0" />
+                </div>
+                <div class="destino-gastado-campo">
+                  <label>Escenario</label>
+                  <input type="number" name="system.destino.gastado.escenario" value="{{system.destino.gastado.escenario}}" min="0" />
+                </div>
+              </div>
+              <div class="destino-gastado-total">
+                <label>Total gastado</label>
+                <span>{{tq-sum system.destino.gastado.objeto system.destino.gastado.persona system.destino.gastado.secreto system.destino.gastado.escenario}}</span>
+              </div>
+            </div>
           </div>
 
         </div>{{!-- /col izq --}}
