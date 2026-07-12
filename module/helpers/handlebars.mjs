@@ -4,6 +4,11 @@ export function registerHandlebarsHelpers() {
     return args.join("");
   });
 
+  Handlebars.registerHelper("tq-sum", function (...args) {
+    args.pop(); // remove options object
+    return args.reduce((s, v) => s + (parseInt(v) || 0), 0);
+  });
+
   Handlebars.registerHelper("tq-base-valor", function (bases, baseNombre) {
     return bases?.[baseNombre]?.valor ?? 0;
   });
@@ -12,10 +17,9 @@ export function registerHandlebarsHelpers() {
     if (!habilidad || !bases) return 0;
     const base = bases[habilidad.base]?.valor ?? 0;
     const nivel = habilidad.nivel ?? 0;
-    const fijos = habilidad.puntosFijos ?? 0;
     const multiplicacionEstorbo = habilidad.estorbo ?? 0;
     const penalizacionEstorbo = multiplicacionEstorbo * (estorbo ?? 0);
-    return base + nivel + fijos - penalizacionEstorbo;
+    return base + nivel - penalizacionEstorbo;
   });
 
   Handlebars.registerHelper("tq-base-abrev", function (base) {
