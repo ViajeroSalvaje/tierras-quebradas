@@ -1,19 +1,5 @@
-2026/07/10-00:01:55.155 6900 Recovering log #179
-2026/07/10-00:01:55.155 6900 Level-0 table #181: started
-2026/07/10-00:01:55.159 6900 Level-0 table #181: 1552 bytes OK
-2026/07/10-00:01:55.169 6900 Delete type=0 #179
-2026/07/10-00:01:55.169 6900 Delete type=3 #177
-2026/07/10-00:01:59.986 6f00 Level-0 table #184: started
-2026/07/10-00:01:59.988 6f00 Level-0 table #184: 1556 bytes OK
-2026/07/10-00:01:59.990 6f00 Delete type=0 #182
-2026/07/10-00:01:59.991 6f00 Manual compaction at level-0 from '!tables!TQtsCompMagi0001' @ 72057594037927935 : 1 .. '!tables.results!ijbFcUBBxygSdPmu' @ 0 : 0; will stop at '!tables.results!va4PKVVa3gcbAFkd' @ 801 : 1
-2026/07/10-00:01:59.991 6f00 Compacting 4@0 + 1@1 files
-2026/07/10-00:01:59.997 6f00 Generated table #185@0: 96 keys, 12421 bytes
-2026/07/10-00:01:59.997 6f00 Compacted 4@0 + 1@1 files => 12421 bytes
-2026/07/10-00:01:59.999 6f00 compacted to: files[ 0 1 0 0 0 0 0 ]
-2026/07/10-00:01:59.999 6f00 Delete type=2 #173
-2026/07/10-00:01:59.999 6f00 Delete type=2 #175
-2026/07/10-00:01:59.999 6f00 Delete type=2 #178
-2026/07/10-00:01:59.999 6f00 Delete type=2 #181
-2026/07/10-00:02:00.000 6f00 Delete type=2 #184
-2026/07/10-00:02:00.012 6f00 Manual compaction at level-0 from '!tables.results!va4PKVVa3gcbAFkd' @ 801 : 1 .. '!tables.results!ijbFcUBBxygSdPmu' @ 0 : 0; will stop at (end)
+2026/07/12-22:41:02.100 43ac Recovering log #248
+2026/07/12-22:41:02.100 43ac Level-0 table #250: started
+2026/07/12-22:41:02.103 43ac Level-0 table #250: 1548 bytes OK
+2026/07/12-22:41:02.110 43ac Delete type=0 #248
+2026/07/12-22:41:02.110 43ac Delete type=3 #246
