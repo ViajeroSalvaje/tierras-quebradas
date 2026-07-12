@@ -51,10 +51,16 @@ Movimiento: Correr, medio.`;
           fuerza: { valor: datos.fuerza }, mDano1m: { valor: datos.mDano1m }, mDano2m: { valor: datos.mDano2m }
         }, salud: {
           pvMax: { valor: datos.pvMax }, pvActual: { valor: datos.pvMax }, pvGrave: { valor: datos.pvGrave }, pvLeve: { valor: datos.pvLeve }
-        }, proteccion: { valor: datos.proteccion, tipo: datos.proteccionTipo }, alImpacto: datos.alImpacto, pm: datos.pm, movimiento: datos.movimiento, poderes: datos.poderes, debilidades: datos.debilidades, notas: datos.notas
+        }, proteccion: { valor: datos.proteccion, tipo: datos.proteccionTipo }, alImpacto: datos.alImpacto, pm: datos.pm, movimiento: datos.movimiento, poderes: datos.poderes, habilidadesEspeciales: datos.habilidadesEspeciales, personalidad: datos.personalidad, notas: datos.notas
       }
     });
     if (!actor) return;
+
+    if (datos.proteccion > 0) {
+      await Item.create({
+        name: "Protección", type: "armadura", system: { proteccion: datos.proteccion, tipo: datos.proteccionTipo }
+      }, { parent: actor });
+    }
 
     if (Object.keys(datos.habilidades).length) {
       const upd = {};
@@ -99,13 +105,37 @@ Movimiento: Correr, medio.`;
           await actor.update({ [`system.habilidades.${habNombre}`]: a.nivel });
         }
       } else {
+        const habMatch = datos.habilidades[a.nombre] ?? 0;
+        const nivelFinal = a.nivel || habMatch;
         await Item.create({
-          name: a.nombre, type: "arma", system: { danoArma: a.dano, propiedades: a.propiedades }
+          name: a.nombre, type: "arma", system: { habilidad: a.nombre, danoArma: a.dano, propiedades: a.propiedades }
         }, { parent: actor });
-        if (a.nivel) {
-          await actor.update({ [`system.habilidades.${a.nombre}`]: a.nivel });
+        if (nivelFinal) {
+          await actor.update({ [`system.habilidades.${a.nombre}`]: nivelFinal });
         }
       }
+    }
+
+    const norm = s => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").trim();
+    const packRasgos = game.packs.get("tierras-quebradas.rasgos");
+    const catalogoRasgos = packRasgos ? await packRasgos.getDocuments() : [];
+
+    for (const p of datos.poderesItems) {
+      const doc = catalogoRasgos.find(d => norm(d.name) === norm(p.nombre));
+      if (doc) await Item.create(doc.toObject(), { parent: actor });
+      else await Item.create({ name: p.nombre, type: "rasgo", system: { tipo: "rasgoSobrenatural", efecto: p.efecto } }, { parent: actor });
+    }
+
+    for (const h of datos.habilidadesEspecialesItems) {
+      const doc = catalogoRasgos.find(d => norm(d.name) === norm(h.nombre));
+      if (doc) await Item.create(doc.toObject(), { parent: actor });
+      else await Item.create({ name: h.nombre, type: "rasgo", system: { tipo: "habilidadEspecial", efecto: h.efecto } }, { parent: actor });
+    }
+
+    for (const p of datos.personalidadItems) {
+      const doc = catalogoRasgos.find(d => norm(d.name) === norm(p.nombre));
+      if (doc) await Item.create(doc.toObject(), { parent: actor });
+      else await Item.create({ name: p.nombre, type: "rasgo", system: { tipo: "personalidad", efecto: p.efecto } }, { parent: actor });
     }
 
     ui.notifications.info(`Criatura "${datos.nombre}" importada.`);
@@ -143,7 +173,9 @@ Movimiento: Correr, medio.`;
     const pm        = int(/PM:\s*(\d+)/i);
     const alImpacto = intSig(/Al\s+impacto:\s*([+-]?\d+)/i);
 
-    const protMatch = texto.match(/Protecci[oó]n:\s*(\d+)\s*(?:\(([^)]+)\))?/i);
+    const protLine = lineas.find(l => /protecc/i.test(l)) ?? "";
+    const protMatch = protLine.normalize("NFC").match(/Protecci[oó]n:?\s*(\d+)\s*(?:\(([^)]+)\))?/i)
+      ?? texto.normalize("NFC").match(/Protecci[oó]n:?\s*(\d+)\s*(?:\(([^)]+)\))?/i);
     const proteccion = parseInt(protMatch?.[1]) || 0;
     const proteccionTipo = protMatch?.[2]?.toLowerCase().includes("dura") ? "dura" : "blanda";
 
@@ -160,18 +192,30 @@ Movimiento: Correr, medio.`;
     const movimientoMatch = texto.match(/Movimiento:\s*([^.]+\.?)/i);
     const movimiento = movimientoMatch?.[1]?.trim() ?? "";
 
-    const secRe = /(Habilidades:|Armas:|Poderes:|Debilidades:)/gi;
-    const partes = texto.split(secRe);
+    const SEC_MAP = {
+      "habilidadesespeciales": "habilidadesEspeciales",
+      "habilidades": "habilidades",
+      "armas": "armas",
+      "poderes": "poderes",
+      "debilidades": "debilidades",
+      "personalidad": "personalidad"
+    };
     const sec = {};
-    for (let i = 1; i < partes.length; i += 2) {
-      const clave = partes[i].toLowerCase().replace(":", "").trim();
-      sec[clave] = partes[i + 1] ?? "";
+    let secKey = null;
+    for (const l of lineas) {
+      const m = l.match(/^(Habilidades especiales|Habilidades|Armas|Poderes|Debilidades|Personalidad):/i);
+      if (m) {
+        secKey = SEC_MAP[m[1].toLowerCase().replace(/\s+/g, "")] ?? m[1].toLowerCase();
+        sec[secKey] = (sec[secKey] ?? "") + l.slice(m[0].length).trim();
+      } else if (secKey) {
+        sec[secKey] += " " + l;
+      }
     }
 
     const habilidades = {};
     if (sec.habilidades) {
       const limpio = sec.habilidades.replace(/Movimiento:.*/i, "").replace(/\.$/, "");
-      const re = /([A-Za-záéíóúñÁÉÍÓÚÑ][A-Za-záéíóúñÁÉÍÓÚÑ ]*?)\s+(\d+)/g;
+      const re = /([A-Za-záéíóúñÁÉÍÓÚÑ][A-Za-záéíóúñÁÉÍÓÚÑ: ]*?)\s+(\d+)/g;
       let m;
       while ((m = re.exec(limpio)) !== null) {
         const nombreHab = m[1].trim();
@@ -181,7 +225,7 @@ Movimiento: Correr, medio.`;
 
     const armas = [];
     if (sec.armas) {
-      const re = /([A-Za-záéíóúñÁÉÍÓÚÑ][A-Za-záéíóúñÁÉÍÓÚÑ\s]*?)\s+(\d+)\.\s*Da[ñn]o:?\s*([^.]+)\.\s*([^A-Z]*?(?=[A-ZÁÉÍÓÚÑ]|$))?/g;
+      const re = /([A-Za-záéíóúñÁÉÍÓÚÑ][A-Za-záéíóúñÁÉÍÓÚÑ\s]*?)\s+(?:[12]M\s+)?(\d+)\.\s*Da[ñn]o:?\s*([^.]+)\.\s*([^A-Z]*?(?=[A-ZÁÉÍÓÚÑ]|$))?/g;
       let m;
       while ((m = re.exec(sec.armas)) !== null) {
         armas.push({
@@ -190,9 +234,24 @@ Movimiento: Correr, medio.`;
       }
     }
 
-    const poderes     = sec.poderes     ? sec.poderes.replace(/Movimiento:.*/i, "").trim()     : "";
-    const debilidades = sec.debilidades ? sec.debilidades.replace(/Movimiento:.*/i, "").trim() : "";
+    const poderes             = sec.poderes             ? sec.poderes.replace(/Movimiento:.*/i, "").trim()             : "";
+    const habilidadesEspeciales = sec.habilidadesEspeciales ? sec.habilidadesEspeciales.replace(/Movimiento:.*/i, "").trim() : "";
+    const personalidad        = sec.personalidad        ? sec.personalidad.replace(/Movimiento:.*/i, "").trim()        : "";
 
-    return { nombre, tipo, cuerpo, mente, espiritu, atractivo, tamanyo, fuerza, pvMax, pvGrave, pvLeve, proteccion, proteccionTipo, mDano1m, mDano2m, pm, alImpacto, movimiento, habilidades, armas, poderes, debilidades, notas: desc };
+    const parsearEntradas = (texto) => {
+      if (!texto) return [];
+      return texto.split(/◆|•|\n/).map(s => s.trim()).filter(Boolean).map(entrada => {
+        const sep = entrada.indexOf(":");
+        if (sep > 0 && sep < 60) {
+          return { nombre: entrada.slice(0, sep).trim(), efecto: entrada.slice(sep + 1).trim() };
+        }
+        return { nombre: entrada, efecto: "" };
+      });
+    };
+    const poderesItems             = parsearEntradas(poderes);
+    const habilidadesEspecialesItems = parsearEntradas(habilidadesEspeciales);
+    const personalidadItems        = parsearEntradas(personalidad);
+
+    return { nombre, tipo, cuerpo, mente, espiritu, atractivo, tamanyo, fuerza, pvMax, pvGrave, pvLeve, proteccion, proteccionTipo, mDano1m, mDano2m, pm, alImpacto, movimiento, habilidades, armas, poderes, habilidadesEspeciales, personalidad, poderesItems, habilidadesEspecialesItems, personalidadItems, notas: desc };
   }
 }

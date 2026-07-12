@@ -22,7 +22,12 @@ Pelea 8 Sigilo 7 Percatarse 6 Buscar 5 Atletismo 7 Esquivar 6
 Armas:
 Espada 10. Daño: 2+2.
 Cuchillo 8. Daño: 1+1.
-Hechizos:`;
+Hechizos:
+Bendiciones:
+Escudo de Fe (ESP: 1) Mano Sanadora (ESP: 2, PM: 3)
+Ventajas: Sangre Fría (2 PP), Reflejos Rápidos (1 PP)
+Desventajas: Codicioso (1 PP)
+Rasgos: Intimidante, Ágil`;
 
   static open() {
     return new PNJImporter().render(true);
@@ -74,6 +79,8 @@ Hechizos:`;
       }, { parent: actor });
     }
 
+    const norm = s => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").trim();
+
     const packNombres = [
       "tierras-quebradas.armamento-armas-cuerpo-a-cuerpo", "tierras-quebradas.armamento-armas-proyectiles", "tierras-quebradas.armamento-armas-arrojadizas", "tierras-quebradas.armamento-armas-improvisadas"
     ];
@@ -110,21 +117,22 @@ Hechizos:`;
           await actor.update({ [`system.habilidades.${habNombre}`]: a.nivel });
         }
       } else {
+        const habMatch = Object.entries(datos.habilidades).find(([h]) => norm(h) === norm(a.nombre));
+        const nivel = habMatch ? habMatch[1] : a.nivel;
         await Item.create({
-          name: a.nombre, type: "arma", system: { danoArma: a.dano }
+          name: a.nombre, type: "arma", system: { danoArma: a.dano, habilidad: a.nombre }
         }, { parent: actor });
-        if (a.nivel) {
-          await actor.update({ [`system.habilidades.${a.nombre}`]: a.nivel });
+        if (nivel) {
+          await actor.update({ [`system.habilidades.${a.nombre}`]: nivel });
         }
       }
     }
 
     const packHechizos = game.packs.get("tierras-quebradas.hechizos");
     const catalogoHechizos = packHechizos ? await packHechizos.getDocuments() : [];
-    const normH = s => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").trim();
 
     for (const h of datos.hechizos) {
-      const doc = catalogoHechizos.find(d => normH(d.name) === normH(h.nombre));
+      const doc = catalogoHechizos.find(d => norm(d.name) === norm(h.nombre));
       if (doc) {
         const itemData = doc.toObject();
         itemData.system.nivelLanzamiento = h.nivel;
@@ -133,6 +141,44 @@ Hechizos:`;
         await Item.create({
           name: h.nombre, type: "hechizo", system: { dificultad: h.dificultad, pmCoste: h.pmCoste, pmMax: h.pmMax, nivelLanzamiento: h.nivel }
         }, { parent: actor });
+      }
+    }
+
+    const packBendiciones = game.packs.get("tierras-quebradas.bendiciones");
+    const catalogoBendiciones = packBendiciones ? await packBendiciones.getDocuments() : [];
+
+    for (const b of datos.bendiciones) {
+      const doc = catalogoBendiciones.find(d => norm(d.name) === norm(b.nombre));
+      if (doc) {
+        await Item.create(doc.toObject(), { parent: actor });
+      } else {
+        await Item.create({
+          name: b.nombre, type: "bendicion", system: { coste: b.coste, pmCoste: b.pmCoste, tipo: b.pmCoste > 0 ? "activa" : "pasiva" }
+        }, { parent: actor });
+      }
+    }
+
+    const packVentajas = game.packs.get("tierras-quebradas.ventajas");
+    const catalogoVentajas = packVentajas ? await packVentajas.getDocuments() : [];
+
+    for (const v of datos.ventajas) {
+      const doc = catalogoVentajas.find(d => norm(d.name) === norm(v.nombre));
+      if (doc) {
+        await Item.create(doc.toObject(), { parent: actor });
+      } else {
+        await Item.create({ name: v.nombre, type: "ventaja", system: { coste: v.coste, tipo: v.tipo } }, { parent: actor });
+      }
+    }
+
+    const packRasgos = game.packs.get("tierras-quebradas.rasgos");
+    const catalogoRasgos = packRasgos ? await packRasgos.getDocuments() : [];
+
+    for (const r of datos.rasgos) {
+      const doc = catalogoRasgos.find(d => norm(d.name) === norm(r.nombre));
+      if (doc) {
+        await Item.create(doc.toObject(), { parent: actor });
+      } else {
+        await Item.create({ name: r.nombre, type: "rasgo" }, { parent: actor });
       }
     }
 
@@ -218,9 +264,8 @@ Hechizos:`;
 
     const aplicar = (nombre, total, habItem) => {
       const baseValor = bases[habItem.system.base] ?? 0;
-      const puntosFijos = habItem.system.puntosFijos ?? 0;
       upd[`system.habilidades.${nombre}`] = {
-        base: habItem.system.base, nivel: Math.max(0, total - baseValor - puntosFijos), puntosFijos, estorbo: habItem.system.estorbo ?? 0
+        base: habItem.system.base, nivel: Math.max(0, total - baseValor), estorbo: habItem.system.estorbo ?? 0
       };
     };
 
@@ -279,11 +324,12 @@ Hechizos:`;
     const pvLeve = parseInt(pvMatch?.[3]) || Math.ceil(pvMax / 4);
 
     // Dividir en secciones
-    const secRe = /(Hechizos:|Habilidades\s+m[áa]gicas:|Habilidades:|Armas:)/gi;
+    const secRe = /(Bendiciones[^:]*:|Hechizos:|Habilidades\s+m[áa]gicas:|Habilidades:|Armas:|Ventajas:|Desventajas:|Rasgos:)/gi;
     const partes = texto.split(secRe);
     const sec = {};
     for (let i = 1; i < partes.length; i += 2) {
-      const clave = partes[i].toLowerCase().replace(/\s+/g, "_").replace(/[áa]/, "a").replace(":", "");
+      let clave = partes[i].toLowerCase().replace(/\s+/g, "_").replace(/[áa]/, "a").replace(":", "");
+      if (clave.startsWith("bendiciones")) clave = "bendiciones";
       sec[clave] = partes[i + 1] ?? "";
     }
 
@@ -333,6 +379,34 @@ Hechizos:`;
       }
     }
 
+    // Bendiciones: "Nombre (ESP: 1, PM: 3)" o simplemente "Nombre", separadas por comas o puntos
+    const bendiciones = [];
+    if (sec.bendiciones) {
+      const entradas = sec.bendiciones.split(/[,.]/).map(s => s.trim()).filter(Boolean);
+      for (const entrada of entradas) {
+        const mEsp = entrada.match(/\(ESP:\s*(\d+)(?:,\s*PM:\s*(\d+))?\)/);
+        const nombre = entrada.replace(/\(.*?\)/, "").trim();
+        if (!nombre) continue;
+        bendiciones.push({ nombre, coste: parseInt(mEsp?.[1]) || 0, pmCoste: parseInt(mEsp?.[2]) || 0 });
+      }
+    }
+
+    // Ventajas / Desventajas: "Nombre (3 PP), Nombre2"
+    const parsearVentajasDesventajas = (t, tipo) => {
+      return t.split(/[,.]/).map(s => s.trim()).filter(Boolean).map(entrada => {
+        const mCoste = entrada.match(/\((\d+)\s*PP\)/i);
+        const nombre = entrada.replace(/\(.*?\)/, "").trim();
+        return nombre ? { nombre, coste: parseInt(mCoste?.[1]) || 0, tipo } : null;
+      }).filter(Boolean);
+    };
+    const ventajas = [
+      ...parsearVentajasDesventajas(sec.ventajas ?? "", "ventaja"),
+      ...parsearVentajasDesventajas(sec.desventajas ?? "", "desventaja")
+    ];
+
+    // Rasgos: "Nombre, Nombre2"
+    const rasgos = (sec.rasgos ?? "").split(/[,.]/).map(s => s.trim()).filter(Boolean).map(nombre => ({ nombre }));
+
     // Notas: descripción + datos sin campo propio
     const notasParts = [];
     if (desc) notasParts.push(desc);
@@ -340,6 +414,6 @@ Hechizos:`;
     if (modDanoStr) notasParts.push(`Mod. al Daño: ${modDanoStr}`);
     const notas = notasParts.join("\n");
 
-    return { nombre, cuerpo, mente, espiritu, atractivo, tamano, pvMax, pvGrave, pvLeve, proteccion, mDano1m, mDano2m, pm, habilidades, armas, hechizos, notas };
+    return { nombre, cuerpo, mente, espiritu, atractivo, tamano, pvMax, pvGrave, pvLeve, proteccion, mDano1m, mDano2m, pm, habilidades, armas, hechizos, bendiciones, ventajas, rasgos, notas };
   }
 }
