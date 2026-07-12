@@ -57,7 +57,13 @@
         },
         "destino": {
           "max": 1,
-          "actual": 1
+          "actual": 1,
+          "gastado": {
+            "objeto": 0,
+            "persona": 0,
+            "secreto": 0,
+            "escenario": 0
+          }
         },
         "lealtad": {
           "caos": 0,
@@ -73,14 +79,14 @@
         "habilidades": {
           "academia": { "nivel": 0, "px": 0, "base": "cultura", "puntosFijos": 0 },
           "actuacion": { "nivel": 0, "px": 0, "base": "comunicacion", "puntosFijos": 0 },
-          "atletismo": { "nivel": 0, "px": 0, "base": "agilidad", "puntosFijos": 2, "estorbo": 1 },
+          "atletismo": { "nivel": 0, "px": 0, "base": "agilidad", "puntosFijos": 0, "estorbo": 1 },
           "buscar": { "nivel": 0, "px": 0, "base": "percepcion", "puntosFijos": 1 },
           "callejeo": { "nivel": 0, "px": 0, "base": "comunicacion", "puntosFijos": 0 },
           "conocimientoMagico": { "nivel": 0, "px": 0, "base": "cultura", "puntosFijos": 0 },
           "disfrazarse": { "nivel": 0, "px": 0, "base": "comunicacion", "puntosFijos": 0 },
           "documentacion": { "nivel": 0, "px": 0, "base": "percepcion", "puntosFijos": 0 },
           "encanto": { "nivel": 0, "px": 0, "base": "comunicacion", "puntosFijos": 2 },
-          "esquivar": { "nivel": 0, "px": 0, "base": "agilidad", "puntosFijos": 1, "estorbo": 1 },
+          "esquivar": { "nivel": 0, "px": 0, "base": "agilidad", "puntosFijos": 0, "estorbo": 1 },
           "estrategia": { "nivel": 0, "px": 0, "base": "cultura", "puntosFijos": 0 },
           "forzarCerraduras": { "nivel": 0, "px": 0, "base": "tecnica", "puntosFijos": 0 },
           "hurtar": { "nivel": 0, "px": 0, "base": "tecnica", "puntosFijos": 0, "estorbo": 1 },
@@ -107,7 +113,7 @@
           "pociones": { "nivel": 0, "px": 0, "base": "cultura", "puntosFijos": 0 },
           "primerosAuxilios": { "nivel": 0, "px": 0, "base": "tecnica", "puntosFijos": 0 },
           "rastrear": { "nivel": 0, "px": 0, "base": "percepcion", "puntosFijos": 0 },
-          "sigilo": { "nivel": 0, "px": 0, "base": "agilidad", "puntosFijos": 1, "estorbo": 1 },
+          "sigilo": { "nivel": 0, "px": 0, "base": "agilidad", "puntosFijos": 0, "estorbo": 1 },
           "seguir": { "nivel": 0, "px": 0, "base": "percepcion", "puntosFijos": 0 },
           "sueños": { "nivel": 0, "px": 0, "base": "cultura", "puntosFijos": 0 },
           "trepar": { "nivel": 0, "px": 0, "base": "agilidad", "puntosFijos": 0, "estorbo": 1 },
@@ -154,6 +160,7 @@
             "ley": 0
           }
         },
+        "heridas": [],
         "motivacion": "",
         "tuMentira": "",
         "tuMentiraMarcas": 0,
@@ -192,7 +199,8 @@
       "templates": ["base"],
       "habilidades": {},
       "poderes": "",
-      "debilidades": "",
+      "habilidadesEspeciales": "",
+      "personalidad": "",
       "tipo": "",
       "proteccion": { "valor": 0, "tipo": "blanda" },
       "alImpacto": 0,

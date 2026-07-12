@@ -1,14 +1,14 @@
 {
   "id": "tierras-quebradas",
   "title": "Tierras Quebradas",
-  "description": "Tierras Quebradas - Edición Revisada",
-  "version": "1.0.0",
+  "description": "Tierras Quebradas: Edición Revisada",
+  "version": "1.1.0",
   "url": "https://github.com/ViajeroSalvaje/tierras-quebradas",
   "manifest": "https://raw.githubusercontent.com/ViajeroSalvaje/tierras-quebradas/main/system.json",
   "download": "https://github.com/ViajeroSalvaje/tierras-quebradas/releases/latest/download/tierras-quebradas.zip",
   "authors": [
     {
-      "name": "Viajero Salvaje",
+      "name": "Segis Alonso (Viajero Salvaje)",
       "url": "https://github.com/ViajeroSalvaje"
     }
   ],
@@ -67,6 +67,13 @@
       "name": "demonios",
       "label": "Bestiario — Demonios",
       "path": "packs/demonios",
+      "type": "Actor",
+      "system": "tierras-quebradas"
+    },
+    {
+      "name": "animales",
+      "label": "Bestiario — Animales",
+      "path": "packs/animales",
       "type": "Actor",
       "system": "tierras-quebradas"
     },
