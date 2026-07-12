@@ -43,7 +43,7 @@ export class CriaturaSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       return { nombre, total: hab.total ?? 0, nivel: hab.nivel ?? 0, base: hab.base ?? "" };
     });
     return {
-      actor: this.actor, system: this.actor.system, cssClass: this.options.classes.join(" "), caracteristicasOrdenadas, habilidades, armas: items.filter(i => i.type === "arma").map(i => ({ id: i.id, name: i.name, dano: i.system.danoArma, habilidad: i.system.habilidad, alcance: i.system.alcance, carga: i.system.carga })), armaduras: items.filter(i => i.type === "armadura").map(i => ({ id: i.id, name: i.name, proteccion: i.system.proteccion, zona: i.system.zona, tipo: i.system.tipo, carga: i.system.carga })), rasgos: items.filter(i => i.type === "rasgo").map(i => ({ id: i.id, name: i.name })), ventajas: items.filter(i => i.type === "ventaja").map(i => ({ id: i.id, name: i.name })), hechizos: items.filter(i => i.type === "hechizo")
+      actor: this.actor, system: this.actor.system, cssClass: this.options.classes.join(" "), caracteristicasOrdenadas, habilidades, armas: items.filter(i => i.type === "arma").map(i => ({ id: i.id, name: i.name, dano: i.system.danoArma, habilidad: i.system.habilidad, alcance: i.system.alcance, carga: i.system.carga })), armaduras: items.filter(i => i.type === "armadura").map(i => ({ id: i.id, name: i.name, proteccion: i.system.proteccion, zona: i.system.zona, tipo: i.system.tipo, carga: i.system.carga })), poderes: items.filter(i => i.type === "rasgo" && i.system.tipo === "rasgoSobrenatural").map(i => ({ id: i.id, name: i.name })), habilidadesEspeciales: items.filter(i => i.type === "rasgo" && i.system.tipo === "habilidadEspecial").map(i => ({ id: i.id, name: i.name })), personalidad: items.filter(i => i.type === "rasgo" && i.system.tipo === "personalidad").map(i => ({ id: i.id, name: i.name })), ventajas: items.filter(i => i.type === "ventaja").map(i => ({ id: i.id, name: i.name })), hechizos: items.filter(i => i.type === "hechizo")
     };
   }
 
@@ -115,6 +115,15 @@ export class CriaturaSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
         } else {
           await this.actor.update({ [`system.habilidades.${nombre}`]: nivel });
         }
+      });
+    });
+
+    el.querySelectorAll(".tirar-base").forEach(div => {
+      div.addEventListener("click", ev => {
+        const base = ev.currentTarget.dataset.base;
+        const nombre = ev.currentTarget.dataset.nombre;
+        const valor = this.actor.system.bases[base]?.valor ?? 0;
+        TQRoll.dialogoTirada(nombre, valor, { actor: this.actor });
       });
     });
 
@@ -194,6 +203,21 @@ export class CriaturaSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       a.addEventListener("click", ev => {
         this.actor.lanzarHechizo(ev.currentTarget.dataset.id);
       });
+    });
+
+    el.querySelector(".criatura-anadir-poder")?.addEventListener("click", async () => {
+      const item = await Item.create({ name: "Nuevo poder", type: "rasgo", system: { tipo: "rasgoSobrenatural" } }, { parent: this.actor });
+      item?.sheet.render(true);
+    });
+
+    el.querySelector(".criatura-anadir-habilidad-especial")?.addEventListener("click", async () => {
+      const item = await Item.create({ name: "Nueva habilidad especial", type: "rasgo", system: { tipo: "habilidadEspecial" } }, { parent: this.actor });
+      item?.sheet.render(true);
+    });
+
+    el.querySelector(".criatura-anadir-personalidad")?.addEventListener("click", async () => {
+      const item = await Item.create({ name: "Nuevo rasgo de personalidad", type: "rasgo", system: { tipo: "personalidad" } }, { parent: this.actor });
+      item?.sheet.render(true);
     });
   }
 }

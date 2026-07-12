@@ -1,3 +1,5 @@
+import { TQRoll } from "../../rolls/TQRoll.mjs";
+
 const { HandlebarsApplicationMixin, DialogV2 } = foundry.applications.api;
 const { ActorSheetV2 } = foundry.applications.sheets;
 
@@ -76,7 +78,7 @@ export class PJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
         let habTotal = "—";
         if (habilidad) {
           const base = this.actor.system.bases[habilidad.base]?.valor ?? 0;
-          habTotal = base + (habilidad.nivel ?? 0) + (habilidad.puntosFijos ?? 0) - (this.actor.system.estorbo?.valor ?? 0);
+          habTotal = base + (habilidad.nivel ?? 0) - (this.actor.system.estorbo?.valor ?? 0);
         }
         return { item: arma, habTotal, md, mdStr };
       });
@@ -190,6 +192,15 @@ export class PJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
         if (!hab) return;
         const nombre = game.i18n.localize(`TQ.Habilidades.${clave}`) || clave;
         this.actor.abrirDialogoEnfrentada(nombre, hab.total ?? 0, clave);
+      });
+    });
+
+    // Tiradas de base de habilidad
+    el.querySelectorAll(".tirar-base").forEach(td => {
+      td.addEventListener("click", ev => {
+        const nombre = ev.currentTarget.dataset.nombre;
+        const valor = parseInt(ev.currentTarget.dataset.valor) || 0;
+        TQRoll.dialogoTirada(nombre, valor, { actor: this.actor });
       });
     });
 
@@ -322,6 +333,36 @@ export class PJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       ev.preventDefault();
       const objetivo = game.user.targets.first()?.actor ?? this.actor;
       objetivo.tirarLesion();
+    });
+
+    // Añadir herida
+    el.querySelector(".herida-add")?.addEventListener("click", ev => {
+      ev.preventDefault();
+      const heridas = foundry.utils.deepClone(this.actor.system.heridas ?? []);
+      heridas.push({ tipo: "rasguño", descripcion: "", sanando: false });
+      this.actor.update({ "system.heridas": heridas });
+    });
+
+    // Borrar herida
+    el.querySelectorAll(".herida-delete").forEach(a => {
+      a.addEventListener("click", ev => {
+        ev.preventDefault();
+        const idx = parseInt(ev.currentTarget.dataset.idx);
+        const heridas = foundry.utils.deepClone(this.actor.system.heridas ?? []);
+        heridas.splice(idx, 1);
+        this.actor.update({ "system.heridas": heridas });
+      });
+    });
+
+    // Toggle sanando en heridas
+    el.querySelectorAll(".toggle-herida-sanando").forEach(a => {
+      a.addEventListener("click", ev => {
+        ev.preventDefault();
+        const idx = parseInt(ev.currentTarget.dataset.idx);
+        const heridas = foundry.utils.deepClone(this.actor.system.heridas ?? []);
+        if (heridas[idx]) heridas[idx].sanando = !heridas[idx].sanando;
+        this.actor.update({ "system.heridas": heridas });
+      });
     });
 
     // Pasiones

@@ -113,7 +113,7 @@ export class TQActor extends Actor {
       if (!hab || typeof hab !== "object") continue;
       const baseValor = bases[hab.base]?.valor ?? 0;
       const multiplicador = this.type === "pj" ? (hab.estorbo ?? 0) : 0;
-      hab.total = baseValor + (hab.nivel ?? 0) + (hab.puntosFijos ?? 0) - actorEstorbo * multiplicador;
+      hab.total = baseValor + (hab.nivel ?? 0)  - actorEstorbo * multiplicador;
     }
   }
 
@@ -148,7 +148,7 @@ export class TQActor extends Actor {
     const multiplicacionEstorbo = habilidad.estorbo ?? 0;
     const penalizacionEstorbo = (this.system.estorbo?.valor ?? 0) * multiplicacionEstorbo;
     const penalizacionYelmo = habilidad.base === "percepcion" ? this._penalizacionPercepcionYelmo() : 0;
-    const total = base + (habilidad.nivel ?? 0) + (habilidad.puntosFijos ?? 0) - penalizacionEstorbo - penalizacionYelmo;
+    const total = base + (habilidad.nivel ?? 0)  - penalizacionEstorbo - penalizacionYelmo;
     const etiqueta = (habilidad.nombre && clave.startsWith("idioma"))
       ? habilidad.nombre
       : game.i18n.localize(`TQ.Habilidades.${clave}`);
@@ -196,13 +196,13 @@ export class TQActor extends Actor {
       if (habilidad) {
         const base = this.system.bases[habilidad.base]?.valor ?? 0;
         const multiplicacionEstorbo = habilidad.estorbo ?? 0;
-        puntuacion = base + (habilidad.nivel ?? 0) + (habilidad.puntosFijos ?? 0) - (this.system.estorbo?.valor ?? 0) * multiplicacionEstorbo;
+        puntuacion = base + (habilidad.nivel ?? 0)  - (this.system.estorbo?.valor ?? 0) * multiplicacionEstorbo;
       }
       if (TQActor.HABILIDADES_ESPECIALIZADAS.has(habClave) && (habilidad?.nivel ?? 0) === 0) {
         return ui.notifications.warn(`${arma.name} es una habilidad especializada (E). Necesitas al menos Nivel 1 para usarla.`);
       }
     } else {
-      const habNombre = ARMA_A_HABILIDAD_PNJ[habClave] ?? habClave;
+      const habNombre = (ARMA_A_HABILIDAD_PNJ[habClave] ?? habClave) || arma.name;
       const hab = this.system.habilidades?.[habNombre];
       puntuacion = typeof hab === "number" ? hab : (hab?.total ?? 0);
     }
@@ -584,7 +584,7 @@ export class TQActor extends Actor {
         let base = 0, puntuacion = 0;
         if (habilidad) {
           base = this.system.bases[habilidad.base]?.valor ?? 0;
-          puntuacion = base + (habilidad.nivel ?? 0) + (habilidad.puntosFijos ?? 0);
+          puntuacion = base + (habilidad.nivel ?? 0) ;
         }
         await TQRoll.dialogoTirada("Imponerse (Respeto de los Demonios)", puntuacion, { dificultadFija: espirituDemonio });
         break;
@@ -605,7 +605,7 @@ export class TQActor extends Actor {
         let base = 0, puntuacion = 0;
         if (habilidad) {
           base = this.system.bases[habilidad.base]?.valor ?? 0;
-          puntuacion = base + (habilidad.nivel ?? 0) + (habilidad.puntosFijos ?? 0);
+          puntuacion = base + (habilidad.nivel ?? 0) ;
         }
         await TQRoll.dialogoTirada("Multiverso (Pliegue entre planos)", puntuacion, { dificultadFija: 20 });
         break;
@@ -915,7 +915,7 @@ export class TQActor extends Actor {
       let base = 0, puntuacion = 0;
       if (habilidad) {
         base = this.system.bases[habilidad.base]?.valor ?? 0;
-        puntuacion = base + (habilidad.nivel ?? 0) + (habilidad.puntosFijos ?? 0);
+        puntuacion = base + (habilidad.nivel ?? 0) ;
       }
       const resultado = await TQRoll.tirar("Sueños", puntuacion, 15, { actor: this, flavor: "Recuperación de PM", etiquetaEnDesglose: true });
       if (resultado.exitos >= 0) pmRecuperado = horas;
@@ -1031,7 +1031,7 @@ export class TQActor extends Actor {
         return ui.notifications.warn("Primeros Auxilios (E): necesitas Nivel 1 o superior para intentar procedimientos complejos.");
       }
       const base = this.system.bases[habilidad.base]?.valor ?? 0;
-      total = base + (habilidad.nivel ?? 0) + (habilidad.puntosFijos ?? 0);
+      total = base + (habilidad.nivel ?? 0) ;
     }
 
     const targetActor = game.user.targets.first()?.actor ?? this;
@@ -1129,7 +1129,7 @@ export class TQActor extends Actor {
     let base = 0, puntuacion = 0;
     if (habilidad) {
       base = this.system.bases[habilidad.base]?.valor ?? 0;
-      puntuacion = base + (habilidad.nivel ?? 0) + (habilidad.puntosFijos ?? 0);
+      puntuacion = base + (habilidad.nivel ?? 0) ;
     }
     const resultado = await TQRoll.tirar("Primeros Auxilios (Estabilizar)", puntuacion, 20, { actor: this });
     if (resultado.exitos >= 0) {

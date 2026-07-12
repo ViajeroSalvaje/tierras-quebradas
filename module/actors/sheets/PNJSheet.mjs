@@ -35,7 +35,7 @@ export class PNJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       return { nombre, total: hab.total ?? 0, nivel: hab.nivel ?? 0, base: hab.base ?? "" };
     });
     return {
-      actor: this.actor, system: this.actor.system, cssClass: this.options.classes.join(" "), config: CONFIG.TQ, habilidades, armas: items.filter(i => i.type === "arma").map(i => ({ id: i.id, name: i.name, dano: i.system.danoArma, habilidad: i.system.habilidad, alcance: i.system.alcance, carga: i.system.carga })), armaduras: items.filter(i => i.type === "armadura").map(i => ({ id: i.id, name: i.name, proteccion: i.system.proteccion, tipo: i.system.tipo, zona: i.system.zona, carga: i.system.carga })), hechizos: items.filter(i => i.type === "hechizo"), rasgos: items.filter(i => i.type === "rasgo").map(i => ({ id: i.id, name: i.name })), ventajas: items.filter(i => i.type === "ventaja").map(i => ({ id: i.id, name: i.name })), objetos: items.filter(i => i.type === "objeto").map(i => ({ id: i.id, name: i.name, categoria: i.system.categoria, carga: i.system.carga })), consumibles: items.filter(i => i.type === "consumible").map(i => ({ id: i.id, name: i.name, dosis: i.system.dosis, efecto: i.system.efecto, carga: i.system.carga }))
+      actor: this.actor, system: this.actor.system, cssClass: this.options.classes.join(" "), config: CONFIG.TQ, habilidades, armas: items.filter(i => i.type === "arma").map(i => ({ id: i.id, name: i.name, dano: i.system.danoArma, habilidad: i.system.habilidad, alcance: i.system.alcance, carga: i.system.carga })), armaduras: items.filter(i => i.type === "armadura").map(i => ({ id: i.id, name: i.name, proteccion: i.system.proteccion, tipo: i.system.tipo, zona: i.system.zona, carga: i.system.carga })), hechizos: items.filter(i => i.type === "hechizo"), rasgos: items.filter(i => i.type === "rasgo").map(i => ({ id: i.id, name: i.name })), ventajas: items.filter(i => i.type === "ventaja").map(i => ({ id: i.id, name: i.name })), objetos: items.filter(i => i.type === "objeto").map(i => ({ id: i.id, name: i.name, categoria: i.system.categoria, carga: i.system.carga })), consumibles: items.filter(i => i.type === "consumible").map(i => ({ id: i.id, name: i.name, dosis: i.system.dosis, efecto: i.system.efecto, carga: i.system.carga })), bendiciones: items.filter(i => i.type === "bendicion")
     };
   }
 
@@ -88,6 +88,15 @@ export class PNJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
         } else {
           await this.actor.update({ [`system.habilidades.${nombre}`]: nivel });
         }
+      });
+    });
+
+    el.querySelectorAll(".tirar-base").forEach(div => {
+      div.addEventListener("click", ev => {
+        const base = ev.currentTarget.dataset.base;
+        const nombre = ev.currentTarget.dataset.nombre;
+        const valor = this.actor.system.bases[base]?.valor ?? 0;
+        TQRoll.dialogoTirada(nombre, valor, { actor: this.actor });
       });
     });
 
@@ -173,6 +182,27 @@ export class PNJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     el.querySelectorAll(".pnj-tirar-hechizo").forEach(a => {
       a.addEventListener("click", ev => {
         this.actor.lanzarHechizo(ev.currentTarget.dataset.id);
+      });
+    });
+
+    el.querySelector(".pnj-anadir-bendicion")?.addEventListener("click", async () => {
+      const item = await Item.create({ name: "Nueva bendición", type: "bendicion" }, { parent: this.actor });
+      item?.sheet.render(true);
+    });
+
+    el.querySelector(".pnj-anadir-ventaja")?.addEventListener("click", async () => {
+      const item = await Item.create({ name: "Nueva ventaja", type: "ventaja" }, { parent: this.actor });
+      item?.sheet.render(true);
+    });
+
+    el.querySelector(".pnj-anadir-rasgo")?.addEventListener("click", async () => {
+      const item = await Item.create({ name: "Nuevo rasgo", type: "rasgo" }, { parent: this.actor });
+      item?.sheet.render(true);
+    });
+
+    el.querySelectorAll(".pnj-activar-bendicion").forEach(a => {
+      a.addEventListener("click", ev => {
+        this.actor.activarBendicion(ev.currentTarget.dataset.id);
       });
     });
   }
