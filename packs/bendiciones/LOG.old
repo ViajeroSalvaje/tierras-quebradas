@@ -1,25 +1,5 @@
-2026/07/10-00:01:55.065 6900 Recovering log #383
-2026/07/10-00:01:55.066 6900 Level-0 table #385: started
-2026/07/10-00:01:55.069 6900 Level-0 table #385: 12721 bytes OK
-2026/07/10-00:01:55.075 6900 Delete type=0 #383
-2026/07/10-00:01:55.075 6900 Delete type=3 #381
-2026/07/10-00:01:55.076 6f00 Compacting 4@0 + 1@1 files
-2026/07/10-00:01:55.082 6f00 Generated table #387@0: 53 keys, 11204 bytes
-2026/07/10-00:01:55.082 6f00 Compacted 4@0 + 1@1 files => 11204 bytes
-2026/07/10-00:01:55.085 6f00 compacted to: files[ 0 1 0 0 0 0 0 ]
-2026/07/10-00:01:55.085 6f00 Delete type=2 #372
-2026/07/10-00:01:55.085 6f00 Delete type=2 #376
-2026/07/10-00:01:55.085 6f00 Delete type=2 #379
-2026/07/10-00:01:55.085 6f00 Delete type=2 #382
-2026/07/10-00:01:55.087 6f00 Delete type=2 #385
-2026/07/10-00:01:59.958 6f00 Level-0 table #389: started
-2026/07/10-00:01:59.960 6f00 Level-0 table #389: 12721 bytes OK
-2026/07/10-00:01:59.962 6f00 Delete type=0 #386
-2026/07/10-00:01:59.969 6f00 Manual compaction at level-0 from '!items!TQbend0001' @ 72057594037927935 : 1 .. '!items!null' @ 0 : 0; will stop at '!items!null' @ 6501 : 1
-2026/07/10-00:01:59.969 6f00 Compacting 1@0 + 1@1 files
-2026/07/10-00:01:59.974 6f00 Generated table #390@0: 53 keys, 11202 bytes
-2026/07/10-00:01:59.974 6f00 Compacted 1@0 + 1@1 files => 11202 bytes
-2026/07/10-00:01:59.976 6f00 compacted to: files[ 0 1 0 0 0 0 0 ]
-2026/07/10-00:01:59.976 6f00 Delete type=2 #387
-2026/07/10-00:01:59.976 6f00 Delete type=2 #389
-2026/07/10-00:01:59.991 6f00 Manual compaction at level-0 from '!items!null' @ 6501 : 1 .. '!items!null' @ 0 : 0; will stop at (end)
+2026/07/12-22:41:02.037 b4a4 Recovering log #452
+2026/07/12-22:41:02.037 b4a4 Level-0 table #454: started
+2026/07/12-22:41:02.040 b4a4 Level-0 table #454: 12717 bytes OK
+2026/07/12-22:41:02.045 b4a4 Delete type=0 #452
+2026/07/12-22:41:02.045 b4a4 Delete type=3 #450
