@@ -35,45 +35,6 @@
 
 {{#if magiaData.tieneHechizos}}
 <div class="cc-section">
-  <div class="cc-magia-hechizos-header">
-    <h3 class="cc-section-title" style="margin:0;">Hechizos iniciales</h3>
-    <div class="cc-magia-pool">
-      Base: <strong>{{magiaData.baseHechizos}}</strong>
-      &nbsp;·&nbsp; Elegidos: <strong>{{magiaData.elegidosCount}}</strong>
-    </div>
-  </div>
-  {{#if magiaData.esTeurgia}}
-  <p class="cc-hint">Teúrgia: solo hechizos de Esfera Ley. Límite estricto de {{magiaData.baseHechizos}} hechizos.</p>
-  {{else}}
-  <p class="cc-hint">Los hechizos de DIF 25 no están disponibles en creación. Hechizos adicionales cuestan −1 PP cada uno.</p>
-  {{/if}}
-  {{#each magiaData.listaHechizosAgrupada as |grupo|}}
-  <div class="cc-hechizo-grupo">
-    <div class="cc-hechizo-grupo-titulo">{{grupo.label}}</div>
-    <div class="cc-hechizo-lista">
-      {{#each grupo.hechizos as |h|}}
-      <div class="cc-hechizo-card {{#if h.selected}}selected{{/if}} {{#if h.bloqueado}}bloqueado{{/if}}"
-           data-hechizo-id="{{h.id}}">
-        <div class="cc-hechizo-nombre">{{h.name}}</div>
-        <div class="cc-hechizo-meta">
-          <span class="cc-hechizo-sintaxis">{{h.verbo}} {{h.esfera}}</span>
-          <span class="cc-hechizo-dif">DIF {{h.dificultad}}</span>
-          <span class="cc-hechizo-pm">PM {{h.pmStr}}</span>
-        </div>
-        {{#if h.selected}}
-        <div class="cc-hechizo-perm-fila">
-          <a class="tq-circulo cc-hechizo-perm {{#if h.permanent}}marcado{{/if}}" data-hechizo-id="{{h.id}}"></a>
-          Permanente (consagra {{h.pmCoste}} ESP)
-        </div>
-        {{/if}}
-      </div>
-      {{/each}}
-    </div>
-  </div>
-  {{/each}}
-</div>
-
-<div class="cc-section">
   <div class="cc-magia-hab-header">
     <h3 class="cc-section-title" style="margin:0;">Verbos y Esferas</h3>
     <div class="cc-magia-pool">
@@ -116,6 +77,45 @@
       </div>
     </div>
   </div>
+</div>
+
+<div class="cc-section">
+  <div class="cc-magia-hechizos-header">
+    <h3 class="cc-section-title" style="margin:0;">Hechizos iniciales</h3>
+    <div class="cc-magia-pool">
+      Base: <strong>{{magiaData.baseHechizos}}</strong>
+      &nbsp;·&nbsp; Elegidos: <strong>{{magiaData.elegidosCount}}</strong>
+    </div>
+  </div>
+  {{#if magiaData.esTeurgia}}
+  <p class="cc-hint">Teúrgia: solo hechizos de Esfera Ley. Límite estricto de {{magiaData.baseHechizos}} hechizos.</p>
+  {{else}}
+  <p class="cc-hint">Los hechizos de DIF 25 no están disponibles en creación. Hechizos adicionales cuestan −1 PP cada uno.</p>
+  {{/if}}
+  {{#each magiaData.listaHechizosAgrupada as |grupo|}}
+  <details class="cc-hechizo-grupo">
+    <summary class="cc-hechizo-grupo-titulo">{{grupo.label}}</summary>
+    <div class="cc-hechizo-lista">
+      {{#each grupo.hechizos as |h|}}
+      <div class="cc-hechizo-card {{#if h.selected}}selected{{/if}} {{#if h.bloqueado}}bloqueado{{/if}}"
+           data-hechizo-id="{{h.id}}">
+        <div class="cc-hechizo-nombre">{{h.name}}</div>
+        <div class="cc-hechizo-meta">
+          <span class="cc-hechizo-sintaxis">{{h.verbo}} {{h.esfera}}</span>
+          <span class="cc-hechizo-dif">DIF {{h.dificultad}}</span>
+          <span class="cc-hechizo-pm">PM {{h.pmStr}}</span>
+        </div>
+        {{#if h.selected}}
+        <div class="cc-hechizo-perm-fila">
+          <a class="tq-circulo cc-hechizo-perm {{#if h.permanent}}marcado{{/if}}" data-hechizo-id="{{h.id}}"></a>
+          Permanente (consagra {{h.pmCoste}} ESP)
+        </div>
+        {{/if}}
+      </div>
+      {{/each}}
+    </div>
+  </details>
+  {{/each}}
 </div>
 
 <div class="cc-section">

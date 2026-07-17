@@ -10,10 +10,17 @@
         <label>Daño</label>
         <input type="text" name="system.danoArma" value="{{system.danoArma}}" placeholder="ej: 1d6+2" />
       </div>
-      <div class="tq-field-group tq-field-group-check">
-        <label>No Letal</label>
+      <label class="arma-prot-label">
         <input type="checkbox" name="system.noLetal" {{checked system.noLetal}} />
-      </div>
+        <span class="tq-circulo {{#if system.noLetal}}marcado{{/if}}"></span>
+        No letal
+      </label>
+      <label class="arma-prot-label">
+        <input type="checkbox" name="system.tieneProteccion" {{checked system.tieneProteccion}} />
+        <span class="tq-circulo {{#if system.tieneProteccion}}marcado{{/if}}"></span>
+        Protección
+      </label>
+      <input type="number" name="system.proteccionValor" value="{{system.proteccionValor}}" min="0" class="arma-prot-valor" {{#unless system.tieneProteccion}}disabled{{/unless}} />
     </div>
     <div class="item-grid">
       <div class="tq-field-group">

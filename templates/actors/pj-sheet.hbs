@@ -212,17 +212,9 @@
                   <div class="destino-campo">
                     <div class="tq-caract-sec-circulo">
                       <input type="number" name="system.destino.actual"
-                             value="{{system.destino.actual}}" min="0" max="{{system.destino.max}}" />
+                             value="{{system.destino.actual}}" min="0" />
                     </div>
-                    <label>Actual</label>
-                  </div>
-                  <span class="destino-sep">/</span>
-                  <div class="destino-campo">
-                    <div class="tq-caract-sec-circulo">
-                      <input type="number" name="system.destino.max"
-                             value="{{system.destino.max}}" min="0" />
-                    </div>
-                    <label>Máx</label>
+                    <label>Sin Asignar</label>
                   </div>
                 </div>
               </div>
@@ -285,10 +277,6 @@
                 <span class="estado-label {{#if system.salud.incapacitado}}activo{{/if}}">Incapacitado</span>
               </span>
               <span class="estado-item">
-                <a class="tq-circulo toggle-estado {{#if system.salud.sanando}}marcado{{/if}}" data-campo="system.salud.sanando" title="Sanando"></a>
-                <span class="estado-label {{#if system.salud.sanando}}activo{{/if}}">Sanando</span>
-              </span>
-              <span class="estado-item">
                 <a class="tq-circulo toggle-estado estado-peligro {{#if system.salud.desangre}}marcado{{/if}}" data-campo="system.salud.desangre" title="Desangre"></a>
                 <span class="estado-label estado-peligro-label {{#if system.salud.desangre}}activo{{/if}}">Desangre</span>
               </span>
@@ -327,6 +315,8 @@
               <span class="heridas-leves-label">Heridas Leves</span>
               <a class="tq-circulo toggle-estado {{#if system.salud.heridasLeves1}}marcado{{/if}}" data-campo="system.salud.heridasLeves1" title="Herida leve 1"></a>
               <a class="tq-circulo toggle-estado {{#if system.salud.heridasLeves2}}marcado{{/if}}" data-campo="system.salud.heridasLeves2" title="Herida leve 2"></a>
+              <a class="tq-circulo toggle-estado {{#if system.salud.heridasLeves3}}marcado{{/if}}" data-campo="system.salud.heridasLeves3" title="Herida leve 3"></a>
+              <a class="tq-circulo toggle-estado {{#if system.salud.heridasLeves4}}marcado{{/if}}" data-campo="system.salud.heridasLeves4" title="Herida leve 4"></a>
             </div>
             <div class="heridas-leves-check">
               <span class="heridas-leves-label">Heridas Graves</span>
@@ -588,6 +578,7 @@
                     <a class="tq-circulo toggle-herida-sanando {{#if herida.sanando}}marcado{{/if}}" data-idx="{{idx}}" title="Sanando"></a>
                   </td>
                   <td class="item-controls">
+                    <a class="herida-primeros-auxilios" data-idx="{{idx}}" title="Primeros Auxilios"><i class="fas fa-medkit"></i></a>
                     <a class="herida-delete" data-idx="{{idx}}" title="Eliminar"><i class="fas fa-trash"></i></a>
                   </td>
                 </tr>
@@ -888,29 +879,43 @@
           </div>
 
           <div class="tq-section-box" style="margin-bottom:0;">
-            <div class="tq-section-header">Destino</div>
+            <div class="tq-section-header">
+              <span>Destino</span>
+              <a class="destino-punto-add" title="Añadir punto de destino"><i class="fas fa-plus"></i></a>
+            </div>
             <div class="tq-section-content">
-              <div class="destino-gastado-grid">
-                <div class="destino-gastado-campo">
-                  <label>Objeto</label>
-                  <input type="number" name="system.destino.gastado.objeto" value="{{system.destino.gastado.objeto}}" min="0" />
-                </div>
-                <div class="destino-gastado-campo">
-                  <label>Persona</label>
-                  <input type="number" name="system.destino.gastado.persona" value="{{system.destino.gastado.persona}}" min="0" />
-                </div>
-                <div class="destino-gastado-campo">
-                  <label>Secreto</label>
-                  <input type="number" name="system.destino.gastado.secreto" value="{{system.destino.gastado.secreto}}" min="0" />
-                </div>
-                <div class="destino-gastado-campo">
-                  <label>Escenario</label>
-                  <input type="number" name="system.destino.gastado.escenario" value="{{system.destino.gastado.escenario}}" min="0" />
-                </div>
-              </div>
+              <table class="heridas-table">
+                <thead>
+                  <tr>
+                    <th>Tipo</th>
+                    <th>Descripción</th>
+                    <th>Valor</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {{#each system.destino.puntos as |punto idx|}}
+                  <tr data-idx="{{idx}}">
+                    <td>
+                      <select name="system.destino.puntos.{{idx}}.tipo">
+                        <option value="objeto"   {{selected punto.tipo "objeto"}}>Objeto</option>
+                        <option value="persona"  {{selected punto.tipo "persona"}}>Persona</option>
+                        <option value="secreto"  {{selected punto.tipo "secreto"}}>Secreto</option>
+                        <option value="escenario" {{selected punto.tipo "escenario"}}>Escenario</option>
+                      </select>
+                    </td>
+                    <td><input type="text" name="system.destino.puntos.{{idx}}.descripcion" value="{{punto.descripcion}}" /></td>
+                    <td><input type="number" name="system.destino.puntos.{{idx}}.valor" value="{{punto.valor}}" min="0" class="destino-punto-valor" /></td>
+                    <td class="item-controls">
+                      <a class="destino-punto-delete" data-idx="{{idx}}" title="Eliminar"><i class="fas fa-trash"></i></a>
+                    </td>
+                  </tr>
+                  {{/each}}
+                </tbody>
+              </table>
               <div class="destino-gastado-total">
-                <label>Total gastado</label>
-                <span>{{tq-sum system.destino.gastado.objeto system.destino.gastado.persona system.destino.gastado.secreto system.destino.gastado.escenario}}</span>
+                <label>Valor total</label>
+                <span>{{destinoTotal}}</span>
               </div>
             </div>
           </div>

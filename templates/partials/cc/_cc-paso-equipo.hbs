@@ -30,15 +30,14 @@
   <p class="cc-hint">Selecciona las piezas que equipa tu personaje. El coste se descuenta de los fondos iniciales.</p>
   <div class="cc-armadura-lista">
     {{#each armadurasData as |a|}}
-    <label class="cc-armadura-fila {{#if a.selected}}selected{{/if}}">
-      <input type="checkbox" class="cc-armadura-check"
-             data-armadura-id="{{a.id}}"
-             data-nombre="{{a.name}}"
-             data-precio="{{a.precio}}"
-             data-carga="{{a.carga}}"
-             {{#if a.selected}}checked{{/if}} />
+    <div class="cc-armadura-fila {{#if a.selected}}selected{{/if}}">
+      <a class="tq-circulo cc-armadura-check {{#if a.selected}}marcado{{/if}}"
+         data-armadura-id="{{a.id}}"
+         data-nombre="{{a.name}}"
+         data-precio="{{a.precio}}"
+         data-carga="{{a.carga}}"></a>
       <span class="cc-armadura-nombre">{{a.name}} <span class="cc-armadura-precio">({{a.precio}} mb)</span></span>
-    </label>
+    </div>
     {{/each}}
   </div>
 </div>
@@ -50,15 +49,14 @@
   <p class="cc-hint">Selecciona las armas que porta tu personaje. El coste se descuenta de los fondos iniciales.</p>
   <div class="cc-armadura-lista">
     {{#each armasCaCData as |a|}}
-    <label class="cc-armadura-fila {{#if a.selected}}selected{{/if}}">
-      <input type="checkbox" class="cc-armacac-check"
-             data-arma-id="{{a.id}}"
-             data-nombre="{{a.name}}"
-             data-precio="{{a.precio}}"
-             data-carga="{{a.carga}}"
-             {{#if a.selected}}checked{{/if}} />
+    <div class="cc-armadura-fila {{#if a.selected}}selected{{/if}}">
+      <a class="tq-circulo cc-armacac-check {{#if a.selected}}marcado{{/if}}"
+         data-arma-id="{{a.id}}"
+         data-nombre="{{a.name}}"
+         data-precio="{{a.precio}}"
+         data-carga="{{a.carga}}"></a>
       <span class="cc-armadura-nombre">{{a.name}} <span class="cc-armadura-precio">({{a.precio}} mb)</span></span>
-    </label>
+    </div>
     {{/each}}
   </div>
 </div>
@@ -70,15 +68,14 @@
   <p class="cc-hint">Selecciona las armas que porta tu personaje. El coste se descuenta de los fondos iniciales.</p>
   <div class="cc-armadura-lista">
     {{#each armasProyData as |a|}}
-    <label class="cc-armadura-fila {{#if a.selected}}selected{{/if}}">
-      <input type="checkbox" class="cc-armaproy-check"
-             data-arma-id="{{a.id}}"
-             data-nombre="{{a.name}}"
-             data-precio="{{a.precio}}"
-             data-carga="{{a.carga}}"
-             {{#if a.selected}}checked{{/if}} />
+    <div class="cc-armadura-fila {{#if a.selected}}selected{{/if}}">
+      <a class="tq-circulo cc-armaproy-check {{#if a.selected}}marcado{{/if}}"
+         data-arma-id="{{a.id}}"
+         data-nombre="{{a.name}}"
+         data-precio="{{a.precio}}"
+         data-carga="{{a.carga}}"></a>
       <span class="cc-armadura-nombre">{{a.name}} <span class="cc-armadura-precio">({{a.precio}} mb)</span></span>
-    </label>
+    </div>
     {{/each}}
   </div>
 </div>
@@ -90,15 +87,14 @@
   <p class="cc-hint">Selecciona las armas que porta tu personaje. El coste se descuenta de los fondos iniciales.</p>
   <div class="cc-armadura-lista">
     {{#each armasArrData as |a|}}
-    <label class="cc-armadura-fila {{#if a.selected}}selected{{/if}}">
-      <input type="checkbox" class="cc-armaArr-check"
-             data-arma-id="{{a.id}}"
-             data-nombre="{{a.name}}"
-             data-precio="{{a.precio}}"
-             data-carga="{{a.carga}}"
-             {{#if a.selected}}checked{{/if}} />
+    <div class="cc-armadura-fila {{#if a.selected}}selected{{/if}}">
+      <a class="tq-circulo cc-armaArr-check {{#if a.selected}}marcado{{/if}}"
+         data-arma-id="{{a.id}}"
+         data-nombre="{{a.name}}"
+         data-precio="{{a.precio}}"
+         data-carga="{{a.carga}}"></a>
       <span class="cc-armadura-nombre">{{a.name}} <span class="cc-armadura-precio">({{a.precio}} mb)</span></span>
-    </label>
+    </div>
     {{/each}}
   </div>
 </div>

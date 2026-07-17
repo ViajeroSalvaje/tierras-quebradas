@@ -1775,6 +1775,33 @@
   margin-bottom: 8px;
 }
 
+.tierras-quebradas .arma-prot-fila {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.tierras-quebradas .arma-prot-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--tq-text-dim);
+  user-select: none;
+}
+.tierras-quebradas .arma-prot-label input[type="checkbox"] { display: none; }
+.tierras-quebradas .arma-prot-valor {
+  width: 52px;
+  text-align: center;
+  padding: 2px 4px;
+  font-size: 14px;
+}
+.tierras-quebradas .arma-prot-valor:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
 .tierras-quebradas .tq-field-group label {
   font-size: 10px;
   color: var(--tq-text-dim);
@@ -4339,7 +4366,13 @@
   border-bottom: 1px solid rgba(28,100,115,0.2);
   padding-bottom: 2px;
   margin-bottom: 4px;
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
 }
+.cc-hechizo-grupo-titulo::-webkit-details-marker { display: none; }
+.cc-hechizo-grupo[open] .cc-hechizo-grupo-titulo { margin-bottom: 6px; }
+.cc-hechizo-lista { margin-top: 4px; }
 
 .cc-hechizo-lista {
   display: flex;
@@ -5356,4 +5389,68 @@ li.chat-message .message-delete:hover {
   gap: 8px;
   padding: 4px 6px;
   border-top: 1px solid rgba(28,100,115,0.15);
+}
+
+.adventure-importer {
+  background: var(--tq-parchment);
+  color: var(--tq-text);
+  font-family: var(--tq-font);
+}
+
+.adventure-importer .window-header {
+  background: var(--tq-teal-dark);
+  color: var(--tq-white);
+  font-family: var(--tq-font);
+}
+
+.adventure-importer .window-header .window-title {
+  color: var(--tq-white);
+}
+
+.adventure-importer .window-content {
+  background: var(--tq-parchment) !important;
+  font-family: var(--tq-font);
+}
+
+.adventure-importer .adventure-overview header {
+  background: var(--tq-parchment-lt);
+  border-bottom: 2px solid var(--tq-teal);
+}
+
+.adventure-importer .adventure-overview h1 {
+  font-family: var(--tq-font);
+  color: var(--tq-text);
+}
+
+.adventure-importer .adventure-overview h2 {
+  font-family: var(--tq-font);
+  color: var(--tq-teal-dark);
+  border-bottom: 1px solid var(--tq-teal);
+}
+
+.adventure-importer .adventure-overview figcaption {
+  color: var(--tq-text-dim);
+  font-family: var(--tq-font);
+  font-style: italic;
+}
+
+.adventure-importer .adventure-overview footer {
+  background: var(--tq-parchment-lt);
+  border-top: 2px solid var(--tq-teal);
+}
+
+.adventure-importer .adventure-overview footer button,
+.adventure-importer footer button,
+.adventure-importer button {
+  background: var(--tq-teal);
+  color: var(--tq-white);
+  font-family: var(--tq-font);
+  border: none;
+  border-radius: 3px;
+}
+
+.adventure-importer .adventure-overview footer button:hover,
+.adventure-importer footer button:hover,
+.adventure-importer button:hover {
+  background: var(--tq-teal-dark);
 }
