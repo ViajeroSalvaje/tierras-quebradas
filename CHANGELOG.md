@@ -1,6 +1,26 @@
 # Notas 12 de julio 2026 
 
 **Pendientes**
+-
+
+- 
+**Cambios**
+
+- Agrupacion de hechizos por esferas en el creador de personajes.
+- Cambios estéticos en pestaña de Magia.
+- Cambio de checkboxes a círculos estilo ruleset en el creador de personajes.
+- Cambios en la estructura de las armas. Las que ofrecen protección se añaden también automáticamente a las protecciones.
+- Correcciones en compendio de armas de proyectiles.
+- Añadida automatización de heridas en los campos de anotación.
+- Cambios en la caja de destino. Ahora pueden crearse "items" en una lista para asignarle puntos.
+- Se añade un compendio de Aventuras. Se incluye El Rey Olvidado (con permiso del autor)
+
+
+
+
+# Notas 12 de julio 2026 
+
+**Pendientes**
 - Agrupación de hechizos
 
 - 
