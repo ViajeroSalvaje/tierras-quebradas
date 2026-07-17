@@ -1,9 +1,7 @@
 # Notas 12 de julio 2026 
 
 **Pendientes**
--
 
-- 
 **Cambios**
 
 - Agrupacion de hechizos por esferas en el creador de personajes.
