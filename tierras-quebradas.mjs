@@ -315,6 +315,27 @@ Hooks.on("deleteItem", async (item, options, userId) => {
   await actor._revertirOrigen(item);
 });
 
+Hooks.on("createItem", async (item, options, userId) => {
+  if (game.userId !== userId) return;
+  if (item.type !== "arma") return;
+  if (!item.system.tieneProteccion) return;
+  if (options.tqFromArma) return;
+  const actor = item.parent;
+  if (!actor) return;
+  const arm = await Item.create({ name: item.name, type: "armadura", system: { proteccion: item.system.proteccionValor ?? 0, tipo: "dura", zona: "Escudo", carga: 0 } }, { parent: actor, tqFromArma: true });
+  if (arm) await arm.setFlag("tierras-quebradas", "fromArmaId", item.id);
+});
+
+Hooks.on("deleteItem", async (item, options, userId) => {
+  if (game.userId !== userId) return;
+  if (item.type !== "arma") return;
+  if (!item.system.tieneProteccion) return;
+  const actor = item.parent;
+  if (!actor) return;
+  const armadura = actor.items.find(i => i.type === "armadura" && i.getFlag("tierras-quebradas", "fromArmaId") === item.id);
+  if (armadura) await armadura.delete({ tqFromArma: true });
+});
+
 
 // Retrato del actor + color del jugador en la cabecera de mensajes TQ
 Hooks.on("renderChatMessageHTML", (message, html) => {

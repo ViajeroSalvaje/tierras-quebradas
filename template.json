@@ -32,6 +32,8 @@
           "pvGrave": { "valor": 0 },
           "heridasLeves1": false,
           "heridasLeves2": false,
+          "heridasLeves3": false,
+          "heridasLeves4": false,
           "heridasGraves1": false,
           "heridasGraves2": false,
           "debilitado": false,
@@ -58,12 +60,7 @@
         "destino": {
           "max": 1,
           "actual": 1,
-          "gastado": {
-            "objeto": 0,
-            "persona": 0,
-            "secreto": 0,
-            "escenario": 0
-          }
+          "puntos": []
         },
         "lealtad": {
           "caos": 0,
@@ -244,6 +241,8 @@
       "habilidad": "",
       "alcance": "contacto",
       "noLetal": false,
+      "tieneProteccion": false,
+      "proteccionValor": 0,
       "propiedades": "",
       "precio": 0
     },
