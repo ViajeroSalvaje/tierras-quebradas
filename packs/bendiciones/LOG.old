@@ -1,5 +1,14 @@
-2026/07/12-22:41:02.037 b4a4 Recovering log #452
-2026/07/12-22:41:02.037 b4a4 Level-0 table #454: started
-2026/07/12-22:41:02.040 b4a4 Level-0 table #454: 12717 bytes OK
-2026/07/12-22:41:02.045 b4a4 Delete type=0 #452
-2026/07/12-22:41:02.045 b4a4 Delete type=3 #450
+2026/07/17-17:22:36.287 6668 Recovering log #513
+2026/07/17-17:22:36.294 6668 Delete type=0 #513
+2026/07/17-17:22:36.294 6668 Delete type=3 #510
+2026/07/17-17:53:22.057 28c8 Level-0 table #519: started
+2026/07/17-17:53:22.061 28c8 Level-0 table #519: 12719 bytes OK
+2026/07/17-17:53:22.064 28c8 Delete type=0 #517
+2026/07/17-17:53:22.076 28c8 Manual compaction at level-0 from '!items!TQbend0001' @ 72057594037927935 : 1 .. '!items!null' @ 0 : 0; will stop at '!items!null' @ 8529 : 1
+2026/07/17-17:53:22.076 28c8 Compacting 1@0 + 1@1 files
+2026/07/17-17:53:22.081 28c8 Generated table #520@0: 53 keys, 11202 bytes
+2026/07/17-17:53:22.081 28c8 Compacted 1@0 + 1@1 files => 11202 bytes
+2026/07/17-17:53:22.084 28c8 compacted to: files[ 0 1 0 0 0 0 0 ]
+2026/07/17-17:53:22.085 28c8 Delete type=2 #515
+2026/07/17-17:53:22.086 28c8 Delete type=2 #519
+2026/07/17-17:53:22.087 28c8 Manual compaction at level-0 from '!items!null' @ 8529 : 1 .. '!items!null' @ 0 : 0; will stop at (end)
