@@ -1138,13 +1138,14 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
       this.render();
     });
     // equipo: armaduras
-    el.querySelectorAll(".cc-armadura-check").forEach(cb => {
-      cb.addEventListener("change", ev => {
-        const id     = ev.target.dataset.armaduraId;
-        const nombre = ev.target.dataset.nombre;
-        const precio = parseInt(ev.target.dataset.precio)  || 0;
-        const carga  = parseFloat(ev.target.dataset.carga) || 0;
-        if (ev.target.checked) {
+    el.querySelectorAll(".cc-armadura-check").forEach(circle => {
+      circle.addEventListener("click", ev => {
+        const t      = ev.currentTarget;
+        const id     = t.dataset.armaduraId;
+        const nombre = t.dataset.nombre;
+        const precio = parseInt(t.dataset.precio)  || 0;
+        const carga  = parseFloat(t.dataset.carga) || 0;
+        if (!t.classList.contains("marcado")) {
           this._charData.armaduraSeleccionadas.push({ id, nombre, precio, carga });
         } else {
           const idx = this._charData.armaduraSeleccionadas.findIndex(a => a.id === id);
@@ -1155,13 +1156,14 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
     });
 
     // equipo: armas arrojadizas
-    el.querySelectorAll(".cc-armaArr-check").forEach(cb => {
-      cb.addEventListener("change", ev => {
-        const id     = ev.target.dataset.armaId;
-        const nombre = ev.target.dataset.nombre;
-        const precio = parseInt(ev.target.dataset.precio)  || 0;
-        const carga  = parseFloat(ev.target.dataset.carga) || 0;
-        if (ev.target.checked) {
+    el.querySelectorAll(".cc-armaArr-check").forEach(circle => {
+      circle.addEventListener("click", ev => {
+        const t      = ev.currentTarget;
+        const id     = t.dataset.armaId;
+        const nombre = t.dataset.nombre;
+        const precio = parseInt(t.dataset.precio)  || 0;
+        const carga  = parseFloat(t.dataset.carga) || 0;
+        if (!t.classList.contains("marcado")) {
           this._charData.armasArrSeleccionadas.push({ id, nombre, precio, carga });
         } else {
           const idx = this._charData.armasArrSeleccionadas.findIndex(a => a.id === id);
@@ -1172,13 +1174,14 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
     });
 
     // equipo: armas de proyectiles
-    el.querySelectorAll(".cc-armaproy-check").forEach(cb => {
-      cb.addEventListener("change", ev => {
-        const id     = ev.target.dataset.armaId;
-        const nombre = ev.target.dataset.nombre;
-        const precio = parseInt(ev.target.dataset.precio)  || 0;
-        const carga  = parseFloat(ev.target.dataset.carga) || 0;
-        if (ev.target.checked) {
+    el.querySelectorAll(".cc-armaproy-check").forEach(circle => {
+      circle.addEventListener("click", ev => {
+        const t      = ev.currentTarget;
+        const id     = t.dataset.armaId;
+        const nombre = t.dataset.nombre;
+        const precio = parseInt(t.dataset.precio)  || 0;
+        const carga  = parseFloat(t.dataset.carga) || 0;
+        if (!t.classList.contains("marcado")) {
           this._charData.armasProySeleccionadas.push({ id, nombre, precio, carga });
         } else {
           const idx = this._charData.armasProySeleccionadas.findIndex(a => a.id === id);
@@ -1189,13 +1192,14 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
     });
 
     // equipo: armas cuerpo a cuerpo
-    el.querySelectorAll(".cc-armacac-check").forEach(cb => {
-      cb.addEventListener("change", ev => {
-        const id     = ev.target.dataset.armaId;
-        const nombre = ev.target.dataset.nombre;
-        const precio = parseInt(ev.target.dataset.precio)  || 0;
-        const carga  = parseFloat(ev.target.dataset.carga) || 0;
-        if (ev.target.checked) {
+    el.querySelectorAll(".cc-armacac-check").forEach(circle => {
+      circle.addEventListener("click", ev => {
+        const t      = ev.currentTarget;
+        const id     = t.dataset.armaId;
+        const nombre = t.dataset.nombre;
+        const precio = parseInt(t.dataset.precio)  || 0;
+        const carga  = parseFloat(t.dataset.carga) || 0;
+        if (!t.classList.contains("marcado")) {
           this._charData.armasCaCSeleccionadas.push({ id, nombre, precio, carga });
         } else {
           const idx = this._charData.armasCaCSeleccionadas.findIndex(a => a.id === id);

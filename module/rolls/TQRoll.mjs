@@ -4,7 +4,7 @@ import { TOPES_HABILIDAD, HABILIDADES_OPCIONES, ARMA_A_HABILIDAD_PNJ, HABILIDADE
 
 export class TQRoll {
   static async tirar(etiqueta, puntuacion, dificultad, opciones = {}) {
-    const { bonificador = 0, flavor = "", actor = null, danho = null, tablaComplicacion = null, esCombate = false, topeInfo = null, autoExito = false, esRepeticion = false, habClave = null, rollMode = null, dosFortuna = false, etiquetaEnDesglose = false, modDesglose = null, puntuacionMostrada = null } = opciones;
+    const { bonificador = 0, flavor = "", actor = null, targetActor = null, modo = null, danho = null, tablaComplicacion = null, esCombate = false, topeInfo = null, autoExito = false, esRepeticion = false, habClave = null, rollMode = null, dosFortuna = false, etiquetaEnDesglose = false, modDesglose = null, puntuacionMostrada = null } = opciones;
     const modoTirada = rollMode ?? game.settings.get("core", "rollMode");
 
     const debilitado = actor?.system?.salud?.debilitado ?? false;
@@ -51,8 +51,14 @@ export class TQRoll {
       pd = TQRoll.calcDanho(danho.danoArma, danho.md, exitos, danho.noLetal);
     }
 
+    let proteccionTarget = 0, danhoAplicado = null;
+    if (pd?.total != null && targetActor && modo === "distancia") {
+      proteccionTarget = TQRoll._calcularProteccion(targetActor, danho.tipo ?? "cortante");
+      danhoAplicado = Math.max(0, pd.total - proteccionTarget);
+    }
+
     const datosChat = {
-      etiqueta, puntuacion, bonificador: bonusFinal, dificultad, debilitado, dolorExtremo, dado: dadoTotal, dadoDisplay: autoExito ? "—" : (dadoDisplayCustom ?? TQRoll._dadoDisplay(dadoTotal, tiradas)), total, exitos, resultado, css: resultado.css, criticos: esCombate ? TQRoll._criticosTexto(exitos) : null, pd, pasionEfecto: pasionEfecto?.texto ?? null, actorImg: actor?.img ?? null, topeInfo, mostrarFortuna: !autoExito && !esRepeticion && !esCombate && !dosFortuna, actorId: actor?.id ?? null, etiquetaEnDesglose, modDesglose, puntuacionMostrada
+      etiqueta, puntuacion, bonificador: bonusFinal, dificultad, debilitado, dolorExtremo, dado: dadoTotal, dadoDisplay: autoExito ? "—" : (dadoDisplayCustom ?? TQRoll._dadoDisplay(dadoTotal, tiradas)), total, exitos, resultado, css: resultado.css, criticos: esCombate ? TQRoll._criticosTexto(exitos) : null, pd, proteccionTarget: proteccionTarget || null, danhoAplicado, pasionEfecto: pasionEfecto?.texto ?? null, actorImg: actor?.img ?? null, topeInfo, mostrarFortuna: !autoExito && !esRepeticion && !esCombate && !dosFortuna, actorId: actor?.id ?? null, etiquetaEnDesglose, modDesglose, puntuacionMostrada
     };
 
     const contenido = await foundry.applications.handlebars.renderTemplate(
@@ -458,7 +464,7 @@ export class TQRoll {
     }
 
     const datosChat = {
-      etiqueta, esMelee: true, puntuacion, bonificador, modLongitud: modJugador, dado: dadoTotalJ, dadoDisplay: dadoDisplayJCustom ?? TQRoll._dadoDisplay(dadoTotalJ, tiradasJ), total: totalJugador, puntuacionRival, bonificadorRival, modLongitudRival: modRival, dadoRival: dadoTotalR, dadoDisplayRival: TQRoll._dadoDisplay(dadoTotalR, tiradasR), totalRival, exitos, resultado, css: resultado.css, criticos: TQRoll._criticosTexto(exitos), pd, danhoAplicado, proteccionTarget, pdRival, danhoRivalAplicado, proteccionJugador, pasionEfecto: pasionEfecto?.texto ?? null, actorImg: actor?.img ?? null, rivalNombre: targetActor?.name ?? "Rival", topeInfo, modDesglose, puntuacionMostrada
+      etiqueta, esMelee: true, puntuacion, bonificador, modLongitud: modJugador, dado: dadoTotalJ, dadoDisplay: dadoDisplayJCustom ?? TQRoll._dadoDisplay(dadoTotalJ, tiradasJ), total: totalJugador, puntuacionRival, bonificadorRival, modLongitudRival: modRival, dadoRival: dadoTotalR, dadoDisplayRival: TQRoll._dadoDisplay(dadoTotalR, tiradasR), totalRival, exitos, resultado, css: resultado.css, criticos: TQRoll._criticosTexto(exitos), pd, danhoAplicado, proteccionTarget, pdRival, danhoRivalAplicado, proteccionJugador, pasionEfecto: pasionEfecto?.texto ?? null, actorImg: actor?.img ?? null, atacanteNombre: actor?.name ?? "PJ", rivalNombre: targetActor?.name ?? "Rival", topeInfo, modDesglose, puntuacionMostrada
     };
 
     const contenido = await foundry.applications.handlebars.renderTemplate(
@@ -544,7 +550,7 @@ export class TQRoll {
     }[resolucion];
 
     const datosChat = {
-      etiqueta: flags.etiqueta, esMelee: true, puntuacion: flags.puntuacion, bonificador: flags.bonificador, modLongitud: flags.modLongitud, dadoDisplay: flags.dadoDisplayJ, total: flags.totalJugador, puntuacionRival: flags.puntuacionRival, bonificadorRival: flags.bonificadorRival, modLongitudRival: flags.modLongitudRival, dadoDisplayRival: flags.dadoDisplayR, totalRival: flags.totalRival, exitos: 0, resultado, css: resultado.css, criticos: null, pd, danhoAplicado, proteccionTarget, pdRival, danhoRivalAplicado, proteccionJugador, pasionEfecto: flags.pasionEfecto ?? null, actorImg: actor?.img ?? null, rivalNombre: targetActor?.name ?? "Rival", topeInfo: flags.topeInfo ?? null, resolucionTablas: resolucionTexto
+      etiqueta: flags.etiqueta, esMelee: true, puntuacion: flags.puntuacion, bonificador: flags.bonificador, modLongitud: flags.modLongitud, dadoDisplay: flags.dadoDisplayJ, total: flags.totalJugador, puntuacionRival: flags.puntuacionRival, bonificadorRival: flags.bonificadorRival, modLongitudRival: flags.modLongitudRival, dadoDisplayRival: flags.dadoDisplayR, totalRival: flags.totalRival, exitos: 0, resultado, css: resultado.css, criticos: null, pd, danhoAplicado, proteccionTarget, pdRival, danhoRivalAplicado, proteccionJugador, pasionEfecto: flags.pasionEfecto ?? null, actorImg: actor?.img ?? null, atacanteNombre: actor?.name ?? "PJ", rivalNombre: targetActor?.name ?? "Rival", topeInfo: flags.topeInfo ?? null, resolucionTablas: resolucionTexto
     };
 
     const contenido = await foundry.applications.handlebars.renderTemplate(

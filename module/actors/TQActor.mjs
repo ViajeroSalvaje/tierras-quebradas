@@ -511,7 +511,11 @@ export class TQActor extends Actor {
       await this.update({
         "system.tuMentiraMarcas": 0, "system.destino.actual": Math.min(destino.actual + 1, destino.max + 1), "system.destino.max": destino.max + 1
       });
-      ui.notifications.info(`¡5ª marca de La Mentira! +1 Destino. Anota +5 PX en una habilidad marcada.`);
+      ChatMessage.create({
+        speaker: ChatMessage.getSpeaker({ actor: this }),
+        content: `<div class="tq-result-card exito"><div class="tq-card-titulo">5ª marca de La Mentira</div><hr/><p><strong>${this.name}</strong> completa La Mentira. +1 Destino. Anota +5 PX en una habilidad marcada.</p></div>`,
+        ...TQRoll._rollModeData()
+      });
     } else {
       await this.update({ "system.tuMentiraMarcas": nuevo });
     }
@@ -973,21 +977,32 @@ export class TQActor extends Actor {
 
       const umbralHeridaGrave = Math.floor(pvMax / 2);
     const umbralHeridaLeve = Math.floor(umbralHeridaGrave / 2);
+    const nuevasHeridas = Object.values(foundry.utils.deepClone(this.system.heridas ?? {}));
+    let heridaRegistrada = false;
     if (pdFinal >= umbralHeridaGrave) {
       if (!salud.heridasGraves1)      updates["system.salud.heridasGraves1"] = true;
       else if (!salud.heridasGraves2) updates["system.salud.heridasGraves2"] = true;
+      nuevasHeridas.push({ tipo: "grave", descripcion: "", sanando: false });
+      heridaRegistrada = true;
     } else if (pdFinal >= umbralHeridaLeve) {
       if (!salud.heridasLeves1)      updates["system.salud.heridasLeves1"] = true;
       else if (!salud.heridasLeves2) updates["system.salud.heridasLeves2"] = true;
+      else if (!salud.heridasLeves3) updates["system.salud.heridasLeves3"] = true;
+      else if (!salud.heridasLeves4) updates["system.salud.heridasLeves4"] = true;
+      nuevasHeridas.push({ tipo: "leve", descripcion: "", sanando: false });
+      heridaRegistrada = true;
     }
+    if (heridaRegistrada) updates["system.heridas"] = nuevasHeridas;
 
     const leves1 = updates["system.salud.heridasLeves1"] ?? salud.heridasLeves1;
     const leves2 = updates["system.salud.heridasLeves2"] ?? salud.heridasLeves2;
+    const leves3 = updates["system.salud.heridasLeves3"] ?? salud.heridasLeves3;
+    const leves4 = updates["system.salud.heridasLeves4"] ?? salud.heridasLeves4;
     const graves1 = updates["system.salud.heridasGraves1"] ?? salud.heridasGraves1;
     const graves2 = updates["system.salud.heridasGraves2"] ?? salud.heridasGraves2;
     if ((leves1 && leves2) || graves1 || graves2)
       updates["system.salud.debilitado"] = true;
-    if (graves2)
+    if (graves2 || (leves1 && leves2 && graves1) || (leves1 && leves2 && leves3 && leves4))
       updates["system.salud.incapacitado"] = true;
 
     const nuevaHeridaGrave = updates["system.salud.heridasGraves1"] || updates["system.salud.heridasGraves2"];
@@ -1013,11 +1028,11 @@ export class TQActor extends Actor {
       }
     }
 
-    await this.update(updates);
+    await this.update(updates, { tqDesdeRecibir: true });
   }
 
   // Intento de Primeros Auxilios 
-  async intentarPrimerosAuxilios() {
+  async intentarPrimerosAuxilios(heridaIdx = null) {
 
 
     const habilidad = this.system.habilidades?.primerosAuxilios;
@@ -1109,15 +1124,29 @@ export class TQActor extends Actor {
         const pdTotal = 1 + pdCritico;
         const pvActual = targetActor.system.salud?.pvActual?.valor ?? 0;
         const pvMax = targetActor.system.salud?.pvMax?.valor ?? 0;
-        updates["system.salud.sanando"] = true;
         updates["system.salud.pvActual.valor"] = Math.min(pvActual + pdTotal, pvMax);
+        if (heridaIdx !== null) {
+          const heridas = Object.values(foundry.utils.deepClone(targetActor.system.heridas ?? {}));
+          if (heridas[heridaIdx]) {
+            heridas[heridaIdx].sanando = true;
+            updates["system.heridas"] = heridas;
+          }
+        }
         const critico = pdCritico > 0 ? ` (+${pdCritico} PD por crítico)` : "";
-        ui.notifications.info(`${targetActor.name}: +${pdTotal} PD curados${critico}. Herida marcada como "Sanando".`);
+        ChatMessage.create({
+          speaker: ChatMessage.getSpeaker({ actor: this }),
+          content: `<div class="tq-result-card exito"><div class="tq-card-titulo">Primeros Auxilios</div><hr/><p><strong>${targetActor.name}</strong>: +${pdTotal} PD curados${critico}. Herida marcada como "Sanando".</p></div>`,
+          ...TQRoll._rollModeData()
+        });
       }
       if (typeof habilidad !== "number" && !habilidad.exito) await this.update({ "system.habilidades.primerosAuxilios.exito": true });
       if (Object.keys(updates).length) await targetActor.update(updates);
     } else {
-      ui.notifications.warn(`Fallo en Primeros Auxilios. Si mañana la herida de ${targetActor.name} sigue sin "Sanando", deberá tirar Cuerpo para evitar infección.`);
+      ChatMessage.create({
+        speaker: ChatMessage.getSpeaker({ actor: this }),
+        content: `<div class="tq-result-card fallo"><div class="tq-card-titulo">Primeros Auxilios</div><hr/><p>La herida de <strong>${targetActor.name}</strong> no está sanando.</p></div>`,
+        ...TQRoll._rollModeData()
+      });
     }
   }
 
@@ -1575,10 +1604,26 @@ export class TQActor extends Actor {
       }
     }
 
+    if (!options.tqDesdeRecibir && changed.system?.heridas !== undefined) {
+      const heridas = Object.values(changed.system.heridas ?? {});
+      const numLeves = heridas.filter(h => h.tipo === "leve").length;
+      const numGraves = heridas.filter(h => h.tipo === "grave").length;
+      const circuloUpdates = {
+        "system.salud.heridasLeves1": numLeves >= 1,
+        "system.salud.heridasLeves2": numLeves >= 2,
+        "system.salud.heridasLeves3": numLeves >= 3,
+        "system.salud.heridasLeves4": numLeves >= 4,
+        "system.salud.heridasGraves1": numGraves >= 1,
+        "system.salud.heridasGraves2": numGraves >= 2,
+      };
+      await this.update(circuloUpdates, { tqDesdeRecibir: true });
+      return;
+    }
+
     // edición manual de heridas desde la ficha, recibirDanho ya lo cubre automáticamente
     const saludCambiada = changed.system?.salud;
     if (!saludCambiada) return;
-    const camposHerida = ["heridasLeves1", "heridasLeves2", "heridasGraves1", "heridasGraves2"];
+    const camposHerida = ["heridasLeves1", "heridasLeves2", "heridasLeves3", "heridasLeves4", "heridasGraves1", "heridasGraves2"];
     if (!camposHerida.some(f => f in saludCambiada)) return;
 
     if (this.type === "pj" && (saludCambiada.heridasGraves1 === true || saludCambiada.heridasGraves2 === true)) {
@@ -1597,6 +1642,11 @@ export class TQActor extends Actor {
 
     if (debeDebilitado !== (salud.debilitado ?? false)) {
       await this.update({ "system.salud.debilitado": debeDebilitado });
+    }
+
+    const debeIncapacitado = salud.heridasGraves2 || (salud.heridasLeves1 && salud.heridasLeves2 && salud.heridasGraves1) || (salud.heridasLeves1 && salud.heridasLeves2 && salud.heridasLeves3 && salud.heridasLeves4);
+    if (debeIncapacitado !== (salud.incapacitado ?? false)) {
+      await this.update({ "system.salud.incapacitado": debeIncapacitado });
     }
   }
 

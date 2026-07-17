@@ -104,8 +104,11 @@ export class PJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       ? `systems/tierras-quebradas/images/lealtades/${LEALTAD_IMG[ganadoras[0]]}.png`
       : null;
 
+    const destinoTotal = Object.values(this.actor.system.destino?.puntos ?? {})
+      .reduce((sum, p) => sum + (parseInt(p.valor) || 0), 0);
+
     return {
-      actor: this.actor, system: this.actor.system, cssClass: this.options.classes.join(" "), activeTab: this._activeTab, imagenLealtad, items: {
+      actor: this.actor, system: this.actor.system, cssClass: this.options.classes.join(" "), activeTab: this._activeTab, imagenLealtad, destinoTotal, items: {
         armas: armasEnriquecidas, armaduras: this.actor.items.filter(i => i.type === "armadura"), hechizos: this.actor.items.filter(i => i.type === "hechizo"), ventajas: this.actor.items.filter(i => i.type === "ventaja"), rasgos: this.actor.items.filter(i => i.type === "rasgo"), pactos: this.actor.items.filter(i => i.type === "pacto"), bendiciones: this.actor.items.filter(i => i.type === "bendicion"), especie: this.actor.items.find(i => i.type === "especie") ?? null, entorno: this.actor.items.find(i => i.type === "entorno") ?? null, origen: this.actor.items.find(i => i.type === "origen") ?? null, profesion: this.actor.items.find(i => i.type === "profesion") ?? null, objetos: this.actor.items.filter(i => i.type === "objeto"), consumibles: this.actor.items.filter(i => i.type === "consumible")
       }, lealtad: { alineado }, pasionAmorActiva: this.actor.system.pasionFlag === "amor", pasionOdioActiva: this.actor.system.pasionFlag === "odio", config: CONFIG.TQ, col1: makeCol(COL1), col2: makeCol(COL2), col3: makeCol(COL3), basesFormulas
     };
@@ -336,11 +339,36 @@ export class PJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     });
 
     // Añadir herida
+    el.querySelector(".destino-punto-add")?.addEventListener("click", ev => {
+      ev.preventDefault();
+      const puntos = Object.values(foundry.utils.deepClone(this.actor.system.destino?.puntos ?? {}));
+      puntos.push({ tipo: "objeto", descripcion: "", valor: 0 });
+      this.actor.update({ "system.destino.puntos": puntos });
+    });
+
+    el.querySelectorAll(".destino-punto-delete").forEach(a => {
+      a.addEventListener("click", ev => {
+        ev.preventDefault();
+        const idx = parseInt(ev.currentTarget.dataset.idx);
+        const puntos = Object.values(foundry.utils.deepClone(this.actor.system.destino?.puntos ?? {}));
+        puntos.splice(idx, 1);
+        this.actor.update({ "system.destino.puntos": puntos });
+      });
+    });
+
     el.querySelector(".herida-add")?.addEventListener("click", ev => {
       ev.preventDefault();
-      const heridas = foundry.utils.deepClone(this.actor.system.heridas ?? []);
+      const heridas = Object.values(foundry.utils.deepClone(this.actor.system.heridas ?? {}));
       heridas.push({ tipo: "rasguño", descripcion: "", sanando: false });
       this.actor.update({ "system.heridas": heridas });
+    });
+
+    el.querySelectorAll(".herida-primeros-auxilios").forEach(a => {
+      a.addEventListener("click", ev => {
+        ev.preventDefault();
+        const idx = parseInt(ev.currentTarget.dataset.idx);
+        this.actor.intentarPrimerosAuxilios(idx);
+      });
     });
 
     // Borrar herida
@@ -348,7 +376,7 @@ export class PJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       a.addEventListener("click", ev => {
         ev.preventDefault();
         const idx = parseInt(ev.currentTarget.dataset.idx);
-        const heridas = foundry.utils.deepClone(this.actor.system.heridas ?? []);
+        const heridas = Object.values(foundry.utils.deepClone(this.actor.system.heridas ?? {}));
         heridas.splice(idx, 1);
         this.actor.update({ "system.heridas": heridas });
       });
@@ -359,7 +387,7 @@ export class PJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       a.addEventListener("click", ev => {
         ev.preventDefault();
         const idx = parseInt(ev.currentTarget.dataset.idx);
-        const heridas = foundry.utils.deepClone(this.actor.system.heridas ?? []);
+        const heridas = Object.values(foundry.utils.deepClone(this.actor.system.heridas ?? {}));
         if (heridas[idx]) heridas[idx].sanando = !heridas[idx].sanando;
         this.actor.update({ "system.heridas": heridas });
       });
@@ -408,7 +436,14 @@ export class PJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
           if (graves1 && graves2) updates["system.salud.incapacitado"] = true;
           else updates["system.salud.incapacitado"] = false;
         }
-        this.actor.update(updates);
+        const esHerida = campo.startsWith("system.salud.heridasLeves") || campo.startsWith("system.salud.heridasGraves");
+        if (esHerida && nuevoValor) {
+          const tipo = campo.includes("Leves") ? "leve" : "grave";
+          const heridas = Object.values(foundry.utils.deepClone(this.actor.system.heridas ?? {}));
+          heridas.push({ tipo, descripcion: "", sanando: false });
+          updates["system.heridas"] = heridas;
+        }
+        this.actor.update(updates, { tqDesdeRecibir: true });
       });
     });
 
