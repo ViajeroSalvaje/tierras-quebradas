@@ -1,4 +1,4 @@
-# Notas 12 de julio 2026 
+# Notas 17 de julio 2026 
 
 **Pendientes**
 
