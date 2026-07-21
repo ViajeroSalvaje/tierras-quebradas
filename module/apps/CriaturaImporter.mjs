@@ -11,6 +11,8 @@ export class CriaturaImporter extends HandlebarsApplicationMixin(ApplicationV2) 
     form: { template: "systems/tierras-quebradas/templates/apps/criatura-importer.hbs" }
   };
 
+  get title() { return game.i18n.localize("TQ.Importer.TituloCriatura"); }
+
   static EJEMPLO = `Gólem de hierro AUTÓMATA
 El gólem de hierro es un hombre metálico articulado de cráneo tachonado en hierro.
 CUE: 10 ATR: - PV: 24 | 12 | 6
@@ -39,9 +41,9 @@ Movimiento: Correr, medio.`;
   }
 
   async _importar(raw) {
-    if (!raw) return ui.notifications.warn("Pega primero el texto de la criatura.");
+    if (!raw) return ui.notifications.warn(game.i18n.localize("TQ.Importer.WarnPegaCriatura"));
     const datos = CriaturaImporter._parsear(raw);
-    if (!datos.nombre) return ui.notifications.warn("No se pudo detectar el nombre de la criatura.");
+    if (!datos.nombre) return ui.notifications.warn(game.i18n.localize("TQ.Importer.WarnNombreCriatura"));
 
     const actor = await Actor.create({
       name: datos.nombre, type: "criatura", img: "icons/svg/mystery-man.svg", system: {
@@ -138,7 +140,7 @@ Movimiento: Correr, medio.`;
       else await Item.create({ name: p.nombre, type: "rasgo", system: { tipo: "personalidad", efecto: p.efecto } }, { parent: actor });
     }
 
-    ui.notifications.info(`Criatura "${datos.nombre}" importada.`);
+    ui.notifications.info(game.i18n.format("TQ.Importer.InfoCriatura", { nombre: datos.nombre }));
     this.close();
     actor.sheet.render(true);
   }

@@ -58,7 +58,7 @@ export class TQRoll {
     }
 
     const datosChat = {
-      etiqueta, puntuacion, bonificador: bonusFinal, dificultad, debilitado, dolorExtremo, dado: dadoTotal, dadoDisplay: autoExito ? "—" : (dadoDisplayCustom ?? TQRoll._dadoDisplay(dadoTotal, tiradas)), total, exitos, resultado, css: resultado.css, criticos: esCombate ? TQRoll._criticosTexto(exitos) : null, pd, proteccionTarget: proteccionTarget || null, danhoAplicado, pasionEfecto: pasionEfecto?.texto ?? null, actorImg: actor?.img ?? null, topeInfo, mostrarFortuna: !autoExito && !esRepeticion && !esCombate && !dosFortuna, actorId: actor?.id ?? null, etiquetaEnDesglose, modDesglose, puntuacionMostrada
+      etiqueta, puntuacion, bonificador: bonusFinal, dificultad, debilitado, dolorExtremo, dado: dadoTotal, dadoDisplay: autoExito ? "—" : (dadoDisplayCustom ?? TQRoll._dadoDisplay(dadoTotal, tiradas)), total, exitos, resultado, css: resultado.css, criticos: esCombate ? TQRoll._criticosTexto(exitos) : null, pd, proteccionTarget: proteccionTarget || null, danhoAplicado, pasionEfecto: pasionEfecto?.texto ?? null, actorImg: actor?.img ?? null, topeInfo, mostrarFortuna: !autoExito && !esRepeticion && !dosFortuna, actorId: actor?.id ?? null, targetActorId: targetActor?.id ?? null, etiquetaEnDesglose, modDesglose, puntuacionMostrada
     };
 
     const contenido = await foundry.applications.handlebars.renderTemplate(
@@ -68,7 +68,7 @@ export class TQRoll {
     await ChatMessage.create({
       speaker: actor ? ChatMessage.getSpeaker({ actor }) : ChatMessage.getSpeaker(), content: contenido, ...TQRoll._rollModeData(modoTirada), flags: {
         "tierras-quebradas": {
-          etiqueta, puntuacion, dificultad, bonificador, rollMode: modoTirada, bonusFinalOriginal: bonusFinal, actorId: actor?.id ?? null, habClave, tablaComplicacion: tablaComplicacion ?? null, esRepeticion, totalOriginal: total, exitosOriginales: exitos, resultadoCssOriginal: resultado.css, resultadoLabelOriginal: resultado.label, dadoDisplayOriginal: autoExito ? "—" : TQRoll._dadoDisplay(dadoTotal, tiradas), debilitadoOriginal: debilitado, dolorExtremoOriginal: dolorExtremo
+          etiqueta, puntuacion, dificultad, bonificador, rollMode: modoTirada, bonusFinalOriginal: bonusFinal, actorId: actor?.id ?? null, habClave, tablaComplicacion: tablaComplicacion ?? null, esRepeticion, totalOriginal: total, exitosOriginales: exitos, resultadoCssOriginal: resultado.css, resultadoLabelOriginal: resultado.label, dadoDisplayOriginal: autoExito ? "—" : TQRoll._dadoDisplay(dadoTotal, tiradas), debilitadoOriginal: debilitado, dolorExtremoOriginal: dolorExtremo, danoArma: danho?.danoArma ?? null, danhoMd: danho?.md ?? 0, danhoNoLetal: danho?.noLetal ?? false, danhoTipo: danho?.tipo ?? null, targetActorId: targetActor?.id ?? null, proteccionTargetOriginal: proteccionTarget || 0, danhoAplicadoOriginal: danhoAplicado ?? null
         }
       }
     });
@@ -85,7 +85,7 @@ export class TQRoll {
     const message = game.messages.get(messageId);
     if (!message) return;
     const flags = message.flags?.["tierras-quebradas"] ?? {};
-    const { etiqueta, puntuacion, dificultad, bonificador: bonOrig, actorId, tablaComplicacion: tablaOrig, totalOriginal, exitosOriginales, resultadoCssOriginal, resultadoLabelOriginal, dadoDisplayOriginal, bonusFinalOriginal, debilitadoOriginal, dolorExtremoOriginal, rollMode: modoTirada } = flags;
+    const { etiqueta, puntuacion, dificultad, bonificador: bonOrig, actorId, tablaComplicacion: tablaOrig, totalOriginal, exitosOriginales, resultadoCssOriginal, resultadoLabelOriginal, dadoDisplayOriginal, bonusFinalOriginal, debilitadoOriginal, dolorExtremoOriginal, rollMode: modoTirada, danoArma, danhoMd, danhoNoLetal, danhoTipo, targetActorId, proteccionTargetOriginal, danhoAplicadoOriginal, danoRival, mdRival, tipoRival, desgloseHechizo, requiereTiradaEspiritu, bonusEspiritu: bonusEspirituOrig } = flags;
 
     const actor = game.actors.get(actorId);
     if (!actor) return;
@@ -105,6 +105,26 @@ export class TQRoll {
     const resultadoNuevo = TQRoll._clasificarResultado(dadoNuevo, exitosNuevos);
     const dadoDisplayNuevo = TQRoll._dadoDisplay(dadoTotalNuevo, rollNuevo.tiradas);
 
+    let pdOriginal = null, pdNuevo = null;
+    if (danoArma !== null && danoArma !== undefined) {
+      if (exitosOriginales >= 0) pdOriginal = TQRoll.calcDanho(danoArma, danhoMd ?? 0, exitosOriginales, danhoNoLetal ?? false);
+      if (exitosNuevos >= 0) pdNuevo = TQRoll.calcDanho(danoArma, danhoMd ?? 0, exitosNuevos, danhoNoLetal ?? false);
+    }
+
+    let pdRivalOriginal = null, pdRivalNuevo = null;
+    let danhoRivOrig = null, danhoRivNuevo = null, protJugador = 0;
+    if (danoRival) {
+      protJugador = TQRoll._calcularProteccion(actor, tipoRival ?? "cortante");
+      if (exitosOriginales < 0) {
+        pdRivalOriginal = TQRoll.calcDanho(danoRival, mdRival ?? 0, Math.abs(exitosOriginales), false);
+        if (pdRivalOriginal?.total != null) danhoRivOrig = Math.max(0, pdRivalOriginal.total - protJugador);
+      }
+      if (exitosNuevos < 0) {
+        pdRivalNuevo = TQRoll.calcDanho(danoRival, mdRival ?? 0, Math.abs(exitosNuevos), false);
+        if (pdRivalNuevo?.total != null) danhoRivNuevo = Math.max(0, pdRivalNuevo.total - protJugador);
+      }
+    }
+
     await actor.update({ "system.fortuna.actual": Math.max(0, fortuna.actual - 1) });
 
     const contenido = await foundry.applications.handlebars.renderTemplate(
@@ -115,7 +135,10 @@ export class TQRoll {
     await ChatMessage.create({
       speaker: ChatMessage.getSpeaker({ actor }), content: contenido, ...TQRoll._rollModeData(modoTirada), flags: {
         "tierras-quebradas": {
-          esEleccionFortuna: true, etiqueta, puntuacion: puntuacion ?? 0, dificultad: dificultad ?? 15, actorId, tablaComplicacion: tablaOrig ?? null, rollMode: modoTirada, original: { dadoDisplay: dadoDisplayOriginal, total: totalOriginal, exitos: exitosOriginales, css: resultadoCssOriginal, label: resultadoLabelOriginal, bonificador: bonusFinalOriginal ?? 0, debilitado: debilitadoOriginal ?? false, dolorExtremo: dolorExtremoOriginal ?? false }, nuevo: { dadoDisplay: dadoDisplayNuevo, total: totalNuevo, exitos: exitosNuevos, css: resultadoNuevo.css, label: resultadoNuevo.label, bonificador: bonusFinalNuevo, debilitado, dolorExtremo }
+          esEleccionFortuna: true, etiqueta, puntuacion: puntuacion ?? 0, dificultad: dificultad ?? 15, actorId, tablaComplicacion: tablaOrig ?? null, rollMode: modoTirada,
+          danoArma: danoArma ?? null, danhoMd: danhoMd ?? 0, danhoNoLetal: danhoNoLetal ?? false, danhoTipo: danhoTipo ?? null, targetActorId: targetActorId ?? null, danoRival: danoRival ?? null, mdRival: mdRival ?? 0, tipoRival: tipoRival ?? "cortante", desgloseHechizo: desgloseHechizo ?? null, requiereTiradaEspiritu: requiereTiradaEspiritu ?? false, bonusEspiritu: bonusEspirituOrig ?? 0,
+          original: { dadoDisplay: dadoDisplayOriginal, total: totalOriginal, exitos: exitosOriginales, css: resultadoCssOriginal, label: resultadoLabelOriginal, bonificador: bonusFinalOriginal ?? 0, debilitado: debilitadoOriginal ?? false, dolorExtremo: dolorExtremoOriginal ?? false, pd: pdOriginal, proteccionTarget: proteccionTargetOriginal || null, danhoAplicado: danhoAplicadoOriginal ?? null, pdRival: pdRivalOriginal, proteccionJugador: protJugador || null, danhoRivalAplicado: danhoRivOrig },
+          nuevo: { dadoDisplay: dadoDisplayNuevo, total: totalNuevo, exitos: exitosNuevos, css: resultadoNuevo.css, label: resultadoNuevo.label, bonificador: bonusFinalNuevo, debilitado, dolorExtremo, pd: pdNuevo, pdRival: pdRivalNuevo, proteccionJugador: protJugador || null, danhoRivalAplicado: danhoRivNuevo }
         }
       }
     });
@@ -130,8 +153,29 @@ export class TQRoll {
     if (!actor) return;
 
     const datos = flags[eleccion];
+    const { danoArma, danhoMd, danhoNoLetal, danhoTipo, targetActorId } = flags;
+
+    let pd = datos.pd ?? null;
+    let proteccionTarget = datos.proteccionTarget ?? null;
+    let danhoAplicado = datos.danhoAplicado ?? null;
+    let pdRival = datos.pdRival ?? null;
+    let proteccionJugador = datos.proteccionJugador ?? null;
+    let danhoRivalAplicado = datos.danhoRivalAplicado ?? null;
+
+    const bonusEspirituFinal = 0;
+
+    // Si se elige "nuevo" y este impacta pero el original no, aplicar el daño ahora
+    if (eleccion === "nuevo" && pd?.total != null && (flags.original?.exitos ?? 0) < 0) {
+      const targetActor = targetActorId ? game.actors.get(targetActorId) : null;
+      if (targetActor) {
+        proteccionTarget = TQRoll._calcularProteccion(targetActor, danhoTipo ?? "cortante") || null;
+        danhoAplicado = Math.max(0, pd.total - (proteccionTarget ?? 0));
+        await targetActor.recibirDanho(danhoAplicado, pd.total);
+      }
+    }
+
     const datosChat = {
-      etiqueta, puntuacion: puntuacion ?? 0, dificultad: dificultad ?? 15, dadoDisplay: datos.dadoDisplay, total: datos.total, exitos: datos.exitos, resultado: { css: datos.css, label: datos.label }, css: datos.css, bonificador: datos.bonificador ?? 0, debilitado: datos.debilitado ?? false, dolorExtremo: datos.dolorExtremo ?? false, criticos: null, pd: null, pasionEfecto: null, actorImg: actor?.img ?? null, topeInfo: null, mostrarFortuna: false, actorId: actorId ?? null
+      etiqueta, puntuacion: puntuacion ?? 0, dificultad: dificultad ?? 15, dadoDisplay: datos.dadoDisplay, total: datos.total, exitos: datos.exitos, resultado: { css: datos.css, label: datos.label }, css: datos.css, bonificador: datos.bonificador ?? 0, debilitado: datos.debilitado ?? false, dolorExtremo: datos.dolorExtremo ?? false, criticos: null, pd, proteccionTarget, danhoAplicado, pdRival, proteccionJugador, danhoRivalAplicado, desgloseHechizo: flags.desgloseHechizo ?? null, mostrarAplicarResultado: flags.tablaComplicacion === "magia" && (datos.exitos ?? -1) >= 0, bonusEspiritu: bonusEspirituFinal, requiereTiradaEspiritu: flags.requiereTiradaEspiritu ?? false, pasionEfecto: null, actorImg: actor?.img ?? null, topeInfo: null, mostrarFortuna: false, actorId: actorId ?? null, targetActorId: flags.targetActorId ?? null
     };
 
     const contenido = await foundry.applications.handlebars.renderTemplate(
@@ -183,7 +227,7 @@ export class TQRoll {
     if (exitos < 10) return null;
     const indiceMD = Math.min(Math.floor(exitos / 5) - 1, 3);
     return [
-      "", "1 efecto — elige 1 proeza o maniobra", "2 efectos — elige 2 proezas o maniobras", "3 efectos — elige 3 proezas o maniobras"
+      "", game.i18n.localize("TQ.Criticos.efecto1"), game.i18n.localize("TQ.Criticos.efecto2"), game.i18n.localize("TQ.Criticos.efecto3")
     ][indiceMD];
   }
 
@@ -217,19 +261,19 @@ export class TQRoll {
   static _aplicarPasion(resultado, exitos) {
     if (exitos >= 0) {
       if (resultado.css.includes("critico")) {
-        return { resultado, texto: "Pasión: segundo Éxito Crítico" };
+        return { resultado, texto: game.i18n.localize("TQ.Pasion.SegundoCritico") };
       }
       const nuevoCss = resultado.css.includes("complicacion") ? "critico complicacion" : "critico";
       return {
-        resultado: { label: nuevoCss.includes("complicacion") ? "TQ.Tirada.CriticoComplicacion" : "TQ.Tirada.ExitoCritico", css: nuevoCss }, texto: "Pasión: Éxito Crítico"
+        resultado: { label: nuevoCss.includes("complicacion") ? "TQ.Tirada.CriticoComplicacion" : "TQ.Tirada.ExitoCritico", css: nuevoCss }, texto: game.i18n.localize("TQ.Pasion.Critico")
       };
     }
     if (resultado.css.includes("complicacion")) {
-      return { resultado, texto: "Pasión: Complicación (ya tenías)" };
+      return { resultado, texto: game.i18n.localize("TQ.Pasion.ComplicacionYaTenias") };
     }
     const nuevoCss = resultado.css === "fallo" ? "complicacion" : resultado.css + " complicacion";
     return {
-      resultado: { label: "TQ.Tirada.Complicacion", css: nuevoCss }, texto: "Pasión: Complicación"
+      resultado: { label: "TQ.Tirada.Complicacion", css: nuevoCss }, texto: game.i18n.localize("TQ.Pasion.Complicacion")
     };
   }
 
@@ -280,7 +324,7 @@ export class TQRoll {
         "tq-tirada-dialog", ...(!dosFortDisponible ? ["tq-fort-insuf"] : []), ...(modo !== "normal" ? ["tq-sin-exito-auto"] : [])
       ], content, rejectClose: false, buttons: [
         {
-          action: "tirar", label: "Lanzar", default: true, callback: (_ev, button) => {
+          action: "tirar", label: game.i18n.localize("TQ.Botones.Lanzar"), default: true, callback: (_ev, button) => {
             const campos = button.form.elements;
             const topeActivo = campos.tope_activo?.checked ?? false;
             const topeClave = topeActivo ? (campos.tope_habilidad?.value ?? null) : null;
@@ -303,7 +347,7 @@ export class TQRoll {
             };
           }
         }, {
-          action: "dos-fortuna", label: "Usar 2 Fortuna", callback: (_ev, button) => {
+          action: "dos-fortuna", label: game.i18n.localize("TQ.Botones.UsarDosFortuna"), callback: (_ev, button) => {
             if (fortunaActual < 2) return null;
             const campos = button.form.elements;
             const topeActivo = campos.tope_activo?.checked ?? false;
@@ -321,7 +365,7 @@ export class TQRoll {
         }, {
           action: "cancelar", label: game.i18n.localize("TQ.Cancelar") || "Cancelar", callback: () => null
         }, {
-          action: "auto", label: "Éxito Automático", callback: (_ev, button) => {
+          action: "auto", label: game.i18n.localize("TQ.Botones.ExitoAutomatico"), callback: (_ev, button) => {
             if (modo !== "normal") return null;
             const campos = button.form.elements;
             const topeActivo = campos.tope_activo?.checked ?? false;
@@ -351,7 +395,7 @@ export class TQRoll {
     if (eleccion.autoExito) {
       const margen = puntuacionFinal + (eleccion.bonificador ?? 0) - eleccion.dificultad;
       if (margen < -1) {
-        const msg = `Éxito automático no disponible: incluso con un 1 en el dado fallarías (margen ${margen}).`;
+        const msg = game.i18n.format("TQ.Warn.ExitoAutoNoDisponible", { margen });
         ui.notifications.warn(msg);
         await ChatMessage.create({
           speaker: opciones.actor ? ChatMessage.getSpeaker({ actor: opciones.actor }) : ChatMessage.getSpeaker(), content: `<div class="tq-aviso">${msg}</div>`, ...TQRoll._rollModeData()
@@ -460,11 +504,10 @@ export class TQRoll {
     if (pdRival?.total != null && actor) {
       proteccionJugador = TQRoll._calcularProteccion(actor, tipoRival ?? "cortante");
       danhoRivalAplicado = Math.max(0, pdRival.total - proteccionJugador);
-      await actor.recibirDanho(danhoRivalAplicado, pdRival.total);
     }
 
     const datosChat = {
-      etiqueta, esMelee: true, puntuacion, bonificador, modLongitud: modJugador, dado: dadoTotalJ, dadoDisplay: dadoDisplayJCustom ?? TQRoll._dadoDisplay(dadoTotalJ, tiradasJ), total: totalJugador, puntuacionRival, bonificadorRival, modLongitudRival: modRival, dadoRival: dadoTotalR, dadoDisplayRival: TQRoll._dadoDisplay(dadoTotalR, tiradasR), totalRival, exitos, resultado, css: resultado.css, criticos: TQRoll._criticosTexto(exitos), pd, danhoAplicado, proteccionTarget, pdRival, danhoRivalAplicado, proteccionJugador, pasionEfecto: pasionEfecto?.texto ?? null, actorImg: actor?.img ?? null, atacanteNombre: actor?.name ?? "PJ", rivalNombre: targetActor?.name ?? "Rival", topeInfo, modDesglose, puntuacionMostrada
+      etiqueta, esMelee: true, puntuacion, bonificador, modLongitud: modJugador, dado: dadoTotalJ, dadoDisplay: dadoDisplayJCustom ?? TQRoll._dadoDisplay(dadoTotalJ, tiradasJ), total: totalJugador, puntuacionRival, bonificadorRival, modLongitudRival: modRival, dadoRival: dadoTotalR, dadoDisplayRival: TQRoll._dadoDisplay(dadoTotalR, tiradasR), totalRival, exitos, resultado, css: resultado.css, criticos: TQRoll._criticosTexto(exitos), pd, danhoAplicado, proteccionTarget, pdRival, danhoRivalAplicado, proteccionJugador, pasionEfecto: pasionEfecto?.texto ?? null, actorImg: actor?.img ?? null, atacanteNombre: actor?.name ?? "PJ", rivalNombre: targetActor?.name ?? "Rival", topeInfo, modDesglose, puntuacionMostrada, mostrarFortuna: !dosFortuna, actorId: actor?.id ?? null
     };
 
     const contenido = await foundry.applications.handlebars.renderTemplate(
@@ -472,7 +515,11 @@ export class TQRoll {
     );
 
     await ChatMessage.create({
-      speaker: actor ? ChatMessage.getSpeaker({ actor }) : ChatMessage.getSpeaker(), content: contenido, ...TQRoll._rollModeData(modoTirada)
+      speaker: actor ? ChatMessage.getSpeaker({ actor }) : ChatMessage.getSpeaker(), content: contenido, ...TQRoll._rollModeData(modoTirada), flags: {
+        "tierras-quebradas": {
+          etiqueta, puntuacion, dificultad: totalRival, bonificador: bonusJ, rollMode: modoTirada, bonusFinalOriginal: bonusJ, actorId: actor?.id ?? null, habClave: null, tablaComplicacion: "melee", esRepeticion: false, totalOriginal: totalJugador, exitosOriginales: exitos, resultadoCssOriginal: resultado.css, resultadoLabelOriginal: resultado.label, dadoDisplayOriginal: dadoDisplayJCustom ?? TQRoll._dadoDisplay(dadoTotalJ, tiradasJ), debilitadoOriginal: debilitadoJ, dolorExtremoOriginal: dolorExtremoJ, danoArma: danho?.danoArma ?? null, danhoMd: danho?.md ?? 0, danhoNoLetal: danho?.noLetal ?? false, danhoTipo: danho?.tipo ?? null, targetActorId: targetActor?.id ?? null, proteccionTargetOriginal: proteccionTarget ?? null, danhoAplicadoOriginal: danhoAplicado ?? null, danoRival: danoRival ?? null, mdRival: mdRival ?? 0, tipoRival: tipoRival ?? "cortante"
+        }
+      }
     });
 
     if (resultado.css.includes("complicacion")) {
@@ -541,16 +588,18 @@ export class TQRoll {
       if (pdRival?.total != null && actor) {
         proteccionJugador = TQRoll._calcularProteccion(actor, flags.tipoRival ?? "cortante");
         danhoRivalAplicado = Math.max(0, pdRival.total - proteccionJugador);
-        await actor.recibirDanho(danhoRivalAplicado, pdRival.total);
       }
     }
 
     const resolucionTexto = {
-      atacante: "Tablas — el atacante impacta con 0 PE", rival: "Tablas — el rival impacta con 0 PE", ambos: "Tablas — ambos impactan con 0 PE", nadie: "Tablas — nadie impacta"
+      atacante: game.i18n.localize("TQ.Tablas.AtacanteImpacta0PE"),
+      rival: game.i18n.localize("TQ.Tablas.RivalImpacta0PE"),
+      ambos: game.i18n.localize("TQ.Tablas.AmbosImpactan0PE"),
+      nadie: game.i18n.localize("TQ.Tablas.NadieImpacta")
     }[resolucion];
 
     const datosChat = {
-      etiqueta: flags.etiqueta, esMelee: true, puntuacion: flags.puntuacion, bonificador: flags.bonificador, modLongitud: flags.modLongitud, dadoDisplay: flags.dadoDisplayJ, total: flags.totalJugador, puntuacionRival: flags.puntuacionRival, bonificadorRival: flags.bonificadorRival, modLongitudRival: flags.modLongitudRival, dadoDisplayRival: flags.dadoDisplayR, totalRival: flags.totalRival, exitos: 0, resultado, css: resultado.css, criticos: null, pd, danhoAplicado, proteccionTarget, pdRival, danhoRivalAplicado, proteccionJugador, pasionEfecto: flags.pasionEfecto ?? null, actorImg: actor?.img ?? null, atacanteNombre: actor?.name ?? "PJ", rivalNombre: targetActor?.name ?? "Rival", topeInfo: flags.topeInfo ?? null, resolucionTablas: resolucionTexto
+      etiqueta: flags.etiqueta, esMelee: true, puntuacion: flags.puntuacion, bonificador: flags.bonificador, modLongitud: flags.modLongitud, dadoDisplay: flags.dadoDisplayJ, total: flags.totalJugador, puntuacionRival: flags.puntuacionRival, bonificadorRival: flags.bonificadorRival, modLongitudRival: flags.modLongitudRival, dadoDisplayRival: flags.dadoDisplayR, totalRival: flags.totalRival, exitos: 0, resultado, css: resultado.css, criticos: null, pd, danhoAplicado, proteccionTarget, pdRival, danhoRivalAplicado, proteccionJugador, pasionEfecto: flags.pasionEfecto ?? null, actorImg: actor?.img ?? null, atacanteNombre: actor?.name ?? "PJ", rivalNombre: targetActor?.name ?? "Rival", topeInfo: flags.topeInfo ?? null, resolucionTablas: resolucionTexto, actorId: actor?.id ?? null
     };
 
     const contenido = await foundry.applications.handlebars.renderTemplate(
@@ -626,7 +675,7 @@ export class TQRoll {
         await actorA.update({ "system.pasionFlag": "" });
       }
       const datosChat = {
-        etiqueta: `Tirada Enfrentada: ${habNombreA} vs ${habNombreB}`, esEnfrentada: true, nombreA: actorA?.name ?? "Iniciador", habNombreA, puntuacionA: habTotalA, bonificadorA: bonusA || null, dadoDisplayA: TQRoll._dadoDisplay(dadoTotalA, tiradasA), totalA, nombreB: actorB?.name ?? "Oponente", habNombreB, puntuacionB: habTotalB, dadoDisplayB: TQRoll._dadoDisplay(dadoTotalB, tiradasB), totalB, exitos, resultado, css: resultado.css, criticos: TQRoll._criticosTexto(exitos), pasionEfecto: pasionEfecto?.texto ?? null, debilitado: debilitadoA, dolorExtremo: dolorExtremoA
+        etiqueta: game.i18n.format("TQ.Tirada.EnfrentadaLabel", { habA: habNombreA, habB: habNombreB }), esEnfrentada: true, nombreA: actorA?.name ?? "Iniciador", habNombreA, puntuacionA: habTotalA, bonificadorA: bonusA || null, dadoDisplayA: TQRoll._dadoDisplay(dadoTotalA, tiradasA), totalA, nombreB: actorB?.name ?? "Oponente", habNombreB, puntuacionB: habTotalB, dadoDisplayB: TQRoll._dadoDisplay(dadoTotalB, tiradasB), totalB, exitos, resultado, css: resultado.css, criticos: TQRoll._criticosTexto(exitos), pasionEfecto: pasionEfecto?.texto ?? null, debilitado: debilitadoA, dolorExtremo: dolorExtremoA
       };
       const contenido = await foundry.applications.handlebars.renderTemplate("systems/tierras-quebradas/templates/dialogs/tirada-resultado.hbs", datosChat);
       await ChatMessage.create({ speaker: actorA ? ChatMessage.getSpeaker({ actor: actorA }) : ChatMessage.getSpeaker(), content: contenido, ...TQRoll._rollModeData(modoTirada) });
@@ -643,12 +692,12 @@ export class TQRoll {
     const puedeFortuna = fortunaActualA >= 2;
 
     const contenidoIntermedio = `<div class="tq-result-card complicacion">
-      <div class="tq-card-titulo">Tirada Enfrentada</div>
+      <div class="tq-card-titulo">${game.i18n.localize("TQ.Tirada.Enfrentada")}</div>
       <hr/>
       <p style="text-align:center;margin:6px 0;"><strong>${actorB?.name ?? "Oponente"}</strong> saca: <span style="font-size:1.4em;font-weight:bold;">${dadoDisplayB}</span></p>
       <div class="tq-card-botones" style="gap:8px;">
-        <button class="tq-enfrentada-normal">Sin Fortuna</button>
-        <button class="tq-enfrentada-fortuna"${puedeFortuna ? "" : " disabled"}>Usar 2 Fortuna</button>
+        <button class="tq-enfrentada-normal">${game.i18n.localize("TQ.Tirada.SinFortuna")}</button>
+        <button class="tq-enfrentada-fortuna"${puedeFortuna ? "" : " disabled"}>${game.i18n.localize("TQ.Botones.UsarDosFortuna")}</button>
       </div>
     </div>`;
 
@@ -689,7 +738,7 @@ export class TQRoll {
 
     if (usarFortuna) {
       const fortActual = actorA?.system?.fortuna?.actual ?? 0;
-      if (fortActual < 2) { ui.notifications.warn("No tienes suficiente Fortuna (necesitas 2)."); return; }
+      if (fortActual < 2) { ui.notifications.warn(game.i18n.localize("TQ.Warn.SinFortuna")); return; }
       const roll1 = await TQRoll._tirarExplosivo(dadoSizeA, modoTirada);
       const roll2 = await TQRoll._tirarExplosivo(dadoSizeA, modoTirada);
       await actorA.update({ "system.fortuna.actual": Math.max(0, fortActual - 2) });
@@ -715,7 +764,7 @@ export class TQRoll {
     }
 
     const datosChat = {
-      etiqueta: `Tirada Enfrentada: ${habNombreA} vs ${habNombreB}`, esEnfrentada: true,
+      etiqueta: game.i18n.format("TQ.Tirada.EnfrentadaLabel", { habA: habNombreA, habB: habNombreB }), esEnfrentada: true,
       nombreA: actorA?.name ?? "Iniciador", habNombreA, puntuacionA: habTotalA, bonificadorA: bonusA || null,
       dadoDisplayA: dadoDisplayACustom ?? TQRoll._dadoDisplay(dadoTotalA, []), totalA,
       nombreB: actorB?.name ?? "Oponente", habNombreB, puntuacionB: habTotalB, dadoDisplayB, totalB,

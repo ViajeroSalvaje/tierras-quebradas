@@ -31,7 +31,7 @@ export class CriaturaSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 
   async _prepareContext(options) {
     const CARACTS = ["cuerpo", "mente", "espiritu", "atractivo", "tamanyo"];
-    const LABELS  = { cuerpo: "Cuerpo", mente: "Mente", espiritu: "Espíritu", atractivo: "Atractivo", tamanyo: "Tamaño" };
+    const LABELS = Object.fromEntries(CARACTS.map(c => [c, game.i18n.localize(`TQ.Caracteristicas.${c}`)]));
     const caracts = this.actor.system.caracteristicas;
     const caracteristicasOrdenadas = CARACTS.map(c => ({
       clave: c, label: LABELS[c], valor: caracts[c]?.valor ?? 0
@@ -81,6 +81,14 @@ export class CriaturaSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 
     el.querySelector("[name='system.salud.pvActual.valor']")?.addEventListener("change", ev => {
       this.actor.update({ "system.salud.pvActual.valor": parseInt(ev.currentTarget.value) || 0 });
+    });
+
+    el.querySelectorAll(".toggle-estado").forEach(a => {
+      a.addEventListener("click", ev => {
+        const campo = ev.currentTarget.dataset.campo;
+        const actual = foundry.utils.getProperty(this.actor, campo) ?? false;
+        this.actor.update({ [campo]: !actual });
+      });
     });
     el.querySelector("[name='system.salud.pvMax.valor']")?.addEventListener("change", ev => {
       this.actor.update({ "system.salud.pvMax.valor": parseInt(ev.currentTarget.value) || 0 });
@@ -143,7 +151,7 @@ export class CriaturaSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 
     el.querySelector(".anadir-habilidad")?.addEventListener("click", async () => {
       const nombre = await DialogV2.prompt({
-        window: { title: "Añadir habilidad" }, content: `<input type="text" name="nombre" placeholder="Nombre de la habilidad" autofocus />`, ok: { label: "Añadir", callback: (_ev, button) => button.form.elements.nombre.value.trim() }
+        window: { title: game.i18n.localize("TQ.Tooltips.AnadirHabilidad") }, content: `<input type="text" name="nombre" placeholder="${game.i18n.localize("TQ.Placeholders.NombreHabilidad")}" autofocus />`, ok: { label: game.i18n.localize("TQ.Botones.Anadir"), callback: (_ev, button) => button.form.elements.nombre.value.trim() }
       }).catch(() => null);
       if (nombre) {
         await this.actor.update({ [`system.habilidades.${nombre}`]: { base: "cultura", nivel: 0, puntosFijos: 0, estorbo: 0 } });
@@ -170,12 +178,17 @@ export class CriaturaSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     });
 
     el.querySelector(".anadir-arma")?.addEventListener("click", async () => {
-      const item = await Item.create({ name: "Nueva arma", type: "arma" }, { parent: this.actor });
+      const item = await Item.create({ name: game.i18n.localize("TQ.Nuevo.arma"), type: "arma" }, { parent: this.actor });
       item?.sheet.render(true);
     });
 
     el.querySelector(".anadir-armadura")?.addEventListener("click", async () => {
-      const item = await Item.create({ name: "Nueva protección", type: "armadura" }, { parent: this.actor });
+      const item = await Item.create({ name: game.i18n.localize("TQ.Nuevo.armadura"), type: "armadura" }, { parent: this.actor });
+      item?.sheet.render(true);
+    });
+
+    el.querySelector(".anadir-hechizo")?.addEventListener("click", async () => {
+      const item = await Item.create({ name: game.i18n.localize("TQ.Nuevo.hechizo"), type: "hechizo" }, { parent: this.actor });
       item?.sheet.render(true);
     });
 
@@ -206,17 +219,17 @@ export class CriaturaSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     });
 
     el.querySelector(".criatura-anadir-poder")?.addEventListener("click", async () => {
-      const item = await Item.create({ name: "Nuevo poder", type: "rasgo", system: { tipo: "rasgoSobrenatural" } }, { parent: this.actor });
+      const item = await Item.create({ name: game.i18n.localize("TQ.Nuevo.poder"), type: "rasgo", system: { tipo: "rasgoSobrenatural" } }, { parent: this.actor });
       item?.sheet.render(true);
     });
 
     el.querySelector(".criatura-anadir-habilidad-especial")?.addEventListener("click", async () => {
-      const item = await Item.create({ name: "Nueva habilidad especial", type: "rasgo", system: { tipo: "habilidadEspecial" } }, { parent: this.actor });
+      const item = await Item.create({ name: game.i18n.localize("TQ.Nuevo.habilidadEspecial"), type: "rasgo", system: { tipo: "habilidadEspecial" } }, { parent: this.actor });
       item?.sheet.render(true);
     });
 
     el.querySelector(".criatura-anadir-personalidad")?.addEventListener("click", async () => {
-      const item = await Item.create({ name: "Nuevo rasgo de personalidad", type: "rasgo", system: { tipo: "personalidad" } }, { parent: this.actor });
+      const item = await Item.create({ name: game.i18n.localize("TQ.Nuevo.rasgoPersonalidad"), type: "rasgo", system: { tipo: "personalidad" } }, { parent: this.actor });
       item?.sheet.render(true);
     });
   }

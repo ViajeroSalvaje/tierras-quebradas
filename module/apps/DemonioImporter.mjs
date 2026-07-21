@@ -11,6 +11,8 @@ export class DemonioImporter extends HandlebarsApplicationMixin(ApplicationV2) {
     form: { template: "systems/tierras-quebradas/templates/apps/demonio-importer.hbs" }
   };
 
+  get title() { return game.i18n.localize("TQ.Importer.TituloDemonio"); }
+
   static EJEMPLO = `Comadreja arco-iris DEMONIO
 Conocidas como comadrejas arco-iris a falta de un nombre mejor.
 CUE: 8 ATR: -3 PV: 21 | 10 | 5
@@ -41,9 +43,9 @@ Movimiento: Correr, rápido.`;
   }
 
   async _importar(raw) {
-    if (!raw) return ui.notifications.warn("Pega primero el texto del demonio.");
+    if (!raw) return ui.notifications.warn(game.i18n.localize("TQ.Importer.WarnPegaDemonio"));
     const datos = DemonioImporter._parsear(raw);
-    if (!datos.nombre) return ui.notifications.warn("No se pudo detectar el nombre del demonio.");
+    if (!datos.nombre) return ui.notifications.warn(game.i18n.localize("TQ.Importer.WarnNombreDemonio"));
 
     const actor = await Actor.create({
       name: datos.nombre, type: "demonio", img: "icons/svg/mystery-man.svg", system: {
@@ -140,7 +142,7 @@ Movimiento: Correr, rápido.`;
       }
     }
 
-    ui.notifications.info(`Demonio "${datos.nombre}" importado.`);
+    ui.notifications.info(game.i18n.format("TQ.Importer.InfoDemonio", { nombre: datos.nombre }));
     this.close();
     actor.sheet.render(true);
   }

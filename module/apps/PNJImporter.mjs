@@ -11,6 +11,8 @@ export class PNJImporter extends HandlebarsApplicationMixin(ApplicationV2) {
     form: { template: "systems/tierras-quebradas/templates/apps/pnj-importer.hbs" }
   };
 
+  get title() { return game.i18n.localize("TQ.Importer.TituloPNJ"); }
+
   static EJEMPLO = `Bandido de Caminos
 Mercenario sin escrúpulos que asalta viajeros en los senderos del reino.
 CUE: 8 MEN: 5 ESP: 4 ATR: -1 TAM: 0
@@ -46,9 +48,9 @@ Rasgos: Intimidante, Ágil`;
   }
 
   async _importar(raw) {
-    if (!raw) return ui.notifications.warn("Pega primero el texto del PNJ.");
+    if (!raw) return ui.notifications.warn(game.i18n.localize("TQ.Importer.WarnPegaPNJ"));
     const datos = PNJImporter._parsear(raw);
-    if (!datos.nombre) return ui.notifications.warn("No se pudo detectar el nombre del PNJ.");
+    if (!datos.nombre) return ui.notifications.warn(game.i18n.localize("TQ.Importer.WarnNombrePNJ"));
 
     let updHabilidades = null;
     if (Object.keys(datos.habilidades).length) {
@@ -182,7 +184,7 @@ Rasgos: Intimidante, Ágil`;
       }
     }
 
-    ui.notifications.info(`PNJ "${datos.nombre}" importado.`);
+    ui.notifications.info(game.i18n.format("TQ.Importer.InfoPNJ", { nombre: datos.nombre }));
     this.close();
     actor.sheet.render(true);
   }
@@ -250,7 +252,7 @@ Rasgos: Intimidante, Ágil`;
         </table>`;
 
       const resultado = await DialogV2.prompt({
-        window: { title: "Resolver habilidades", resizable: true }, position: { width: 500 }, content: html, ok: { label: "Importar", callback: (_ev, button) => {
+        window: { title: game.i18n.localize("TQ.Importer.ResolverHabilidades"), resizable: true }, position: { width: 500 }, content: html, ok: { label: game.i18n.localize("TQ.Botones.Importar"), callback: (_ev, button) => {
           const form = button.form;
           return Object.fromEntries(entradas.map(([nombre], i) => [nombre, form.elements[`h${i}`]?.value ?? ""]));
         }}

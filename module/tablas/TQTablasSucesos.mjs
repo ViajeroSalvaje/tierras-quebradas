@@ -11,9 +11,9 @@ export async function tirarComplicacion(tabla, actor) {
   const num = roll.total;
   const entrada = tabla.find(e => num >= e.range[0] && num <= e.range[1]);
   const content = `<div class="tq-result-card complicacion">
-    <div class="tq-card-titulo">Complicación — ${num}</div>
+    <div class="tq-card-titulo">${game.i18n.format("TQ.Tablas.ComplicacionTitulo", { num })}</div>
     <hr/>
-    <p>${entrada?.text ?? "Resultado desconocido."}</p>
+    <p>${entrada?.text ?? game.i18n.localize("TQ.Tablas.ResultadoDesconocido")}</p>
   </div>`;
   if (game.dice3d) await game.dice3d.showForRoll(roll, game.user, true, null, false);
   await ChatMessage.create({

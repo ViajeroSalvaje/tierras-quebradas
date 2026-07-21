@@ -46,9 +46,29 @@ export class PJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       "nadar", "naturaleza", "navegacion", "ocultar", "oratoria", "pelea", "percatarse", "perspicacia", "pociones", "primerosAuxilios", "rastrear", "seguir", "sigilo", "sueños", "tierrasQuebradas", "tratarAnimales", "trepar"
     ];
 
+    const habDescripciones = {};
+    const packHabs = game.packs.get("tierras-quebradas.habilidades");
+    if (packHabs) {
+      const docs = await packHabs.getDocuments();
+      for (const item of docs) {
+        if (item.system.clave && item.system.descripcion)
+          habDescripciones[item.system.clave] = item.system.descripcion;
+      }
+    }
+    for (const item of game.items) {
+      if (item.type === "habilidad" && item.system.clave && item.system.descripcion)
+        habDescripciones[item.system.clave] = item.system.descripcion;
+    }
+
+    const instrucciones = `Click <strong>izquierdo</strong> para tirada normal | Click <strong>derecho</strong> para tirada enfrentada`;
     const IDIOMAS = new Set(["idioma1", "idioma2", "idioma3"]);
     const makeCol = keys => keys
-      .map(k => habs[k] ? { key: k, hab: habs[k], esIdioma: IDIOMAS.has(k) } : null)
+      .map(k => {
+        if (!habs[k]) return null;
+        const desc = habDescripciones[k];
+        const tooltip = desc ? `${instrucciones}<hr>${desc}` : instrucciones;
+        return { key: k, hab: habs[k], esIdioma: IDIOMAS.has(k), tooltip };
+      })
       .filter(Boolean);
 
     // Fórmulas de bases para mostrar en tabla
@@ -137,13 +157,13 @@ export class PJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       if (cargaActual + cargaItem > limite) {
         if (!game.user.isGM) {
           await ChatMessage.create({
-            speaker: ChatMessage.getSpeaker({ actor: this.actor }), content: `<div class="tq-result-card complicacion"><div class="tq-card-titulo">Sobrepasa límite de carga</div><hr/><p>Límite de carga es 4 x FUERZA = <strong>${limite}</strong></p></div>`
+            speaker: ChatMessage.getSpeaker({ actor: this.actor }), content: `<div class="tq-result-card complicacion"><div class="tq-card-titulo">${game.i18n.localize("TQ.Carga.TituloSobrepasa")}</div><hr/><p>${game.i18n.format("TQ.Carga.Limite", { limite })}</p></div>`
           });
           return;
         }
         const confirmar = await DialogV2.wait({
-          window: { title: "Límite de Carga Superado" }, content: `<p>${this.actor.name} superaría el límite absoluto de 4×FUE (${limite} puntos). ¿Añadir igualmente?</p>`, rejectClose: false, buttons: [
-            { action: "si", label: "Sí, añadir", default: true }, { action: "no", label: "Cancelar" }
+          window: { title: game.i18n.localize("TQ.Carga.TituloSuperado") }, content: `<p>${game.i18n.format("TQ.Carga.Confirmar", { actor: this.actor.name, limite })}</p>`, rejectClose: false, buttons: [
+            { action: "si", label: game.i18n.localize("TQ.Botones.SiAnadir"), default: true }, { action: "no", label: game.i18n.localize("TQ.Botones.Cancelar") }
           ]
         });
         if (confirmar !== "si") return;
@@ -184,6 +204,22 @@ export class PJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 
     // Tiradas de habilidad (nombre)
     el.querySelectorAll(".tirar-habilidad").forEach(a => {
+      let tooltipTimer = null;
+      a.addEventListener("pointerenter", ev => {
+        const target = ev.currentTarget;
+        const content = target.dataset.tqHabTooltip;
+        if (!content) return;
+        tooltipTimer = setTimeout(() => {
+          target.dataset.tooltip = content;
+          game.tooltip.activate(target, { cssClass: "tq-hab-tooltip", direction: "UP" });
+          delete target.dataset.tooltip;
+        }, 4000);
+      });
+      a.addEventListener("pointerleave", () => {
+        clearTimeout(tooltipTimer);
+        tooltipTimer = null;
+        game.tooltip.deactivate();
+      });
       a.addEventListener("click", ev => {
         ev.preventDefault();
         this.actor.tirarHabilidad(ev.currentTarget.dataset.habilidad);
@@ -227,8 +263,18 @@ export class PJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     el.querySelectorAll(".item-create").forEach(a => {
       a.addEventListener("click", ev => {
         const tipo = ev.currentTarget.dataset.tipo ?? "arma";
-        const NOMBRES = { rasgo: "Nuevo rasgo", pacto: "Nuevo pacto", bendicion: "Nueva bendición", ventaja: "Nueva ventaja", arma: "Nueva arma", armadura: "Nueva armadura" };
-        Item.create({ name: NOMBRES[tipo] ?? `Nuevo ${tipo}`, type: tipo }, { parent: this.actor });
+        const NOMBRES = {
+          rasgo: game.i18n.localize("TQ.Nuevo.rasgo"),
+          pacto: game.i18n.localize("TQ.Nuevo.pacto"),
+          bendicion: game.i18n.localize("TQ.Nuevo.bendicion"),
+          ventaja: game.i18n.localize("TQ.Nuevo.ventaja"),
+          arma: game.i18n.localize("TQ.Nuevo.arma"),
+          armadura: game.i18n.localize("TQ.Nuevo.armadura"),
+          objeto: game.i18n.localize("TQ.Nuevo.objeto"),
+          hechizo: game.i18n.localize("TQ.Nuevo.hechizo"),
+          consumible: game.i18n.localize("TQ.Nuevo.consumible")
+        };
+        Item.create({ name: NOMBRES[tipo] ?? `${game.i18n.localize("TQ.Dialogo.Nuevo")} ${tipo}`, type: tipo }, { parent: this.actor });
       });
     });
     // Items: editar
@@ -279,13 +325,13 @@ export class PJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
         const clave = ev.currentTarget.dataset.habilidad;
         const actual = this.actor.system.habilidades?.[clave]?.px ?? 0;
         const nuevo = await DialogV2.wait({
-          window: { title: "PX acumulados", width: 175 }, content: `<div style="display:flex;align-items:center;gap:8px;padding:4px;">
-            <label>PX a añadir: </label>
+          window: { title: game.i18n.localize("TQ.Dialogo.PXAcumulados"), width: 175 }, content: `<div style="display:flex;align-items:center;gap:8px;padding:4px;">
+            <label>${game.i18n.localize("TQ.Dialogo.PXAnadir")}</label>
             <input type="number" id="tq-px-val" value="0" style="width:60px;" />
           </div>`, rejectClose: false, buttons: [
             {
-              action: "ok", label: "Guardar", default: true, callback: (_ev, btn) => parseInt(btn.form.elements["tq-px-val"]?.value) || 0
-            }, { action: "cancelar", label: "Cancelar", callback: () => 0 }
+              action: "ok", label: game.i18n.localize("TQ.Botones.Guardar"), default: true, callback: (_ev, btn) => parseInt(btn.form.elements["tq-px-val"]?.value) || 0
+            }, { action: "cancelar", label: game.i18n.localize("TQ.Botones.Cancelar"), callback: () => 0 }
           ]
         });
         if (nuevo == null || nuevo === 0) return;
@@ -323,11 +369,16 @@ export class PJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
         const hechizo = this.actor.items.get(ev.currentTarget.dataset.itemId);
         if (!hechizo) return;
         const nuevoPermanent = !hechizo.system.permanent;
-        const pmCoste = hechizo.system.pmCoste || 1;
-        const espActual = this.actor.system.hechiceria?.espirituConsagrado ?? 0;
-        const nuevoEsp = nuevoPermanent ? espActual + pmCoste : Math.max(0, espActual - pmCoste);
+        if (nuevoPermanent) {
+          const pmCoste = hechizo.system.pmCoste || 1;
+          const espActual = this.actor.system.hechiceria?.espirituConsagrado ?? 0;
+          const espMax = this.actor.system.caracteristicas?.espiritu?.valor ?? 0;
+          if (espActual + pmCoste > espMax) {
+            ui.notifications.warn(game.i18n.format("TQ.Magia.EspirituConsagradoMaximo", { max: espMax }));
+            return;
+          }
+        }
         hechizo.update({ "system.permanent": nuevoPermanent });
-        this.actor.update({ "system.hechiceria.espirituConsagrado": nuevoEsp });
       });
     });
 
@@ -359,7 +410,7 @@ export class PJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     el.querySelector(".herida-add")?.addEventListener("click", ev => {
       ev.preventDefault();
       const heridas = Object.values(foundry.utils.deepClone(this.actor.system.heridas ?? {}));
-      heridas.push({ tipo: "rasguño", descripcion: "", sanando: false });
+      heridas.push({ tipo: "rasguño", descripcion: "", dano: 0, sanando: false });
       this.actor.update({ "system.heridas": heridas });
     });
 
@@ -401,7 +452,7 @@ export class PJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
         this.actor.activarPasion(ev.currentTarget.dataset.tipo);
       });
     });
-    el.querySelectorAll(".toggle-pasion-usada").forEach(a => {
+    el.querySelectorAll(".toggle-pasion-usada, .toggle-rasgo-usada").forEach(a => {
       a.addEventListener("click", ev => {
         ev.preventDefault();
         const campo = ev.currentTarget.dataset.campo;
@@ -440,7 +491,7 @@ export class PJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
         if (esHerida && nuevoValor) {
           const tipo = campo.includes("Leves") ? "leve" : "grave";
           const heridas = Object.values(foundry.utils.deepClone(this.actor.system.heridas ?? {}));
-          heridas.push({ tipo, descripcion: "", sanando: false });
+          heridas.push({ tipo, descripcion: "", dano: 0, sanando: false });
           updates["system.heridas"] = heridas;
         }
         this.actor.update(updates, { tqDesdeRecibir: true });

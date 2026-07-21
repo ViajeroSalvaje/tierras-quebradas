@@ -11,6 +11,8 @@ export class DirectorWidget extends HandlebarsApplicationMixin(ApplicationV2) {
     }
   };
 
+  get title() { return game.i18n.localize("TQ.Director.Titulo"); }
+
   async _prepareContext() {
     return {
       infortunio: game.settings.get("tierras-quebradas", "infortunio"), pxAventura: game.settings.get("tierras-quebradas", "pxAventura")
@@ -46,23 +48,23 @@ export class DirectorWidget extends HandlebarsApplicationMixin(ApplicationV2) {
 
   async _despertarPasion() {
     const pjs = game.actors.filter(a => a.type === "pj");
-    if (!pjs.length) return ui.notifications.warn("No hay personajes jugadores en el mundo.");
+    if (!pjs.length) return ui.notifications.warn(game.i18n.localize("TQ.Director.NoPJs"));
 
     const pjOptions = pjs.map(a => `<option value="${a.id}">${a.name}</option>`).join("");
     const html = `<div style="display:grid;gap:8px;padding:4px;">
       <div>
-        <label>Personaje</label>
+        <label>${game.i18n.localize("TQ.Director.Personaje")}</label>
         <select id="tq-dp-pj" style="width:100%;">${pjOptions}</select>
       </div>
       <div>
-        <label>Pasión</label>
+        <label>${game.i18n.localize("TQ.Director.Pasion")}</label>
         <select id="tq-dp-tipo" style="width:100%;">
           <option value="amor">Amor</option>
           <option value="odio">Odio</option>
         </select>
       </div>
       <div>
-        <label>Dificultad de resistencia (Espíritu)</label>
+        <label>${game.i18n.localize("TQ.Director.DifResistencia")}</label>
         <select id="tq-dp-dif" style="width:100%;">
           <option value="9">Fácil (9)</option>
           <option value="12" selected>Normal (12)</option>
@@ -73,7 +75,7 @@ export class DirectorWidget extends HandlebarsApplicationMixin(ApplicationV2) {
     </div>`;
 
     const result = await DialogV2.prompt({
-      window: { title: "Despertar Pasión", width: 280 }, content: html, ok: { label: "Despertar", callback: () => ({
+      window: { title: game.i18n.localize("TQ.Botones.DespertarPasion"), width: 280 }, content: html, ok: { label: game.i18n.localize("TQ.Director.Despertar"), callback: () => ({
         actorId: document.getElementById("tq-dp-pj").value, tipo: document.getElementById("tq-dp-tipo").value, dificultad: parseInt(document.getElementById("tq-dp-dif").value) || 15
       })}
     });
@@ -87,15 +89,15 @@ export class DirectorWidget extends HandlebarsApplicationMixin(ApplicationV2) {
 
     await ChatMessage.create({
       content: `<div class="tq-result-card complicacion">
-        <div class="tq-card-titulo">Despertar Pasión</div>
+        <div class="tq-card-titulo">${game.i18n.localize("TQ.Botones.DespertarPasion")}</div>
         <hr/>
-        <p><strong>${actor.name}</strong>: el Narrador despierta tu pasión de <em>${pasionNombre}</em>.</p>
-        <p>Tira <strong>Espíritu</strong> vs <strong>${result.dificultad}</strong> para resistirte.</p>
+        <p>${game.i18n.format("TQ.Director.DespertarDesc", { actor: `<strong>${actor.name}</strong>`, pasion: `<em>${pasionNombre}</em>` })}</p>
+        <p>${game.i18n.format("TQ.Director.DespertarInstr", { dificultad: `<strong>${result.dificultad}</strong>` })}</p>
         <div class="tq-card-botones">
           <button class="tq-aplicar-pasion" style="display:none"
                   data-actor-id="${result.actorId}"
                   data-pasion-tipo="${result.tipo}">
-            Aplicar — el personaje no resistió
+            ${game.i18n.localize("TQ.Director.AplicarPasion")}
           </button>
         </div>
       </div>`
@@ -104,7 +106,7 @@ export class DirectorWidget extends HandlebarsApplicationMixin(ApplicationV2) {
 
   async _finSesion() {
     const actores = this._getPJsActivos();
-    if (!actores.length) return ui.notifications.warn("No hay jugadores activos con personaje asignado.");
+    if (!actores.length) return ui.notifications.warn(game.i18n.localize("TQ.Director.NoActivos"));
     for (const actor of actores) {
       await actor.aplicarFinDeSesionPX();
       await actor.aplicarFinSesion();
@@ -113,7 +115,7 @@ export class DirectorWidget extends HandlebarsApplicationMixin(ApplicationV2) {
 
   async _finAventura() {
     const actores = this._getPJsActivos();
-    if (!actores.length) return ui.notifications.warn("No hay jugadores activos con personaje asignado.");
+    if (!actores.length) return ui.notifications.warn(game.i18n.localize("TQ.Director.NoActivos"));
     const px = game.settings.get("tierras-quebradas", "pxAventura");
     for (const actor of actores) {
       await actor.asignarPXHito(px);

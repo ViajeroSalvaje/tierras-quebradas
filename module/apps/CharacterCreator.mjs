@@ -76,6 +76,8 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
     }
   };
 
+  get title() { return game.i18n.localize("TQ.Botones.CrearPersonaje"); }
+
   static ARMA_LABELS = {
     armasEspada: "Espada", armasAsta: "Arma de asta", armasMangos: "Arma de mango", armasPunhal: "Puñal", escudo: "Escudo", pelea: "Pelea", arco: "Arco", ballesta: "Ballesta", honda: "Honda", lanzar: "Lanzar", canonDeMano: "Cañón de mano"
   };
@@ -1241,7 +1243,7 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
     if (id === "caracteristicas") {
       const { metodoCaract, cuerpo, mente, espiritu, tiradaAleatoria } = this._charData;
       if (metodoCaract === "aleatorio" && !tiradaAleatoria) {
-        ui.notifications.warn("Tira los dados antes de continuar.");
+        ui.notifications.warn(game.i18n.localize("TQ.CC.Warn.TirarPrimero"));
         return false;
       }
       // La validación del pool exacto se hace en el paso de Especie
@@ -1251,36 +1253,38 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
       const pool = this._edadActual.puntosCaract + this._charData.especieBonusPuntos;
       const total = this._charData.cuerpo + this._charData.mente + this._charData.espiritu;
       if (total !== pool) {
-        ui.notifications.warn(`Debes repartir exactamente ${pool} puntos de características (${total > pool ? "sobran" : "faltan"} ${Math.abs(pool - total)}).`);
+        const diff = Math.abs(pool - total);
+        const dir = total > pool ? game.i18n.localize("TQ.CC.Warn.Sobran") : game.i18n.localize("TQ.CC.Warn.Faltan");
+        ui.notifications.warn(game.i18n.format("TQ.CC.Warn.PuntosExactos", { pool, dir, diff }));
         return false;
       }
     }
 
     if (id === "entorno" && !this._charData.entornoId) {
-      ui.notifications.warn("Selecciona un entorno antes de continuar.");
+      ui.notifications.warn(game.i18n.localize("TQ.CC.Warn.SeleccionaEntorno"));
       return false;
     }
 
     if (id === "origen" && !this._charData.origenId) {
-      ui.notifications.warn("Selecciona un origen étnico antes de continuar.");
+      ui.notifications.warn(game.i18n.localize("TQ.CC.Warn.SeleccionaOrigen"));
       return false;
     }
 
     if (id === "profesion") {
       if (!this._charData.profesionId) {
-        ui.notifications.warn("Selecciona una profesión antes de continuar.");
+        ui.notifications.warn(game.i18n.localize("TQ.CC.Warn.SeleccionaProfesion"));
         return false;
       }
       const prof = this._profesionesCache?.find(p => p.id === this._charData.profesionId);
       if (prof?.especializaciones?.length && this._charData.especializacionIdx === null) {
-        ui.notifications.warn("Selecciona una especialización antes de continuar.");
+        ui.notifications.warn(game.i18n.localize("TQ.CC.Warn.SeleccionaEspecializacion"));
         return false;
       }
     }
 
     if (id === "religion") {
       if (!this._charData.ideologiaReligion) {
-        ui.notifications.warn("Selecciona una ideología religiosa.");
+        ui.notifications.warn(game.i18n.localize("TQ.CC.Warn.SeleccionaReligion"));
         return false;
       }
       const plBase = this._charData.espiritu * 3;
@@ -1288,7 +1292,8 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
       const plGastado = pl.ley + pl.caos + pl.elementos + pl.antepasados;
       if (plGastado !== plBase) {
         const diff = Math.abs(plBase - plGastado);
-        ui.notifications.warn(`Debes repartir exactamente ${plBase} PL (${plGastado > plBase ? "sobran" : "faltan"} ${diff}).`);
+        const dir = plGastado > plBase ? game.i18n.localize("TQ.CC.Warn.Sobran") : game.i18n.localize("TQ.CC.Warn.Faltan");
+        ui.notifications.warn(game.i18n.format("TQ.CC.Warn.PLExactos", { pl: plBase, dir, diff }));
         return false;
       }
       const lealtadClave = IDEOLOGIA_A_LEALTAD[this._charData.ideologiaReligion];
@@ -1296,7 +1301,7 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
         const miPL = pl[lealtadClave];
         const otroMax = Math.max(...Object.entries(pl).filter(([k]) => k !== lealtadClave).map(([, v]) => v));
         if (miPL < otroMax) {
-          ui.notifications.warn("La religión elegida debe tener más PL que cualquier otra.");
+          ui.notifications.warn(game.i18n.localize("TQ.CC.Warn.ReligionMasPL"));
           return false;
         }
       }
@@ -1306,11 +1311,11 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
       const espConsa = this._charData.hechizosElegidos
         .filter(h => h.permanent).reduce((s, h) => s + (h.pmCoste || 1), 0);
       if (espConsa > this._charData.espiritu) {
-        ui.notifications.warn(`El Espíritu Consagrado (${espConsa}) supera el Espíritu del personaje (${this._charData.espiritu}).`);
+        ui.notifications.warn(game.i18n.format("TQ.CC.Warn.EspConsagradoSuperado", { espConsa, espiritu: this._charData.espiritu }));
         return false;
       }
       if (this._calcPPConVentajas() < 0) {
-        ui.notifications.warn("Los PP están en negativo. Reduce hechizos extra o revisa tus ventajas.");
+        ui.notifications.warn(game.i18n.localize("TQ.CC.Warn.PPNegativo"));
         return false;
       }
       return true;
@@ -1318,7 +1323,7 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
 
     if (id === "edad") {
       if (!this._charData.nombre?.trim()) {
-        ui.notifications.warn("Introduce un nombre para el personaje.");
+        ui.notifications.warn(game.i18n.localize("TQ.CC.Warn.IntroducirNombre"));
         return false;
       }
       if (this._charData.metodoCaract === "distribuir") {
@@ -1326,11 +1331,11 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
         const pool = edad.puntosCaract + this._charData.especieBonusPuntos;
         const sum = this._charData.cuerpo + this._charData.mente + this._charData.espiritu;
         if (sum > pool) {
-          ui.notifications.warn(`Debes reducir ${sum - pool} punto(s) de las características para esta categoría de edad y especie.`);
+          ui.notifications.warn(game.i18n.format("TQ.CC.Warn.ReducirPuntos", { n: sum - pool }));
           return false;
         }
         if (this._charData.cuerpo > edad.maxCuerpo) {
-          ui.notifications.warn(`Cuerpo no puede superar ${edad.maxCuerpo} con esta categoría de edad.`);
+          ui.notifications.warn(game.i18n.format("TQ.CC.Warn.MaxCuerpo", { max: edad.maxCuerpo }));
           return false;
         }
       }

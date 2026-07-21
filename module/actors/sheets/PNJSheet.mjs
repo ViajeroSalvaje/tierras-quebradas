@@ -65,6 +65,14 @@ export class PNJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       this.actor.update({ "system.salud.pvActual.valor": parseInt(ev.currentTarget.value) || 0 });
     });
 
+    el.querySelectorAll(".toggle-estado").forEach(a => {
+      a.addEventListener("click", ev => {
+        const campo = ev.currentTarget.dataset.campo;
+        const actual = foundry.utils.getProperty(this.actor, campo) ?? false;
+        this.actor.update({ [campo]: !actual });
+      });
+    });
+
     el.querySelectorAll(".sheet-tabs .item").forEach(tab => {
       tab.addEventListener("click", ev => {
         this._activeTab = ev.currentTarget.dataset.tab;
@@ -123,7 +131,7 @@ export class PNJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 
     el.querySelector(".anadir-habilidad")?.addEventListener("click", async () => {
       const nombre = await DialogV2.prompt({
-        window: { title: "Añadir habilidad" }, content: `<input type="text" name="nombre" placeholder="Nombre de la habilidad" autofocus />`, ok: { label: "Añadir", callback: (_ev, button) => button.form.elements.nombre.value.trim() }
+        window: { title: game.i18n.localize("TQ.Tooltips.AnadirHabilidad") }, content: `<input type="text" name="nombre" placeholder="${game.i18n.localize("TQ.Placeholders.NombreHabilidad")}" autofocus />`, ok: { label: game.i18n.localize("TQ.Botones.Anadir"), callback: (_ev, button) => button.form.elements.nombre.value.trim() }
       }).catch(() => null);
       if (nombre) {
         await this.actor.update({ [`system.habilidades.${nombre}`]: { base: "cultura", nivel: 0, puntosFijos: 0, estorbo: 0 } });
@@ -150,12 +158,17 @@ export class PNJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     });
 
     el.querySelector(".anadir-arma")?.addEventListener("click", async () => {
-      const item = await Item.create({ name: "Nueva arma", type: "arma" }, { parent: this.actor });
+      const item = await Item.create({ name: game.i18n.localize("TQ.Nuevo.arma"), type: "arma" }, { parent: this.actor });
       item?.sheet.render(true);
     });
 
     el.querySelector(".anadir-armadura")?.addEventListener("click", async () => {
-      const item = await Item.create({ name: "Nueva protección", type: "armadura" }, { parent: this.actor });
+      const item = await Item.create({ name: game.i18n.localize("TQ.Nuevo.armadura"), type: "armadura" }, { parent: this.actor });
+      item?.sheet.render(true);
+    });
+
+    el.querySelector(".anadir-hechizo")?.addEventListener("click", async () => {
+      const item = await Item.create({ name: game.i18n.localize("TQ.Nuevo.hechizo"), type: "hechizo" }, { parent: this.actor });
       item?.sheet.render(true);
     });
 
@@ -186,17 +199,17 @@ export class PNJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     });
 
     el.querySelector(".pnj-anadir-bendicion")?.addEventListener("click", async () => {
-      const item = await Item.create({ name: "Nueva bendición", type: "bendicion" }, { parent: this.actor });
+      const item = await Item.create({ name: game.i18n.localize("TQ.Nuevo.bendicion"), type: "bendicion" }, { parent: this.actor });
       item?.sheet.render(true);
     });
 
     el.querySelector(".pnj-anadir-ventaja")?.addEventListener("click", async () => {
-      const item = await Item.create({ name: "Nueva ventaja", type: "ventaja" }, { parent: this.actor });
+      const item = await Item.create({ name: game.i18n.localize("TQ.Nuevo.ventaja"), type: "ventaja" }, { parent: this.actor });
       item?.sheet.render(true);
     });
 
     el.querySelector(".pnj-anadir-rasgo")?.addEventListener("click", async () => {
-      const item = await Item.create({ name: "Nuevo rasgo", type: "rasgo" }, { parent: this.actor });
+      const item = await Item.create({ name: game.i18n.localize("TQ.Nuevo.rasgo"), type: "rasgo" }, { parent: this.actor });
       item?.sheet.render(true);
     });
 

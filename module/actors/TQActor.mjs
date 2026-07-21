@@ -141,7 +141,7 @@ export class TQActor extends Actor {
       const etiqueta = habilidad.nombre && clave.startsWith("idioma")
         ? habilidad.nombre
         : (game.i18n.localize(`TQ.Habilidades.${clave}`) || clave);
-      return ui.notifications.warn(`${etiqueta} es una habilidad especializada (E). Necesitas al menos Nivel 1 para intentarla.`);
+      return ui.notifications.warn(game.i18n.format("TQ.Warn.HabilidadEspecializada", { nombre: etiqueta }));
     }
 
     const base = this.system.bases[habilidad.base]?.valor ?? 0;
@@ -199,7 +199,7 @@ export class TQActor extends Actor {
         puntuacion = base + (habilidad.nivel ?? 0)  - (this.system.estorbo?.valor ?? 0) * multiplicacionEstorbo;
       }
       if (TQActor.HABILIDADES_ESPECIALIZADAS.has(habClave) && (habilidad?.nivel ?? 0) === 0) {
-        return ui.notifications.warn(`${arma.name} es una habilidad especializada (E). Necesitas al menos Nivel 1 para usarla.`);
+        return ui.notifications.warn(game.i18n.format("TQ.Warn.ArmaEspecializada", { nombre: arma.name }));
       }
     } else {
       const habNombre = (ARMA_A_HABILIDAD_PNJ[habClave] ?? habClave) || arma.name;
@@ -213,7 +213,7 @@ export class TQActor extends Actor {
       const fuerzaActor = this.system.derivadas?.fuerza?.valor ?? 0;
       if (fuerzaActor < fueMinimaArma) {
         modDesglose.push({ label: "Fuerza", valor: -2, signo: "−", valorAbs: 2 });
-        ui.notifications.warn(`FUE insuficiente para ${arma.name} (FUE ${fuerzaActor} < mín. ${fueMinimaArma}): −2 a la tirada.`);
+        ui.notifications.warn(game.i18n.format("TQ.Warn.FUEInsuficiente", { nombre: arma.name, fue: fuerzaActor, min: fueMinimaArma }));
       }
     }
 
@@ -232,14 +232,7 @@ export class TQActor extends Actor {
       }
     }
 
-    if (resultado && !resultado.enMelee && resultado.exitos >= 0 && targetActor && modo === "distancia") {
-      const pd = TQRoll.calcDanho(arma.system.danoArma ?? "0", md, resultado.exitos, arma.system.noLetal ?? false);
-      if (pd.total != null) {
-        const proteccion = TQRoll._calcularProteccion(targetActor, arma.system.tipo ?? "cortante");
-        const danhoNeto = Math.max(0, pd.total - proteccion);
-        await targetActor.recibirDanho(danhoNeto, pd.total);
-      }
-    }
+    // El daño de distancia se aplica manualmente con el botón "Aplicar Daño" de la tarjeta de chat
 
     if (resultado && resultado.enMelee && resultado.exitos >= 0 && resultado.exitos < 3) {
       const aliadoActor = resultado.aliadoId ? game.actors.get(resultado.aliadoId) : null;
@@ -262,7 +255,7 @@ export class TQActor extends Actor {
       const nombreAliado = aliadoActor?.name ?? "el aliado";
 
       let cardContent = `<div class="tq-result-card complicacion">
-        <div class="tq-card-titulo">Fuego Amigo</div>
+        <div class="tq-card-titulo">${game.i18n.localize("TQ.Combate.FuegoAmigo")}</div>
         <hr/>
         <p><strong>${nombreAliado}</strong> es alcanzado.</p>`;
 
@@ -274,7 +267,7 @@ export class TQActor extends Actor {
         }
         cardContent += `</p>`;
         if (aliadoActor && danhoNeto !== null) {
-          cardContent += `<div class="tq-card-botones"><button class="tq-fuego-amigo-aplicar" data-actor-id="${aliadoActor.id}" data-danho="${danhoNeto}" data-danho-bruto="${pd.total}">Aplicar ${danhoNeto} PD a ${nombreAliado}</button></div>`;
+          cardContent += `<div class="tq-card-botones"><button class="tq-fuego-amigo-aplicar" data-actor-id="${aliadoActor.id}" data-danho="${danhoNeto}" data-danho-bruto="${pd.total}">${game.i18n.format("TQ.Combate.AplicarDanho", { danho: danhoNeto, nombre: nombreAliado })}</button></div>`;
         }
       } else {
         cardContent += `<p>Daño: ${pd.formula} (aplica el daño del arma + ${resultado.exitos} éxitos, menos la protección de ${nombreAliado}).</p>`;
@@ -310,7 +303,7 @@ export class TQActor extends Actor {
     await this.update({ [`system.lealtad.${religion}`]: nuevoPL });
     await ChatMessage.create({
       speaker: ChatMessage.getSpeaker({ actor: this }), content: `<div class="tq-result-card complicacion">
-        <div class="tq-card-titulo">Intervención Divina — ${pacto.name}</div>
+        <div class="tq-card-titulo">${game.i18n.format("TQ.Intervencion.Titulo", { nombre: pacto.name })}</div>
         <hr/>
         <p>Intervención ${exito ? "exitosa" : "fallida"}: −${coste} PL en ${religion} (quedan ${nuevoPL}).</p>
       </div>`, ...TQRoll._rollModeData()
@@ -331,7 +324,7 @@ export class TQActor extends Actor {
       await this.update({ [`system.lealtad.${mayorReligion}`]: plActual + 2 });
       await ChatMessage.create({
         speaker: ChatMessage.getSpeaker({ actor: this }), content: `<div class="tq-result-card complicacion">
-          <div class="tq-card-titulo">Fin de Sesión</div>
+          <div class="tq-card-titulo">${game.i18n.localize("TQ.FinSesion.Titulo")}</div>
           <hr/>
           <p>Servicial: +2 PL en ${mayorReligion} (total: ${plActual + 2}).</p>
         </div>`, ...TQRoll._rollModeData()
@@ -341,7 +334,7 @@ export class TQActor extends Actor {
       const fortuna = this.system.fortuna;
 
       const dir = await DialogV2.confirm({
-        window: { title: "Atemorizado — Fin de sesión" }, content: `<p>¿Canjear 3 PL por 1 Fortuna, o 1 Fortuna por 3 PL?</p>`, yes: { label: "3 PL → 1 Fortuna", icon: "" }, no: { label: "1 Fortuna → 3 PL", icon: "" }
+        window: { title: game.i18n.localize("TQ.FinSesion.TituloAtemorizado") }, content: `<p>${game.i18n.localize("TQ.FinSesion.ContenidoAtemorizado")}</p>`, yes: { label: game.i18n.localize("TQ.FinSesion.Opcion3PLFortuna"), icon: "" }, no: { label: game.i18n.localize("TQ.FinSesion.Opcion1FortunaPL"), icon: "" }
       });
       if (dir === true && plActual >= 3) {
         await this.update({
@@ -349,7 +342,7 @@ export class TQActor extends Actor {
         });
         await ChatMessage.create({
           speaker: ChatMessage.getSpeaker({ actor: this }), content: `<div class="tq-result-card complicacion">
-            <div class="tq-card-titulo">Fin de Sesión</div>
+            <div class="tq-card-titulo">${game.i18n.localize("TQ.FinSesion.Titulo")}</div>
             <hr/>
             <p>Atemorizado: −3 PL, +1 Fortuna.</p>
           </div>`, ...TQRoll._rollModeData()
@@ -360,7 +353,7 @@ export class TQActor extends Actor {
         });
         await ChatMessage.create({
           speaker: ChatMessage.getSpeaker({ actor: this }), content: `<div class="tq-result-card complicacion">
-            <div class="tq-card-titulo">Fin de Sesión</div>
+            <div class="tq-card-titulo">${game.i18n.localize("TQ.FinSesion.Titulo")}</div>
             <hr/>
             <p>Atemorizado: −1 Fortuna, +3 PL.</p>
           </div>`, ...TQRoll._rollModeData()
@@ -368,11 +361,11 @@ export class TQActor extends Actor {
       }
 
     } else if (actitud === "pragmatico") {
-      if (plActual < 3) return ui.notifications.warn("No tienes 3 PL para gastar.");
+      if (plActual < 3) return ui.notifications.warn(game.i18n.localize("TQ.Warn.SinPL"));
       await this.update({ [`system.lealtad.${mayorReligion}`]: plActual - 3 });
       await ChatMessage.create({
         speaker: ChatMessage.getSpeaker({ actor: this }), content: `<div class="tq-result-card complicacion">
-          <div class="tq-card-titulo">Fin de Sesión</div>
+          <div class="tq-card-titulo">${game.i18n.localize("TQ.FinSesion.Titulo")}</div>
           <hr/>
           <p>Pragmático: −3 PL. Anota +1 PE extra en una habilidad marcada.</p>
         </div>`, ...TQRoll._rollModeData()
@@ -381,7 +374,7 @@ export class TQActor extends Actor {
     } else if (actitud === "rebelde") {
 
       const dir = await DialogV2.confirm({
-        window: { title: "Rebelde — Fin de sesión" }, content: `<p>¿Reducir 20 PL para ganar 1 Destino, o gastar 1 Destino para ganar 20 PL?</p>`, yes: { label: "20 PL → 1 Destino", icon: "" }, no: { label: "1 Destino → 20 PL", icon: "" }
+        window: { title: game.i18n.localize("TQ.FinSesion.TituloRebelde") }, content: `<p>${game.i18n.localize("TQ.FinSesion.ContenidoRebelde")}</p>`, yes: { label: game.i18n.localize("TQ.FinSesion.Opcion20PLDestino"), icon: "" }, no: { label: game.i18n.localize("TQ.FinSesion.Opcion1DestinoPL"), icon: "" }
       });
       const destino = this.system.destino;
       if (dir === true && plActual >= 20) {
@@ -390,7 +383,7 @@ export class TQActor extends Actor {
         });
         await ChatMessage.create({
           speaker: ChatMessage.getSpeaker({ actor: this }), content: `<div class="tq-result-card complicacion">
-            <div class="tq-card-titulo">Fin de Sesión</div>
+            <div class="tq-card-titulo">${game.i18n.localize("TQ.FinSesion.Titulo")}</div>
             <hr/>
             <p>Rebelde: −20 PL, +1 Destino.</p>
           </div>`, ...TQRoll._rollModeData()
@@ -401,7 +394,7 @@ export class TQActor extends Actor {
         });
         await ChatMessage.create({
           speaker: ChatMessage.getSpeaker({ actor: this }), content: `<div class="tq-result-card complicacion">
-            <div class="tq-card-titulo">Fin de Sesión</div>
+            <div class="tq-card-titulo">${game.i18n.localize("TQ.FinSesion.Titulo")}</div>
             <hr/>
             <p>Rebelde: −1 Destino, +20 PL.</p>
           </div>`, ...TQRoll._rollModeData()
@@ -412,19 +405,19 @@ export class TQActor extends Actor {
 
       const html = `
         <div style="display:grid;gap:6px;padding:4px;">
-          <div><label>Origen</label>
+          <div><label>${game.i18n.localize("TQ.FinSesion.LabelOrigen")}</label>
             <select id="tq-id-origen">
               ${religiones.map(r => `<option value="${r}">${r} (${lealtad[r] ?? 0} PL)</option>`).join("")}
             </select></div>
-          <div><label>Destino</label>
+          <div><label>${game.i18n.localize("TQ.FinSesion.LabelDestino")}</label>
             <select id="tq-id-destino">
               ${religiones.map(r => `<option value="${r}">${r}</option>`).join("")}
             </select></div>
-          <div><label>Cantidad (máx. 3)</label>
-            <input type="number" id="tq-id-cantidad" value="1" min="1" max="3" /></div> 
+          <div><label>${game.i18n.localize("TQ.FinSesion.LabelCantidadMax")}</label>
+            <input type="number" id="tq-id-cantidad" value="1" min="1" max="3" /></div>
         </div>`;           // ¿Qué cojones?¿Seguro?
       const result = await DialogV2.prompt({
-        window: { title: "Indiferente — Transferir PL" }, content: html, ok: { label: "Transferir", callback: (_ev, btn) => {
+        window: { title: game.i18n.localize("TQ.FinSesion.TituloIndiferente") }, content: html, ok: { label: game.i18n.localize("TQ.Botones.Transferir"), callback: (_ev, btn) => {
           const campos = btn.form ?? btn.closest("form");
           return {
             origen: document.getElementById("tq-id-origen").value, destino: document.getElementById("tq-id-destino").value, cantidad: Math.min(3, Math.max(1, parseInt(document.getElementById("tq-id-cantidad").value) || 1))
@@ -439,7 +432,7 @@ export class TQActor extends Actor {
       });
       await ChatMessage.create({
         speaker: ChatMessage.getSpeaker({ actor: this }), content: `<div class="tq-result-card complicacion">
-          <div class="tq-card-titulo">Fin de Sesión</div>
+          <div class="tq-card-titulo">${game.i18n.localize("TQ.FinSesion.Titulo")}</div>
           <hr/>
           <p>Indiferente: transferidos ${cant} PL de ${result.origen} a ${result.destino}.</p>
         </div>`, ...TQRoll._rollModeData()
@@ -467,31 +460,31 @@ export class TQActor extends Actor {
 
   async activarPasion(tipo) {
     if (this.system.pasionFlag) {
-      ui.notifications.warn("Ya hay una pasión activa. Haz la tirada primero.");
+      ui.notifications.warn(game.i18n.localize("TQ.Warn.PasionActiva"));
       return;
     }
     const campo = tipo === "amor" ? "pasionAmorUsada" : "pasionOdioUsada";
     if (this.system[campo]) {
-      ui.notifications.warn("Esta pasión ya fue usada en esta escena.");
+      ui.notifications.warn(game.i18n.localize("TQ.Warn.PasionUsada"));
       return;
     }
     await this.update({ "system.pasionFlag": tipo, [`system.${campo}`]: true });
     const nombre = tipo === "amor" ? this.system.pasionAmor : this.system.pasionOdio;
-    ui.notifications.info(`Pasión activada: ${nombre || tipo}. La próxima tirada será apasionada.`);
+    ui.notifications.info(game.i18n.format("TQ.Info.PasionActivada", { nombre: nombre || tipo }));
   }
 
   async forzarPasion(tipo) {
     const campo = tipo === "amor" ? "pasionAmorUsada" : "pasionOdioUsada";
     await this.update({ "system.pasionFlag": tipo, [`system.${campo}`]: true });
     const nombre = tipo === "amor" ? this.system.pasionAmor : this.system.pasionOdio;
-    ui.notifications.info(`Pasión forzada aplicada a ${this.name}: ${nombre || tipo}.`);
+    ui.notifications.info(game.i18n.format("TQ.Info.PasionForzada", { actor: this.name, nombre: nombre || tipo }));
   }
 
   async resetearPasiones() {
     await this.update({
       "system.pasionAmorUsada": false, "system.pasionOdioUsada": false, "system.pasionFlag": ""
     });
-    ui.notifications.info("Marcas de pasión reseteadas (nueva escena).");
+    ui.notifications.info(game.i18n.localize("TQ.Info.PasionReseteada"));
   }
 
   _penalizacionPercepcionYelmo() {
@@ -513,7 +506,7 @@ export class TQActor extends Actor {
       });
       ChatMessage.create({
         speaker: ChatMessage.getSpeaker({ actor: this }),
-        content: `<div class="tq-result-card exito"><div class="tq-card-titulo">5ª marca de La Mentira</div><hr/><p><strong>${this.name}</strong> completa La Mentira. +1 Destino. Anota +5 PX en una habilidad marcada.</p></div>`,
+        content: `<div class="tq-result-card exito"><div class="tq-card-titulo">${game.i18n.localize("TQ.Mentira.Titulo")}</div><hr/><p><strong>${this.name}</strong> completa La Mentira. +1 Destino. Anota +5 PX en una habilidad marcada.</p></div>`,
         ...TQRoll._rollModeData()
       });
     } else {
@@ -527,7 +520,7 @@ export class TQActor extends Actor {
     const pm = bend.system.pmCoste ?? 0;
     const pmActual = this.system.hechiceria?.pmActual ?? 0;
     if (pmActual < pm) {
-      return ui.notifications.warn(`No tienes suficientes PM (necesitas ${pm}).`);
+      return ui.notifications.warn(game.i18n.format("TQ.Warn.SinPM", { pm }));
     }
     if (pm > 0) await this.update({ "system.hechiceria.pmActual": pmActual - pm });
     await this._efectoBendicion(bend);
@@ -763,43 +756,24 @@ export class TQActor extends Actor {
       if (config.duracion === "horas")   costePM += 2;
     }
 
-    // Crítico: elige beneficio
-    let bonusEspiritu = 0;
-    if (!fallo && exitos >= 10) {
-      const beneficio = await DialogV2.wait({
-        window: { title: "¡Éxito crítico! — Elige beneficio", width: 360 }, content: `<p style="margin-bottom:8px;">Has obtenido <strong>${exitos} puntos de éxito</strong>. Elige un beneficio:</p>
-          <select name="beneficio" style="width:100%;font-size:12px;">
-            <option value="ahorrar">Ahorrarse 1 PM</option>
-            <option value="blanco">Añadir un blanco extra gratis</option>
-            <option value="potencia">Aumentar potencia o duración</option>
-            <option value="espiritu">+2 a la Lucha de Espíritu</option>
-          </select>`, rejectClose: false, buttons: [{
-          action: "elegir", label: "Confirmar", default: true, callback: (_ev, b) => b.form.elements.beneficio.value
-        }]
-      });
-      if (beneficio === "ahorrar") costePM = Math.max(1, costePM - 1);
-      if (beneficio === "espiritu") bonusEspiritu = 2;
-    }
+    const bonusEspiritu = 0;
 
     const minVal = niveles.length ? Math.min(...niveles) : 0;
-    let desgloseHechizo = null;
-    if (niveles.length) {
-      const habilidades = [];
-      for (let i = 0; i < claves.length; i++) {
-        const claveHabilidad = claves[i];
-        let display;
-        if (hechizo.system.verbo && norm(hechizo.system.verbo) === claveHabilidad) display = hechizo.system.verbo;
-        else if (hechizo.system.esfera && norm(hechizo.system.esfera) === claveHabilidad) display = hechizo.system.esfera;
-        else display = claveHabilidad;
-        habilidades.push({ nombre: display, valor: niveles[i], esMinimo: niveles[i] === minVal, puntuacion: baseHech + niveles[i] });
-      }
-      // Si varias habilidades empatan en el mínimo, mostrar solo la esfera (último con esMinimo)
-      const minimoIdxs = habilidades.map((s, i) => s.esMinimo ? i : -1).filter(i => i >= 0);
-      if (minimoIdxs.length > 1) {
-        for (const i of minimoIdxs.slice(0, -1)) habilidades[i].esMinimo = false;
-      }
-      desgloseHechizo = { base: baseHech, habilidades };
+    const habilidades = [];
+    for (let i = 0; i < claves.length; i++) {
+      const claveHabilidad = claves[i];
+      let display, tipo = "";
+      if (hechizo.system.verbo && norm(hechizo.system.verbo) === claveHabilidad) { display = hechizo.system.verbo; tipo = "Verbo"; }
+      else if (hechizo.system.esfera && norm(hechizo.system.esfera) === claveHabilidad) { display = hechizo.system.esfera; tipo = "Esfera"; }
+      else display = claveHabilidad;
+      habilidades.push({ nombre: display, tipo, valor: niveles[i], esMinimo: niveles[i] === minVal, puntuacion: baseHech + niveles[i] });
     }
+    // Si varias habilidades empatan en el mínimo, mostrar solo la esfera (último con esMinimo)
+    const minimoIdxs = habilidades.map((s, i) => s.esMinimo ? i : -1).filter(i => i >= 0);
+    if (minimoIdxs.length > 1) {
+      for (const i of minimoIdxs.slice(0, -1)) habilidades[i].esMinimo = false;
+    }
+    const desgloseHechizo = { base: baseHech, habilidades };
 
     const modDesglose = [];
     if (config.ceremonia) modDesglose.push({ label: "Ceremonia", valor: 2 });
@@ -809,8 +783,9 @@ export class TQActor extends Actor {
     if (dolorExtremo) modDesglose.push({ label: "Dolor extremo", valor: -2 });
     modDesglose.forEach(m => { m.signo = m.valor >= 0 ? "+" : "−"; m.valorAbs = Math.abs(m.valor); });
 
+    const mostrarAplicarResultado = !fallo;
     const datosChat = {
-      etiqueta: hechizo.name, puntuacion, bonificador: mod, dificultad: dif, debilitado, dolorExtremo, dado: dadoTotal, dadoDisplay: config.autoExito ? "—" : (dadoDisplayCustom ?? TQRoll._dadoDisplay(dadoTotal, tiradas)), total, exitos, resultado, css: resultado.css, pd: null, desgloseHechizo, modDesglose, mostrarFortuna: !config.autoExito && !config.dosFortuna, actorId: this.id
+      etiqueta: hechizo.name, puntuacion, bonificador: mod, dificultad: dif, debilitado, dolorExtremo, dado: dadoTotal, dadoDisplay: config.autoExito ? "—" : (dadoDisplayCustom ?? TQRoll._dadoDisplay(dadoTotal, tiradas)), total, exitos, resultado, css: resultado.css, pd: null, desgloseHechizo, modDesglose, mostrarFortuna: !config.autoExito && !config.dosFortuna, actorId: this.id, mostrarAplicarResultado, bonusEspiritu, requiereTiradaEspiritu: hechizo.system.requiereTiradaEspiritu ?? false
     };
     const contenido = await foundry.applications.handlebars.renderTemplate(
       "systems/tierras-quebradas/templates/dialogs/tirada-resultado.hbs", datosChat
@@ -818,7 +793,7 @@ export class TQActor extends Actor {
     await ChatMessage.create({
       speaker: ChatMessage.getSpeaker({ actor: this }), content: contenido, ...TQRoll._rollModeData(modoTirada), flags: {
         "tierras-quebradas": {
-          etiqueta: hechizo.name, puntuacion, dificultad: dif, bonificador: mod, rollMode: modoTirada, bonusFinalOriginal: mod, actorId: this.id, habClave: null, tablaComplicacion: "magia", esRepeticion: false, totalOriginal: total, exitosOriginales: exitos, resultadoCssOriginal: resultado.css, resultadoLabelOriginal: resultado.label, dadoDisplayOriginal: config.autoExito ? "—" : (dadoDisplayCustom ?? TQRoll._dadoDisplay(dadoTotal, tiradas)), debilitadoOriginal: debilitado, dolorExtremoOriginal: dolorExtremo
+          etiqueta: hechizo.name, puntuacion, dificultad: dif, bonificador: mod, rollMode: modoTirada, bonusFinalOriginal: mod, actorId: this.id, habClave: null, tablaComplicacion: "magia", esRepeticion: false, totalOriginal: total, exitosOriginales: exitos, resultadoCssOriginal: resultado.css, resultadoLabelOriginal: resultado.label, dadoDisplayOriginal: config.autoExito ? "—" : (dadoDisplayCustom ?? TQRoll._dadoDisplay(dadoTotal, tiradas)), debilitadoOriginal: debilitado, dolorExtremoOriginal: dolorExtremo, desgloseHechizo, requiereTiradaEspiritu: hechizo.system.requiereTiradaEspiritu ?? false, bonusEspiritu
         }
       }
     });
@@ -831,15 +806,15 @@ export class TQActor extends Actor {
       await this.update(camposPM);
       if (pmNuevo === 0) {
         await this.update({ "system.salud.debilitado": true });
-        ui.notifications.warn(`${this.name} ha quedado Debilitado por agotamiento mágico.`);
+        ui.notifications.warn(game.i18n.format("TQ.Magia.Debilitado", { nombre: this.name }));
       } else {
-        ui.notifications.info(`${hechizo.name}: −${costePM} PM → quedan ${pmNuevo}/${pmMaxTotal}.`);
+        ui.notifications.info(game.i18n.format("TQ.Magia.PMGastados", { hechizo: hechizo.name, costePM, pmNuevo, pmMax: pmMaxTotal }));
       }
     } else {
       const danhoMagico = Math.abs(pmNuevo);
       await this.update({ ...camposPM, "system.salud.debilitado": true });
       await this.recibirDanho(danhoMagico, danhoMagico);
-      ui.notifications.error(`Agotamiento mágico extremo: ${this.name} recibe ${danhoMagico} PD.`);
+      ui.notifications.error(game.i18n.format("TQ.Magia.AgotamientoExtremo", { nombre: this.name, danho: danhoMagico }));
     }
 
     if (resultado.css.includes("complicacion")) {
@@ -847,16 +822,13 @@ export class TQActor extends Actor {
       for (let i = 0; i < count; i++) await tirarComplicacion(TABLA_COMPLICACIONES_MAGIA, this);
     }
 
-    if (!fallo && hechizo.system.requiereTiradaEspiritu) {
-      await this._luchaDeEspiritu(hechizo.name, bonusEspiritu);
-    }
   }
 
   async _luchaDeEspiritu(nombreHechizo, bonusCaster = 0) {
 
     const targetActor = game.user.targets.first()?.actor;
     if (!targetActor) {
-      ui.notifications.warn("Selecciona un objetivo para la Lucha de Espíritu.");
+      ui.notifications.warn(game.i18n.localize("TQ.Warn.SinObjetivo"));
       return false;
     }
     const espirituAtacante = this.system.caracteristicas?.espiritu?.valor ?? 0;
@@ -868,8 +840,8 @@ export class TQActor extends Actor {
     const gana = totalAtacante > totalObjetivo;
 
     await ChatMessage.create({
-      speaker: ChatMessage.getSpeaker({ actor: this }), flavor: `Lucha de Espíritu — ${nombreHechizo} vs ${targetActor.name}`, content: `<div class="tq-result-card ${gana ? "exito" : "fallo"}">
-        <div class="tq-card-titulo">${gana ? "Hechizo surte efecto" : "Objetivo resiste"}</div>
+      speaker: ChatMessage.getSpeaker({ actor: this }), flavor: game.i18n.format("TQ.Magia.LuchaEspiritu", { hechizo: nombreHechizo, target: targetActor.name }), content: `<div class="tq-result-card ${gana ? "exito" : "fallo"}">
+        <div class="tq-card-titulo">${gana ? game.i18n.localize("TQ.Magia.HechizSurteEfecto") : game.i18n.localize("TQ.Magia.ObjetivoResiste")}</div>
         <hr/>
         <div class="tq-desglose" style="text-align:center;">
           ${this.name}: ${dadoAtacante} + ${espirituAtacante}(Esp)${bonusCaster ? ` + ${bonusCaster}(crít.)` : ""} = <strong>${totalAtacante}</strong><br>
@@ -877,7 +849,7 @@ export class TQActor extends Actor {
         </div>
       </div>`
     });
-    if (!gana) ui.notifications.warn(`${targetActor.name} resiste — ${nombreHechizo} no tiene efecto.`);
+    if (!gana) ui.notifications.warn(game.i18n.format("TQ.Magia.Resiste", { nombre: targetActor.name, hechizo: nombreHechizo }));
     return gana;
   }
 
@@ -886,24 +858,24 @@ export class TQActor extends Actor {
 
 
     const result = await DialogV2.wait({
-      window: { title: "Recuperar Puntos de Magia" }, content: `<div style="display:grid;gap:8px;padding:4px;">
+      window: { title: game.i18n.localize("TQ.Magia.RecuperarTitulo") }, content: `<div style="display:grid;gap:8px;padding:4px;">
         <div style="display:flex;align-items:center;gap:8px;">
-          <label>Horas de sueño</label>
+          <label>${game.i18n.localize("TQ.Magia.HorasSueno")}</label>
           <input type="number" name="horas" value="8" min="1" style="width:60px;" />
         </div>
         <div style="display:flex;align-items:center;gap:8px;">
           <input type="checkbox" name="lanzarSuenos" id="tq-tirar-suenos" />
-          <label for="tq-tirar-suenos">Intentar tirada de Sueños (Dif 15)</label>
+          <label for="tq-tirar-suenos">${game.i18n.localize("TQ.Magia.TiradaSuenos")}</label>
         </div>
       </div>`, rejectClose: false, buttons: [
         {
-          action: "ok", label: "Recuperar", default: true, callback: (_ev, btn) => {
+          action: "ok", label: game.i18n.localize("TQ.Botones.RecuperarPM"), default: true, callback: (_ev, btn) => {
             const campos = btn.form.elements;
             return {
               horas: parseInt(campos.horas?.value) || 1, lanzarSuenos: campos.lanzarSuenos?.checked ?? false
             };
           }
-        }, { action: "cancelar", label: "Cancelar" }
+        }, { action: "cancelar", label: game.i18n.localize("TQ.Botones.Cancelar") }
       ]
     });
     if (!result) return;
@@ -932,7 +904,7 @@ export class TQActor extends Actor {
     await this.update({ "system.hechiceria.pmActual": pmNuevo });
     await ChatMessage.create({
       speaker: ChatMessage.getSpeaker({ actor: this }), content: `<div class="tq-result-card exito">
-        <div class="tq-card-titulo">Recuperación de PM</div>
+        <div class="tq-card-titulo">${game.i18n.localize("TQ.Magia.RecuperacionTitulo")}</div>
         <hr/>
         <p>${this.name} descansa <strong>${horas}h</strong> y recupera <strong>+${pmGanado} PM</strong>${pmExtra > 0 ? ` <em>(+${pmExtra} PM extra recuperados)</em>` : ""}.<br>PM actuales: <strong>${pmNuevo} / ${pmMax}</strong></p>
       </div>`
@@ -950,12 +922,12 @@ export class TQActor extends Actor {
     let pdFinal = pd;
     if ((fortuna?.actual ?? 0) >= 2) {
       const gastar = await DialogV2.confirm({
-        window: { title: "¿Gastar Fortuna?" }, content: `<p><strong>${this.name}</strong> recibe <strong>${pd} PD</strong>. ¿Gastar 2 Fortuna para reducir el daño a la mitad?</p>`, yes: { label: "Sí — gastar 2 Fortuna", icon: "" }, no: { label: "No", icon: "" }
+        window: { title: game.i18n.localize("TQ.Fortuna.GastarTitulo") }, content: `<p><strong>${this.name}</strong> recibe <strong>${pd} PD</strong>. ¿Gastar 2 Fortuna para reducir el daño a la mitad?</p>`, yes: { label: game.i18n.localize("TQ.Fortuna.SiGastar"), icon: "" }, no: { label: game.i18n.localize("TQ.Fortuna.NoGastar"), icon: "" }
       });
       if (gastar) {
         pdFinal = Math.ceil(pd / 2);
         await this.update({ "system.fortuna.actual": fortuna.actual - 2 });
-        ui.notifications.info(`${this.name}: 2 Fortuna gastados. Daño reducido a ${pdFinal} PD.`);
+        ui.notifications.info(game.i18n.format("TQ.Fortuna.DanhoReducido", { nombre: this.name, danho: pdFinal }));
       }
     }
 
@@ -968,7 +940,7 @@ export class TQActor extends Actor {
       updates["system.salud.incapacitado"] = true;
       await this.update(updates);
       ChatMessage.create({
-        speaker: ChatMessage.getSpeaker({ actor: this }), content: `<div class="tq-result-card fallo"><div class="tq-card-titulo">Herida Mortal</div><hr/><p>${this.name} ha sufrido una herida mortal (${pdBruto} PD vs ${pvMax} PV máx). Muere en el acto.</p></div>`
+        speaker: ChatMessage.getSpeaker({ actor: this }), content: `<div class="tq-result-card fallo"><div class="tq-card-titulo">${game.i18n.localize("TQ.Combate.HeridaMortal")}</div><hr/><p>${this.name} ha sufrido una herida mortal (${pdBruto} PD vs ${pvMax} PV máx). Muere en el acto.</p></div>`
       });
       return;
     }
@@ -982,14 +954,17 @@ export class TQActor extends Actor {
     if (pdFinal >= umbralHeridaGrave) {
       if (!salud.heridasGraves1)      updates["system.salud.heridasGraves1"] = true;
       else if (!salud.heridasGraves2) updates["system.salud.heridasGraves2"] = true;
-      nuevasHeridas.push({ tipo: "grave", descripcion: "", sanando: false });
+      nuevasHeridas.push({ tipo: "grave", descripcion: "", dano: pdFinal, sanando: false });
       heridaRegistrada = true;
     } else if (pdFinal >= umbralHeridaLeve) {
       if (!salud.heridasLeves1)      updates["system.salud.heridasLeves1"] = true;
       else if (!salud.heridasLeves2) updates["system.salud.heridasLeves2"] = true;
       else if (!salud.heridasLeves3) updates["system.salud.heridasLeves3"] = true;
       else if (!salud.heridasLeves4) updates["system.salud.heridasLeves4"] = true;
-      nuevasHeridas.push({ tipo: "leve", descripcion: "", sanando: false });
+      nuevasHeridas.push({ tipo: "leve", descripcion: "", dano: pdFinal, sanando: false });
+      heridaRegistrada = true;
+    } else if (pdFinal > 0) {
+      nuevasHeridas.push({ tipo: "rasguño", descripcion: "", dano: pdFinal, sanando: false });
       heridaRegistrada = true;
     }
     if (heridaRegistrada) updates["system.heridas"] = nuevasHeridas;
@@ -1008,7 +983,7 @@ export class TQActor extends Actor {
     const nuevaHeridaGrave = updates["system.salud.heridasGraves1"] || updates["system.salud.heridasGraves2"];
     if (nuevaHeridaGrave && this.type === "pj") {
       ChatMessage.create({
-        speaker: ChatMessage.getSpeaker({ actor: this }), content: `<div class="tq-result-card complicacion"><div class="tq-card-titulo">Desgaste de Armadura</div><hr/><p><strong>${this.name}</strong> ha recibido una Herida Grave. Reduce en 1 la Protección de una de sus armaduras.</p></div>`
+        speaker: ChatMessage.getSpeaker({ actor: this }), content: `<div class="tq-result-card complicacion"><div class="tq-card-titulo">${game.i18n.localize("TQ.Combate.DesgasteArmadura")}</div><hr/><p><strong>${this.name}</strong> ha recibido una Herida Grave. Reduce en 1 la Protección de una de sus armaduras.</p></div>`
       });
     }
 
@@ -1043,7 +1018,7 @@ export class TQActor extends Actor {
       total = habilidad;
     } else {
       if ((habilidad.nivel ?? 0) === 0) {
-        return ui.notifications.warn("Primeros Auxilios (E): necesitas Nivel 1 o superior para intentar procedimientos complejos.");
+        return ui.notifications.warn(game.i18n.localize("TQ.Warn.PAEspecializada"));
       }
       const base = this.system.bases[habilidad.base]?.valor ?? 0;
       total = base + (habilidad.nivel ?? 0) ;
@@ -1054,32 +1029,32 @@ export class TQActor extends Actor {
 
     const html = `
       <div style="display:grid;gap:8px;padding:4px;">
-        <p style="margin:0"><strong>Tratando a:</strong> ${targetActor.name}</p>
-        <p style="margin:0">Puntuación: <strong>${total}</strong></p>
+        <p style="margin:0"><strong>${game.i18n.localize("TQ.PA.TratandoA")}</strong> ${targetActor.name}</p>
+        <p style="margin:0">${game.i18n.localize("TQ.Dialogo.Puntuacion")}: <strong>${total}</strong></p>
         <div style="display:flex;align-items:center;gap:8px;">
-          <label style="white-space:nowrap">Tipo de tratamiento</label>
+          <label style="white-space:nowrap">${game.i18n.localize("TQ.PA.TipoTratamiento")}</label>
           <select name="tipo" style="flex:1;">
-            <option value="10">Rasguño (Dif. 10)</option>
-            <option value="15" selected>Herida Leve (Dif. 15)</option>
-            <option value="20">Herida Grave (Dif. 20)</option>
-            <option value="20_agonia">Estabilizar Agonía (Dif. 20)</option>
-            <option value="15_desangre">Detener Desangre (Dif. 15)</option>
+            <option value="10">${game.i18n.localize("TQ.PA.RasgunoDif")}</option>
+            <option value="15" selected>${game.i18n.localize("TQ.PA.HeridaLeveDif")}</option>
+            <option value="20">${game.i18n.localize("TQ.PA.HeridaGraveDif")}</option>
+            <option value="20_agonia">${game.i18n.localize("TQ.PA.AgoniaDif")}</option>
+            <option value="15_desangre">${game.i18n.localize("TQ.PA.DesangreDif")}</option>
           </select>
         </div>
         <div style="display:flex;align-items:center;gap:8px;">
           <input type="checkbox" name="autocuracion" id="tq-pa-auto" ${esSelf ? "checked" : ""} />
-          <label for="tq-pa-auto">Autocuración (−2 a la tirada)</label> <!-- se marca solo si te curas tú mismo -->
+          <label for="tq-pa-auto">${game.i18n.localize("TQ.PA.Autocuracion")}</label>
         </div>
       </div>`;
 
     const config = await DialogV2.wait({
-      window: { title: "Primeros Auxilios", width: 380 }, content: html, rejectClose: false, buttons: [
+      window: { title: game.i18n.localize("TQ.PA.Titulo"), width: 380 }, content: html, rejectClose: false, buttons: [
         {
-          action: "tirar", label: "Tirar", default: true, callback: (_ev, button) => {
+          action: "tirar", label: game.i18n.localize("TQ.Botones.Tirar"), default: true, callback: (_ev, button) => {
             const campos = button.form.elements;
             return { tipo: campos.tipo.value, autocuracion: campos.autocuracion.checked };
           }
-        }, { action: "cancelar", label: "Cancelar" }
+        }, { action: "cancelar", label: game.i18n.localize("TQ.Botones.Cancelar") }
       ]
     });
     if (!config || config === "cancelar") return;
@@ -1089,13 +1064,13 @@ export class TQActor extends Actor {
     let dificultad, etiqueta;
     if (esAgonia) {
       dificultad = 20;
-      etiqueta = "Primeros Auxilios (Estabilizar Agonía)";
+      etiqueta = game.i18n.localize("TQ.PA.EtiquetaAgonia");
     } else if (esDesangre) {
       dificultad = 15;
-      etiqueta = "Primeros Auxilios (Detener Desangre)";
+      etiqueta = game.i18n.localize("TQ.PA.EtiquetaDesangre");
     } else {
       dificultad = parseInt(config.tipo);
-      etiqueta = "Primeros Auxilios";
+      etiqueta = game.i18n.localize("TQ.PA.Titulo");
     }
     const bonificador = config.autocuracion ? -2 : 0;
 
@@ -1115,10 +1090,10 @@ export class TQActor extends Actor {
     if (exitos >= 0) {
       if (esAgonia) {
         updates["system.salud.agonia"] = false;
-        ui.notifications.info(`${targetActor.name}: agonía estabilizada. Ya no pierde PD/minuto.`);
+        ui.notifications.info(game.i18n.format("TQ.PA.AgoniaEstabilizada", { nombre: targetActor.name }));
       } else if (esDesangre) {
         updates["system.salud.desangre"] = false;
-        ui.notifications.info(`${targetActor.name}: desangre detenido.`);
+        ui.notifications.info(game.i18n.format("TQ.PA.DesangteDetenido", { nombre: targetActor.name }));
       } else {
         const pdCritico = Math.min(Math.floor(exitos / 10), 3);
         const pdTotal = 1 + pdCritico;
@@ -1135,7 +1110,7 @@ export class TQActor extends Actor {
         const critico = pdCritico > 0 ? ` (+${pdCritico} PD por crítico)` : "";
         ChatMessage.create({
           speaker: ChatMessage.getSpeaker({ actor: this }),
-          content: `<div class="tq-result-card exito"><div class="tq-card-titulo">Primeros Auxilios</div><hr/><p><strong>${targetActor.name}</strong>: +${pdTotal} PD curados${critico}. Herida marcada como "Sanando".</p></div>`,
+          content: `<div class="tq-result-card exito"><div class="tq-card-titulo">${game.i18n.localize("TQ.PA.Titulo")}</div><hr/><p><strong>${targetActor.name}</strong>: +${pdTotal} PD curados${critico}. Herida marcada como "Sanando".</p></div>`,
           ...TQRoll._rollModeData()
         });
       }
@@ -1144,7 +1119,7 @@ export class TQActor extends Actor {
     } else {
       ChatMessage.create({
         speaker: ChatMessage.getSpeaker({ actor: this }),
-        content: `<div class="tq-result-card fallo"><div class="tq-card-titulo">Primeros Auxilios</div><hr/><p>La herida de <strong>${targetActor.name}</strong> no está sanando.</p></div>`,
+        content: `<div class="tq-result-card fallo"><div class="tq-card-titulo">${game.i18n.localize("TQ.PA.Titulo")}</div><hr/><p>La herida de <strong>${targetActor.name}</strong> no está sanando.</p></div>`,
         ...TQRoll._rollModeData()
       });
     }
@@ -1153,17 +1128,17 @@ export class TQActor extends Actor {
   //Estabilización personaje
   async estabilizar() {
 
-    if (!this.system.salud?.agonia) return ui.notifications.warn(`${this.name} no está en agonía.`);
+    if (!this.system.salud?.agonia) return ui.notifications.warn(game.i18n.format("TQ.Warn.NoAgonia", { nombre: this.name }));
     const habilidad = this.system.habilidades?.primerosAuxilios;
     let base = 0, puntuacion = 0;
     if (habilidad) {
       base = this.system.bases[habilidad.base]?.valor ?? 0;
       puntuacion = base + (habilidad.nivel ?? 0) ;
     }
-    const resultado = await TQRoll.tirar("Primeros Auxilios (Estabilizar)", puntuacion, 20, { actor: this });
+    const resultado = await TQRoll.tirar(game.i18n.localize("TQ.PA.EtiquetaAgonia"), puntuacion, 20, { actor: this });
     if (resultado.exitos >= 0) {
       await this.update({ "system.salud.agonia": false });
-      ui.notifications.info(`${this.name} estabilizado. La agonía se detiene.`);
+      ui.notifications.info(game.i18n.format("TQ.PA.Estabilizado", { nombre: this.name }));
     }
   }
 
@@ -1206,8 +1181,8 @@ export class TQActor extends Actor {
       const opciones = especializaciones.map((e, i) => `<option value="${i}">${e.nombre}</option>`).join("");
       const idxStr = await DialogV2.prompt({
         window: { title: `Especialización — ${profesion.name}`, width: 320 },
-        content: `<p>Elige una especialización:</p><select id="tq-esp-sel" style="width:100%;margin-top:4px;">${opciones}</select>`,
-        ok: { label: "Confirmar", callback: () => document.getElementById("tq-esp-sel").value }
+        content: `<p>${game.i18n.localize("TQ.Dialogo.EligeEspecializacion")}</p><select id="tq-esp-sel" style="width:100%;margin-top:4px;">${opciones}</select>`,
+        ok: { label: game.i18n.localize("TQ.Botones.Confirmar"), callback: () => document.getElementById("tq-esp-sel").value }
       });
       if (idxStr !== null && idxStr !== undefined) {
         for (const { clave, bonus } of (especializaciones[parseInt(idxStr)]?.habilidades ?? [])) {
@@ -1319,7 +1294,7 @@ export class TQActor extends Actor {
       updates["system.caracteristicas.espiritu.valor"] = Math.min(9, (this.system.caracteristicas?.espiritu?.valor ?? 5) + especie.system.bonusEspiritu);
 
     await this.update(updates);
-    ui.notifications.info(`Especie "${especie.name}" aplicada. −${especie.system.costePP} PP.`);
+    ui.notifications.info(game.i18n.format("TQ.Info.EspecieAplicada", { nombre: especie.name, pp: especie.system.costePP }));
   }
 
   async _revertirEspecie(especie) {
@@ -1335,7 +1310,7 @@ export class TQActor extends Actor {
       updates["system.caracteristicas.espiritu.valor"] = (this.system.caracteristicas?.espiritu?.valor ?? 5) - especie.system.bonusEspiritu;
 
     await this.update(updates);
-    ui.notifications.info(`Especie "${especie.name}" retirada. +${especie.system.costePP} PP restaurados.`);
+    ui.notifications.info(game.i18n.format("TQ.Info.EspecieRetirada", { nombre: especie.name, pp: especie.system.costePP }));
   }
 
   async tirarLesion() {
@@ -1351,7 +1326,7 @@ export class TQActor extends Actor {
     if (game.dice3d) await game.dice3d.showForRoll(roll, game.user, true, null, false);
     await ChatMessage.create({
       speaker: ChatMessage.getSpeaker({ actor: this }), content: `<div class="tq-result-card complicacion">
-        <div class="tq-card-titulo">Tabla de Lesiones — ${resultadoRoll}</div>
+        <div class="tq-card-titulo">${game.i18n.format("TQ.Lesion.Titulo", { resultado: resultadoRoll })}</div>
         <hr/>
         <p><strong>${entrada.titulo}</strong> <em>(${entrada.tipos})</em></p>
         <p>${entrada.efecto}</p>
@@ -1360,37 +1335,37 @@ export class TQActor extends Actor {
 
     if (resultadoRoll >= 1 && resultadoRoll <= 4) {
       await this.update({ "system.salud.piernaInutilizada": true });
-      ui.notifications.warn(`${this.name}: Pierna inutilizada.`);
+      ui.notifications.warn(game.i18n.format("TQ.Lesion.Pierna", { nombre: this.name }));
     }
 
     if (resultadoRoll >= 5 && resultadoRoll <= 8) {
       await this.update({ "system.salud.brazoInutilizado": true });
-      ui.notifications.warn(`${this.name}: Brazo inutilizado.`);
+      ui.notifications.warn(game.i18n.format("TQ.Lesion.Brazo", { nombre: this.name }));
     }
 
     if (resultadoRoll >= 13 && resultadoRoll <= 14) {
       const atractivoActual = this.system.caracteristicas?.atractivo?.valor ?? 0;
       const atractivoNuevo = Math.max(-3, atractivoActual - 1);
       await this.update({ "system.caracteristicas.atractivo.valor": atractivoNuevo });
-      ui.notifications.warn(`${this.name}: Atractivo reducido de ${atractivoActual} a ${atractivoNuevo}.`);
+      ui.notifications.warn(game.i18n.format("TQ.Lesion.Atractivo", { nombre: this.name, desde: atractivoActual, hasta: atractivoNuevo }));
     }
 
     if (resultadoRoll >= 15 && resultadoRoll <= 17) {
       await this.update({ "system.salud.desangre": true });
-      ui.notifications.warn(`${this.name}: Estado de Desangre activo. Pierde 1 PV al inicio de cada ronda.`);
+      ui.notifications.warn(game.i18n.format("TQ.Lesion.Desangre", { nombre: this.name }));
     }
 
     if (resultadoRoll >= 18 && resultadoRoll <= 19) {
       await this.update({ "system.salud.dolorExtremo": true });
-      ui.notifications.warn(`${this.name}: Dolor extremo activo. −2 a todas las tiradas durante el combate.`);
+      ui.notifications.warn(game.i18n.format("TQ.Lesion.DolorExtremo", { nombre: this.name }));
     }
 
     if (resultadoRoll >= 9 && resultadoRoll <= 10) {
       const magnitud = await DialogV2.prompt({
-        window: { title: "Conmoción cerebral — magnitud de la herida" }, content: `<div style="padding:8px">
-          <label>Magnitud de la herida (PD recibidos)</label>
+        window: { title: game.i18n.localize("TQ.Lesion.ConmocionTitulo") }, content: `<div style="padding:8px">
+          <label>${game.i18n.localize("TQ.Lesion.MagnitudLabel")}</label>
           <input type="number" id="tq-conmocion-mag" value="1" min="1" style="width:80px;margin-left:8px;" />
-        </div>`, ok: { label: "Tirar Cuerpo", callback: () => parseInt(document.getElementById("tq-conmocion-mag").value) || 1 }
+        </div>`, ok: { label: game.i18n.localize("TQ.Lesion.TirarCuerpo"), callback: () => parseInt(document.getElementById("tq-conmocion-mag").value) || 1 }
       });
       if (magnitud) {
     
@@ -1432,11 +1407,11 @@ export class TQActor extends Actor {
       const etiqueta = this.system.habilidades?.[clave]?.nombre && clave.startsWith("idioma")
         ? this.system.habilidades[clave].nombre
         : (game.i18n.localize(`TQ.Habilidades.${clave}`) || clave);
-      ui.notifications.info(`¡${etiqueta} sube a Nivel ${resultado.nivelNuevo}!`);
+      ui.notifications.info(game.i18n.format("TQ.Info.HabilidadSube", { nombre: etiqueta, nivel: resultado.nivelNuevo }));
     }
   }
 
-  // +1 PX a habilidades con éxito marcado, borra las marcas
+  // +1 PX a habilidades con éxito marcado, +1 Fortuna por marca de uso de pasiones/rasgos/motivación
   async aplicarFinDeSesionPX() {
     const habs = this.system.habilidades;
     const updates = {};
@@ -1456,17 +1431,31 @@ export class TQActor extends Actor {
       if (resultado.subio) subidas.push({ etiqueta, nivelNuevo: resultado.nivelNuevo });
     }
 
+    const camposMarca = [
+      "pasionAmorUsada", "pasionOdioUsada", "motivacionUsada",
+      "rasgoPos1Usada", "rasgoPos2Usada", "rasgoPos3Usada",
+      "rasgoNeg1Usada", "rasgoNeg2Usada", "rasgoNeg3Usada"
+    ];
+    const marcasActivas = camposMarca.filter(c => this.system[c]);
+    let fortunaGanada = 0;
+    if (marcasActivas.length > 0) {
+      const fortuna = this.system.fortuna;
+      const fortunaNueva = Math.min(fortuna.actual + marcasActivas.length, fortuna.max);
+      fortunaGanada = fortunaNueva - fortuna.actual;
+      if (fortunaGanada > 0) updates["system.fortuna.actual"] = fortunaNueva;
+      for (const campo of marcasActivas) updates[`system.${campo}`] = false;
+    }
+
     if (!Object.keys(updates).length) {
-      return ui.notifications.info("Ninguna habilidad marcada con éxito esta sesión.");
+      return ui.notifications.info(game.i18n.localize("TQ.Info.SinHabilidadesExito"));
     }
 
     await this.update(updates);
 
-    let msg = `<div class="tq-result-card complicacion"><div class="tq-card-titulo">Fin de Sesión — ${this.name}</div><hr/>`;
-    msg += `<p><strong>+1 PX:</strong> ${conPX.join(", ")}</p>`;
-    if (subidas.length) {
-      msg += `<p><strong>Subida de nivel:</strong> ${subidas.map(s => `${s.etiqueta} → Nv. ${s.nivelNuevo}`).join(", ")}</p>`;
-    }
+    let msg = `<div class="tq-result-card complicacion"><div class="tq-card-titulo">${game.i18n.format("TQ.FinSesion.TituloNombre", { nombre: this.name })}</div><hr/>`;
+    if (conPX.length) msg += `<p><strong>+1 PX:</strong> ${conPX.join(", ")}</p>`;
+    if (subidas.length) msg += `<p><strong>Subida de nivel:</strong> ${subidas.map(s => `${s.etiqueta} → Nv. ${s.nivelNuevo}`).join(", ")}</p>`;
+    if (fortunaGanada > 0) msg += `<p><strong>+${fortunaGanada} Fortuna</strong> por marcas de trasfondo.</p>`;
     msg += `</div>`;
     await ChatMessage.create({ speaker: ChatMessage.getSpeaker({ actor: this }), content: msg });
   }
@@ -1490,35 +1479,35 @@ export class TQActor extends Actor {
     }
 
     const pxFinal = totalPXFijo ?? game.settings.get("tierras-quebradas", "pxAventura") ?? 3;
-    const pxCabecera = `<p style="font-weight:bold;margin-bottom:8px;">PX disponibles: ${pxFinal} <input type="hidden" name="totalPX" value="${pxFinal}" /></p>`;
+    const pxCabecera = `<p style="font-weight:bold;margin-bottom:8px;">${game.i18n.format("TQ.FinAventura.PXDisponibles", { px: pxFinal })} <input type="hidden" name="totalPX" value="${pxFinal}" /></p>`;
 
     const html = `
       <div style="padding:4px;">
         ${pxCabecera}
-        <p style="font-size:11px;opacity:0.7;margin-bottom:6px;">Máximo 1 PX por habilidad.</p>
+        <p style="font-size:11px;opacity:0.7;margin-bottom:6px;">${game.i18n.localize("TQ.FinAventura.MaxUnoPorHabilidad")}</p>
         <div style="max-height:300px;overflow-y:auto;border:1px solid var(--tq-bg-mid);padding:4px;border-radius:4px;">
           ${opcionesHTML}
         </div>
       </div>`;
 
     const config = await DialogV2.wait({
-      window: { title: `Fin de Aventura — ${this.name}`, width: 420 }, content: html, rejectClose: false, buttons: [
+      window: { title: game.i18n.format("TQ.FinAventura.Titulo", { nombre: this.name }), width: 420 }, content: html, rejectClose: false, buttons: [
         {
-          action: "asignar", label: "Asignar", default: true, callback: (_ev, button) => {
+          action: "asignar", label: game.i18n.localize("TQ.Botones.Asignar"), default: true, callback: (_ev, button) => {
             const campos = button.form;
             const totalPX = parseInt(campos.elements.totalPX?.value) || 3;
             const seleccionadas = [...campos.querySelectorAll("input[type=checkbox]:checked")].map(cb => cb.value);
             return { totalPX, seleccionadas };
           }
-        }, { action: "cancelar", label: "Cancelar" }
+        }, { action: "cancelar", label: game.i18n.localize("TQ.Botones.Cancelar") }
       ]
     });
     if (!config || config === "cancelar") return;
 
     const { totalPX, seleccionadas } = config;
-    if (!seleccionadas.length) return ui.notifications.warn("No seleccionaste ninguna habilidad.");
+    if (!seleccionadas.length) return ui.notifications.warn(game.i18n.localize("TQ.Warn.SinHabilidadesSeleccionadas"));
     if (seleccionadas.length > totalPX) {
-      return ui.notifications.warn(`Solo puedes asignar ${totalPX} PX. Has marcado ${seleccionadas.length} habilidades.`);
+      return ui.notifications.warn(game.i18n.format("TQ.Warn.DemasiadosPX", { max: totalPX, marcadas: seleccionadas.length }));
     }
 
     const updates = {};
@@ -1545,7 +1534,7 @@ export class TQActor extends Actor {
       if (habilidadBucle.nombre && claveHabilidad.startsWith("idioma")) nombres.push(habilidadBucle.nombre);
       else nombres.push(game.i18n.localize(`TQ.Habilidades.${claveHabilidad}`) || claveHabilidad);
     }
-    let msg = `<div class="tq-result-card complicacion"><div class="tq-card-titulo">Fin de Aventura — ${this.name}</div><hr/>`;
+    let msg = `<div class="tq-result-card complicacion"><div class="tq-card-titulo">${game.i18n.format("TQ.FinAventura.Titulo", { nombre: this.name })}</div><hr/>`;
     msg += `<p><strong>+1 PX:</strong> ${nombres.join(", ")}</p>`;
     if (subidas.length) {
       msg += `<p><strong>Subida de nivel:</strong> ${subidas.map(s => `${s.etiqueta} → Nv. ${s.nivelNuevo}`).join(", ")}</p>`;
@@ -1557,7 +1546,6 @@ export class TQActor extends Actor {
 
   async _preUpdate(changed, options, userId) {
     await super._preUpdate(changed, options, userId);
-    // guardar antes del cambio para ver si cruzamos algún umbral
     if (changed.system?.lealtad) {
       options._oldLealtad = {};
       for (const r of ["caos", "ley", "elementos", "antepasados"]) {
@@ -1628,7 +1616,7 @@ export class TQActor extends Actor {
 
     if (this.type === "pj" && (saludCambiada.heridasGraves1 === true || saludCambiada.heridasGraves2 === true)) {
       ChatMessage.create({
-        speaker: ChatMessage.getSpeaker({ actor: this }), content: `<div class="tq-result-card complicacion"><div class="tq-card-titulo">Desgaste de Armadura</div><hr/><p><strong>${this.name}</strong> ha recibido una Herida Grave. Reduce en 1 la Protección de una de sus armaduras.</p></div>`
+        speaker: ChatMessage.getSpeaker({ actor: this }), content: `<div class="tq-result-card complicacion"><div class="tq-card-titulo">${game.i18n.localize("TQ.Combate.DesgasteArmadura")}</div><hr/><p><strong>${this.name}</strong> ha recibido una Herida Grave. Reduce en 1 la Protección de una de sus armaduras.</p></div>`
       });
     }
 

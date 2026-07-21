@@ -19,4 +19,16 @@ export class HechizoSheet extends BaseItemSheet {
   static PARTS = {
     form: { template: "systems/tierras-quebradas/templates/items/hechizo-sheet.hbs", scrollable: [".item-body"] }
   };
+
+  _onRender(context, options) {
+    super._onRender?.(context, options);
+    this.element.querySelectorAll(".toggle-item-bool").forEach(a => {
+      a.addEventListener("click", ev => {
+        ev.preventDefault();
+        const campo = ev.currentTarget.dataset.campo;
+        const actual = foundry.utils.getProperty(this.item, campo) ?? false;
+        this.item.update({ [campo]: !actual });
+      });
+    });
+  }
 }
