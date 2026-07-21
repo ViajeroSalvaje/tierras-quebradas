@@ -1,3 +1,7 @@
-2026/07/21-00:40:18.947 4d1c Recovering log #70
-2026/07/21-00:40:18.956 4d1c Delete type=0 #70
-2026/07/21-00:40:18.957 4d1c Delete type=3 #69
+2026/07/21-12:21:05.873 10f0 Recovering log #88
+2026/07/21-12:21:05.882 10f0 Delete type=0 #88
+2026/07/21-12:21:05.882 10f0 Delete type=3 #87
+2026/07/21-12:31:22.352 4a80 Level-0 table #92: started
+2026/07/21-12:31:22.352 4a80 Level-0 table #92: 0 bytes OK
+2026/07/21-12:31:22.356 4a80 Delete type=0 #90
+2026/07/21-12:31:22.370 4a80 Manual compaction at level-0 from '!actors!6bZJUk2k04cZx2v5' @ 72057594037927935 : 1 .. '!actors.items!q3PAogu400BnqdY0.YxP6pHMOPzvF0WfL' @ 0 : 0; will stop at (end)
