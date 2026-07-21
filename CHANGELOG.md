@@ -2,6 +2,9 @@
 
 **Pendientes**
 
+- Armas de proyectiles que sobrepasen su distancia máxima hacen mitad de daño.
+
+- 
 **Cambios**
 
 - Cambios en el orden de la presentación en la pestaña de magia.
