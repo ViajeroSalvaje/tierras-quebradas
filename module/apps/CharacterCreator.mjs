@@ -24,15 +24,6 @@ export const EDADES = {
   nino: { label: "Niño", rango: "10–15 años", ppBonus: 8, puntosHab: 0, puntosCaract: 17, maxCuerpo: 7, maxTamanyo: 2, aleatorioCuerpo: -1, aleatorioMente: -1 }, joven: { label: "Joven", rango: "16–20 años", ppBonus: 4, puntosHab: 5, puntosCaract: 18, maxCuerpo: 9, maxTamanyo: null, aleatorioCuerpo: 0, aleatorioMente: -1 }, adulto: { label: "Adulto", rango: "21–35 años", ppBonus: 0, puntosHab: 10, puntosCaract: 19, maxCuerpo: 9, maxTamanyo: null, aleatorioCuerpo: 0, aleatorioMente: 0 }, mayor: { label: "Mayor", rango: "36–49 años", ppBonus: 2, puntosHab: 15, puntosCaract: 18, maxCuerpo: 8, maxTamanyo: null, aleatorioCuerpo: -1, aleatorioMente: 0 }, viejo: { label: "Viejo", rango: "50–64 años", ppBonus: 4, puntosHab: 20, puntosCaract: 17, maxCuerpo: 7, maxTamanyo: null, aleatorioCuerpo: -2, aleatorioMente: 0 }, anciano: { label: "Anciano", rango: "+65 años", ppBonus: 8, puntosHab: 30, puntosCaract: 15, maxCuerpo: 6, maxTamanyo: 2, aleatorioCuerpo: -3, aleatorioMente: -1 }
 };
 
-const ESPECIES = [
-  {
-    id: "__humano__", name: "Humano", costePP: 0, bonusPuntos: 0, bonusMente: 0, bonusEspiritu: 0, descripcion: "Los humanos son la especie de referencia. No presentan modificaciones a las características y no cuestan Puntos de Personaje."
-  }, {
-    id: "__mereni__", name: "Merení", costePP: 6, bonusPuntos: 2, bonusMente: 1, bonusEspiritu: 1, descripcion: "Especie homínida esbelta y estilizada, de mayor sensibilidad e inteligencia. Cuando conviven con humanos asumen el liderazgo."
-  }, {
-    id: "__mestizo__", name: "Mestizo", costePP: 3, bonusPuntos: 1, bonusMente: 0, bonusEspiritu: 1, descripcion: "Mezcla estéril de humano y merení. Retienen la esbeltez merení pero son mentalmente más humanos, aunque de mayor fuerza espiritual."
-  }
-];
 
 const IDEOLOGIAS = [
   { id: "ley", label: "La Ley", desc: "Orden, civilización y progreso (Patriarcado / Tres Valles)" }, { id: "caos", label: "El Caos", desc: "Cambio, libertad y fuerza (Excelsa / Merendrak)" }, { id: "equilibrio", label: "El Equilibrio Cósmico", desc: "Punto medio entre Orden y Entropía. Sin devoción ni promesas." }, { id: "elementales", label: "Los Señores Elementales", desc: "Adoración a las fuerzas de la naturaleza" }, { id: "antepasados", label: "Los Antepasados", desc: "Culto a los ancestros de los Caídos (Imanguk, Jungla)" }, { id: "sincretismo", label: "Sincretismo", desc: "Adoración conjunta de dioses de la Ley y el Caos (isla de Templanza)" }, { id: "sinReligion", label: "Sin Religión", desc: "Sin lealtad a ningún panteón. Nunca puede alinearse.", ppBonus: 1 }
@@ -92,7 +83,7 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
     nombre: "", // Características
     metodoCaract: "distribuir", cuerpo: 7, mente: 6, espiritu: 6, atractivo: 0, tamano: 0, tiradaAleatoria: null, tiradaBruta: null, cuerpoRolled: null, menteRolled: null, espirituRolled: null, // Edad
     edadCategoria: "adulto", edadNumero: 25, puntosHab: 10, // Especie
-    especieId: "__humano__", especieCostePP: 0, especieBonusMente: 0, especieBonusEsp: 0, especieBonusPuntos: 0, // Entorno
+    especieId: null, especieCostePP: 0, especieBonusMente: 0, especieBonusEsp: 0, especieBonusPuntos: 0, especieAcMagico: false, // Entorno
     entornoId: null, entornoNombre: "", entornoHabilidades: [], // Origen
     origenId: null, origenNombre: "", origenPPBonus: 0, origenIdioma: "", origenReligion: "", origenHabilidades: [], origenElecciones: {}, // Profesión
     profesionId: null, profesionNombre: "", profesionHabilidades: [], profesionVentajas: [], // Elecciones de arma
@@ -182,7 +173,7 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
     if (this._esProfesionMagica() && tipo === "hechiceria") return 0;
     if (rasgoMagia?.tipo === tipo) return 0;
     const prof = this._charData.profesionNombre.toLowerCase();
-    const esMereni = ["__mereni__", "__mestizo__"].includes(this._charData.especieId);
+    const esMereni = this._charData.especieAcMagico === true;
     const esSacerdote = prof.includes("sacerdote");
     const esNoble = prof.includes("noble");
     const esSabio = prof.includes("sabio");
@@ -259,8 +250,19 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
 
   // Especies
 
-  _getEspecies() {
-    return ESPECIES;
+  async _getEspecies() {
+    if (this._especiesCache) return this._especiesCache;
+    const pack = game.packs.get("tierras-quebradas.especies");
+    if (!pack) return [];
+    const docs = await pack.getDocuments();
+    this._especiesCache = docs.map(d => ({
+      id: d.id, name: d.name,
+      costePP: d.system.costePP ?? 0, bonusPuntos: d.system.bonusPuntos ?? 0,
+      bonusMente: d.system.bonusMente ?? 0, bonusEspiritu: d.system.bonusEspiritu ?? 0,
+      tamanoMax: d.system.tamanoMax ?? 0, accesoMagico: d.system.accesoMagico ?? false,
+      descripcion: d.system.descripcion ?? ""
+    })).sort((a, b) => a.name.localeCompare(b.name));
+    return this._especiesCache;
   }
 
   async _getEntornos() {
@@ -518,7 +520,8 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
     // Datos de especie
     let especiesData = null;
     if (pasoId === "especie") {
-      especiesData = this._getEspecies().map(e => ({
+      const especies = await this._getEspecies();
+      especiesData = especies.map(e => ({
         ...e, selected: e.id === this._charData.especieId, ppCostStr: e.costePP > 0 ? "−" + e.costePP + " PP" : "0 PP", bonusPuntosStr: e.bonusPuntos > 0 ? "+" + e.bonusPuntos + " pts. a distribuir" : null, bonusCaract: this._formatBonusCaract(e)
       }));
     }
@@ -940,10 +943,11 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
     el.querySelectorAll(".especie-card").forEach(card => {
       card.addEventListener("click", () => {
         this._charData.especieId = card.dataset.especieId;
-        this._charData.especieCostePP = parseInt(card.dataset.costePp)    || 0;
-        this._charData.especieBonusMente = parseInt(card.dataset.bonusMente) || 0;
-        this._charData.especieBonusEsp = parseInt(card.dataset.bonusEsp)   || 0;
+        this._charData.especieCostePP = parseInt(card.dataset.costePp)       || 0;
+        this._charData.especieBonusMente = parseInt(card.dataset.bonusMente)  || 0;
+        this._charData.especieBonusEsp = parseInt(card.dataset.bonusEsp)      || 0;
         this._charData.especieBonusPuntos = parseInt(card.dataset.bonusPuntos)|| 0;
+        this._charData.especieAcMagico = card.dataset.accesoMagico === "true";
         this._aplicarEdadAleatorio();
         this.render();
       });
@@ -1453,14 +1457,11 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
 
     // Añadir ítem de especie para mostrarlo en la ficha
     // tqWizard: true → el hook createItem salta _aplicarEspecie (ya aplicado por el wizard)
-    if (this._charData.especieId !== "__humano__") {
-      const especie = ESPECIES.find(e => e.id === this._charData.especieId);
-      if (especie) {
-        await Item.create({
-          name: especie.name, type: "especie", system: {
-            costePP: especie.costePP, bonusPuntos: especie.bonusPuntos, bonusCuerpo: 0, bonusMente: especie.bonusMente, bonusEspiritu: especie.bonusEspiritu, tamanoMin: -3, tamanoMax: 3, atractivoMin: -3, atractivoMax: 3, descripcion: especie.descripcion
-          }
-        }, { parent: actor, tqWizard: true });
+    if (this._charData.especieId) {
+      const packEsp = game.packs.get("tierras-quebradas.especies");
+      if (packEsp) {
+        const docEsp = await packEsp.getDocument(this._charData.especieId);
+        if (docEsp) await Item.create(docEsp.toObject(), { parent: actor, tqWizard: true });
       }
     }
 
