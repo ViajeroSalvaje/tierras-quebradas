@@ -369,7 +369,11 @@ Hooks.on("renderChatMessageHTML", (message, html) => {
   if (btnFortuna) {
     const actor = game.actors.get(btnFortuna.dataset.actorId);
     if (!actor || (actor.system.fortuna?.actual ?? 0) <= 0) btnFortuna.disabled = true;
-    btnFortuna.addEventListener("click", () => TQRoll.repetirConFortuna(message.id));
+    const flagsMsg = message.flags?.["tierras-quebradas"] ?? {};
+    btnFortuna.addEventListener("click", () => {
+      if (flagsMsg.esEnfrentadaFortuna) return TQRoll.repetirConFortunaEnfrentada(message.id);
+      return TQRoll.repetirConFortuna(message.id);
+    });
   }
 
   const btnAplicarDanho = html.querySelector(".tq-aplicar-danho");
@@ -382,6 +386,20 @@ Hooks.on("renderChatMessageHTML", (message, html) => {
       await targetActor.recibirDanho(danhoNeto, danhoBruto);
       btnAplicarDanho.disabled = true;
       btnAplicarDanho.textContent = game.i18n.localize("TQ.Botones.DanhoAplicado");
+    });
+  }
+
+  const btnRecuperarPM = html.querySelector(".tq-aplicar-recuperacion-pm");
+  if (btnRecuperarPM) {
+    btnRecuperarPM.addEventListener("click", async () => {
+      const actor = game.actors.get(btnRecuperarPM.dataset.actorId);
+      if (!actor) return;
+      const pmRecuperado = parseInt(btnRecuperarPM.dataset.pmRecuperado);
+      const pmActual = actor.system.hechiceria?.pmActual ?? 0;
+      const pmMax = actor.system.hechiceria?.pmMax ?? 0;
+      await actor.update({ "system.hechiceria.pmActual": Math.min(pmActual + pmRecuperado, pmMax) });
+      btnRecuperarPM.disabled = true;
+      btnRecuperarPM.textContent = game.i18n.localize("TQ.Botones.RecuperacionAplicada");
     });
   }
 
@@ -474,7 +492,11 @@ Hooks.on("renderChatMessageHTML", (message, html) => {
   }
 
   html.querySelectorAll(".tq-fortuna-elegir").forEach(btn => {
-    btn.addEventListener("click", () => TQRoll.elegirResultadoFortuna(message.id, btn.dataset.eleccion));
+    const flagsMsg2 = message.flags?.["tierras-quebradas"] ?? {};
+    btn.addEventListener("click", () => {
+      if (flagsMsg2.esEleccionFortunaEnfrentada) return TQRoll.elegirResultadoFortunaEnfrentada(message.id, btn.dataset.eleccion);
+      return TQRoll.elegirResultadoFortuna(message.id, btn.dataset.eleccion);
+    });
   });
 
   if (!html.querySelector(".tq-tirada-resultado")) return;
