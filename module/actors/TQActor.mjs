@@ -696,7 +696,7 @@ export class TQActor extends Actor {
 
     const fortunaActual = this.system.fortuna?.actual ?? 0;
     const leerCamposHechizo = campos => ({
-      pmElegido: parseInt(campos.pmElegido?.value) || pmMin, blancos: Math.max(1, parseInt(campos.blancos?.value) || 1), duracion: campos.duracion?.value   || "standard", ceremonia: campos.ceremonia?.checked ?? false, grimorio: campos.grimorio?.checked ?? false, acelerar: campos.acelerar?.checked ?? false, limFisica: parseInt(campos.limFisica?.value) || 0
+      pmElegido: parseInt(campos.pmElegido?.value) || pmMin, blancos: Math.max(1, parseInt(campos.blancos?.value) || 1), duracion: campos.duracion?.value   || "standard", ceremonia: campos.ceremonia?.checked ?? false, grimorio: campos.grimorio?.checked ?? false, acelerar: campos.acelerar?.checked ?? false, limFisica: parseInt(campos.limFisica?.value) || 0, md: parseInt(campos.md?.value) || 0
     });
     const config = await DialogV2.wait({
       window: { title: `Lanzar: ${hechizo.name}`, width: 420 }, classes: [
@@ -721,6 +721,7 @@ export class TQActor extends Actor {
     if (config.grimorio)  mod += 2;
     if (config.acelerar)  mod -= 2;
     mod += config.limFisica;
+    if (config.md) mod += config.md;
 
     const dolorExtremo = this.system.salud?.dolorExtremo ?? false;
     if (dolorExtremo) mod -= 2;
@@ -781,6 +782,7 @@ export class TQActor extends Actor {
     if (config.acelerar) modDesglose.push({ label: "Acelerar", valor: -2 });
     if (config.limFisica < 0) modDesglose.push({ label: "Lim. física", valor: config.limFisica });
     if (dolorExtremo) modDesglose.push({ label: "Dolor extremo", valor: -2 });
+    if (config.md) modDesglose.push({ label: "MD", valor: config.md });
     modDesglose.forEach(m => { m.signo = m.valor >= 0 ? "+" : "−"; m.valorAbs = Math.abs(m.valor); });
 
     const mostrarAplicarResultado = !fallo;
@@ -883,31 +885,35 @@ export class TQActor extends Actor {
     const { horas, lanzarSuenos } = result;
     const pmActual = this.system.hechiceria?.pmActual ?? 0;
     const pmMax = this.system.hechiceria?.pmMax ?? 0;
-
-    let pmRecuperado = Math.floor(horas / 2);
+    const pmBase = Math.floor(horas / 2);
 
     if (lanzarSuenos) {
-        const habilidad = this.system.habilidades?.["sueños"];
-      let base = 0, puntuacion = 0;
+      const habilidad = this.system.habilidades?.["sueños"];
+      let puntuacion = 0;
       if (habilidad) {
-        base = this.system.bases[habilidad.base]?.valor ?? 0;
-        puntuacion = base + (habilidad.nivel ?? 0) ;
+        const base = this.system.bases[habilidad.base]?.valor ?? 0;
+        puntuacion = base + (habilidad.nivel ?? 0);
       }
-      const resultado = await TQRoll.tirar("Sueños", puntuacion, 15, { actor: this, flavor: "Recuperación de PM", etiquetaEnDesglose: true });
-      if (resultado.exitos >= 0) pmRecuperado = horas;
+      await TQRoll.dialogoTirada("Sueños", puntuacion, {
+        actor: this, habClave: "sueños", dificultadPorDefecto: 15,
+        pmRecuperadoBase: pmBase, pmRecuperadoExito: horas
+      });
+      return;
     }
 
-    const pmBase = Math.floor(horas / 2);
-    const pmNuevo = Math.min(pmActual + pmRecuperado, pmMax);
-    const pmGanado = pmNuevo - pmActual;
-    const pmExtra = lanzarSuenos && pmRecuperado > pmBase ? pmRecuperado - pmBase : 0;
-    await this.update({ "system.hechiceria.pmActual": pmNuevo });
     await ChatMessage.create({
-      speaker: ChatMessage.getSpeaker({ actor: this }), content: `<div class="tq-result-card exito">
-        <div class="tq-card-titulo">${game.i18n.localize("TQ.Magia.RecuperacionTitulo")}</div>
+      speaker: ChatMessage.getSpeaker({ actor: this }),
+      content: `<div class="tq-result-card exito">
+        <div class="tq-card-titulo"><strong>${game.i18n.localize("TQ.Magia.RecuperacionTitulo")}</strong></div>
         <hr/>
-        <p>${this.name} descansa <strong>${horas}h</strong> y recupera <strong>+${pmGanado} PM</strong>${pmExtra > 0 ? ` <em>(+${pmExtra} PM extra recuperados)</em>` : ""}.<br>PM actuales: <strong>${pmNuevo} / ${pmMax}</strong></p>
-      </div>`
+        <p>${this.name} descansa <strong>${horas}h</strong>. Puede recuperar <strong>+${pmBase} PM</strong>.<br>PM actuales: <strong>${pmActual} / ${pmMax}</strong></p>
+        <div class="tq-fortuna-actions">
+          <button class="tq-aplicar-recuperacion-pm" type="button" data-actor-id="${this.id}" data-pm-recuperado="${pmBase}">
+            ${game.i18n.localize("TQ.Botones.AplicarRecuperacion")} (+${pmBase} PM)
+          </button>
+        </div>
+      </div>`,
+      flags: { "tierras-quebradas": { esRecuperacionPM: true } }
     });
   }
 
@@ -1659,7 +1665,7 @@ export class TQActor extends Actor {
           .sort((a, b) => a.nombre.localeCompare(b.nombre));
       }
       return Object.entries(actor.system.habilidades ?? {})
-        .map(([nombre, valor]) => ({ nombre, total: typeof valor === "number" ? valor : 0 }))
+        .map(([nombre, valor]) => ({ nombre, total: typeof valor === "number" ? valor : (valor.total ?? valor.nivel ?? 0) }))
         .sort((a, b) => a.nombre.localeCompare(b.nombre));
     };
 
@@ -1709,7 +1715,7 @@ export class TQActor extends Actor {
             if (!habVal) return null;
             const sep = habVal.indexOf("|");
             return {
-              habTotalB: parseInt(habVal.substring(0, sep)), habNombreB: habVal.substring(sep + 1), actorUuid: campos.actorUuid?.value ?? null
+              habTotalB: parseInt(habVal.substring(0, sep)), habNombreB: habVal.substring(sep + 1), actorUuid: campos.actorUuid?.value ?? null, mod: parseInt(campos.modificador?.value) || 0
             };
           }
         }, { action: "cancelar", label: "Cancelar" }
@@ -1721,7 +1727,7 @@ export class TQActor extends Actor {
     const oponenteActor = targetActor ?? actoresMap.get(config.actorUuid) ?? null;
 
     await TQRoll.tirarEnfrentada(
-      this, habNombreDisplay, habTotal, oponenteActor, config.habNombreB, config.habTotalB, { habClave }
+      this, habNombreDisplay, habTotal, oponenteActor, config.habNombreB, config.habTotalB, { habClave, mod: config.mod ?? 0 }
     );
   }
 }

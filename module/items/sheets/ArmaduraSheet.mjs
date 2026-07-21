@@ -25,6 +25,17 @@ export class ArmaduraSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
 
   get title() { return this.item.name; }
 
+  async _onRender(context, options) {
+    await super._onRender(context, options);
+    this.element.querySelectorAll(".toggle-estado").forEach(el => {
+      el.addEventListener("click", async ev => {
+        const campo = ev.currentTarget.dataset.campo;
+        const actual = foundry.utils.getProperty(this.item, campo);
+        await this.item.update({ [campo]: !actual });
+      });
+    });
+  }
+
   async _prepareContext(options) {
     return {
       item: this.item, system: this.item.system, cssClass: this.options.classes.join(" ")

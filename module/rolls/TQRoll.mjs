@@ -4,7 +4,7 @@ import { TOPES_HABILIDAD, HABILIDADES_OPCIONES, ARMA_A_HABILIDAD_PNJ, HABILIDADE
 
 export class TQRoll {
   static async tirar(etiqueta, puntuacion, dificultad, opciones = {}) {
-    const { bonificador = 0, flavor = "", actor = null, targetActor = null, modo = null, danho = null, tablaComplicacion = null, esCombate = false, topeInfo = null, autoExito = false, esRepeticion = false, habClave = null, rollMode = null, dosFortuna = false, etiquetaEnDesglose = false, modDesglose = null, puntuacionMostrada = null } = opciones;
+    const { bonificador = 0, flavor = "", actor = null, targetActor = null, modo = null, danho = null, tablaComplicacion = null, esCombate = false, topeInfo = null, autoExito = false, esRepeticion = false, habClave = null, rollMode = null, dosFortuna = false, etiquetaEnDesglose = false, modDesglose = null, puntuacionMostrada = null, pmRecuperadoBase = null, pmRecuperadoExito = null } = opciones;
     const modoTirada = rollMode ?? game.settings.get("core", "rollMode");
 
     const debilitado = actor?.system?.salud?.debilitado ?? false;
@@ -57,8 +57,9 @@ export class TQRoll {
       danhoAplicado = Math.max(0, pd.total - proteccionTarget);
     }
 
+    const pmRecuperado = pmRecuperadoExito !== null ? (exitos >= 0 ? pmRecuperadoExito : (pmRecuperadoBase ?? 0)) : null;
     const datosChat = {
-      etiqueta, puntuacion, bonificador: bonusFinal, dificultad, debilitado, dolorExtremo, dado: dadoTotal, dadoDisplay: autoExito ? "—" : (dadoDisplayCustom ?? TQRoll._dadoDisplay(dadoTotal, tiradas)), total, exitos, resultado, css: resultado.css, criticos: esCombate ? TQRoll._criticosTexto(exitos) : null, pd, proteccionTarget: proteccionTarget || null, danhoAplicado, pasionEfecto: pasionEfecto?.texto ?? null, actorImg: actor?.img ?? null, topeInfo, mostrarFortuna: !autoExito && !esRepeticion && !dosFortuna, actorId: actor?.id ?? null, targetActorId: targetActor?.id ?? null, etiquetaEnDesglose, modDesglose, puntuacionMostrada
+      etiqueta, puntuacion, bonificador: bonusFinal, dificultad, debilitado, dolorExtremo, dado: dadoTotal, dadoDisplay: autoExito ? "—" : (dadoDisplayCustom ?? TQRoll._dadoDisplay(dadoTotal, tiradas)), total, exitos, resultado, css: resultado.css, criticos: esCombate ? TQRoll._criticosTexto(exitos) : null, pd, proteccionTarget: proteccionTarget || null, danhoAplicado, pasionEfecto: pasionEfecto?.texto ?? null, actorImg: actor?.img ?? null, topeInfo, mostrarFortuna: !autoExito && !esRepeticion && !dosFortuna, actorId: actor?.id ?? null, targetActorId: targetActor?.id ?? null, etiquetaEnDesglose, modDesglose, puntuacionMostrada, mostrarRecuperarPM: pmRecuperado !== null, pmRecuperado: pmRecuperado ?? 0
     };
 
     const contenido = await foundry.applications.handlebars.renderTemplate(
@@ -68,7 +69,7 @@ export class TQRoll {
     await ChatMessage.create({
       speaker: actor ? ChatMessage.getSpeaker({ actor }) : ChatMessage.getSpeaker(), content: contenido, ...TQRoll._rollModeData(modoTirada), flags: {
         "tierras-quebradas": {
-          etiqueta, puntuacion, dificultad, bonificador, rollMode: modoTirada, bonusFinalOriginal: bonusFinal, actorId: actor?.id ?? null, habClave, tablaComplicacion: tablaComplicacion ?? null, esRepeticion, totalOriginal: total, exitosOriginales: exitos, resultadoCssOriginal: resultado.css, resultadoLabelOriginal: resultado.label, dadoDisplayOriginal: autoExito ? "—" : TQRoll._dadoDisplay(dadoTotal, tiradas), debilitadoOriginal: debilitado, dolorExtremoOriginal: dolorExtremo, danoArma: danho?.danoArma ?? null, danhoMd: danho?.md ?? 0, danhoNoLetal: danho?.noLetal ?? false, danhoTipo: danho?.tipo ?? null, targetActorId: targetActor?.id ?? null, proteccionTargetOriginal: proteccionTarget || 0, danhoAplicadoOriginal: danhoAplicado ?? null
+          etiqueta, puntuacion, dificultad, bonificador, rollMode: modoTirada, bonusFinalOriginal: bonusFinal, actorId: actor?.id ?? null, habClave, tablaComplicacion: tablaComplicacion ?? null, esRepeticion, totalOriginal: total, exitosOriginales: exitos, resultadoCssOriginal: resultado.css, resultadoLabelOriginal: resultado.label, dadoDisplayOriginal: autoExito ? "—" : TQRoll._dadoDisplay(dadoTotal, tiradas), debilitadoOriginal: debilitado, dolorExtremoOriginal: dolorExtremo, danoArma: danho?.danoArma ?? null, danhoMd: danho?.md ?? 0, danhoNoLetal: danho?.noLetal ?? false, danhoTipo: danho?.tipo ?? null, targetActorId: targetActor?.id ?? null, proteccionTargetOriginal: proteccionTarget || 0, danhoAplicadoOriginal: danhoAplicado ?? null, pmRecuperadoBase: pmRecuperadoBase ?? null, pmRecuperadoExito: pmRecuperadoExito ?? null, pmRecuperadoOriginal: pmRecuperado ?? null
         }
       }
     });
@@ -85,7 +86,7 @@ export class TQRoll {
     const message = game.messages.get(messageId);
     if (!message) return;
     const flags = message.flags?.["tierras-quebradas"] ?? {};
-    const { etiqueta, puntuacion, dificultad, bonificador: bonOrig, actorId, tablaComplicacion: tablaOrig, totalOriginal, exitosOriginales, resultadoCssOriginal, resultadoLabelOriginal, dadoDisplayOriginal, bonusFinalOriginal, debilitadoOriginal, dolorExtremoOriginal, rollMode: modoTirada, danoArma, danhoMd, danhoNoLetal, danhoTipo, targetActorId, proteccionTargetOriginal, danhoAplicadoOriginal, danoRival, mdRival, tipoRival, desgloseHechizo, requiereTiradaEspiritu, bonusEspiritu: bonusEspirituOrig } = flags;
+    const { etiqueta, puntuacion, dificultad, bonificador: bonOrig, actorId, tablaComplicacion: tablaOrig, totalOriginal, exitosOriginales, resultadoCssOriginal, resultadoLabelOriginal, dadoDisplayOriginal, bonusFinalOriginal, debilitadoOriginal, dolorExtremoOriginal, rollMode: modoTirada, danoArma, danhoMd, danhoNoLetal, danhoTipo, targetActorId, proteccionTargetOriginal, danhoAplicadoOriginal, danoRival, mdRival, tipoRival, desgloseHechizo, requiereTiradaEspiritu, bonusEspiritu: bonusEspirituOrig, pmRecuperadoBase, pmRecuperadoExito } = flags;
 
     const actor = game.actors.get(actorId);
     if (!actor) return;
@@ -136,9 +137,9 @@ export class TQRoll {
       speaker: ChatMessage.getSpeaker({ actor }), content: contenido, ...TQRoll._rollModeData(modoTirada), flags: {
         "tierras-quebradas": {
           esEleccionFortuna: true, etiqueta, puntuacion: puntuacion ?? 0, dificultad: dificultad ?? 15, actorId, tablaComplicacion: tablaOrig ?? null, rollMode: modoTirada,
-          danoArma: danoArma ?? null, danhoMd: danhoMd ?? 0, danhoNoLetal: danhoNoLetal ?? false, danhoTipo: danhoTipo ?? null, targetActorId: targetActorId ?? null, danoRival: danoRival ?? null, mdRival: mdRival ?? 0, tipoRival: tipoRival ?? "cortante", desgloseHechizo: desgloseHechizo ?? null, requiereTiradaEspiritu: requiereTiradaEspiritu ?? false, bonusEspiritu: bonusEspirituOrig ?? 0,
-          original: { dadoDisplay: dadoDisplayOriginal, total: totalOriginal, exitos: exitosOriginales, css: resultadoCssOriginal, label: resultadoLabelOriginal, bonificador: bonusFinalOriginal ?? 0, debilitado: debilitadoOriginal ?? false, dolorExtremo: dolorExtremoOriginal ?? false, pd: pdOriginal, proteccionTarget: proteccionTargetOriginal || null, danhoAplicado: danhoAplicadoOriginal ?? null, pdRival: pdRivalOriginal, proteccionJugador: protJugador || null, danhoRivalAplicado: danhoRivOrig },
-          nuevo: { dadoDisplay: dadoDisplayNuevo, total: totalNuevo, exitos: exitosNuevos, css: resultadoNuevo.css, label: resultadoNuevo.label, bonificador: bonusFinalNuevo, debilitado, dolorExtremo, pd: pdNuevo, pdRival: pdRivalNuevo, proteccionJugador: protJugador || null, danhoRivalAplicado: danhoRivNuevo }
+          danoArma: danoArma ?? null, danhoMd: danhoMd ?? 0, danhoNoLetal: danhoNoLetal ?? false, danhoTipo: danhoTipo ?? null, targetActorId: targetActorId ?? null, danoRival: danoRival ?? null, mdRival: mdRival ?? 0, tipoRival: tipoRival ?? "cortante", desgloseHechizo: desgloseHechizo ?? null, requiereTiradaEspiritu: requiereTiradaEspiritu ?? false, bonusEspiritu: bonusEspirituOrig ?? 0, pmRecuperadoBase: pmRecuperadoBase ?? null, pmRecuperadoExito: pmRecuperadoExito ?? null,
+          original: { dadoDisplay: dadoDisplayOriginal, total: totalOriginal, exitos: exitosOriginales, css: resultadoCssOriginal, label: resultadoLabelOriginal, bonificador: bonusFinalOriginal ?? 0, debilitado: debilitadoOriginal ?? false, dolorExtremo: dolorExtremoOriginal ?? false, pd: pdOriginal, proteccionTarget: proteccionTargetOriginal || null, danhoAplicado: danhoAplicadoOriginal ?? null, pdRival: pdRivalOriginal, proteccionJugador: protJugador || null, danhoRivalAplicado: danhoRivOrig, pmRecuperado: pmRecuperadoExito !== null ? (exitosOriginales >= 0 ? pmRecuperadoExito : (pmRecuperadoBase ?? 0)) : null },
+          nuevo: { dadoDisplay: dadoDisplayNuevo, total: totalNuevo, exitos: exitosNuevos, css: resultadoNuevo.css, label: resultadoNuevo.label, bonificador: bonusFinalNuevo, debilitado, dolorExtremo, pd: pdNuevo, pdRival: pdRivalNuevo, proteccionJugador: protJugador || null, danhoRivalAplicado: danhoRivNuevo, pmRecuperado: pmRecuperadoExito !== null ? (exitosNuevos >= 0 ? pmRecuperadoExito : (pmRecuperadoBase ?? 0)) : null }
         }
       }
     });
@@ -174,8 +175,9 @@ export class TQRoll {
       }
     }
 
+    const pmRecuperadoElegido = datos.pmRecuperado ?? null;
     const datosChat = {
-      etiqueta, puntuacion: puntuacion ?? 0, dificultad: dificultad ?? 15, dadoDisplay: datos.dadoDisplay, total: datos.total, exitos: datos.exitos, resultado: { css: datos.css, label: datos.label }, css: datos.css, bonificador: datos.bonificador ?? 0, debilitado: datos.debilitado ?? false, dolorExtremo: datos.dolorExtremo ?? false, criticos: null, pd, proteccionTarget, danhoAplicado, pdRival, proteccionJugador, danhoRivalAplicado, desgloseHechizo: flags.desgloseHechizo ?? null, mostrarAplicarResultado: flags.tablaComplicacion === "magia" && (datos.exitos ?? -1) >= 0, bonusEspiritu: bonusEspirituFinal, requiereTiradaEspiritu: flags.requiereTiradaEspiritu ?? false, pasionEfecto: null, actorImg: actor?.img ?? null, topeInfo: null, mostrarFortuna: false, actorId: actorId ?? null, targetActorId: flags.targetActorId ?? null
+      etiqueta, puntuacion: puntuacion ?? 0, dificultad: dificultad ?? 15, dadoDisplay: datos.dadoDisplay, total: datos.total, exitos: datos.exitos, resultado: { css: datos.css, label: datos.label }, css: datos.css, bonificador: datos.bonificador ?? 0, debilitado: datos.debilitado ?? false, dolorExtremo: datos.dolorExtremo ?? false, criticos: null, pd, proteccionTarget, danhoAplicado, pdRival, proteccionJugador, danhoRivalAplicado, desgloseHechizo: flags.desgloseHechizo ?? null, mostrarAplicarResultado: flags.tablaComplicacion === "magia" && (datos.exitos ?? -1) >= 0, bonusEspiritu: bonusEspirituFinal, requiereTiradaEspiritu: flags.requiereTiradaEspiritu ?? false, pasionEfecto: null, actorImg: actor?.img ?? null, topeInfo: null, mostrarFortuna: false, actorId: actorId ?? null, targetActorId: flags.targetActorId ?? null, mostrarRecuperarPM: pmRecuperadoElegido !== null, pmRecuperado: pmRecuperadoElegido ?? 0
     };
 
     const contenido = await foundry.applications.handlebars.renderTemplate(
@@ -647,7 +649,7 @@ export class TQRoll {
   }
 
   static async tirarEnfrentada(actorA, habNombreA, habTotalA, actorB, habNombreB, habTotalB, opciones = {}) {
-    const { habClave = null } = opciones;
+    const { habClave = null, mod = 0 } = opciones;
     const forzarBlind = !game.user.isGM
       && habClave
       && game.settings.get("tierras-quebradas", "blindRollHabilidades")
@@ -658,7 +660,7 @@ export class TQRoll {
       const debilitadoA = actorA?.system?.salud?.debilitado ?? false;
       const dolorExtremoA = actorA?.system?.salud?.dolorExtremo ?? false;
       const dadoSizeA = debilitadoA ? 6 : 10;
-      const bonusA = dolorExtremoA ? -2 : 0;
+      const bonusA = (dolorExtremoA ? -2 : 0) + mod;
       const debilitadoB = actorB?.system?.salud?.debilitado ?? false;
       const dadoSizeB = debilitadoB ? 6 : 10;
       const { dado: dadoA, total: dadoTotalA, tiradas: tiradasA } = await TQRoll._tirarExplosivo(dadoSizeA, modoTirada);
@@ -707,7 +709,7 @@ export class TQRoll {
       flags: {
         "tierras-quebradas": {
           esEnfrentadaPendiente: true,
-          actorAId: actorA?.id ?? null, habNombreA, habTotalA,
+          actorAId: actorA?.id ?? null, habNombreA, habTotalA, mod,
           actorBId: actorB?.id ?? null, habNombreB, habTotalB,
           dadoTotalB, dadoDisplayB, modoTirada, habClave
         }
@@ -721,7 +723,7 @@ export class TQRoll {
     if (!message) return;
     const flags = message.flags?.["tierras-quebradas"] ?? {};
     if (flags.enfrentadaCompletada) return;
-    const { actorAId, habNombreA, habTotalA, actorBId, habNombreB, habTotalB, dadoTotalB, dadoDisplayB, modoTirada, habClave } = flags;
+    const { actorAId, habNombreA, habTotalA, mod = 0, actorBId, habNombreB, habTotalB, dadoTotalB, dadoDisplayB, modoTirada, habClave } = flags;
 
     const actorA = game.actors.get(actorAId);
     const actorB = game.actors.get(actorBId);
@@ -732,7 +734,7 @@ export class TQRoll {
     const debilitadoA = actorA?.system?.salud?.debilitado ?? false;
     const dolorExtremoA = actorA?.system?.salud?.dolorExtremo ?? false;
     const dadoSizeA = debilitadoA ? 6 : 10;
-    const bonusA = dolorExtremoA ? -2 : 0;
+    const bonusA = (dolorExtremoA ? -2 : 0) + mod;
 
     let dadoTotalA, dadoA, dadoDisplayACustom = null;
 
@@ -763,18 +765,110 @@ export class TQRoll {
       await actorA.update({ "system.pasionFlag": "" });
     }
 
+    const dadoDisplayA = dadoDisplayACustom ?? TQRoll._dadoDisplay(dadoTotalA, []);
     const datosChat = {
       etiqueta: game.i18n.format("TQ.Tirada.EnfrentadaLabel", { habA: habNombreA, habB: habNombreB }), esEnfrentada: true,
       nombreA: actorA?.name ?? "Iniciador", habNombreA, puntuacionA: habTotalA, bonificadorA: bonusA || null,
-      dadoDisplayA: dadoDisplayACustom ?? TQRoll._dadoDisplay(dadoTotalA, []), totalA,
+      dadoDisplayA, totalA,
       nombreB: actorB?.name ?? "Oponente", habNombreB, puntuacionB: habTotalB, dadoDisplayB, totalB,
       exitos, resultado, css: resultado.css, criticos: TQRoll._criticosTexto(exitos),
-      pasionEfecto: pasionEfecto?.texto ?? null, debilitado: debilitadoA, dolorExtremo: dolorExtremoA
+      pasionEfecto: pasionEfecto?.texto ?? null, debilitado: debilitadoA, dolorExtremo: dolorExtremoA,
+      mostrarFortuna: !usarFortuna && actorA?.type === "pj", actorId: actorAId
     };
 
     const contenido = await foundry.applications.handlebars.renderTemplate("systems/tierras-quebradas/templates/dialogs/tirada-resultado.hbs", datosChat);
-    await ChatMessage.create({ speaker: actorA ? ChatMessage.getSpeaker({ actor: actorA }) : ChatMessage.getSpeaker(), content: contenido, ...TQRoll._rollModeData(modoTirada) });
+    await ChatMessage.create({
+      speaker: actorA ? ChatMessage.getSpeaker({ actor: actorA }) : ChatMessage.getSpeaker(),
+      content: contenido,
+      ...TQRoll._rollModeData(modoTirada),
+      flags: { "tierras-quebradas": {
+        esEnfrentadaFortuna: !usarFortuna && actorA?.type === "pj",
+        actorAId, habNombreA, habTotalA, bonusA, dadoDisplayA, totalA, totalB, exitos,
+        resultadoCss: resultado.css, resultadoLabel: resultado.label,
+        nombreA: actorA?.name ?? "Iniciador", nombreB: actorB?.name ?? "Oponente",
+        habNombreB, puntuacionB: habTotalB, dadoDisplayB, modoTirada
+      }}
+    });
 
     if (resultado.css.includes("complicacion")) await tirarComplicacion(TABLA_COMPLICACIONES_MELE, actorA);
+  }
+
+  static async repetirConFortunaEnfrentada(messageId) {
+    const message = game.messages.get(messageId);
+    if (!message) return;
+    const flags = message.flags?.["tierras-quebradas"] ?? {};
+    const { actorAId, habNombreA, habTotalA, bonusA, dadoDisplayA: dadoDisplayOriginal, totalA: totalOriginal, totalB, exitos: exitosOriginales, resultadoCss, resultadoLabel, nombreA, nombreB, habNombreB, puntuacionB, dadoDisplayB, modoTirada } = flags;
+
+    const actorA = game.actors.get(actorAId);
+    if (!actorA) return;
+    const fortuna = actorA.system.fortuna;
+    if ((fortuna?.actual ?? 0) <= 0) return;
+
+    const debilitado = actorA.system.salud?.debilitado ?? false;
+    const rollNuevo = await TQRoll._tirarExplosivo(debilitado ? 6 : 10, modoTirada);
+    const dadoTotalNuevo = rollNuevo.total;
+    const totalNuevo = dadoTotalNuevo + habTotalA + bonusA;
+    const exitosNuevos = totalNuevo - totalB;
+    const resultadoNuevo = TQRoll._clasificarResultado(rollNuevo.dado, exitosNuevos);
+    const dadoDisplayNuevo = TQRoll._dadoDisplay(dadoTotalNuevo, rollNuevo.tiradas);
+
+    await actorA.update({ "system.fortuna.actual": Math.max(0, fortuna.actual - 1) });
+
+    const etiqueta = game.i18n.format("TQ.Tirada.EnfrentadaLabel", { habA: habNombreA, habB: habNombreB });
+    const contenido = await foundry.applications.handlebars.renderTemplate(
+      "systems/tierras-quebradas/templates/dialogs/tirada-fortuna-eleccion.hbs", {
+        etiqueta,
+        original: { dadoDisplay: dadoDisplayOriginal, total: totalOriginal, exitos: exitosOriginales, label: resultadoLabel, css: resultadoCss },
+        nuevo: { dadoDisplay: dadoDisplayNuevo, total: totalNuevo, exitos: exitosNuevos, label: resultadoNuevo.label, css: resultadoNuevo.css }
+      }
+    );
+    await ChatMessage.create({
+      speaker: ChatMessage.getSpeaker({ actor: actorA }),
+      content: contenido,
+      ...TQRoll._rollModeData(modoTirada),
+      flags: { "tierras-quebradas": {
+        esEleccionFortunaEnfrentada: true,
+        actorAId, modoTirada,
+        nombreA, habNombreA, habTotalA, bonusA,
+        nombreB, habNombreB, puntuacionB, dadoDisplayB, totalB,
+        original: { dadoDisplay: dadoDisplayOriginal, total: totalOriginal, exitos: exitosOriginales, css: resultadoCss, label: resultadoLabel },
+        nuevo: { dadoDisplay: dadoDisplayNuevo, total: totalNuevo, exitos: exitosNuevos, css: resultadoNuevo.css, label: resultadoNuevo.label }
+      }}
+    });
+  }
+
+  static async elegirResultadoFortunaEnfrentada(messageId, eleccion) {
+    const message = game.messages.get(messageId);
+    if (!message) return;
+    const flags = message.flags?.["tierras-quebradas"] ?? {};
+    const { actorAId, modoTirada, nombreA, habNombreA, habTotalA, bonusA, dadoDisplayB, puntuacionB, totalB, nombreB, habNombreB } = flags;
+
+    const actorA = game.actors.get(actorAId);
+    if (!actorA) return;
+
+    const datos = flags[eleccion];
+    const resultado = { css: datos.css, label: datos.label };
+
+    const datosChat = {
+      etiqueta: game.i18n.format("TQ.Tirada.EnfrentadaLabel", { habA: habNombreA, habB: habNombreB }),
+      esEnfrentada: true,
+      nombreA, habNombreA, puntuacionA: habTotalA, bonificadorA: bonusA || null,
+      dadoDisplayA: datos.dadoDisplay, totalA: datos.total,
+      nombreB, habNombreB, puntuacionB, dadoDisplayB, totalB,
+      exitos: datos.exitos, resultado, css: datos.css,
+      criticos: TQRoll._criticosTexto(datos.exitos),
+      pasionEfecto: null, debilitado: false, dolorExtremo: false,
+      mostrarFortuna: false, actorId: actorAId
+    };
+
+    const contenido = await foundry.applications.handlebars.renderTemplate(
+      "systems/tierras-quebradas/templates/dialogs/tirada-resultado.hbs", datosChat
+    );
+    await ChatMessage.create({
+      speaker: ChatMessage.getSpeaker({ actor: actorA }),
+      content: contenido,
+      ...TQRoll._rollModeData(modoTirada),
+      flags: { "tierras-quebradas": { esRepeticion: true } }
+    });
   }
 }
