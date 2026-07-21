@@ -372,6 +372,69 @@ Hooks.on("renderChatMessageHTML", (message, html) => {
     btnFortuna.addEventListener("click", () => TQRoll.repetirConFortuna(message.id));
   }
 
+  const btnAplicarDanho = html.querySelector(".tq-aplicar-danho");
+  if (btnAplicarDanho) {
+    btnAplicarDanho.addEventListener("click", async () => {
+      const targetActor = game.actors.get(btnAplicarDanho.dataset.targetId);
+      if (!targetActor) return;
+      const danhoNeto = parseInt(btnAplicarDanho.dataset.danhoNeto);
+      const danhoBruto = parseInt(btnAplicarDanho.dataset.danhoBruto);
+      await targetActor.recibirDanho(danhoNeto, danhoBruto);
+      btnAplicarDanho.disabled = true;
+      btnAplicarDanho.textContent = game.i18n.localize("TQ.Botones.DanhoAplicado");
+    });
+  }
+
+  const btnResultado = html.querySelector(".tq-aplicar-resultado");
+  if (btnResultado) {
+    btnResultado.addEventListener("click", async () => {
+      const actor = game.actors.get(btnResultado.dataset.actorId);
+      if (!actor) return;
+
+      let bonusEspiritu = 0;
+      const exitos = parseInt(btnResultado.dataset.exitos) || 0;
+
+      if (exitos >= 10) {
+        const beneficio = await foundry.applications.api.DialogV2.wait({
+          window: { title: "¡Éxito crítico! — Elige beneficio", width: 360 },
+          content: `<p style="margin-bottom:8px;">Has obtenido <strong>${exitos} puntos de éxito</strong>. Elige un beneficio:</p>
+            <select name="beneficio" style="width:100%;font-size:12px;">
+              <option value="ahorrar">Ahorrarse 1 PM</option>
+              <option value="blanco">Añadir un blanco extra gratis</option>
+              <option value="potencia">Aumentar potencia o duración</option>
+              <option value="espiritu">+2 a la Lucha de Espíritu</option>
+            </select>`,
+          rejectClose: false,
+          buttons: [{ action: "elegir", label: "Confirmar", default: true, callback: (_ev, b) => b.form.elements.beneficio.value }]
+        });
+        if (beneficio === "ahorrar") {
+          const esPJ = actor.type === "pj";
+          const campo = esPJ ? "system.hechiceria.pmActual" : "system.pm";
+          const pmActual = esPJ ? (actor.system.hechiceria?.pmActual ?? 0) : (actor.system.pm ?? 0);
+          const pmMax = esPJ ? (actor.system.hechiceria?.pmMax ?? pmActual) : (actor.system.pmMax ?? pmActual);
+          await actor.update({ [campo]: Math.min(pmActual + 1, pmMax) });
+        }
+        if (beneficio === "espiritu") bonusEspiritu = 2;
+      }
+
+      if (btnResultado.dataset.requiereEspiritu === "true")
+        await actor._luchaDeEspiritu(btnResultado.dataset.etiqueta ?? "", bonusEspiritu);
+      btnResultado.disabled = true;
+      btnResultado.textContent = game.i18n.localize("TQ.Botones.ResultadoAplicado");
+    });
+  }
+
+  const btnDanhoRival = html.querySelector(".tq-aplicar-danho-rival");
+  if (btnDanhoRival) {
+    btnDanhoRival.addEventListener("click", async () => {
+      const actor = game.actors.get(btnDanhoRival.dataset.actorId);
+      if (!actor) return;
+      await actor.recibirDanho(parseInt(btnDanhoRival.dataset.danhoNeto), parseInt(btnDanhoRival.dataset.danhoBruto));
+      btnDanhoRival.disabled = true;
+      btnDanhoRival.textContent = game.i18n.localize("TQ.Botones.DanhoAplicado");
+    });
+  }
+
   const flags = message.flags?.["tierras-quebradas"] ?? {};
   if (flags.esEnfrentadaPendiente) {
     const btnNormal = html.querySelector(".tq-enfrentada-normal");
