@@ -1,3 +1,8 @@
-2026/07/21-00:40:19.298 4d1c Recovering log #22
-2026/07/21-00:40:19.304 4d1c Delete type=0 #22
-2026/07/21-00:40:19.304 4d1c Delete type=3 #21
+2026/07/21-12:21:06.202 60d4 Recovering log #40
+2026/07/21-12:21:06.208 60d4 Delete type=0 #40
+2026/07/21-12:21:06.208 60d4 Delete type=3 #39
+2026/07/21-12:31:22.607 4a80 Level-0 table #44: started
+2026/07/21-12:31:22.607 4a80 Level-0 table #44: 0 bytes OK
+2026/07/21-12:31:22.611 4a80 Delete type=0 #42
+2026/07/21-12:31:22.612 4a80 Manual compaction at level-0 from '!adventures!YSxZj9RUMbds2V1I' @ 72057594037927935 : 1 .. '!items!gwljIcQDGsx6vj7Z' @ 0 : 0; will stop at (end)
+2026/07/21-12:31:22.612 4a80 Manual compaction at level-1 from '!adventures!YSxZj9RUMbds2V1I' @ 72057594037927935 : 1 .. '!items!gwljIcQDGsx6vj7Z' @ 0 : 0; will stop at (end)
