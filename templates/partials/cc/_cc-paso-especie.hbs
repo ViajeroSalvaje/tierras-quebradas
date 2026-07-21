@@ -5,7 +5,8 @@
     <div class="especie-card {{#if e.selected}}selected{{/if}}"
          data-especie-id="{{e.id}}" data-coste-pp="{{e.costePP}}"
          data-bonus-mente="{{e.bonusMente}}" data-bonus-esp="{{e.bonusEspiritu}}"
-         data-bonus-puntos="{{e.bonusPuntos}}">
+         data-bonus-puntos="{{e.bonusPuntos}}"
+         data-acceso-magico="{{#if e.accesoMagico}}true{{else}}false{{/if}}">
       <div class="especie-card-header">
         <span class="especie-nombre">{{e.name}}</span>
         <span class="especie-pp-badge {{#if (tq-gt e.costePP 0)}}coste{{/if}}">{{e.ppCostStr}}</span>
