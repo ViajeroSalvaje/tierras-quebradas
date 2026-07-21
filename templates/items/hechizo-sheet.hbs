@@ -1,11 +1,11 @@
 <div class="{{cssClass}} flexcol" autocomplete="off" style="height:100%;width:100%;">
   <section class="item-body">
 
-    <h1><input type="text" name="name" value="{{item.name}}" placeholder="Nombre del hechizo" /></h1>
+    <h1><input type="text" name="name" value="{{item.name}}" placeholder="{{localize "TQ.Placeholders.NombreHechizo"}}" /></h1>
 
     <div class="item-grid">
       <div class="tq-field-group">
-        <label>Verbo</label>
+        <label>{{localize "TQ.Hechizo.Verbo"}}</label>
         <select name="system.verbo">
           {{#each (tq-verbos) as |v|}}
           <option value="{{v}}" {{#if (tq-eq ../system.verbo v)}}selected{{/if}}>{{v}}</option>
@@ -13,7 +13,7 @@
         </select>
       </div>
       <div class="tq-field-group">
-        <label>Esfera</label>
+        <label>{{localize "TQ.Hechizo.Esfera"}}</label>
         <select name="system.esfera">
           {{#each (tq-esferas) as |e|}}
           <option value="{{e}}" {{#if (tq-eq ../system.esfera e)}}selected{{/if}}>{{e}}</option>
@@ -21,34 +21,34 @@
         </select>
       </div>
       <div class="tq-field-group">
-        <label>Dificultad</label>
+        <label>{{localize "TQ.Tirada.Dificultad"}}</label>
         <input type="number" name="system.dificultad" value="{{system.dificultad}}" min="5" />
       </div>
       <div class="tq-field-group">
-        <label>PM mín.</label>
+        <label>{{localize "TQ.Hechizo.PMMin"}}</label>
         <input type="number" name="system.pmCoste" value="{{system.pmCoste}}" min="0" />
       </div>
       <div class="tq-field-group">
-        <label>PM máx. <span style="font-size:9px;opacity:0.6;">(0 = fijo)</span></label>
+        <label>{{localize "TQ.Hechizo.PMMax"}} <span style="font-size:9px;opacity:0.6;">(0 = fijo)</span></label>
         <input type="number" name="system.pmMax" value="{{system.pmMax}}" min="0" />
       </div>
       <div class="tq-field-group">
-        <label>Duración</label>
+        <label>{{localize "TQ.Hechizo.Duracion"}}</label>
         <input type="text" name="system.duracion" value="{{system.duracion}}" />
       </div>
       <div class="tq-field-group">
-        <label>Alcance</label>
+        <label>{{localize "TQ.General.Alcance"}}</label>
         <input type="text" name="system.alcance" value="{{system.alcance}}" />
       </div>
       <div class="tq-field-group" style="align-items:center;gap:6px;">
-        <label>Lucha espíritu</label>
-        <input type="checkbox" name="system.requiereTiradaEspiritu"
-               {{checked system.requiereTiradaEspiritu}} style="width:auto;" />
+        <label>{{localize "TQ.Hechizo.LuchaEspiritu"}}</label>
+        <a class="tq-circulo toggle-item-bool {{#if system.requiereTiradaEspiritu}}marcado{{/if}}"
+           data-campo="system.requiereTiradaEspiritu"></a>
       </div>
     </div>
 
     <div class="tq-field-group full-width" style="margin-top:6px;">
-      <label>Descripción</label>
+      <label>{{localize "TQ.General.Descripcion"}}</label>
       <textarea name="system.descripcion" rows="6">{{system.descripcion}}</textarea>
     </div>
 

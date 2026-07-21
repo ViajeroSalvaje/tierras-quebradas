@@ -1,5 +1,5 @@
 <div class="cc-section">
-  <h3 class="cc-section-title">Entorno</h3>
+  <h3 class="cc-section-title">{{localize "TQ.Actor.EntornoLabel"}}</h3>
   {{#if entornos}}
   <div class="origen-grid">
     {{#each entornos as |e|}}
@@ -17,13 +17,13 @@
     {{/each}}
   </div>
   {{else}}
-  <p style="color:var(--tq-text-dim);font-size:13px;">Recarga el sistema para cargar el compendio de entornos.</p>
+  <p style="color:var(--tq-text-dim);font-size:13px;">{{localize "TQ.CC.RecargaEntornos"}}</p>
   {{/if}}
 </div>
 
 {{#if eleccionesEntorno}}
 <div class="cc-section cc-elecciones-armas">
-  <h3 class="cc-section-title">Elige tu arma</h3>
+  <h3 class="cc-section-title">{{localize "TQ.CC.EligeTuArma"}}</h3>
   {{#each eleccionesEntorno as |e|}}
   <div class="cc-eleccion-fila">
     <span class="cc-eleccion-nombre">{{e.nombre}} <span class="cc-eleccion-bonus">+{{e.bonus}}</span></span>

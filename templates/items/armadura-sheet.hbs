@@ -3,51 +3,51 @@
   <section class="item-body">
     <div class="tq-item-header-fila">
       <img class="item-img" src="{{item.img}}" title="{{item.name}}" />
-      <h1><input type="text" name="name" value="{{item.name}}" placeholder="Nombre de la armadura" /></h1>
+      <h1><input type="text" name="name" value="{{item.name}}" placeholder="{{localize "TQ.Placeholders.NombreArmadura"}}" /></h1>
     </div>
     <div class="item-grid">
       <div class="tq-field-group">
-        <label>Protección</label>
+        <label>{{localize "TQ.General.Proteccion"}}</label>
         <input type="number" name="system.proteccion" value="{{system.proteccion}}" min="0" />
       </div>
       <div class="tq-field-group">
-        <label>Zona</label>
+        <label>{{localize "TQ.General.Zona"}}</label>
         <select name="system.zona">
-          <option value="cuerpo" {{selected system.zona "cuerpo"}}>Cuerpo</option>
-          <option value="cabeza" {{selected system.zona "cabeza"}}>Cabeza</option>
-          <option value="brazos" {{selected system.zona "brazos"}}>Brazos</option>
-          <option value="piernas" {{selected system.zona "piernas"}}>Piernas</option>
-          <option value="escudo" {{selected system.zona "escudo"}}>Escudo</option>
+          <option value="cuerpo"   {{selected system.zona "cuerpo"}}>{{localize "TQ.Armadura.Zona.cuerpo"}}</option>
+          <option value="cabeza"   {{selected system.zona "cabeza"}}>{{localize "TQ.Armadura.Zona.cabeza"}}</option>
+          <option value="brazos"   {{selected system.zona "brazos"}}>{{localize "TQ.Armadura.Zona.brazos"}}</option>
+          <option value="piernas"  {{selected system.zona "piernas"}}>{{localize "TQ.Armadura.Zona.piernas"}}</option>
+          <option value="escudo"   {{selected system.zona "escudo"}}>{{localize "TQ.Armadura.Zona.escudo"}}</option>
         </select>
       </div>
       <div class="tq-field-group">
-        <label>Tipo</label>
+        <label>{{localize "TQ.General.Tipo"}}</label>
         <select name="system.tipo">
-          <option value="blanda" {{selected system.tipo "blanda"}}>Blanda</option>
-          <option value="dura"   {{selected system.tipo "dura"}}>Dura</option>
+          <option value="blanda" {{selected system.tipo "blanda"}}>{{localize "TQ.Armadura.Blanda"}}</option>
+          <option value="dura"   {{selected system.tipo "dura"}}>{{localize "TQ.Armadura.Dura"}}</option>
         </select>
       </div>
       <div class="tq-field-group">
-        <label>¿Es yelmo?</label>
+        <label>{{localize "TQ.Armadura.EsYelmo"}}</label>
         <input type="checkbox" name="system.esYelmo" {{checked system.esYelmo}} />
       </div>
       {{#if system.esYelmo}}
       <div class="tq-field-group">
-        <label>Visera bajada</label>
+        <label>{{localize "TQ.Armadura.ViseraBajada"}}</label>
         <input type="checkbox" name="system.viseraBajada" {{checked system.viseraBajada}} />
       </div>
       {{/if}}
       <div class="tq-field-group">
-        <label>Carga</label>
+        <label>{{localize "TQ.Combate.carga"}}</label>
         <input type="number" name="system.carga" value="{{system.carga}}" min="0" />
       </div>
       <div class="tq-field-group">
-        <label>Precio</label>
+        <label>{{localize "TQ.General.Precio"}}</label>
         <input type="number" name="system.precio" value="{{system.precio}}" min="0" />
       </div>
     </div>
     <div class="tq-field-group full-width">
-      <label>Descripción</label>
+      <label>{{localize "TQ.General.Descripcion"}}</label>
       <textarea name="system.descripcion" rows="4">{{system.descripcion}}</textarea>
     </div>
   </section>

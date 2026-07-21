@@ -1,10 +1,10 @@
 <div class="cc-section">
   <div class="cc-ventajas-info">
-    Seleccionadas: <strong>{{ventajasConteo}}/4</strong>
-    <span class="cc-hint">(no es obligatorio elegir)</span>
+    {{localize "TQ.CC.Seleccionadas"}} <strong>{{ventajasConteo}}/4</strong>
+    <span class="cc-hint">{{localize "TQ.CC.NoObligatorio"}}</span>
   </div>
 
-  <h3 class="cc-section-title">Ventajas</h3>
+  <h3 class="cc-section-title">{{localize "TQ.CC.Ventajas"}}</h3>
   {{#if ventajasLista}}
   <div class="ventaja-grid">
     {{#each ventajasLista as |v|}}
@@ -19,10 +19,10 @@
     {{/each}}
   </div>
   {{else}}
-  <p style="color:var(--tq-text-dim);font-size:13px;">Recarga el sistema para cargar el compendio de ventajas.</p>
+  <p style="color:var(--tq-text-dim);font-size:13px;">{{localize "TQ.CC.RecargaVentajas"}}</p>
   {{/if}}
 
-  <h3 class="cc-section-title cc-desventajas-title">Desventajas</h3>
+  <h3 class="cc-section-title cc-desventajas-title">{{localize "TQ.CC.Desventajas"}}</h3>
   {{#if desventajasLista}}
   <div class="ventaja-grid">
     {{#each desventajasLista as |v|}}

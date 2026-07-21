@@ -80,6 +80,30 @@
 </div>
 
 <div class="cc-section">
+  <h3 class="cc-section-title">Recursos mágicos</h3>
+  <div class="cc-magia-recursos">
+    <div class="cc-magia-recurso">
+      <span class="cc-magia-rec-label">PM máx.</span>
+      <span class="cc-magia-rec-valor">{{magiaData.pmMax}}</span>
+      <span class="cc-magia-rec-formula">Espíritu × 2</span>
+    </div>
+    <div class="cc-magia-recurso">
+      <span class="cc-magia-rec-label">Espíritu</span>
+      <span class="cc-magia-rec-valor">{{magiaData.espiritu}}</span>
+    </div>
+    <div class="cc-magia-recurso">
+      <span class="cc-magia-rec-label">Espíritu Consagrado</span>
+      <span class="cc-magia-rec-valor {{#if (tq-gt magiaData.espirituConsagrado magiaData.espiritu)}}cc-mb-deficit{{/if}}">{{magiaData.espirituConsagrado}}</span>
+      <span class="cc-magia-rec-formula">hechizos permanentes</span>
+    </div>
+    <div class="cc-magia-recurso">
+      <span class="cc-magia-rec-label">Espíritu libre</span>
+      <span class="cc-magia-rec-valor">{{magiaData.espirituLibre}}</span>
+    </div>
+  </div>
+</div>
+
+<div class="cc-section">
   <div class="cc-magia-hechizos-header">
     <h3 class="cc-section-title" style="margin:0;">Hechizos iniciales</h3>
     <div class="cc-magia-pool">
@@ -116,30 +140,6 @@
     </div>
   </details>
   {{/each}}
-</div>
-
-<div class="cc-section">
-  <h3 class="cc-section-title">Recursos mágicos</h3>
-  <div class="cc-magia-recursos">
-    <div class="cc-magia-recurso">
-      <span class="cc-magia-rec-label">PM máx.</span>
-      <span class="cc-magia-rec-valor">{{magiaData.pmMax}}</span>
-      <span class="cc-magia-rec-formula">Espíritu × 2</span>
-    </div>
-    <div class="cc-magia-recurso">
-      <span class="cc-magia-rec-label">Espíritu</span>
-      <span class="cc-magia-rec-valor">{{magiaData.espiritu}}</span>
-    </div>
-    <div class="cc-magia-recurso">
-      <span class="cc-magia-rec-label">Espíritu Consagrado</span>
-      <span class="cc-magia-rec-valor {{#if (tq-gt magiaData.espirituConsagrado magiaData.espiritu)}}cc-mb-deficit{{/if}}">{{magiaData.espirituConsagrado}}</span>
-      <span class="cc-magia-rec-formula">hechizos permanentes</span>
-    </div>
-    <div class="cc-magia-recurso">
-      <span class="cc-magia-rec-label">Espíritu libre</span>
-      <span class="cc-magia-rec-valor">{{magiaData.espirituLibre}}</span>
-    </div>
-  </div>
 </div>
 {{/if}}
 

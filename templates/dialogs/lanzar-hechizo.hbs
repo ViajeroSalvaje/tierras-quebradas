@@ -8,9 +8,9 @@
   <div class="lh-stats">
     <span>DIF <strong>{{dif}}</strong></span>
     <span class="lh-sep">·</span>
-    <span>PM base <strong>{{pmBase}}</strong></span>
+    <span>{{localize "TQ.Hechizo.PMBase"}} <strong>{{pmBase}}</strong></span>
     <span class="lh-sep">·</span>
-    <span>Puntuación <strong>{{puntuacion}}</strong></span>
+    <span>{{localize "TQ.Dialogo.Puntuacion"}} <strong>{{puntuacion}}</strong></span>
     <span class="lh-sep">·</span>
     <span>PM {{pmActual}} / {{pmMaxTotal}}</span>
   </div>
@@ -18,7 +18,7 @@
   {{!-- PM variable --}}
   {{#if pmVariable}}
   <div class="lh-fila">
-    <label>PM a gastar ({{pmMin}}–{{pmMax}})</label>
+    <label>{{localize "TQ.Hechizo.PMGastar"}}</label>
     <input type="number" name="pmElegido" value="{{pmMin}}" min="{{pmMin}}" max="{{pmMax}}" class="lh-input-num" />
   </div>
   {{else}}
@@ -28,33 +28,33 @@
   {{!-- Blancos y duración --}}
   <div class="lh-grid-2">
     <div class="lh-campo">
-      <label>Blancos totales <span class="lh-hint">(+{{pmBase}} PM/extra)</span></label>
+      <label>{{localize "TQ.Hechizo.BlancosTotales"}} <span class="lh-hint">(+{{pmBase}} PM/extra)</span></label>
       <input type="number" name="blancos" value="1" min="1" max="10" class="lh-input-num" />
     </div>
     <div class="lh-campo">
-      <label>Duración</label>
+      <label>{{localize "TQ.Hechizo.Duracion"}}</label>
       <select name="duracion">
-        <option value="standard">Estándar (ESP en turnos)</option>
-        <option value="minutos">Minutos (+1 PM)</option>
-        <option value="horas">Horas (+2 PM)</option>
+        <option value="standard">{{localize "TQ.Hechizo.DuracionEstandar"}}</option>
+        <option value="minutos">{{localize "TQ.Hechizo.DuracionMinutos"}}</option>
+        <option value="horas">{{localize "TQ.Hechizo.DuracionHoras"}}</option>
       </select>
     </div>
   </div>
 
-  {{!-- Modificadores — div en lugar de fieldset para evitar estilos de navegador --}}
+  {{!-- Modificadores --}}
   <div class="lh-mod-box">
-    <div class="lh-mod-titulo">Modificadores al lanzamiento</div>
+    <div class="lh-mod-titulo">{{localize "TQ.Hechizo.ModificadoresLanzamiento"}}</div>
     <div class="lh-checks">
-      <label class="lh-check"><input type="checkbox" name="ceremonia" /> Ceremonia (+2)</label>
-      <label class="lh-check"><input type="checkbox" name="grimorio" /> Grimorio / texto (+2)</label>
-      <label class="lh-check"><input type="checkbox" name="acelerar" /> Acelerar — Fase 1 (−2)</label>
+      <label class="lh-check"><input type="checkbox" name="ceremonia" /> {{localize "TQ.Hechizo.Ceremonia"}}</label>
+      <label class="lh-check"><input type="checkbox" name="grimorio" /> {{localize "TQ.Hechizo.Grimorio"}}</label>
+      <label class="lh-check"><input type="checkbox" name="acelerar" /> {{localize "TQ.Hechizo.Acelerar"}}</label>
     </div>
     <div class="lh-campo" style="margin-top:8px;">
-      <label>Limitación física</label>
+      <label>{{localize "TQ.Hechizo.LimitacionFisica"}}</label>
       <select name="limFisica">
-        <option value="0">Sin penalización</option>
-        <option value="-1">Una mano ocupada (−1)</option>
-        <option value="-2">Sin hablar o sin manos libres (−2)</option>
+        <option value="0">{{localize "TQ.Hechizo.SinPenalizacion"}}</option>
+        <option value="-1">{{localize "TQ.Hechizo.UnaManoOcupada"}}</option>
+        <option value="-2">{{localize "TQ.Hechizo.SinHablar"}}</option>
       </select>
     </div>
   </div>

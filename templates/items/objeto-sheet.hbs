@@ -1,22 +1,22 @@
 <div class="{{cssClass}} flexcol" autocomplete="off" style="height:100%;width:100%;">
   <section class="item-body">
-    <h1><input type="text" name="name" value="{{item.name}}" placeholder="Nombre" /></h1>
+    <h1><input type="text" name="name" value="{{item.name}}" placeholder="{{localize "TQ.Placeholders.Nombre"}}" /></h1>
     <div class="item-grid">
       <div class="tq-field-group">
-        <label>Carga</label>
+        <label>{{localize "TQ.Combate.carga"}}</label>
         <input type="number" name="system.carga" value="{{system.carga}}" step="0.1" min="0" />
       </div>
       <div class="tq-field-group">
-        <label>Precio (mb)</label>
+        <label>{{localize "TQ.General.PrecioMB"}}</label>
         <input type="number" name="system.precio" value="{{system.precio}}" min="0" />
       </div>
       <div class="tq-field-group full-width">
-        <label>Categoría</label>
+        <label>{{localize "TQ.Objeto.Categoria"}}</label>
         <input type="text" name="system.categoria" value="{{system.categoria}}" placeholder="Aventura, Herramientas, Lujo…" />
       </div>
     </div>
     <div class="tq-field-group full-width">
-      <label>Descripción</label>
+      <label>{{localize "TQ.General.Descripcion"}}</label>
       <textarea name="system.descripcion" rows="5">{{system.descripcion}}</textarea>
     </div>
   </section>

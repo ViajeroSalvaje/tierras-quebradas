@@ -1,61 +1,61 @@
 <div class="{{cssClass}} flexcol" autocomplete="off" style="height:100%;width:100%;">
 
   <section class="item-body">
-    <h1><input type="text" name="name" value="{{item.name}}" placeholder="Nombre de la especie" /></h1>
+    <h1><input type="text" name="name" value="{{item.name}}" placeholder="{{localize "TQ.Placeholders.NombreEspecie"}}" /></h1>
 
     <div class="item-grid">
       <div class="tq-field-group">
-        <label>Coste (PP)</label>
+        <label>{{localize "TQ.Especie.CostePP"}}</label>
         <input type="number" name="system.costePP" value="{{system.costePP}}" min="0" />
       </div>
       <div class="tq-field-group">
-        <label>Bonus puntos reparto</label>
+        <label>{{localize "TQ.Especie.BonusPuntos"}}</label>
         <input type="number" name="system.bonusPuntos" value="{{system.bonusPuntos}}" min="0" />
       </div>
       <div class="tq-field-group">
-        <label>Bonus Cuerpo (aleatorio)</label>
+        <label>{{localize "TQ.Especie.BonusCuerpo"}}</label>
         <input type="number" name="system.bonusCuerpo" value="{{system.bonusCuerpo}}" />
       </div>
       <div class="tq-field-group">
-        <label>Bonus Mente (aleatorio)</label>
+        <label>{{localize "TQ.Especie.BonusMente"}}</label>
         <input type="number" name="system.bonusMente" value="{{system.bonusMente}}" />
       </div>
       <div class="tq-field-group">
-        <label>Bonus Espíritu (aleatorio)</label>
+        <label>{{localize "TQ.Especie.BonusEspiritu"}}</label>
         <input type="number" name="system.bonusEspiritu" value="{{system.bonusEspiritu}}" />
       </div>
       <div class="tq-field-group">
-        <label>Tamaño mín.</label>
+        <label>{{localize "TQ.Especie.TamanoMin"}}</label>
         <input type="number" name="system.tamanoMin" value="{{system.tamanoMin}}" />
       </div>
       <div class="tq-field-group">
-        <label>Tamaño máx.</label>
+        <label>{{localize "TQ.Especie.TamanoMax"}}</label>
         <input type="number" name="system.tamanoMax" value="{{system.tamanoMax}}" />
       </div>
       <div class="tq-field-group">
-        <label>Atractivo mín.</label>
+        <label>{{localize "TQ.Especie.AtractivoMin"}}</label>
         <input type="number" name="system.atractivoMin" value="{{system.atractivoMin}}" />
       </div>
       <div class="tq-field-group">
-        <label>Atractivo máx.</label>
+        <label>{{localize "TQ.Especie.AtractivoMax"}}</label>
         <input type="number" name="system.atractivoMax" value="{{system.atractivoMax}}" />
       </div>
       <div class="tq-field-group">
-        <label>Estéril</label>
+        <label>{{localize "TQ.Especie.Esteril"}}</label>
         <input type="checkbox" name="system.esteril" {{checked system.esteril}} />
       </div>
       <div class="tq-field-group">
-        <label>Extraviado (+PP)</label>
+        <label>{{localize "TQ.Especie.Extraviado"}}</label>
         <input type="checkbox" name="system.extraviado" {{checked system.extraviado}} />
       </div>
     </div>
 
     <div class="tq-field-group full-width">
-      <label>Rasgos</label>
+      <label>{{localize "TQ.Secciones.Rasgos"}}</label>
       <textarea name="system.rasgos" rows="3">{{system.rasgos}}</textarea>
     </div>
     <div class="tq-field-group full-width">
-      <label>Descripción</label>
+      <label>{{localize "TQ.General.Descripcion"}}</label>
       <textarea name="system.descripcion" rows="4">{{system.descripcion}}</textarea>
     </div>
   </section>

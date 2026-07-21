@@ -3,11 +3,11 @@
     <img class="profile-img" src="{{actor.img}}" data-edit="img" title="{{actor.name}}" />
     <div class="header-fields">
       <h1 class="charname">
-        <input name="name" type="text" value="{{actor.name}}" placeholder="Nombre" />
+        <input name="name" type="text" value="{{actor.name}}" placeholder="{{localize "TQ.Placeholders.Nombre"}}" />
       </h1>
       <div class="header-info">
         <div class="tq-field-group inline">
-          <label>Tipo</label>
+          <label>{{localize "TQ.General.Tipo"}}</label>
           <input type="text" name="system.tipo" value="{{system.tipo}}" />
         </div>
       </div>
@@ -15,9 +15,9 @@
   </header>
 
   <nav class="sheet-tabs" data-group="primary">
-    <a class="item" data-tab="stats">Estadísticas</a>
-    <a class="item" data-tab="combate">Combate y Magia</a>
-    <a class="item" data-tab="informacion">Información</a>
+    <a class="item" data-tab="stats">{{localize "TQ.Tabs.Estadisticas"}}</a>
+    <a class="item" data-tab="combate">{{localize "TQ.Tabs.CombateMagia"}}</a>
+    <a class="item" data-tab="informacion">{{localize "TQ.Tabs.Informacion"}}</a>
   </nav>
 
   <div class="sheet-body">
@@ -38,7 +38,7 @@
 
       <div class="tq-derivadas-fila">
         <div class="derivada-item">
-          <span class="derivada-label tirar-caracteristica" data-caracteristica="fuerza" title="Tirar Fuerza" style="cursor:pointer;">FUE</span>
+          <span class="derivada-label tirar-caracteristica" data-caracteristica="fuerza" title="{{localize "TQ.Tooltips.TirarFuerza"}}" style="cursor:pointer;">FUE</span>
           <div class="tq-caract-sec-circulo"><span class="derivada-value">{{system.derivadas.fuerza.valor}}</span></div>
         </div>
         <div class="derivada-item">
@@ -81,47 +81,50 @@
 
       <div class="combat-stats">
         <div class="stat-item">
-          <label>Prot.</label>
+          <label>{{localize "TQ.Armadura.Proteccion"}}</label>
           <input type="number" name="system.proteccion.valor" value="{{system.proteccion.valor}}" style="width:40px" />
           <select name="system.proteccion.tipo">
-            <option value="blanda" {{#if (eq system.proteccion.tipo "blanda")}}selected{{/if}}>Blanda</option>
-            <option value="dura" {{#if (eq system.proteccion.tipo "dura")}}selected{{/if}}>Dura</option>
+            <option value="blanda" {{#if (eq system.proteccion.tipo "blanda")}}selected{{/if}}>{{localize "TQ.Armadura.Blanda"}}</option>
+            <option value="dura" {{#if (eq system.proteccion.tipo "dura")}}selected{{/if}}>{{localize "TQ.Armadura.Dura"}}</option>
           </select>
         </div>
         <div class="stat-item">
-          <label>Al Impacto</label>
+          <label>{{localize "TQ.General.AlImpacto"}}</label>
           <input type="number" name="system.alImpacto" value="{{system.alImpacto}}" style="width:40px" />
         </div>
       </div>
 
       <div class="tq-movimiento-fila">
-        <label>Movimiento</label>
+        <label>{{localize "TQ.General.Movimiento"}}</label>
         <input type="text" name="system.movimiento" value="{{system.movimiento}}" />
       </div>
 
-      <div class="salud-simple">
-        <div class="tq-salud-fila-wrap">
-          <div class="tq-salud-centrada">
-            <label class="tq-salud-label">PV</label>
-            <div class="tq-salud-fila">
-              <input type="number" name="system.salud.pvActual.valor" value="{{system.salud.pvActual.valor}}" class="pnj-pv-input" />
-              <span class="tq-salud-sep">/</span>
-              <input type="number" name="system.salud.pvMax.valor" value="{{system.salud.pvMax.valor}}" class="pnj-pv-input" />
-            </div>
-          </div>
-          <div class="tq-salud-centrada">
-            <label class="tq-salud-label">PM</label>
-            <div class="tq-salud-fila">
-              <input type="number" name="system.pm" value="{{system.pm}}" class="pnj-pv-input" min="0" />
-            </div>
-          </div>
-        </div>
-        <span class="salud-threshold">(Deb: {{system.salud.pvLeve.valor}} · Inc: {{system.salud.pvGrave.valor}})</span>
+      <div class="pnj-salud-fila">
+        <label class="tq-salud-label">PV</label>
+        <input type="number" name="system.salud.pvActual.valor" value="{{system.salud.pvActual.valor}}" class="pnj-pv-input" />
+        <span class="tq-salud-sep">/</span>
+        <input type="number" name="system.salud.pvMax.valor" value="{{system.salud.pvMax.valor}}" class="pnj-pv-input" />
+        <span class="pnj-heridas-sep"></span>
+        <span class="pnj-salud-label">{{localize "TQ.Salud.heridasLevesAbrev"}}</span>
+        <a class="tq-circulo toggle-estado {{#if system.salud.heridasLeves1}}marcado{{/if}}" data-campo="system.salud.heridasLeves1" title="Herida leve 1"></a>
+        <a class="tq-circulo toggle-estado {{#if system.salud.heridasLeves2}}marcado{{/if}}" data-campo="system.salud.heridasLeves2" title="Herida leve 2"></a>
+        <a class="tq-circulo toggle-estado {{#if system.salud.heridasLeves3}}marcado{{/if}}" data-campo="system.salud.heridasLeves3" title="Herida leve 3"></a>
+        <a class="tq-circulo toggle-estado {{#if system.salud.heridasLeves4}}marcado{{/if}}" data-campo="system.salud.heridasLeves4" title="Herida leve 4"></a>
+        <span class="pnj-heridas-sep"></span>
+        <span class="pnj-salud-label">{{localize "TQ.Salud.heridasGravesAbrev"}}</span>
+        <a class="tq-circulo toggle-estado tq-circulo-grave {{#if system.salud.heridasGraves1}}marcado{{/if}}" data-campo="system.salud.heridasGraves1" title="Herida grave 1"></a>
+        <a class="tq-circulo toggle-estado tq-circulo-grave {{#if system.salud.heridasGraves2}}marcado{{/if}}" data-campo="system.salud.heridasGraves2" title="Herida grave 2"></a>
+        <span class="pnj-heridas-sep"></span>
+        <span class="pnj-salud-label">{{localize "TQ.Salud.debilitado"}}</span>
+        <a class="tq-circulo toggle-estado {{#if system.salud.debilitado}}marcado{{/if}}" data-campo="system.salud.debilitado" title="{{localize "TQ.Salud.debilitado"}}"></a>
+        <span class="pnj-heridas-sep"></span>
+        <span class="pnj-salud-label">{{localize "TQ.Salud.incapacitado"}}</span>
+        <a class="tq-circulo toggle-estado {{#if system.salud.incapacitado}}marcado{{/if}}" data-campo="system.salud.incapacitado" title="{{localize "TQ.Salud.incapacitado"}}"></a>
       </div>
 
       <div class="tq-section-header">
-        <span>Habilidades</span>
-        <a class="anadir-habilidad" title="Añadir habilidad"><i class="fas fa-plus"></i></a>
+        <span>{{localize "TQ.Secciones.Habilidades"}}</span>
+        <a class="anadir-habilidad" title="{{localize "TQ.Tooltips.AnadirHabilidad"}}"><i class="fas fa-plus"></i></a>
       </div>
       <div class="pnj-habilidades">
         {{#each habilidades as |hab|}}
@@ -132,7 +135,7 @@
             <input type="number" class="hab-nivel-input" data-nombre="{{hab.nombre}}"
                    value="{{hab.nivel}}" min="0" />
           </span>
-          <a class="eliminar-habilidad" data-nombre="{{hab.nombre}}" title="Eliminar">
+          <a class="eliminar-habilidad" data-nombre="{{hab.nombre}}" title="{{localize "TQ.Tooltips.Eliminar"}}">
             <i class="fas fa-trash"></i>
           </a>
         </div>
@@ -147,8 +150,8 @@
 
     <div class="tab" data-tab="informacion">
       <div class="tq-section-header" style="margin-top:6px;">
-        <span>Poderes e Inmunidades</span>
-        <a class="criatura-anadir-poder" title="Añadir poder"><i class="fas fa-plus"></i></a>
+        <span>{{localize "TQ.Secciones.PoderesInmunidades"}}</span>
+        <a class="criatura-anadir-poder" title="{{localize "TQ.Tooltips.AnadirPoder"}}"><i class="fas fa-plus"></i></a>
       </div>
       <ul class="ventajas-list">
         {{#each poderes as |p|}}
@@ -162,13 +165,13 @@
         {{/each}}
       </ul>
       <div class="tq-field-group" style="margin-top:4px;">
-        <label>Notas de poderes</label>
+        <label>{{localize "TQ.General.Notas"}}</label>
         <textarea name="system.poderes" rows="3">{{system.poderes}}</textarea>
       </div>
 
       <div class="tq-section-header" style="margin-top:6px;">
-        <span>Habilidades Especiales</span>
-        <a class="criatura-anadir-habilidad-especial" title="Añadir habilidad especial"><i class="fas fa-plus"></i></a>
+        <span>{{localize "TQ.Secciones.HabilidadesEspeciales"}}</span>
+        <a class="criatura-anadir-habilidad-especial" title="{{localize "TQ.Tooltips.AnadirHabilidadEspecial"}}"><i class="fas fa-plus"></i></a>
       </div>
       <ul class="ventajas-list">
         {{#each habilidadesEspeciales as |h|}}
@@ -182,13 +185,13 @@
         {{/each}}
       </ul>
       <div class="tq-field-group" style="margin-top:4px;">
-        <label>Notas</label>
+        <label>{{localize "TQ.General.Notas"}}</label>
         <textarea name="system.habilidadesEspeciales" rows="2">{{system.habilidadesEspeciales}}</textarea>
       </div>
 
       <div class="tq-section-header" style="margin-top:6px;">
-        <span>Personalidad</span>
-        <a class="criatura-anadir-personalidad" title="Añadir rasgo de personalidad"><i class="fas fa-plus"></i></a>
+        <span>{{localize "TQ.Secciones.Personalidad"}}</span>
+        <a class="criatura-anadir-personalidad" title="{{localize "TQ.Tooltips.AnadirPersonalidad"}}"><i class="fas fa-plus"></i></a>
       </div>
       <ul class="ventajas-list">
         {{#each personalidad as |p|}}
@@ -202,12 +205,12 @@
         {{/each}}
       </ul>
       <div class="tq-field-group" style="margin-top:4px;">
-        <label>Notas</label>
+        <label>{{localize "TQ.General.Notas"}}</label>
         <textarea name="system.personalidad" rows="2">{{system.personalidad}}</textarea>
       </div>
 
       <div class="tq-field-group" style="margin-top:6px;">
-        <label>Notas</label>
+        <label>{{localize "TQ.General.Notas"}}</label>
         <textarea name="system.notas" rows="4">{{system.notas}}</textarea>
       </div>
     </div>

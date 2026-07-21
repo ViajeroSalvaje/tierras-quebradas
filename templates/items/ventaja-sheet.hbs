@@ -1,26 +1,26 @@
 <div class="{{cssClass}} flexcol" autocomplete="off" style="height:100%;width:100%;">
 
   <section class="item-body">
-    <h1><input type="text" name="name" value="{{item.name}}" placeholder="Nombre" /></h1>
+    <h1><input type="text" name="name" value="{{item.name}}" placeholder="{{localize "TQ.Placeholders.Nombre"}}" /></h1>
     <div class="item-grid">
       <div class="tq-field-group">
-        <label>Tipo</label>
+        <label>{{localize "TQ.General.Tipo"}}</label>
         <select name="system.tipo">
-          <option value="ventaja" {{selected system.tipo "ventaja"}}>Ventaja</option>
-          <option value="desventaja" {{selected system.tipo "desventaja"}}>Desventaja</option>
+          <option value="ventaja"    {{selected system.tipo "ventaja"}}>{{localize "TQ.VentajaDesventaja.ventaja"}}</option>
+          <option value="desventaja" {{selected system.tipo "desventaja"}}>{{localize "TQ.VentajaDesventaja.desventaja"}}</option>
         </select>
       </div>
       <div class="tq-field-group">
-        <label>Coste PP</label>
+        <label>{{localize "TQ.General.CostePP"}}</label>
         <input type="number" name="system.coste" value="{{system.coste}}" />
       </div>
     </div>
     <div class="tq-field-group full-width">
-      <label>Efecto</label>
+      <label>{{localize "TQ.General.Efecto"}}</label>
       <input type="text" name="system.efecto" value="{{system.efecto}}" />
     </div>
     <div class="tq-field-group full-width">
-      <label>Descripción</label>
+      <label>{{localize "TQ.General.Descripcion"}}</label>
       <textarea name="system.descripcion" rows="5">{{system.descripcion}}</textarea>
     </div>
   </section>

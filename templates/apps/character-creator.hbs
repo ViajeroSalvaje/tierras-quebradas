@@ -79,7 +79,7 @@
     <div class="cc-placeholder">
       <div class="cc-placeholder-icon">⚙</div>
       <p class="cc-placeholder-titulo">{{pasoLabel}}</p>
-      <p class="cc-placeholder-desc">Este paso se implementará próximamente.</p>
+      <p class="cc-placeholder-desc">{{localize "TQ.CC.PasoProximamente"}}</p>
     </div>
     {{/if}}
 
@@ -92,19 +92,19 @@
         <span class="cc-pp-valor">{{ppTotal}}</span>
       </div>
       <div class="cc-pp-total">
-        <span class="cc-pp-label">Hab. libres</span>
+        <span class="cc-pp-label">{{localize "TQ.CC.HabLibres"}}</span>
         <span class="cc-pp-valor">{{puntosHab}}</span>
       </div>
     </div>
     <div class="cc-nav">
       {{#if hayAnterior}}
-      <button type="button" class="cc-btn-anterior">Anterior</button>
+      <button type="button" class="cc-btn-anterior">{{localize "TQ.Botones.Anterior"}}</button>
       {{/if}}
       {{#if mostrarCrear}}
-      <button type="button" class="cc-btn-crear">Crear Personaje</button>
+      <button type="button" class="cc-btn-crear">{{localize "TQ.Botones.CrearPersonaje"}}</button>
       {{/if}}
       {{#unless esUltimoPaso}}
-      <button type="button" class="cc-btn-siguiente">Siguiente</button>
+      <button type="button" class="cc-btn-siguiente">{{localize "TQ.Botones.Siguiente"}}</button>
       {{/unless}}
     </div>
   </div>

@@ -1,15 +1,15 @@
 <div class="tierras-quebradas sheet item idioma flexcol" autocomplete="off" style="height:100%;width:100%;">
   <section class="item-body" style="padding:10px 14px;display:flex;flex-direction:column;gap:10px;">
 
-    <h1><input type="text" name="name" value="{{item.name}}" placeholder="Nombre del idioma" /></h1>
+    <h1><input type="text" name="name" value="{{item.name}}" placeholder="{{localize "TQ.Placeholders.NombreIdioma"}}" /></h1>
 
     <div style="display:flex;align-items:center;gap:8px;">
-      <label style="margin:0;">Tiene forma escrita</label>
+      <label style="margin:0;">{{localize "TQ.Idioma.FormaEscrita"}}</label>
       <input type="checkbox" name="system.escrita" {{#if system.escrita}}checked{{/if}} />
     </div>
 
     <div class="tq-field-group full-width" style="flex:1;">
-      <label>Descripción</label>
+      <label>{{localize "TQ.General.Descripcion"}}</label>
       <textarea name="system.descripcion" rows="6" style="resize:vertical;">{{system.descripcion}}</textarea>
     </div>
 

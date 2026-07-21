@@ -2,7 +2,7 @@
 
 {{#if rasgosItemsData.sobrenaturales.length}}
 <div class="cc-section">
-  <h3 class="cc-section-title">Rasgos sobrenaturales</h3>
+  <h3 class="cc-section-title">{{localize "TQ.CC.RasgosSobrenaturales"}}</h3>
   <div class="ventaja-grid">
     {{#each rasgosItemsData.sobrenaturales as |r|}}
     <div class="ventaja-card rasgo-card {{#if r.selected}}selected{{/if}} {{#if r.deshabilitada}}disabled{{/if}}"
@@ -21,7 +21,7 @@
 
 {{#if rasgosItemsData.sociales.length}}
 <div class="cc-section">
-  <h3 class="cc-section-title">Rasgos sociales</h3>
+  <h3 class="cc-section-title">{{localize "TQ.CC.RasgosSociales"}}</h3>
   <div class="ventaja-grid">
     {{#each rasgosItemsData.sociales as |r|}}
     <div class="ventaja-card rasgo-card {{#if r.selected}}selected{{/if}} {{#if r.deshabilitada}}disabled{{/if}}"
@@ -39,20 +39,20 @@
 {{/if}}
 
 {{else}}
-<p class="cc-hint">Recarga el sistema para cargar el compendio de rasgos.</p>
+<p class="cc-hint">{{localize "TQ.CC.RecargaRasgos"}}</p>
 {{/if}}
 
 {{#if rasgosData}}
 <div class="cc-section">
-  <h3 class="cc-section-title" style="margin-top:8px;">Rasgos de personalidad
-    <span class="cc-hint" style="font-weight:normal;">(opcional)</span>
+  <h3 class="cc-section-title" style="margin-top:8px;">{{localize "TQ.Secciones.RasgosPersonalidad"}}
+    <span class="cc-hint" style="font-weight:normal;">{{localize "TQ.CC.Opcional"}}</span>
   </h3>
   <div class="cc-rasgos-grid" style="margin-bottom:12px;">
     {{#each rasgosData.positivos as |r|}}
     <div class="cc-rasgo-fila">
       <label class="cc-rasgo-label">{{r.label}}</label>
       <input type="text" class="cc-rasgo-input" data-tipo="pos" data-idx="{{r.idx}}"
-             value="{{r.valor}}" placeholder="Describe un rasgo positivo…" />
+             value="{{r.valor}}" placeholder="{{localize "TQ.CC.RasgoPosPlaceholder"}}" />
     </div>
     {{/each}}
   </div>
@@ -61,7 +61,7 @@
     <div class="cc-rasgo-fila">
       <label class="cc-rasgo-label">{{r.label}}</label>
       <input type="text" class="cc-rasgo-input" data-tipo="neg" data-idx="{{r.idx}}"
-             value="{{r.valor}}" placeholder="Describe un rasgo negativo…" />
+             value="{{r.valor}}" placeholder="{{localize "TQ.CC.RasgoNegPlaceholder"}}" />
     </div>
     {{/each}}
   </div>

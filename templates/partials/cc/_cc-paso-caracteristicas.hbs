@@ -1,12 +1,12 @@
 <div class="cc-metodo-toggle">
-  <button type="button" class="cc-metodo-btn {{#if (tq-eq data.metodoCaract 'distribuir')}}active{{/if}}" data-metodo="distribuir">Repartir valores</button>
-  <button type="button" class="cc-metodo-btn {{#if (tq-eq data.metodoCaract 'aleatorio')}}active{{/if}}" data-metodo="aleatorio">Aleatorio</button>
+  <button type="button" class="cc-metodo-btn {{#if (tq-eq data.metodoCaract 'distribuir')}}active{{/if}}" data-metodo="distribuir">{{localize "TQ.CC.RepartirValores"}}</button>
+  <button type="button" class="cc-metodo-btn {{#if (tq-eq data.metodoCaract 'aleatorio')}}active{{/if}}" data-metodo="aleatorio">{{localize "TQ.CC.Aleatorio"}}</button>
 </div>
 
 {{#if (tq-eq data.metodoCaract "distribuir")}}
 <div class="cc-section">
   <h3 class="cc-section-title">
-    Características
+    {{localize "TQ.Secciones.Caracteristicas"}}
     <span class="cc-pts-badge {{#if (tq-gt ptsRestantes 0)}}pendiente{{else if (tq-gt 0 ptsRestantes)}}exceso{{/if}}">
       {{#if (tq-gt ptsRestantes 0)}}Faltan {{ptsRestantes}} pts.
       {{else if (tq-gt 0 ptsRestantes)}}Exceso {{ptsRestantes}} pts.
@@ -29,9 +29,9 @@
 
 {{#if (tq-eq data.metodoCaract "aleatorio")}}
 <div class="cc-section">
-  <h3 class="cc-section-title">Características — aleatorio</h3>
+  <h3 class="cc-section-title">{{localize "TQ.CC.CaractAleatorio"}}</h3>
   {{#if asignacionAleatoria}}
-  <p class="cc-aleatorio-hint">Asigna los 3 valores obtenidos libremente.</p>
+  <p class="cc-aleatorio-hint">{{localize "TQ.CC.AsignaValores"}}</p>
   <div class="cc-aleatorio-layout">
     <div class="cc-aleatorio-asignacion">
       <div class="cc-caract-grid cc-aleatorio-grid">
@@ -49,24 +49,24 @@
     </div>
     {{#if tiradaBruta}}
     <div class="cc-aleatorio-resultados">
-      <p class="cc-aleatorio-resultados-titulo">Resultados obtenidos</p>
+      <p class="cc-aleatorio-resultados-titulo">{{localize "TQ.CC.ResultadosObtenidos"}}</p>
       {{#each tiradaBruta as |v i|}}
       <div class="cc-aleatorio-dado {{#if v.descartado}}descartado{{/if}}">{{v.valor}}</div>
       {{/each}}
-      <p class="cc-aleatorio-resultados-nota">El 2.º valor por abajo se descarta</p>
+      <p class="cc-aleatorio-resultados-nota">{{localize "TQ.CC.ValorDescartado"}}</p>
     </div>
     {{/if}}
   </div>
-  <button type="button" class="cc-tirar-aleatorio cc-tirar-de-nuevo">Volver a tirar</button>
+  <button type="button" class="cc-tirar-aleatorio cc-tirar-de-nuevo">{{localize "TQ.CC.VolverTirar"}}</button>
   {{else}}
-  <p class="cc-aleatorio-hint">Tira 4 veces 1d6+3, descarta el 2.º valor por abajo y asigna los 3 restantes.</p>
-  <button type="button" class="cc-tirar-aleatorio">Tirar dados</button>
+  <p class="cc-aleatorio-hint">{{localize "TQ.CC.InstruccionTirar"}}</p>
+  <button type="button" class="cc-tirar-aleatorio">{{localize "TQ.CC.TirarDados"}}</button>
   {{/if}}
 </div>
 {{/if}}
 
 <div class="cc-section cc-atr-tam-section">
-  <h3 class="cc-section-title">Atractivo y Tamaño</h3>
+  <h3 class="cc-section-title">{{localize "TQ.Secciones.AtrTam"}}</h3>
   <div class="cc-atr-tam-grid">
     {{#each atrTamLista as |c|}}
     <div class="cc-caract-fila">

@@ -9,40 +9,40 @@
     <img class="profile-img" src="{{actor.img}}" data-edit="img" title="{{actor.name}}" />
     <div class="header-fields">
       <h1 class="charname">
-        <input name="name" type="text" value="{{actor.name}}" placeholder="Nombre del personaje" />
+        <input name="name" type="text" value="{{actor.name}}" placeholder="{{localize "TQ.Placeholders.NombrePersonaje"}}" />
       </h1>
       <div class="header-info">
         {{#if items.especie}}
         <div class="tq-field-group especie-slot activa">
-          <label>Especie</label>
+          <label>{{localize "TQ.Actor.Especie"}}</label>
           <span class="especie-nombre">{{items.especie.name}}</span>
         </div>
         {{else}}
         <div class="tq-field-group especie-slot vacia">
-          <label>Especie</label>
-          <span class="especie-vacia">Arrastra una especie aquí</span>
+          <label>{{localize "TQ.Actor.Especie"}}</label>
+          <span class="especie-vacia">{{localize "TQ.Actor.EspecieVacia"}}</span>
         </div>
         {{/if}}
         {{#if items.origen}}
         <div class="tq-field-group especie-slot activa">
-          <label>Origen</label>
+          <label>{{localize "TQ.Actor.OrigenLabel"}}</label>
           <span class="especie-nombre">{{items.origen.name}}</span>
         </div>
         {{else}}
         <div class="tq-field-group especie-slot vacia">
-          <label>Origen</label>
-          <span class="especie-vacia">Arrastra un origen aquí</span>
+          <label>{{localize "TQ.Actor.OrigenLabel"}}</label>
+          <span class="especie-vacia">{{localize "TQ.Actor.OrigenVacio"}}</span>
         </div>
         {{/if}}
         {{#if items.profesion}}
         <div class="tq-field-group especie-slot activa">
-          <label>Profesión</label>
+          <label>{{localize "TQ.Actor.ProfesionLabel"}}</label>
           <span class="especie-nombre">{{items.profesion.name}}</span>
         </div>
         {{else}}
         <div class="tq-field-group especie-slot vacia">
-          <label>Profesión</label>
-          <span class="especie-vacia">Arrastra una profesión aquí</span>
+          <label>{{localize "TQ.Actor.ProfesionLabel"}}</label>
+          <span class="especie-vacia">{{localize "TQ.Actor.ProfesionVacia"}}</span>
         </div>
         {{/if}}
         <div class="tq-field-group">
@@ -59,10 +59,10 @@
 
   {{!-- PESTAÑAS --}}
   <nav class="sheet-tabs" data-group="primary">
-    <a class="item {{#if (tq-eq activeTab 'hoja1')}}active{{/if}}" data-tab="hoja1">Personaje</a>
-    <a class="item {{#if (tq-eq activeTab 'combate')}}active{{/if}}" data-tab="combate">Combate y Equipo</a>
-    <a class="item {{#if (tq-eq activeTab 'magia')}}active{{/if}}" data-tab="magia">Magia</a>
-    <a class="item {{#if (tq-eq activeTab 'hoja2')}}active{{/if}}" data-tab="hoja2">Trasfondo</a>
+    <a class="item {{#if (tq-eq activeTab 'hoja1')}}active{{/if}}" data-tab="hoja1">{{localize "TQ.Tabs.hoja1"}}</a>
+    <a class="item {{#if (tq-eq activeTab 'combate')}}active{{/if}}" data-tab="combate">{{localize "TQ.Tabs.CombateEquipo"}}</a>
+    <a class="item {{#if (tq-eq activeTab 'magia')}}active{{/if}}" data-tab="magia">{{localize "TQ.Tabs.magia"}}</a>
+    <a class="item {{#if (tq-eq activeTab 'hoja2')}}active{{/if}}" data-tab="hoja2">{{localize "TQ.Tabs.hoja2"}}</a>
   </nav>
 
   <section class="sheet-body">
@@ -80,7 +80,7 @@
 
           {{!-- Características principales --}}
           <div class="tq-section-box">
-            <div class="tq-section-header">Características</div>
+            <div class="tq-section-header">{{localize "TQ.Secciones.Caracteristicas"}}</div>
             <div class="tq-section-content">
               <div class="caract-grid">
                 <div class="caract-item">
@@ -89,7 +89,7 @@
                     <input type="number" name="system.caracteristicas.cuerpo.valor"
                            value="{{system.caracteristicas.cuerpo.valor}}" min="1" max="20" />
                   </div>
-                  <span style="font-size:10px;color:var(--tq-text-dim);">Cuerpo</span>
+                  <span style="font-size:10px;color:var(--tq-text-dim);">{{localize "TQ.Caracteristicas.cuerpo"}}</span>
                 </div>
                 <div class="caract-item">
                   <span class="caract-etiqueta tirar-caracteristica" data-caracteristica="mente">MEN</span>
@@ -97,7 +97,7 @@
                     <input type="number" name="system.caracteristicas.mente.valor"
                            value="{{system.caracteristicas.mente.valor}}" min="1" max="20" />
                   </div>
-                  <span style="font-size:10px;color:var(--tq-text-dim);">Mente</span>
+                  <span style="font-size:10px;color:var(--tq-text-dim);">{{localize "TQ.Caracteristicas.mente"}}</span>
                 </div>
                 <div class="caract-item">
                   <span class="caract-etiqueta tirar-caracteristica" data-caracteristica="espiritu">ESP</span>
@@ -105,7 +105,7 @@
                     <input type="number" name="system.caracteristicas.espiritu.valor"
                            value="{{system.caracteristicas.espiritu.valor}}" min="1" max="20" />
                   </div>
-                  <span style="font-size:10px;color:var(--tq-text-dim);">Espíritu</span>
+                  <span style="font-size:10px;color:var(--tq-text-dim);">{{localize "TQ.Caracteristicas.espiritu"}}</span>
                 </div>
               </div>
               {{!-- ATR y TAM --}}
@@ -116,7 +116,7 @@
                     <input type="number" name="system.caracteristicas.atractivo.valor"
                            value="{{system.caracteristicas.atractivo.valor}}" min="-5" max="10" />
                   </div>
-                  <span style="font-size:9px;color:var(--tq-text-dim);">Atractivo</span>
+                  <span style="font-size:9px;color:var(--tq-text-dim);">{{localize "TQ.Caracteristicas.atractivo"}}</span>
                 </div>
                 <div class="caract-sec-item">
                   <span class="caract-sec-label">TAM</span>
@@ -124,25 +124,25 @@
                     <input type="number" name="system.caracteristicas.tamano.valor"
                            value="{{system.caracteristicas.tamano.valor}}" min="-3" max="10" />
                   </div>
-                  <span style="font-size:9px;color:var(--tq-text-dim);">Tamaño</span>
+                  <span style="font-size:9px;color:var(--tq-text-dim);">{{localize "TQ.Caracteristicas.tamano"}}</span>
                 </div>
               </div>
               {{!-- Derivadas --}}
               <div class="tq-derivadas-fila">
                 <div class="derivada-item">
-                  <span class="derivada-label tirar-caracteristica" data-caracteristica="fuerza" title="Tirar Fuerza" style="cursor:pointer;">Fuerza</span>
+                  <span class="derivada-label tirar-caracteristica" data-caracteristica="fuerza" title="{{localize "TQ.Tooltips.TirarFuerza"}}" style="cursor:pointer;">{{localize "TQ.Caracteristicas.fuerza"}}</span>
                   <div class="tq-caract-sec-circulo">
                     <span class="derivada-value">{{system.derivadas.fuerza.valor}}</span>
                   </div>
                 </div>
                 <div class="derivada-item">
-                  <span class="derivada-label">MD 1M</span>
+                  <span class="derivada-label">{{localize "TQ.Combate.md1m"}}</span>
                   <div class="tq-caract-sec-circulo">
                     <span class="derivada-value">{{system.derivadas.mDano1m.valor}}</span>
                   </div>
                 </div>
                 <div class="derivada-item">
-                  <span class="derivada-label">MD 2M</span>
+                  <span class="derivada-label">{{localize "TQ.Combate.md2m"}}</span>
                   <div class="tq-caract-sec-circulo">
                     <span class="derivada-value">{{system.derivadas.mDano2m.valor}}</span>
                   </div>
@@ -158,42 +158,42 @@
 
           {{!-- Bases de habilidades --}}
           <div class="tq-section-box" style="flex:1;">
-            <div class="tq-section-header">Bases de Habilidades</div>
+            <div class="tq-section-header">{{localize "TQ.Secciones.BasesHabilidades"}}</div>
             <div class="tq-section-content">
               <table class="bases-table">
                 <tbody>
                   <tr>
-                    <td class="base-nombre tirar-base" data-nombre="Agilidad" data-valor="{{system.bases.agilidad.valor}}">Agilidad</td>
+                    <td class="base-nombre tirar-base" data-nombre="{{localize "TQ.Bases.agilidad"}}" data-valor="{{system.bases.agilidad.valor}}">{{localize "TQ.Bases.agilidad"}}</td>
                     <td class="base-valor">{{system.bases.agilidad.valor}}</td>
                     <td class="base-formula">CUE − TAM</td>
                   </tr>
                   <tr>
-                    <td class="base-nombre tirar-base" data-nombre="Comunicación" data-valor="{{system.bases.comunicacion.valor}}">Comunicación</td>
+                    <td class="base-nombre tirar-base" data-nombre="{{localize "TQ.Bases.comunicacion"}}" data-valor="{{system.bases.comunicacion.valor}}">{{localize "TQ.Bases.comunicacion"}}</td>
                     <td class="base-valor">{{system.bases.comunicacion.valor}}</td>
                     <td class="base-formula">ESP + ATR</td>
                   </tr>
                   <tr>
-                    <td class="base-nombre tirar-base" data-nombre="Cultura" data-valor="{{system.bases.cultura.valor}}">Cultura</td>
+                    <td class="base-nombre tirar-base" data-nombre="{{localize "TQ.Bases.cultura"}}" data-valor="{{system.bases.cultura.valor}}">{{localize "TQ.Bases.cultura"}}</td>
                     <td class="base-valor">{{system.bases.cultura.valor}}</td>
                     <td class="base-formula">MEN</td>
                   </tr>
                   <tr>
-                    <td class="base-nombre tirar-base" data-nombre="Hechicería" data-valor="{{system.bases.hechiceria.valor}}">Hechicería</td>
+                    <td class="base-nombre tirar-base" data-nombre="{{localize "TQ.Bases.hechiceria"}}" data-valor="{{system.bases.hechiceria.valor}}">{{localize "TQ.Bases.hechiceria"}}</td>
                     <td class="base-valor">{{system.bases.hechiceria.valor}}</td>
                     <td class="base-formula">(MEN+ESP)/3</td>
                   </tr>
                   <tr>
-                    <td class="base-nombre tirar-base" data-nombre="Percepción" data-valor="{{system.bases.percepcion.valor}}">Percepción</td>
+                    <td class="base-nombre tirar-base" data-nombre="{{localize "TQ.Bases.percepcion"}}" data-valor="{{system.bases.percepcion.valor}}">{{localize "TQ.Bases.percepcion"}}</td>
                     <td class="base-valor">{{system.bases.percepcion.valor}}</td>
                     <td class="base-formula">(MEN+ESP)/2</td>
                   </tr>
                   <tr>
-                    <td class="base-nombre tirar-base" data-nombre="Técnica" data-valor="{{system.bases.tecnica.valor}}">Técnica</td>
+                    <td class="base-nombre tirar-base" data-nombre="{{localize "TQ.Bases.tecnica"}}" data-valor="{{system.bases.tecnica.valor}}">{{localize "TQ.Bases.tecnica"}}</td>
                     <td class="base-valor">{{system.bases.tecnica.valor}}</td>
                     <td class="base-formula">(MEN+CUE)/2</td>
                   </tr>
                   <tr>
-                    <td class="base-nombre tirar-base" data-nombre="Vigor" data-valor="{{system.bases.vigor.valor}}">Vigor</td>
+                    <td class="base-nombre tirar-base" data-nombre="{{localize "TQ.Bases.vigor"}}" data-valor="{{system.bases.vigor.valor}}">{{localize "TQ.Bases.vigor"}}</td>
                     <td class="base-valor">{{system.bases.vigor.valor}}</td>
                     <td class="base-formula">CUE</td>
                   </tr>
@@ -206,7 +206,7 @@
           <div class="tq-top-der-recursos">
             {{!-- Destino --}}
             <div class="tq-section-box">
-              <div class="tq-section-header">Destino</div>
+              <div class="tq-section-header">{{localize "TQ.Secciones.Destino"}}</div>
               <div class="tq-section-content">
                 <div class="destino-box">
                   <div class="destino-campo">
@@ -214,37 +214,37 @@
                       <input type="number" name="system.destino.actual"
                              value="{{system.destino.actual}}" min="0" />
                     </div>
-                    <label>Sin Asignar</label>
+                    <label>{{localize "TQ.Destino.SinAsignar"}}</label>
                   </div>
                 </div>
               </div>
             </div>
             {{!-- Fortuna --}}
             <div class="tq-section-box">
-              <div class="tq-section-header">Fortuna</div>
+              <div class="tq-section-header">{{localize "TQ.Recursos.fortuna"}}</div>
               <div class="tq-section-content">
                 <div class="tq-fortuna-fila">
-                  <button type="button" class="usar-fortuna" title="Gastar Fortuna">−</button>
+                  <button type="button" class="usar-fortuna" title="{{localize "TQ.Tooltips.GastarFortuna"}}">−</button>
                   <div class="fortuna-pips">
                     {{#tq-rango 1 system.fortuna.max}}
                     <span class="fortuna-pip {{#if (tq-gt (tq-add ../system.fortuna.actual 1) this)}}lleno{{/if}}">●</span>
                     {{/tq-rango}}
                   </div>
-                  <button type="button" class="recuperar-fortuna" title="Recuperar Fortuna">+</button>
+                  <button type="button" class="recuperar-fortuna" title="{{localize "TQ.Tooltips.RecuperarFortuna"}}">+</button>
                 </div>
               </div>
             </div>
             {{!-- Carga y Estorbo --}}
             <div class="tq-section-box">
-              <div class="tq-section-header">Carga y Estorbo</div>
+              <div class="tq-section-header">{{localize "TQ.Secciones.CargaEstorbo"}}</div>
               <div class="tq-section-content" style="display:flex;align-items:center;justify-content:center;">
                 <div class="tq-estorbo-fila">
                   <div class="estorbo-field">
-                    <label>Carga</label>
+                    <label>{{localize "TQ.Combate.carga"}}</label>
                     <span class="estorbo-valor">{{system.carga.valor}}</span>
                   </div>
                   <div class="estorbo-field">
-                    <label>Estorbo</label>
+                    <label>{{localize "TQ.Combate.estorbo"}}</label>
                     <span class="estorbo-valor">{{system.estorbo.valor}}</span>
                   </div>
                 </div>
@@ -257,7 +257,7 @@
 
       {{!-- PUNTOS DE VIDA (ancho completo) --}}
       <div class="tq-section-box">
-        <div class="tq-section-header">Puntos de Vida</div>
+        <div class="tq-section-header">{{localize "TQ.Secciones.PuntosVida"}}</div>
         <div class="tq-section-content">
           <div class="tq-pv-main-fila">
             <span class="pv-label">PV</span>
@@ -269,32 +269,32 @@
 
             <span class="tq-estados-fila">
               <span class="estado-item">
-                <a class="tq-circulo toggle-estado {{#if system.salud.debilitado}}marcado{{/if}}" data-campo="system.salud.debilitado" title="Debilitado"></a>
-                <span class="estado-label {{#if system.salud.debilitado}}activo{{/if}}">Debilitado</span>
+                <a class="tq-circulo toggle-estado {{#if system.salud.debilitado}}marcado{{/if}}" data-campo="system.salud.debilitado" title="{{localize "TQ.Salud.debilitado"}}"></a>
+                <span class="estado-label {{#if system.salud.debilitado}}activo{{/if}}">{{localize "TQ.Salud.debilitado"}}</span>
               </span>
               <span class="estado-item">
-                <a class="tq-circulo toggle-estado {{#if system.salud.incapacitado}}marcado{{/if}}" data-campo="system.salud.incapacitado" title="Incapacitado"></a>
-                <span class="estado-label {{#if system.salud.incapacitado}}activo{{/if}}">Incapacitado</span>
+                <a class="tq-circulo toggle-estado {{#if system.salud.incapacitado}}marcado{{/if}}" data-campo="system.salud.incapacitado" title="{{localize "TQ.Salud.incapacitado"}}"></a>
+                <span class="estado-label {{#if system.salud.incapacitado}}activo{{/if}}">{{localize "TQ.Salud.incapacitado"}}</span>
               </span>
               <span class="estado-item">
-                <a class="tq-circulo toggle-estado estado-peligro {{#if system.salud.desangre}}marcado{{/if}}" data-campo="system.salud.desangre" title="Desangre"></a>
-                <span class="estado-label estado-peligro-label {{#if system.salud.desangre}}activo{{/if}}">Desangre</span>
+                <a class="tq-circulo toggle-estado estado-peligro {{#if system.salud.desangre}}marcado{{/if}}" data-campo="system.salud.desangre" title="{{localize "TQ.Salud.desangre"}}"></a>
+                <span class="estado-label estado-peligro-label {{#if system.salud.desangre}}activo{{/if}}">{{localize "TQ.Salud.desangre"}}</span>
               </span>
               <span class="estado-item">
-                <a class="tq-circulo toggle-estado estado-peligro {{#if system.salud.dolorExtremo}}marcado{{/if}}" data-campo="system.salud.dolorExtremo" title="Dolor Extremo"></a>
-                <span class="estado-label estado-peligro-label {{#if system.salud.dolorExtremo}}activo{{/if}}">Dolor Extremo</span>
+                <a class="tq-circulo toggle-estado estado-peligro {{#if system.salud.dolorExtremo}}marcado{{/if}}" data-campo="system.salud.dolorExtremo" title="{{localize "TQ.Salud.dolorExtremo"}}"></a>
+                <span class="estado-label estado-peligro-label {{#if system.salud.dolorExtremo}}activo{{/if}}">{{localize "TQ.Salud.dolorExtremo"}}</span>
               </span>
               <span class="estado-item">
-                <a class="tq-circulo toggle-estado {{#if system.salud.ceguera}}marcado{{/if}}" data-campo="system.salud.ceguera" title="Ceguera"></a>
-                <span class="estado-label {{#if system.salud.ceguera}}activo{{/if}}">Ceguera</span>
+                <a class="tq-circulo toggle-estado {{#if system.salud.ceguera}}marcado{{/if}}" data-campo="system.salud.ceguera" title="{{localize "TQ.Salud.ceguera"}}"></a>
+                <span class="estado-label {{#if system.salud.ceguera}}activo{{/if}}">{{localize "TQ.Salud.ceguera"}}</span>
               </span>
               <span class="estado-item">
-                <a class="tq-circulo toggle-estado {{#if system.salud.piernaInutilizada}}marcado{{/if}}" data-campo="system.salud.piernaInutilizada" title="Pierna inutilizada"></a>
-                <span class="estado-label {{#if system.salud.piernaInutilizada}}activo{{/if}}">Pierna</span>
+                <a class="tq-circulo toggle-estado {{#if system.salud.piernaInutilizada}}marcado{{/if}}" data-campo="system.salud.piernaInutilizada" title="{{localize "TQ.Salud.pierna"}}"></a>
+                <span class="estado-label {{#if system.salud.piernaInutilizada}}activo{{/if}}">{{localize "TQ.Salud.pierna"}}</span>
               </span>
               <span class="estado-item">
-                <a class="tq-circulo toggle-estado {{#if system.salud.brazoInutilizado}}marcado{{/if}}" data-campo="system.salud.brazoInutilizado" title="Brazo inutilizado"></a>
-                <span class="estado-label {{#if system.salud.brazoInutilizado}}activo{{/if}}">Brazo</span>
+                <a class="tq-circulo toggle-estado {{#if system.salud.brazoInutilizado}}marcado{{/if}}" data-campo="system.salud.brazoInutilizado" title="{{localize "TQ.Salud.brazo"}}"></a>
+                <span class="estado-label {{#if system.salud.brazoInutilizado}}activo{{/if}}">{{localize "TQ.Salud.brazo"}}</span>
               </span>
             </span>
           </div>
@@ -303,23 +303,23 @@
 
       {{!-- HERIDAS --}}
       <div class="tq-section-box">
-        <div class="tq-section-header">Heridas</div>
+        <div class="tq-section-header">{{localize "TQ.Secciones.Heridas"}}</div>
         <div class="tq-section-content">
           <div class="heridas-cabecera">
             <div class="pv-umbrales">
-              <span title="Umbral de Rasguño">R: {{system.salud.pvRagunos.valor}}</span>
-              <span title="Umbral de Herida Leve">HL: {{system.salud.pvLeve.valor}}</span>
-              <span title="Umbral de Herida Grave">HG: {{system.salud.pvGrave.valor}}</span>
+              <span title="{{localize "TQ.Salud.UmbralRasguño"}}">R: {{system.salud.pvRagunos.valor}}</span>
+              <span title="{{localize "TQ.Salud.UmbralLeve"}}">HL: {{system.salud.pvLeve.valor}}</span>
+              <span title="{{localize "TQ.Salud.UmbralGrave"}}">HG: {{system.salud.pvGrave.valor}}</span>
             </div>
             <div class="heridas-leves-check">
-              <span class="heridas-leves-label">Heridas Leves</span>
+              <span class="heridas-leves-label">{{localize "TQ.Salud.heridasLeves"}}</span>
               <a class="tq-circulo toggle-estado {{#if system.salud.heridasLeves1}}marcado{{/if}}" data-campo="system.salud.heridasLeves1" title="Herida leve 1"></a>
               <a class="tq-circulo toggle-estado {{#if system.salud.heridasLeves2}}marcado{{/if}}" data-campo="system.salud.heridasLeves2" title="Herida leve 2"></a>
               <a class="tq-circulo toggle-estado {{#if system.salud.heridasLeves3}}marcado{{/if}}" data-campo="system.salud.heridasLeves3" title="Herida leve 3"></a>
               <a class="tq-circulo toggle-estado {{#if system.salud.heridasLeves4}}marcado{{/if}}" data-campo="system.salud.heridasLeves4" title="Herida leve 4"></a>
             </div>
             <div class="heridas-leves-check">
-              <span class="heridas-leves-label">Heridas Graves</span>
+              <span class="heridas-leves-label">{{localize "TQ.Salud.heridasGraves"}}</span>
               <a class="tq-circulo toggle-estado {{#if system.salud.heridasGraves1}}marcado{{/if}}" data-campo="system.salud.heridasGraves1" title="Herida grave 1"></a>
               <a class="tq-circulo toggle-estado {{#if system.salud.heridasGraves2}}marcado{{/if}}" data-campo="system.salud.heridasGraves2" title="Herida grave 2"></a>
             </div>
@@ -330,9 +330,9 @@
       {{!-- HABILIDADES en 3 columnas --}}
       <div class="tq-section-box">
         <div class="tq-section-header">
-          Habilidades
-          <button type="button" class="tq-btn fin-sesion-px" title="Dar 1 PX a cada habilidad marcada y borrar marcas">Fin de Sesión</button>
-          <button type="button" class="tq-btn fin-aventura-px" title="Repartir PX libres al finalizar la aventura">Fin de Aventura</button>
+          {{localize "TQ.Secciones.Habilidades"}}
+          <button type="button" class="tq-btn fin-sesion-px" title="{{localize "TQ.Tooltips.FinSesionPX"}}">{{localize "TQ.Botones.FinSesion"}}</button>
+          <button type="button" class="tq-btn fin-aventura-px" title="{{localize "TQ.Tooltips.FinAventuraPX"}}">{{localize "TQ.Botones.FinAventura"}}</button>
         </div>
         <div class="tq-section-content" style="padding:2px;">
           <div class="tq-habilidades-grid">
@@ -345,13 +345,13 @@
                    data-habilidad="{{entry.key}}" title="Marcar/desmarcar éxito"></a>
                 {{#if entry.esIdioma}}
                 <a class="tq-habilidad-nombre tirar-habilidad" data-habilidad="{{entry.key}}"
-                   title="Tirar {{#if entry.hab.nombre}}{{entry.hab.nombre}}{{else}}Idioma{{/if}}">
+                   data-tq-hab-tooltip="{{entry.tooltip}}">
                   {{#if entry.hab.nombre}}{{entry.hab.nombre}}
                   {{else}}<em style="color:var(--tq-text-dim);">—</em>{{/if}}
                 </a>
                 {{else}}
                 <a class="tq-habilidad-nombre tirar-habilidad" data-habilidad="{{entry.key}}"
-                   title="Tirar {{localize (concat 'TQ.Habilidades.' entry.key)}}">
+                   data-tq-hab-tooltip="{{entry.tooltip}}">
                   {{localize (concat "TQ.Habilidades." entry.key)}}
                 </a>
                 {{/if}}
@@ -374,13 +374,13 @@
                    data-habilidad="{{entry.key}}" title="Marcar/desmarcar éxito"></a>
                 {{#if entry.esIdioma}}
                 <a class="tq-habilidad-nombre tirar-habilidad" data-habilidad="{{entry.key}}"
-                   title="Tirar {{#if entry.hab.nombre}}{{entry.hab.nombre}}{{else}}Idioma{{/if}}">
+                   data-tq-hab-tooltip="{{entry.tooltip}}">
                   {{#if entry.hab.nombre}}{{entry.hab.nombre}}
                   {{else}}<em style="color:var(--tq-text-dim);">—</em>{{/if}}
                 </a>
                 {{else}}
                 <a class="tq-habilidad-nombre tirar-habilidad" data-habilidad="{{entry.key}}"
-                   title="Tirar {{localize (concat 'TQ.Habilidades.' entry.key)}}">
+                   data-tq-hab-tooltip="{{entry.tooltip}}">
                   {{localize (concat "TQ.Habilidades." entry.key)}}
                 </a>
                 {{/if}}
@@ -403,13 +403,13 @@
                    data-habilidad="{{entry.key}}" title="Marcar/desmarcar éxito"></a>
                 {{#if entry.esIdioma}}
                 <a class="tq-habilidad-nombre tirar-habilidad" data-habilidad="{{entry.key}}"
-                   title="Tirar {{#if entry.hab.nombre}}{{entry.hab.nombre}}{{else}}Idioma{{/if}}">
+                   data-tq-hab-tooltip="{{entry.tooltip}}">
                   {{#if entry.hab.nombre}}{{entry.hab.nombre}}
                   {{else}}<em style="color:var(--tq-text-dim);">—</em>{{/if}}
                 </a>
                 {{else}}
                 <a class="tq-habilidad-nombre tirar-habilidad" data-habilidad="{{entry.key}}"
-                   title="Tirar {{localize (concat 'TQ.Habilidades.' entry.key)}}">
+                   data-tq-hab-tooltip="{{entry.tooltip}}">
                   {{localize (concat "TQ.Habilidades." entry.key)}}
                 </a>
                 {{/if}}
@@ -444,20 +444,20 @@
 
         <div class="tq-section-box" style="flex:1;">
           <div class="tq-section-header">
-            <span>Armas</span>
-            <a class="item-create" data-tipo="arma" title="Añadir arma"><i class="fas fa-plus"></i></a>
+            <span>{{localize "TQ.Secciones.Armas"}}</span>
+            <a class="item-create" data-tipo="arma" title="{{localize "TQ.Tooltips.AnadirArma"}}"><i class="fas fa-plus"></i></a>
           </div>
           <div class="tq-section-content" style="padding:2px;">
             <table class="armas-table">
               <thead>
                 <tr>
                   <th></th>
-                  <th>Nombre</th>
-                  <th>Hab. (total)</th>
-                  <th>Daño</th>
-                  <th>MD</th>
-                  <th>Alcance</th>
-                  <th>Carga</th>
+                  <th>{{localize "TQ.General.Nombre"}}</th>
+                  <th>{{localize "TQ.General.HabTotal"}}</th>
+                  <th>{{localize "TQ.General.Dano"}}</th>
+                  <th>{{localize "TQ.General.MD"}}</th>
+                  <th>{{localize "TQ.General.Alcance"}}</th>
+                  <th>{{localize "TQ.Combate.carga"}}</th>
                   <th></th>
                 </tr>
               </thead>
@@ -479,8 +479,8 @@
                   <td>{{arma.item.system.alcance}}</td>
                   <td>{{arma.item.system.carga}}</td>
                   <td class="item-controls">
-                    <a class="item-edit" data-item-id="{{arma.item.id}}" title="Editar"><i class="fas fa-edit"></i></a>
-                    <a class="item-delete" data-item-id="{{arma.item.id}}" title="Eliminar"><i class="fas fa-trash"></i></a>
+                    <a class="item-edit" data-item-id="{{arma.item.id}}" title="{{localize "TQ.Tooltips.Editar"}}"><i class="fas fa-edit"></i></a>
+                    <a class="item-delete" data-item-id="{{arma.item.id}}" title="{{localize "TQ.Tooltips.Eliminar"}}"><i class="fas fa-trash"></i></a>
                   </td>
                 </tr>
                 {{/each}}
@@ -491,7 +491,7 @@
 
         {{!-- Mod. Daño --}}
         <div class="tq-section-box" style="flex:0 0 auto;min-width:100px;">
-          <div class="tq-section-header">Mod. al Daño</div>
+          <div class="tq-section-header">{{localize "TQ.Secciones.ModDano"}}</div>
           <div class="tq-section-content">
             <div class="md-field">
               <span>1M:</span>
@@ -509,18 +509,18 @@
       {{!-- PROTECCIÓN --}}
       <div class="tq-section-box">
         <div class="tq-section-header">
-          <span>Protección</span>
-          <a class="item-create" data-tipo="armadura" title="Añadir protección"><i class="fas fa-plus"></i></a>
+          <span>{{localize "TQ.Secciones.Proteccion"}}</span>
+          <a class="item-create" data-tipo="armadura" title="{{localize "TQ.Tooltips.AnadirArmadura"}}"><i class="fas fa-plus"></i></a>
         </div>
         <div class="tq-section-content" style="padding:2px;">
           <table class="armaduras-table">
             <thead>
               <tr>
-                <th>Nombre</th>
-                <th>Prot.</th>
-                <th>Zona</th>
-                <th>Tipo</th>
-                <th>Carga</th>
+                <th>{{localize "TQ.General.Nombre"}}</th>
+                <th>{{localize "TQ.Armadura.Proteccion"}}</th>
+                <th>{{localize "TQ.General.Zona"}}</th>
+                <th>{{localize "TQ.General.Tipo"}}</th>
+                <th>{{localize "TQ.Combate.carga"}}</th>
                 <th></th>
               </tr>
             </thead>
@@ -536,8 +536,8 @@
                   {{#if arm.system.esYelmo}}
                   <a class="toggle-visera {{#if arm.system.viseraBajada}}visera-bajada{{/if}}" data-item-id="{{arm.id}}" title="{{#if arm.system.viseraBajada}}Visera bajada (−2 Perc.) — clic para subir{{else}}Visera subida (−1 Perc.) — clic para bajar{{/if}}">{{#if arm.system.viseraBajada}}Bajada{{else}}Subida{{/if}}</a>
                   {{/if}}
-                  <a class="item-edit" data-item-id="{{arm.id}}" title="Editar"><i class="fas fa-edit"></i></a>
-                  <a class="item-delete" data-item-id="{{arm.id}}" title="Eliminar"><i class="fas fa-trash"></i></a>
+                  <a class="item-edit" data-item-id="{{arm.id}}" title="{{localize "TQ.Tooltips.Editar"}}"><i class="fas fa-edit"></i></a>
+                  <a class="item-delete" data-item-id="{{arm.id}}" title="{{localize "TQ.Tooltips.Eliminar"}}"><i class="fas fa-trash"></i></a>
                 </td>
               </tr>
               {{/each}}
@@ -550,16 +550,17 @@
       <div class="tq-bottom-fila" style="margin-top:6px;">
         <div class="tq-section-box" style="flex:1;">
           <div class="tq-section-header">
-            <span>Heridas</span>
-            <a class="herida-add" title="Añadir herida"><i class="fas fa-plus"></i></a>
+            <span>{{localize "TQ.Secciones.Heridas"}}</span>
+            <a class="herida-add" title="{{localize "TQ.Tooltips.AnadirHerida"}}"><i class="fas fa-plus"></i></a>
           </div>
           <div class="tq-section-content" style="padding:2px;">
             <table class="heridas-table">
               <thead>
                 <tr>
-                  <th>Tipo</th>
-                  <th>Descripción</th>
-                  <th>Sanando</th>
+                  <th>{{localize "TQ.General.Tipo"}}</th>
+                  <th>{{localize "TQ.General.Descripcion"}}</th>
+                  <th>{{localize "TQ.Salud.Dano"}}</th>
+                  <th>{{localize "TQ.Salud.sanando"}}</th>
                   <th></th>
                 </tr>
               </thead>
@@ -568,25 +569,26 @@
                 <tr data-idx="{{idx}}">
                   <td>
                     <select name="system.heridas.{{idx}}.tipo">
-                      <option value="rasguño" {{selected herida.tipo "rasguño"}}>Rasguño</option>
-                      <option value="leve" {{selected herida.tipo "leve"}}>Leve</option>
-                      <option value="grave" {{selected herida.tipo "grave"}}>Grave</option>
+                      <option value="rasguño" {{selected herida.tipo "rasguño"}}>{{localize "TQ.Salud.OpcionRasguno"}}</option>
+                      <option value="leve" {{selected herida.tipo "leve"}}>{{localize "TQ.Salud.OpcionLeve"}}</option>
+                      <option value="grave" {{selected herida.tipo "grave"}}>{{localize "TQ.Salud.OpcionGrave"}}</option>
                     </select>
                   </td>
                   <td><input type="text" name="system.heridas.{{idx}}.descripcion" value="{{herida.descripcion}}" /></td>
+                  <td class="herida-dano"><input type="number" name="system.heridas.{{idx}}.dano" value="{{herida.dano}}" min="0" /></td>
                   <td class="herida-sanando">
-                    <a class="tq-circulo toggle-herida-sanando {{#if herida.sanando}}marcado{{/if}}" data-idx="{{idx}}" title="Sanando"></a>
+                    <a class="tq-circulo toggle-herida-sanando {{#if herida.sanando}}marcado{{/if}}" data-idx="{{idx}}" title="{{localize "TQ.Salud.sanando"}}"></a>
                   </td>
                   <td class="item-controls">
-                    <a class="herida-primeros-auxilios" data-idx="{{idx}}" title="Primeros Auxilios"><i class="fas fa-medkit"></i></a>
-                    <a class="herida-delete" data-idx="{{idx}}" title="Eliminar"><i class="fas fa-trash"></i></a>
+                    <a class="herida-primeros-auxilios" data-idx="{{idx}}" title="{{localize "TQ.PA.Titulo"}}"><i class="fas fa-medkit"></i></a>
+                    <a class="herida-delete" data-idx="{{idx}}" title="{{localize "TQ.Tooltips.Eliminar"}}"><i class="fas fa-trash"></i></a>
                   </td>
                 </tr>
                 {{/each}}
               </tbody>
             </table>
             <div class="heridas-actions">
-              <a class="tirar-lesion tq-btn-lanzar" title="Tirar en la Tabla de Lesiones (1d20)"><i class="fas fa-dice-d20"></i> Tabla de Lesiones</a>
+              <a class="tirar-lesion tq-btn-lanzar" title="{{localize "TQ.Botones.TablaLesiones"}}"><i class="fas fa-dice-d20"></i> {{localize "TQ.Botones.TablaLesiones"}}</a>
             </div>
           </div>
         </div>
@@ -595,8 +597,8 @@
       {{!-- EQUIPO --}}
       <div class="tq-section-box" style="margin-bottom:6px;">
         <div class="tq-section-header">
-          <span>Equipo</span>
-          <a class="item-create" data-tipo="objeto" title="Añadir objeto"><i class="fas fa-plus"></i></a>
+          <span>{{localize "TQ.Secciones.Equipo"}}</span>
+          <a class="item-create" data-tipo="objeto" title="{{localize "TQ.Tooltips.AnadirObjeto"}}"><i class="fas fa-plus"></i></a>
         </div>
         <div class="tq-section-content equipo-content">
           {{#each items.objetos as |obj|}}
@@ -623,18 +625,18 @@
           </div>
           {{/each}}
           {{#unless items.objetos.length}}{{#unless items.consumibles.length}}
-          <p class="equipo-vacio">Sin equipo. Arrastra objetos o consumibles aquí.</p>
+          <p class="equipo-vacio">{{localize "TQ.Secciones.EquipoVacio"}}</p>
           {{/unless}}{{/unless}}
         </div>
       </div>
 
       {{!-- DINERO --}}
       <div class="tq-dinero-fila">
-        <label class="tq-dinero-label">Monedas de bronce (mb)</label>
+        <label class="tq-dinero-label">{{localize "TQ.General.MonedasBronce"}}</label>
         <input type="number" name="system.dinero" value="{{system.dinero}}" min="0" class="tq-dinero-input" />
         <div class="tq-dinero-extra">
-          <span class="tq-dinero-stat"><label>Carga</label> <span class="estorbo-valor">{{system.carga.valor}}</span></span>
-          <span class="tq-dinero-stat"><label>Estorbo</label> <span class="estorbo-valor">{{system.estorbo.valor}}</span></span>
+          <span class="tq-dinero-stat"><label>{{localize "TQ.Combate.carga"}}</label> <span class="estorbo-valor">{{system.carga.valor}}</span></span>
+          <span class="tq-dinero-stat"><label>{{localize "TQ.Combate.estorbo"}}</label> <span class="estorbo-valor">{{system.estorbo.valor}}</span></span>
         </div>
       </div>
 
@@ -651,22 +653,21 @@
 
       {{!-- Puntos de Magia --}}
       <div class="tq-section-box">
-        <div class="tq-section-header">Puntos de Magia</div>
+        <div class="tq-section-header">{{localize "TQ.Secciones.PuntosMagia"}}</div>
         <div class="tq-section-content">
           <div class="tq-pm-fila">
-            <label>PM</label>
+            <label>{{localize "TQ.General.PM"}}</label>
             <input type="number" name="system.hechiceria.pmActual"
                    value="{{system.hechiceria.pmActual}}" min="0" />
             <span class="pm-sep">/</span>
             <span class="estorbo-valor">{{system.hechiceria.pmMax}}</span>
             <span class="pm-sep" style="margin:0 4px;">·</span>
-            <label>Esp. Consagrado</label>
-            <input type="number" name="system.hechiceria.espirituConsagrado"
-                   value="{{system.hechiceria.espirituConsagrado}}" min="0" />
+            <label>{{localize "TQ.General.EspConsagradoAbrev"}}</label>
+            <span class="estorbo-valor">{{system.hechiceria.espirituConsagrado}}</span>
             <span class="pm-sep" style="margin:0 4px;">·</span>
-            <label>Base Hech.</label>
+            <label>{{localize "TQ.Magia.BaseHechiceria"}}</label>
             <strong style="color:var(--tq-teal-dark);font-size:17px;">{{system.bases.hechiceria.valor}}</strong>
-            <button type="button" class="tq-btn recuperar-pm" style="margin-left:8px;" title="Recuperar PM durmiendo"><i class="fas fa-moon"></i></button>
+            <button type="button" class="tq-btn recuperar-pm" style="margin-left:8px;" title="{{localize "TQ.Tooltips.RecuperarPMDurmiendo"}}"><i class="fas fa-moon"></i></button>
           </div>
         </div>
       </div>
@@ -717,7 +718,7 @@
       {{!-- Hechizos --}}
       <div class="tq-section-box">
         <div class="tq-section-header">
-          <span>Hechizos</span>
+          <span>{{localize "TQ.Secciones.Hechizos"}}</span>
           <a class="item-create" data-tipo="hechizo"><i class="fas fa-plus"></i></a>
         </div>
         <ul class="hechizos-list">
@@ -725,11 +726,11 @@
           <li class="hechizo-item" data-item-id="{{hech.id}}">
             <div class="hechizo-main">
               <div class="hechizo-nombre-wrap">
-                <span class="tq-circulo hechizo-permanent{{#if hech.system.permanent}} marcado{{/if}}" data-item-id="{{hech.id}}" title="Espíritu consagrado"></span>
+                <span class="tq-circulo hechizo-permanent{{#if hech.system.permanent}} marcado{{/if}}" data-item-id="{{hech.id}}" title="{{localize "TQ.Hechizo.EspirituConsagrado"}}"></span>
                 <span class="hechizo-nombre">{{hech.name}}</span>
               </div>
               <span class="item-controls">
-                <a class="tirar-hechizo tq-btn-lanzar" data-item-id="{{hech.id}}">Lanzar</a>
+                <a class="tirar-hechizo tq-btn-lanzar" data-item-id="{{hech.id}}">{{localize "TQ.Botones.Lanzar"}}</a>
                 <a class="item-edit" data-item-id="{{hech.id}}"><i class="fas fa-edit"></i></a>
                 <a class="item-delete" data-item-id="{{hech.id}}"><i class="fas fa-trash"></i></a>
               </span>
@@ -739,8 +740,8 @@
               <span>DIF. {{hech.system.dificultad}}</span>
               <span class="hechizo-sep">|</span>
               <span>PM {{hech.system.pmCoste}}{{#if (tq-gt hech.system.pmMax hech.system.pmCoste)}}-{{hech.system.pmMax}}{{/if}}</span>
-              {{#if (tq-eq hech.system.duracion "instantaneo")}}<span class="hechizo-sep">|</span><span class="hechizo-badge">Inmediato</span>{{/if}}
-              {{#if hech.system.requiereTiradaEspiritu}}<span class="hechizo-sep">|</span><span class="hechizo-espiritu">Espíritu</span>{{/if}}
+              {{#if (tq-eq hech.system.duracion "instantaneo")}}<span class="hechizo-sep">|</span><span class="hechizo-badge">{{localize "TQ.Hechizo.Inmediato"}}</span>{{/if}}
+              {{#if hech.system.requiereTiradaEspiritu}}<span class="hechizo-sep">|</span><span class="hechizo-espiritu">{{localize "TQ.Hechizo.Espiritu"}}</span>{{/if}}
             </div>
           </li>
           {{/each}}
@@ -766,68 +767,68 @@
 
           {{!-- LEALTAD --}}
           <div class="tq-section-box" style="margin-bottom:0;">
-            <div class="tq-section-header">Lealtad</div>
+            <div class="tq-section-header">{{localize "TQ.Secciones.Lealtad"}}</div>
             <div class="tq-section-content">
               <div class="tq-lealtad-fila">
                 <div class="lealtad-item {{#if lealtad.alineado.caos}}lealtad-alineada{{/if}}">
-                  <label>Caos</label>
+                  <label>{{localize "TQ.Lealtad.caos"}}</label>
                   <div class="lealtad-circulo">
                     <input type="number" name="system.lealtad.caos" value="{{system.lealtad.caos}}" min="0" />
                   </div>
                 </div>
                 <div class="lealtad-item {{#if lealtad.alineado.ley}}lealtad-alineada{{/if}}">
-                  <label>Ley</label>
+                  <label>{{localize "TQ.Lealtad.ley"}}</label>
                   <div class="lealtad-circulo">
                     <input type="number" name="system.lealtad.ley" value="{{system.lealtad.ley}}" min="0" />
                   </div>
                 </div>
                 <div class="lealtad-item {{#if lealtad.alineado.elementos}}lealtad-alineada{{/if}}">
-                  <label>Elementos</label>
+                  <label>{{localize "TQ.Lealtad.elementos"}}</label>
                   <div class="lealtad-circulo">
                     <input type="number" name="system.lealtad.elementos" value="{{system.lealtad.elementos}}" min="0" />
                   </div>
                 </div>
                 <div class="lealtad-item {{#if lealtad.alineado.antepasados}}lealtad-alineada{{/if}}">
-                  <label>Antepasados</label>
+                  <label>{{localize "TQ.Lealtad.antepasados"}}</label>
                   <div class="lealtad-circulo">
                     <input type="number" name="system.lealtad.antepasados" value="{{system.lealtad.antepasados}}" min="0" />
                   </div>
                 </div>
               </div>
               <div class="lealtad-divina-campo">
-                <label>Actitud ante lo divino</label>
+                <label>{{localize "TQ.Lealtad.ActitudDivina"}}</label>
                 <select name="system.actitudDivina">
-                  <option value="servicial"   {{selected system.actitudDivina "servicial"}}>Servicial</option>
-                  <option value="atemorizado" {{selected system.actitudDivina "atemorizado"}}>Atemorizado</option>
-                  <option value="pragmatico"  {{selected system.actitudDivina "pragmatico"}}>Pragmático</option>
-                  <option value="rebelde"     {{selected system.actitudDivina "rebelde"}}>Rebelde</option>
-                  <option value="indiferente" {{selected system.actitudDivina "indiferente"}}>Indiferente</option>
+                  <option value="servicial"   {{selected system.actitudDivina "servicial"}}>{{localize "TQ.Lealtad.Actitud.servicial"}}</option>
+                  <option value="atemorizado" {{selected system.actitudDivina "atemorizado"}}>{{localize "TQ.Lealtad.Actitud.atemorizado"}}</option>
+                  <option value="pragmatico"  {{selected system.actitudDivina "pragmatico"}}>{{localize "TQ.Lealtad.Actitud.pragmatico"}}</option>
+                  <option value="rebelde"     {{selected system.actitudDivina "rebelde"}}>{{localize "TQ.Lealtad.Actitud.rebelde"}}</option>
+                  <option value="indiferente" {{selected system.actitudDivina "indiferente"}}>{{localize "TQ.Lealtad.Actitud.indiferente"}}</option>
                 </select>
               </div>
               <div class="lealtad-divina-campo actitud-efecto">
                 {{#if (tq-eq system.actitudDivina "servicial")}}
-                  <span class="actitud-desc">+2 PL gratis al finalizar sesión</span>
-                  <button type="button" class="tq-btn fin-sesion-actitud">Aplicar fin de sesión</button>
+                  <span class="actitud-desc">{{localize "TQ.Lealtad.Actitud.ServicialDesc"}}</span>
+                  <button type="button" class="tq-btn fin-sesion-actitud">{{localize "TQ.Botones.AplicarFinSesion"}}</button>
                 {{/if}}
                 {{#if (tq-eq system.actitudDivina "atemorizado")}}
-                  <span class="actitud-desc">Canjear 3 PL ↔ 1 Fortuna</span>
-                  <button type="button" class="tq-btn fin-sesion-actitud">Aplicar fin de sesión</button>
+                  <span class="actitud-desc">{{localize "TQ.Lealtad.Actitud.AtemoradoDesc"}}</span>
+                  <button type="button" class="tq-btn fin-sesion-actitud">{{localize "TQ.Botones.AplicarFinSesion"}}</button>
                 {{/if}}
                 {{#if (tq-eq system.actitudDivina "pragmatico")}}
-                  <span class="actitud-desc">Gastar 3 PL → 1 PE extra en habilidad marcada</span>
-                  <button type="button" class="tq-btn fin-sesion-actitud">Aplicar fin de sesión</button>
+                  <span class="actitud-desc">{{localize "TQ.Lealtad.Actitud.PragmaticoDesc"}}</span>
+                  <button type="button" class="tq-btn fin-sesion-actitud">{{localize "TQ.Botones.AplicarFinSesion"}}</button>
                 {{/if}}
                 {{#if (tq-eq system.actitudDivina "rebelde")}}
-                  <span class="actitud-desc">Reducir 20 PL ↔ 1 Destino</span>
-                  <button type="button" class="tq-btn fin-sesion-actitud">Aplicar fin de sesión</button>
+                  <span class="actitud-desc">{{localize "TQ.Lealtad.Actitud.RebeldeDesc"}}</span>
+                  <button type="button" class="tq-btn fin-sesion-actitud">{{localize "TQ.Botones.AplicarFinSesion"}}</button>
                 {{/if}}
                 {{#if (tq-eq system.actitudDivina "indiferente")}}
-                  <span class="actitud-desc">Transferir hasta 3 PL entre religiones</span>
-                  <button type="button" class="tq-btn fin-sesion-actitud">Aplicar fin de sesión</button>
+                  <span class="actitud-desc">{{localize "TQ.Lealtad.Actitud.IndiferenteDesc"}}</span>
+                  <button type="button" class="tq-btn fin-sesion-actitud">{{localize "TQ.Botones.AplicarFinSesion"}}</button>
                 {{/if}}
               </div>
               <div class="lealtad-divina-campo">
-                <button type="button" class="tq-btn cambiar-lealtad-pm">Cambiar Lealtad por PM</button>
+                <button type="button" class="tq-btn cambiar-lealtad-pm">{{localize "TQ.Botones.CambiarLealtadPM"}}</button>
               </div>
             </div>
           </div>
@@ -835,7 +836,7 @@
           {{!-- Pactos --}}
           <div class="tq-section-box" style="margin-bottom:0;">
             <div class="tq-section-header">
-              <span>Pactos</span>
+              <span>{{localize "TQ.Secciones.Pactos"}}</span>
               <a class="item-create" data-tipo="pacto"><i class="fas fa-plus"></i></a>
             </div>
             <ul class="pactos-list">
@@ -845,7 +846,7 @@
                 <span class="pacto-religion">({{pacto.system.religion}})</span>
                 <span class="pacto-esp">{{pacto.system.espirituConsagrado}} ESP</span>
                 <span class="item-controls">
-                  <a class="tirar-intervencion" data-item-id="{{pacto.id}}" title="Intervención Divina">Intervención</a>
+                  <a class="tirar-intervencion" data-item-id="{{pacto.id}}" title="{{localize "TQ.Botones.Intervencion"}}">{{localize "TQ.Botones.Intervencion"}}</a>
                   <a class="item-edit" data-item-id="{{pacto.id}}"><i class="fas fa-edit"></i></a>
                   <a class="item-delete" data-item-id="{{pacto.id}}"><i class="fas fa-trash"></i></a>
                 </span>
@@ -857,7 +858,7 @@
           {{!-- Bendiciones --}}
           <div class="tq-section-box" style="margin-bottom:0;">
             <div class="tq-section-header">
-              <span>Bendiciones</span>
+              <span>{{localize "TQ.Secciones.Bendiciones"}}</span>
               <a class="item-create" data-tipo="bendicion"><i class="fas fa-plus"></i></a>
             </div>
             <ul class="bendiciones-list">
@@ -867,7 +868,7 @@
                 <span class="bend-coste">{{bend.system.coste}} ESP</span>
                 {{#if (tq-eq bend.system.tipo "activa")}}
                 <span class="bend-pm">{{bend.system.pmCoste}} PM</span>
-                <a class="activar-bendicion" data-item-id="{{bend.id}}" title="Activar">Activar</a>
+                <a class="activar-bendicion" data-item-id="{{bend.id}}" title="{{localize "TQ.Botones.Activar"}}">{{localize "TQ.Botones.Activar"}}</a>
                 {{/if}}
                 <span class="item-controls">
                   <a class="item-edit" data-item-id="{{bend.id}}"><i class="fas fa-edit"></i></a>
@@ -880,16 +881,16 @@
 
           <div class="tq-section-box" style="margin-bottom:0;">
             <div class="tq-section-header">
-              <span>Destino</span>
-              <a class="destino-punto-add" title="Añadir punto de destino"><i class="fas fa-plus"></i></a>
+              <span>{{localize "TQ.Secciones.Destino"}}</span>
+              <a class="destino-punto-add" title="{{localize "TQ.Tooltips.AnhadirDestino"}}"><i class="fas fa-plus"></i></a>
             </div>
             <div class="tq-section-content">
               <table class="heridas-table">
                 <thead>
                   <tr>
-                    <th>Tipo</th>
-                    <th>Descripción</th>
-                    <th>Valor</th>
+                    <th>{{localize "TQ.General.Tipo"}}</th>
+                    <th>{{localize "TQ.General.Descripcion"}}</th>
+                    <th>{{localize "TQ.General.Valor"}}</th>
                     <th></th>
                   </tr>
                 </thead>
@@ -898,23 +899,23 @@
                   <tr data-idx="{{idx}}">
                     <td>
                       <select name="system.destino.puntos.{{idx}}.tipo">
-                        <option value="objeto"   {{selected punto.tipo "objeto"}}>Objeto</option>
-                        <option value="persona"  {{selected punto.tipo "persona"}}>Persona</option>
-                        <option value="secreto"  {{selected punto.tipo "secreto"}}>Secreto</option>
-                        <option value="escenario" {{selected punto.tipo "escenario"}}>Escenario</option>
+                        <option value="objeto"   {{selected punto.tipo "objeto"}}>{{localize "TQ.Destino.Tipos.objeto"}}</option>
+                        <option value="persona"  {{selected punto.tipo "persona"}}>{{localize "TQ.Destino.Tipos.persona"}}</option>
+                        <option value="secreto"  {{selected punto.tipo "secreto"}}>{{localize "TQ.Destino.Tipos.secreto"}}</option>
+                        <option value="escenario" {{selected punto.tipo "escenario"}}>{{localize "TQ.Destino.Tipos.escenario"}}</option>
                       </select>
                     </td>
                     <td><input type="text" name="system.destino.puntos.{{idx}}.descripcion" value="{{punto.descripcion}}" /></td>
                     <td><input type="number" name="system.destino.puntos.{{idx}}.valor" value="{{punto.valor}}" min="0" class="destino-punto-valor" /></td>
                     <td class="item-controls">
-                      <a class="destino-punto-delete" data-idx="{{idx}}" title="Eliminar"><i class="fas fa-trash"></i></a>
+                      <a class="destino-punto-delete" data-idx="{{idx}}" title="{{localize "TQ.Tooltips.Eliminar"}}"><i class="fas fa-trash"></i></a>
                     </td>
                   </tr>
                   {{/each}}
                 </tbody>
               </table>
               <div class="destino-gastado-total">
-                <label>Valor total</label>
+                <label>{{localize "TQ.Destino.ValorTotal"}}</label>
                 <span>{{destinoTotal}}</span>
               </div>
             </div>
@@ -927,7 +928,7 @@
 
           {{!-- Información personal --}}
           <div class="tq-section-box" style="margin-bottom:0;">
-            <div class="tq-section-header">Información Personal</div>
+            <div class="tq-section-header">{{localize "TQ.Secciones.InfoPersonal"}}</div>
             <div class="tq-section-content">
               <div class="tq-info-grid">
                 <div class="tq-info-field">
@@ -940,7 +941,7 @@
                 </div>
                 <div class="tq-info-field full tq-info-fila-triple">
                   <div class="tq-info-field">
-                    <label>Entorno</label>
+                    <label>{{localize "TQ.Actor.EntornoLabel"}}</label>
                     {{#if items.entorno}}
                     <span class="tq-origen-nombre">{{items.entorno.name}}</span>
                     {{else}}
@@ -948,7 +949,7 @@
                     {{/if}}
                   </div>
                   <div class="tq-info-field">
-                    <label>Origen Étnico</label>
+                    <label>{{localize "TQ.Actor.OrigenEtnicoLabel"}}</label>
                     {{#if items.origen}}
                     <span class="tq-origen-nombre">{{items.origen.name}}</span>
                     {{else}}
@@ -956,7 +957,7 @@
                     {{/if}}
                   </div>
                   <div class="tq-info-field">
-                    <label>Profesión</label>
+                    <label>{{localize "TQ.Actor.ProfesionLabel"}}</label>
                     {{#if items.profesion}}
                     <span class="tq-origen-nombre">{{items.profesion.name}}</span>
                     {{else}}
@@ -966,17 +967,17 @@
                 </div>
                 <div class="tq-info-field full tq-info-fila-triple">
                   <div class="tq-info-field">
-                    <label>Idioma nativo</label>
+                    <label>{{localize "TQ.Idioma.IdiomaNativo"}}</label>
                     <input type="text" name="system.habilidades.idioma1.nombre"
                            value="{{system.habilidades.idioma1.nombre}}" placeholder="—" />
                   </div>
                   <div class="tq-info-field">
-                    <label>Idioma 2</label>
+                    <label>{{localize "TQ.Idioma.Idioma2"}}</label>
                     <input type="text" name="system.habilidades.idioma2.nombre"
                            value="{{system.habilidades.idioma2.nombre}}" placeholder="—" />
                   </div>
                   <div class="tq-info-field">
-                    <label>Idioma 3</label>
+                    <label>{{localize "TQ.Idioma.Idioma3"}}</label>
                     <input type="text" name="system.habilidades.idioma3.nombre"
                            value="{{system.habilidades.idioma3.nombre}}" placeholder="—" />
                   </div>
@@ -996,7 +997,7 @@
           {{!-- Ventajas y desventajas --}}
           <div class="tq-section-box" style="margin-bottom:0;">
             <div class="tq-section-header">
-              <span>Ventajas y Desventajas</span>
+              <span>{{localize "TQ.Secciones.VentajasDesventajas"}}</span>
               <a class="item-create" data-tipo="ventaja"><i class="fas fa-plus"></i></a>
             </div>
             <ul class="ventajas-list">
@@ -1020,7 +1021,7 @@
           {{#if (or items.rasgos.length true)}}
           <div class="tq-section-box" style="margin-bottom:0;margin-top:4px;">
             <div class="tq-section-header">
-              <span>Rasgos</span>
+              <span>{{localize "TQ.Secciones.Rasgos"}}</span>
               <a class="item-create" data-tipo="rasgo"><i class="fas fa-plus"></i></a>
             </div>
             <ul class="ventajas-list">
@@ -1043,20 +1044,38 @@
 
           {{!-- Rasgos de personalidad --}}
           <div class="tq-section-box" style="margin-bottom:0;margin-top:4px;">
-            <div class="tq-section-header">Rasgos de Personalidad</div>
+            <div class="tq-section-header">{{localize "TQ.Secciones.RasgosPersonalidad"}}</div>
             <div class="tq-section-content">
               <div class="rasgos-grid">
                 <div class="rasgos-col">
-                  <div class="rasgos-col-title rasgo-pos-title">Positivos</div>
-                  <input type="text" name="system.rasgoPos1" value="{{system.rasgoPos1}}" placeholder="Rasgo positivo 1" class="rasgo-input rasgo-pos" />
-                  <input type="text" name="system.rasgoPos2" value="{{system.rasgoPos2}}" placeholder="Rasgo positivo 2" class="rasgo-input rasgo-pos" />
-                  <input type="text" name="system.rasgoPos3" value="{{system.rasgoPos3}}" placeholder="Rasgo positivo 3" class="rasgo-input rasgo-pos rasgo-extra" />
+                  <div class="rasgos-col-title rasgo-pos-title">{{localize "TQ.Rasgos.Positivos"}}</div>
+                  <div class="rasgo-fila">
+                    <input type="text" name="system.rasgoPos1" value="{{system.rasgoPos1}}" placeholder="{{localize "TQ.Placeholders.RasgoPos1"}}" class="rasgo-input rasgo-pos" />
+                    <a class="tq-circulo toggle-rasgo-usada {{#if system.rasgoPos1Usada}}marcado{{/if}}" data-campo="rasgoPos1Usada" title="Marcar uso"></a>
+                  </div>
+                  <div class="rasgo-fila">
+                    <input type="text" name="system.rasgoPos2" value="{{system.rasgoPos2}}" placeholder="{{localize "TQ.Placeholders.RasgoPos2"}}" class="rasgo-input rasgo-pos" />
+                    <a class="tq-circulo toggle-rasgo-usada {{#if system.rasgoPos2Usada}}marcado{{/if}}" data-campo="rasgoPos2Usada" title="Marcar uso"></a>
+                  </div>
+                  <div class="rasgo-fila">
+                    <input type="text" name="system.rasgoPos3" value="{{system.rasgoPos3}}" placeholder="{{localize "TQ.Placeholders.RasgoPos3"}}" class="rasgo-input rasgo-pos rasgo-extra" />
+                    <a class="tq-circulo toggle-rasgo-usada {{#if system.rasgoPos3Usada}}marcado{{/if}}" data-campo="rasgoPos3Usada" title="Marcar uso"></a>
+                  </div>
                 </div>
                 <div class="rasgos-col">
-                  <div class="rasgos-col-title rasgo-neg-title">Negativos</div>
-                  <input type="text" name="system.rasgoNeg1" value="{{system.rasgoNeg1}}" placeholder="Rasgo negativo 1" class="rasgo-input rasgo-neg" />
-                  <input type="text" name="system.rasgoNeg2" value="{{system.rasgoNeg2}}" placeholder="Rasgo negativo 2" class="rasgo-input rasgo-neg" />
-                  <input type="text" name="system.rasgoNeg3" value="{{system.rasgoNeg3}}" placeholder="Rasgo negativo 3" class="rasgo-input rasgo-neg rasgo-extra" />
+                  <div class="rasgos-col-title rasgo-neg-title">{{localize "TQ.Rasgos.Negativos"}}</div>
+                  <div class="rasgo-fila">
+                    <input type="text" name="system.rasgoNeg1" value="{{system.rasgoNeg1}}" placeholder="{{localize "TQ.Placeholders.RasgoNeg1"}}" class="rasgo-input rasgo-neg" />
+                    <a class="tq-circulo toggle-rasgo-usada {{#if system.rasgoNeg1Usada}}marcado{{/if}}" data-campo="rasgoNeg1Usada" title="Marcar uso"></a>
+                  </div>
+                  <div class="rasgo-fila">
+                    <input type="text" name="system.rasgoNeg2" value="{{system.rasgoNeg2}}" placeholder="{{localize "TQ.Placeholders.RasgoNeg2"}}" class="rasgo-input rasgo-neg" />
+                    <a class="tq-circulo toggle-rasgo-usada {{#if system.rasgoNeg2Usada}}marcado{{/if}}" data-campo="rasgoNeg2Usada" title="Marcar uso"></a>
+                  </div>
+                  <div class="rasgo-fila">
+                    <input type="text" name="system.rasgoNeg3" value="{{system.rasgoNeg3}}" placeholder="{{localize "TQ.Placeholders.RasgoNeg3"}}" class="rasgo-input rasgo-neg rasgo-extra" />
+                    <a class="tq-circulo toggle-rasgo-usada {{#if system.rasgoNeg3Usada}}marcado{{/if}}" data-campo="rasgoNeg3Usada" title="Marcar uso"></a>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1071,11 +1090,14 @@
 
         {{!-- Guías Interpretativas --}}
         <div class="tq-section-box" style="margin-bottom:0;">
-          <div class="tq-section-header">Guías Interpretativas</div>
+          <div class="tq-section-header">{{localize "TQ.Secciones.GuiasInterpretativas"}}</div>
           <div class="tq-section-content">
             <div class="guias-grid">
               <div class="guia-field full">
-                <label>{{localize "TQ.Creacion.motivacion"}}</label>
+                <div style="display:flex;align-items:center;gap:6px;">
+                  <label>{{localize "TQ.Creacion.motivacion"}}</label>
+                  <a class="tq-circulo toggle-rasgo-usada {{#if system.motivacionUsada}}marcado{{/if}}" data-campo="motivacionUsada" title="Marcar uso"></a>
+                </div>
                 <input type="text" name="system.motivacion" value="{{system.motivacion}}" />
               </div>
               <div class="guia-field full">
@@ -1116,7 +1138,7 @@
 
         {{!-- Notas --}}
         <div class="tq-section-box" style="margin-bottom:0;">
-          <div class="tq-section-header">Notas</div>
+          <div class="tq-section-header">{{localize "TQ.General.Notas"}}</div>
           <div class="tq-section-content">
             <textarea class="tq-notas" name="system.descripcion" rows="4">{{system.descripcion}}</textarea>
           </div>

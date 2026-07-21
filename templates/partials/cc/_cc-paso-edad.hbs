@@ -1,11 +1,11 @@
 <div class="cc-section">
-  <h3 class="cc-section-title">Nombre del personaje</h3>
+  <h3 class="cc-section-title">{{localize "TQ.CC.NombrePersonaje"}}</h3>
   <input type="text" id="cc-nombre" class="cc-nombre-input"
-         value="{{data.nombre}}" placeholder="Nombre del personaje" autofocus />
+         value="{{data.nombre}}" placeholder="{{localize "TQ.Placeholders.NombrePersonaje"}}" autofocus />
 </div>
 
 <div class="cc-section">
-  <h3 class="cc-section-title">Categoría de edad</h3>
+  <h3 class="cc-section-title">{{localize "TQ.CC.CategoriaEdad"}}</h3>
   <div class="edad-grid">
     {{#each edades as |e|}}
     <div class="edad-card {{#if e.selected}}selected{{/if}}" data-edad="{{e.key}}">
@@ -15,16 +15,16 @@
         <span class="edad-pp-badge">{{e.ppStr}}</span>
       </div>
       <div class="edad-card-body">
-        <div class="edad-stat"><span class="edad-stat-label">Hab. libres</span><span class="edad-stat-val">{{e.puntosHab}}</span></div>
-        <div class="edad-stat"><span class="edad-stat-label">Pts. caract.</span><span class="edad-stat-val">{{e.puntosCaract}}</span></div>
-        <div class="edad-stat"><span class="edad-stat-label">Máx. Cuerpo</span><span class="edad-stat-val">{{e.maxCuerpo}}</span></div>
-        {{#if e.maxTamanyo}}<div class="edad-stat"><span class="edad-stat-label">Máx. Tamaño</span><span class="edad-stat-val">+{{e.maxTamanyo}}</span></div>{{/if}}
+        <div class="edad-stat"><span class="edad-stat-label">{{localize "TQ.CC.HabLibres"}}</span><span class="edad-stat-val">{{e.puntosHab}}</span></div>
+        <div class="edad-stat"><span class="edad-stat-label">{{localize "TQ.CC.PtsCaract"}}</span><span class="edad-stat-val">{{e.puntosCaract}}</span></div>
+        <div class="edad-stat"><span class="edad-stat-label">{{localize "TQ.CC.MaxCuerpo"}}</span><span class="edad-stat-val">{{e.maxCuerpo}}</span></div>
+        {{#if e.maxTamanyo}}<div class="edad-stat"><span class="edad-stat-label">{{localize "TQ.CC.MaxTamano"}}</span><span class="edad-stat-val">+{{e.maxTamanyo}}</span></div>{{/if}}
       </div>
     </div>
     {{/each}}
   </div>
   <div class="cc-edad-num-fila">
-    <label>Edad exacta</label>
+    <label>{{localize "TQ.CC.EdadExacta"}}</label>
     <input type="number" id="cc-edad-num" value="{{data.edadNumero}}" min="1" max="200" />
     <span class="cc-hint">({{edad.rango}})</span>
   </div>
@@ -32,7 +32,7 @@
 
 {{#if reduccionesAleatorias}}
 <div class="cc-aleatorio-reduccion-panel">
-  <div class="cc-aleatorio-red-titulo">Ajuste automático por edad (método aleatorio)</div>
+  <div class="cc-aleatorio-red-titulo">{{localize "TQ.CC.AjusteEdad"}}</div>
   {{#each reduccionesAleatorias as |r|}}
   <div class="cc-aleatorio-red-fila">
     <span class="cc-aleatorio-red-label">{{r.label}}</span>
@@ -47,7 +47,7 @@
 
 {{#if hayConflicto}}
 <div class="cc-conflicto-panel">
-  <div class="cc-conflicto-titulo">⚠ Ajuste de características necesario</div>
+  <div class="cc-conflicto-titulo">{{localize "TQ.CC.ConflictoCaract"}}</div>
   {{#if (tq-gt ptsExceso 0)}}
   <p>La categoría <strong>{{edad.label}}</strong> permite {{edad.puntosCaract}} puntos (tienes {{sumCaract}}). Debes retirar <strong>{{ptsExceso}} punto(s)</strong>.</p>
   {{/if}}

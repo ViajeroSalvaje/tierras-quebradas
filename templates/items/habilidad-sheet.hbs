@@ -3,42 +3,42 @@
   <section class="item-body">
     <div class="tq-item-header-fila">
       <img class="item-img" src="{{item.img}}" title="{{item.name}}" />
-      <h1><input type="text" name="name" value="{{item.name}}" placeholder="Nombre de la habilidad" /></h1>
+      <h1><input type="text" name="name" value="{{item.name}}" placeholder="{{localize "TQ.Placeholders.NombreHabilidad"}}" /></h1>
     </div>
     <div class="item-grid">
       <div class="tq-field-group">
-        <label>Clave interna</label>
+        <label>{{localize "TQ.Habilidad.ClaveInterna"}}</label>
         <input type="text" name="system.clave" value="{{system.clave}}" placeholder="academia" />
       </div>
       <div class="tq-field-group">
-        <label>Base</label>
+        <label>{{localize "TQ.Habilidad.Base"}}</label>
         <select name="system.base">
-          <option value="agilidad"    {{selected system.base "agilidad"}}>Agilidad</option>
-          <option value="comunicacion" {{selected system.base "comunicacion"}}>Comunicación</option>
-          <option value="cultura"     {{selected system.base "cultura"}}>Cultura</option>
-          <option value="hechiceria"  {{selected system.base "hechiceria"}}>Hechicería</option>
-          <option value="percepcion"  {{selected system.base "percepcion"}}>Percepción</option>
-          <option value="tecnica"     {{selected system.base "tecnica"}}>Técnica</option>
-          <option value="vigor"       {{selected system.base "vigor"}}>Vigor</option>
+          <option value="agilidad"     {{selected system.base "agilidad"}}>{{localize "TQ.Bases.agilidad"}}</option>
+          <option value="comunicacion" {{selected system.base "comunicacion"}}>{{localize "TQ.Bases.comunicacion"}}</option>
+          <option value="cultura"      {{selected system.base "cultura"}}>{{localize "TQ.Bases.cultura"}}</option>
+          <option value="hechiceria"   {{selected system.base "hechiceria"}}>{{localize "TQ.Bases.hechiceria"}}</option>
+          <option value="percepcion"   {{selected system.base "percepcion"}}>{{localize "TQ.Bases.percepcion"}}</option>
+          <option value="tecnica"      {{selected system.base "tecnica"}}>{{localize "TQ.Bases.tecnica"}}</option>
+          <option value="vigor"        {{selected system.base "vigor"}}>{{localize "TQ.Bases.vigor"}}</option>
         </select>
       </div>
       <div style="display:flex;gap:12px;align-items:flex-start;">
         <div class="tq-field-group">
-          <label style="white-space:nowrap;">Puntos Fijos</label>
+          <label style="white-space:nowrap;">{{localize "TQ.Habilidad.PuntosFijos"}}</label>
           <input type="number" name="system.puntosFijos" value="{{system.puntosFijos}}" min="0" />
         </div>
         <div class="tq-field-group">
-          <label>Estorbo</label>
+          <label>{{localize "TQ.Combate.estorbo"}}</label>
           <input type="number" name="system.estorbo" value="{{system.estorbo}}" min="0" max="2" />
         </div>
         <div class="tq-field-group" style="align-items:center;">
-          <label style="white-space:nowrap;">Especializada (E)</label>
+          <label style="white-space:nowrap;">{{localize "TQ.Habilidad.Especializada"}}</label>
           <a class="tq-circulo hab-especializada {{#if system.especializada}}marcado{{/if}}" style="width:19px;height:19px;" title="{{#if system.especializada}}Especializada{{else}}No especializada{{/if}}"></a>
         </div>
       </div>
     </div>
     <div class="tq-field-group full-width">
-      <label>Descripción</label>
+      <label>{{localize "TQ.General.Descripcion"}}</label>
       <textarea name="system.descripcion" rows="4">{{system.descripcion}}</textarea>
     </div>
   </section>

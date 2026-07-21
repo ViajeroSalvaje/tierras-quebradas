@@ -1,7 +1,7 @@
 <div class="tirada-dialogo">
   <div class="tirada-info">
     <span class="tirada-nombre">{{etiqueta}}</span>
-    <span class="tirada-puntuacion">Puntuación: <strong>{{puntuacion}}</strong></span>
+    <span class="tirada-puntuacion">{{localize "TQ.Dialogo.Puntuacion"}}: <strong>{{puntuacion}}</strong></span>
   </div>
 
   <div class="tirada-campos">
@@ -10,11 +10,11 @@
     {{!-- Tirada enfrentada: fila del jugador --}}
     <div class="tq-melee-fila">
       <div class="tq-campo-grupo">
-        <label>Tu arma</label>
+        <label>{{localize "TQ.Dialogo.TuArma"}}</label>
         <span class="longitud-jugador">{{longitudArma}}</span>
       </div>
       <div class="tq-campo-grupo">
-        <label>Daño</label>
+        <label>{{localize "TQ.General.Dano"}}</label>
         <span>{{jugadorDatos.danoArma}}</span>
       </div>
       <div class="tq-campo-grupo">
@@ -22,50 +22,50 @@
         <span>{{jugadorDatos.md}}</span>
       </div>
       <div class="tq-campo-grupo">
-        <label>Tipo</label>
+        <label>{{localize "TQ.General.Tipo"}}</label>
         <span>{{jugadorDatos.tipo}}</span>
       </div>
       <div class="tq-campo-grupo">
-        <label for="bonificador">Bonificador</label>
+        <label for="bonificador">{{localize "TQ.Dialogo.Bonificador"}}</label>
         <input type="number" name="bonificador" id="bonificador" value="0" step="1" />
       </div>
     </div>
     {{!-- Fila del rival --}}
     <div class="tq-melee-fila">
       <div class="tq-campo-grupo">
-        <label for="rival_puntuacion">Punt. rival</label>
+        <label for="rival_puntuacion">{{localize "TQ.Dialogo.PuntuacionRival"}}</label>
         <input type="number" name="rival_puntuacion" id="rival_puntuacion" value="{{rivalDatos.puntuacion}}" min="0" step="1" />
       </div>
       <div class="tq-campo-grupo">
-        <label for="rival_longitud">Arma rival</label>
+        <label for="rival_longitud">{{localize "TQ.Dialogo.ArmaRival"}}</label>
         <select name="rival_longitud" id="rival_longitud">
-          <option value="corta"     {{#if (tq-eq rivalDatos.longitud "corta")}}selected{{/if}}>Corta</option>
-          <option value="media"     {{#if (tq-eq rivalDatos.longitud "media")}}selected{{/if}}>Media</option>
-          <option value="larga"     {{#if (tq-eq rivalDatos.longitud "larga")}}selected{{/if}}>Larga</option>
-          <option value="muy larga" {{#if (tq-eq rivalDatos.longitud "muy larga")}}selected{{/if}}>Muy larga</option>
+          <option value="corta"     {{#if (tq-eq rivalDatos.longitud "corta")}}selected{{/if}}>{{localize "TQ.Arma.Longitud.corta"}}</option>
+          <option value="media"     {{#if (tq-eq rivalDatos.longitud "media")}}selected{{/if}}>{{localize "TQ.Arma.Longitud.media"}}</option>
+          <option value="larga"     {{#if (tq-eq rivalDatos.longitud "larga")}}selected{{/if}}>{{localize "TQ.Arma.Longitud.larga"}}</option>
+          <option value="muy larga" {{#if (tq-eq rivalDatos.longitud "muy larga")}}selected{{/if}}>{{localize "TQ.Arma.Longitud.muyLarga"}}</option>
         </select>
       </div>
       <div class="tq-campo-grupo">
-        <label for="rival_bonificador">Bon. rival</label>
+        <label for="rival_bonificador">{{localize "TQ.Dialogo.BonificadorRival"}}</label>
         <input type="number" name="rival_bonificador" id="rival_bonificador" value="0" step="1" />
       </div>
     </div>
     <div class="tq-melee-fila">
       <div class="tq-campo-grupo">
-        <label for="rival_danoArma">Daño rival</label>
+        <label for="rival_danoArma">{{localize "TQ.Dialogo.DanoRival"}}</label>
         <input type="text" name="rival_danoArma" id="rival_danoArma" value="{{rivalDatos.danoArma}}" />
       </div>
       <div class="tq-campo-grupo">
-        <label for="rival_md">MD rival</label>
+        <label for="rival_md">{{localize "TQ.Dialogo.MDRival"}}</label>
         <input type="number" name="rival_md" id="rival_md" value="{{rivalDatos.md}}" step="1" />
       </div>
       <div class="tq-campo-grupo">
-        <label for="rival_tipo">Tipo rival</label>
+        <label for="rival_tipo">{{localize "TQ.Dialogo.TipoRival"}}</label>
         <select name="rival_tipo" id="rival_tipo">
-          <option value="cortante"     {{#if (tq-eq rivalDatos.tipo "cortante")}}selected{{/if}}>Cortante</option>
-          <option value="contundente"  {{#if (tq-eq rivalDatos.tipo "contundente")}}selected{{/if}}>Contundente</option>
-          <option value="desgarradora" {{#if (tq-eq rivalDatos.tipo "desgarradora")}}selected{{/if}}>Desgarradora</option>
-          <option value="penetrante"   {{#if (tq-eq rivalDatos.tipo "penetrante")}}selected{{/if}}>Penetrante</option>
+          <option value="cortante"     {{#if (tq-eq rivalDatos.tipo "cortante")}}selected{{/if}}>{{localize "TQ.Arma.Tipo.cortante"}}</option>
+          <option value="contundente"  {{#if (tq-eq rivalDatos.tipo "contundente")}}selected{{/if}}>{{localize "TQ.Arma.Tipo.contundente"}}</option>
+          <option value="desgarradora" {{#if (tq-eq rivalDatos.tipo "desgarradora")}}selected{{/if}}>{{localize "TQ.Arma.Tipo.desgarradora"}}</option>
+          <option value="penetrante"   {{#if (tq-eq rivalDatos.tipo "penetrante")}}selected{{/if}}>{{localize "TQ.Arma.Tipo.penetrante"}}</option>
         </select>
       </div>
     </div>
@@ -73,38 +73,38 @@
     {{else if (tq-eq modo "distancia")}}
     {{!-- Tirada a distancia --}}
     <div class="tq-campo-grupo">
-      <label for="distancia">Distancia</label>
+      <label for="distancia">{{localize "TQ.Dialogo.Distancia"}}</label>
       <select name="distancia" id="distancia">
-        <option value="10">Corta — 0-14 m (10)</option>
-        <option value="15" selected>Media — 15-49 m (15)</option>
-        <option value="20">Larga — 50-99 m (20)</option>
-        <option value="25">Muy larga — 100+ m (25)</option>
+        <option value="10">{{localize "TQ.Distancia.corta"}}</option>
+        <option value="15" selected>{{localize "TQ.Distancia.media"}}</option>
+        <option value="20">{{localize "TQ.Distancia.larga"}}</option>
+        <option value="25">{{localize "TQ.Distancia.muyLarga"}}</option>
       </select>
     </div>
     <div class="tq-melee-fila">
       <div class="tq-campo-grupo">
-        <label for="esquivar_blanco" title="Si el objetivo es consciente de que le están apuntando utiliza lo que sea más alto, la dificultad o la esquiva del objetivo">Objetivo Alerta</label>
+        <label for="esquivar_blanco" title="Si el objetivo es consciente de que le están apuntando utiliza lo que sea más alto, la dificultad o la esquiva del objetivo">{{localize "TQ.Dialogo.ObjetivoAlerta"}}</label>
         <input type="number" name="esquivar_blanco" id="esquivar_blanco" value="0" min="0" step="1" />
       </div>
       <div class="tq-campo-grupo">
-        <label for="bonificador">Bonificador</label>
+        <label for="bonificador">{{localize "TQ.Dialogo.Bonificador"}}</label>
         <input type="number" name="bonificador" id="bonificador" value="0" step="1" />
       </div>
       <div class="tq-campo-grupo" style="flex-direction:row;align-items:center;gap:4px;">
-        <label for="apuntando">Apuntando</label>
+        <label for="apuntando">{{localize "TQ.Dialogo.Apuntando"}}</label>
         <input type="checkbox" name="apuntando" id="apuntando" class="tq-apuntar-check" />
         <label for="apuntando" class="tq-circulo tq-apuntar-circulo" style="width:16px;height:16px;cursor:pointer;" title="+2 al ataque"></label>
       </div>
     </div>
     <div class="tq-melee-fila">
       <div class="tq-campo-grupo" style="flex-direction:row;align-items:center;gap:4px;">
-        <label for="en_melee">En melé con aliado</label>
+        <label for="en_melee">{{localize "TQ.Dialogo.EnMeleeAliado"}}</label>
         <input type="checkbox" name="en_melee" id="en_melee" class="tq-apuntar-check" />
         <label for="en_melee" class="tq-circulo tq-apuntar-circulo" style="width:16px;height:16px;cursor:pointer;" title="El objetivo está trabado en melé con un aliado"></label>
       </div>
       {{#if aliados}}
       <div class="tq-campo-grupo">
-        <label for="aliado_id">Aliado</label>
+        <label for="aliado_id">{{localize "TQ.Dialogo.Aliado"}}</label>
         <select name="aliado_id" id="aliado_id">
           {{#each aliados}}
           <option value="{{this.id}}">{{this.name}}</option>
@@ -117,7 +117,7 @@
     {{else}}
     {{!-- Tirada genérica de habilidad --}}
     <div class="tq-campo-grupo">
-      <label for="dificultad">Dificultad</label>
+      <label for="dificultad">{{localize "TQ.Tirada.Dificultad"}}</label>
       <select name="dificultad" id="dificultad">
         {{#if (tq-eq escalaDif "caracteristica")}}
         <option value="9"  {{#if (tq-eq dificultadPorDefecto "9")}}selected{{/if}}>Fácil (9)</option>
@@ -125,15 +125,15 @@
         <option value="15" {{#if (tq-eq dificultadPorDefecto "15")}}selected{{/if}}>Difícil (15)</option>
         <option value="18" {{#if (tq-eq dificultadPorDefecto "18")}}selected{{/if}}>Muy Difícil (18)</option>
         {{else}}
-        <option value="10"  {{#if (tq-eq dificultadPorDefecto "10")}}selected{{/if}}>Fácil (10)</option>
-        <option value="15"  {{#if (tq-eq dificultadPorDefecto "15")}}selected{{/if}}>Normal (15)</option>
-        <option value="20"  {{#if (tq-eq dificultadPorDefecto "20")}}selected{{/if}}>Difícil (20)</option>
-        <option value="25"  {{#if (tq-eq dificultadPorDefecto "25")}}selected{{/if}}>Muy Difícil (25)</option>
+        <option value="10"  {{#if (tq-eq dificultadPorDefecto "10")}}selected{{/if}}>{{localize "TQ.Tirada.Facil"}}</option>
+        <option value="15"  {{#if (tq-eq dificultadPorDefecto "15")}}selected{{/if}}>{{localize "TQ.Tirada.Normal"}}</option>
+        <option value="20"  {{#if (tq-eq dificultadPorDefecto "20")}}selected{{/if}}>{{localize "TQ.Tirada.Dificil"}}</option>
+        <option value="25"  {{#if (tq-eq dificultadPorDefecto "25")}}selected{{/if}}>{{localize "TQ.Tirada.MuyDificil"}}</option>
         {{/if}}
       </select>
     </div>
     <div class="tq-campo-grupo">
-      <label for="bonificador">Bonificador</label>
+      <label for="bonificador">{{localize "TQ.Dialogo.Bonificador"}}</label>
       <input type="number" name="bonificador" id="bonificador" value="0" step="1" />
     </div>
     {{/if}}
@@ -142,7 +142,7 @@
     <div class="tq-campo-tope">
       <input type="checkbox" name="tope_activo" id="tope_activo" class="tq-apuntar-check" />
       <label for="tope_activo" class="tq-circulo tq-apuntar-circulo" style="width:16px;height:16px;cursor:pointer;flex-shrink:0;"></label>
-      <span class="tq-tope-label">Aplicar Tope</span>
+      <span class="tq-tope-label">{{localize "TQ.Dialogo.AplicarTope"}}</span>
       <select name="tope_habilidad" id="tope_habilidad">
         {{#each topesOpciones as |t|}}
         <option value="{{t.clave}}">{{t.label}} ({{t.valor}})</option>

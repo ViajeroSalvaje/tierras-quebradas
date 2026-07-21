@@ -1,24 +1,24 @@
 <div class="{{cssClass}} flexcol" autocomplete="off" style="height:100%;width:100%;">
 
   <section class="item-body">
-    <h1><input type="text" name="name" value="{{item.name}}" placeholder="Nombre del dios" /></h1>
+    <h1><input type="text" name="name" value="{{item.name}}" placeholder="{{localize "TQ.Placeholders.NombreDios"}}" /></h1>
     <div class="item-grid">
       <div class="tq-field-group">
-        <label>Religión</label>
+        <label>{{localize "TQ.Creacion.religion"}}</label>
         <select name="system.religion">
-          <option value="caos"        {{selected system.religion "caos"}}>Caos</option>
-          <option value="ley"         {{selected system.religion "ley"}}>Ley</option>
-          <option value="elementos"   {{selected system.religion "elementos"}}>Elementos</option>
-          <option value="antepasados" {{selected system.religion "antepasados"}}>Antepasados</option>
+          <option value="caos"        {{selected system.religion "caos"}}>{{localize "TQ.Lealtad.caos"}}</option>
+          <option value="ley"         {{selected system.religion "ley"}}>{{localize "TQ.Lealtad.ley"}}</option>
+          <option value="elementos"   {{selected system.religion "elementos"}}>{{localize "TQ.Lealtad.elementos"}}</option>
+          <option value="antepasados" {{selected system.religion "antepasados"}}>{{localize "TQ.Lealtad.antepasados"}}</option>
         </select>
       </div>
       <div class="tq-field-group">
-        <label>Espíritu Consagrado</label>
+        <label>{{localize "TQ.Magia.espirituConsagrado"}}</label>
         <input type="number" name="system.espirituConsagrado" value="{{system.espirituConsagrado}}" min="0" />
       </div>
     </div>
     <div class="tq-field-group full-width">
-      <label>Notas</label>
+      <label>{{localize "TQ.General.Notas"}}</label>
       <textarea name="system.notas" rows="5">{{system.notas}}</textarea>
     </div>
   </section>

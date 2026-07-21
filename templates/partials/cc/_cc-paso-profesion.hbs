@@ -1,5 +1,5 @@
 <div class="cc-section">
-  <h3 class="cc-section-title">Profesión</h3>
+  <h3 class="cc-section-title">{{localize "TQ.Actor.ProfesionLabel"}}</h3>
   {{#if profesiones}}
   <div class="origen-grid">
     {{#each profesiones as |p|}}
@@ -12,7 +12,7 @@
       {{/if}}
       {{#if p.ventajas.length}}
       <div class="origen-habs" style="color:var(--tq-green);">
-        Ventajas: {{#each p.ventajas as |v|}}{{v.nombre}}{{#unless @last}}, {{/unless}}{{/each}}
+        {{localize "TQ.CC.VentajasProf"}} {{#each p.ventajas as |v|}}{{v.nombre}}{{#unless @last}}, {{/unless}}{{/each}}
       </div>
       {{/if}}
       {{#if p.selected}}
@@ -22,13 +22,13 @@
     {{/each}}
   </div>
   {{else}}
-  <p style="color:var(--tq-text-dim);font-size:13px;">Recarga el sistema para cargar el compendio de profesiones.</p>
+  <p style="color:var(--tq-text-dim);font-size:13px;">{{localize "TQ.CC.RecargaProfesiones"}}</p>
   {{/if}}
 </div>
 
 {{#if eleccionesProfesion}}
 <div class="cc-section cc-elecciones-armas">
-  <h3 class="cc-section-title">Elige tus armas</h3>
+  <h3 class="cc-section-title">{{localize "TQ.CC.EligeTusArmas"}}</h3>
   {{#each eleccionesProfesion as |e|}}
   <div class="cc-eleccion-fila">
     <span class="cc-eleccion-nombre">{{e.nombre}} <span class="cc-eleccion-bonus">+{{e.bonus}}</span></span>
@@ -44,7 +44,7 @@
 
 {{#if especializaciones}}
 <div class="cc-section">
-  <h3 class="cc-section-title">Especialización</h3>
+  <h3 class="cc-section-title">{{localize "TQ.CC.Especializacion"}}</h3>
   <div class="origen-grid">
     {{#each especializaciones as |e|}}
     <div class="cc-especializacion-card origen-card {{#if e.selected}}selected{{/if}}" data-idx="{{e.idx}}">

@@ -1,41 +1,41 @@
 <div style="height:100%;width:100%;display:flex;flex-direction:column;">
   <div class="item-body" style="flex:1;overflow-y:auto;padding:8px 12px;display:flex;flex-direction:column;gap:10px;">
 
-    <h1><input type="text" name="name" value="{{item.name}}" placeholder="Nombre del origen" /></h1>
+    <h1><input type="text" name="name" value="{{item.name}}" placeholder="{{localize "TQ.Placeholders.NombreOrigen"}}" /></h1>
 
     <div class="tq-field-group full">
-      <label>Descripción</label>
+      <label>{{localize "TQ.General.Descripcion"}}</label>
       <textarea name="system.descripcion" rows="4">{{system.descripcion}}</textarea>
     </div>
 
     <div style="display:flex;gap:10px;">
       <div class="tq-field-group" style="flex:1;">
-        <label>Idioma Nativo</label>
+        <label>{{localize "TQ.Origen.IdiomaNativo"}}</label>
         <input type="text" name="system.idiomaNoativo" value="{{system.idiomaNoativo}}" />
       </div>
       <div class="tq-field-group" style="flex:1;">
-        <label>Religión</label>
+        <label>{{localize "TQ.Creacion.religion"}}</label>
         <input type="text" name="system.religion" value="{{system.religion}}" />
       </div>
       <div class="tq-field-group" style="width:80px;">
-        <label>Bonus PP</label>
+        <label>{{localize "TQ.Origen.BonusPP"}}</label>
         <input type="number" name="system.ppBonus" value="{{system.ppBonus}}" />
       </div>
     </div>
 
     <div class="tq-field-group full">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
-        <label>Modificadores de Habilidades</label>
+        <label>{{localize "TQ.General.ModificadoresHabilidades"}}</label>
         <a class="origen-hab-add" style="font-size:11px;color:var(--tq-teal);cursor:pointer;">
-          <i class="fas fa-plus"></i> Añadir
+          <i class="fas fa-plus"></i> {{localize "TQ.Botones.Anadir"}}
         </a>
       </div>
       <table style="width:100%;font-size:12px;">
         <thead>
           <tr>
-            <th style="text-align:left;">Habilidad</th>
+            <th style="text-align:left;">{{localize "TQ.General.Habilidad"}}</th>
             <th style="text-align:left;">Nombre (idioma)</th>
-            <th style="width:60px;text-align:center;">Bonus</th>
+            <th style="width:60px;text-align:center;">{{localize "TQ.General.Bonus"}}</th>
             <th style="width:30px;"></th>
           </tr>
         </thead>

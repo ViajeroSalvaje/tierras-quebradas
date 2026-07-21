@@ -1,36 +1,36 @@
 <div class="{{cssClass}} flexcol" autocomplete="off" style="height:100%;width:100%;">
   <section class="item-body">
-    <h1><input type="text" name="name" value="{{item.name}}" placeholder="Nombre" /></h1>
+    <h1><input type="text" name="name" value="{{item.name}}" placeholder="{{localize "TQ.Placeholders.Nombre"}}" /></h1>
     <div class="item-fila-triple">
       <div class="tq-field-group">
-        <label>Potencia (POT)</label>
+        <label>{{localize "TQ.Consumible.Potencia"}}</label>
         <input type="number" name="system.potencia" value="{{system.potencia}}" min="0" />
       </div>
       <div class="tq-field-group">
-        <label>Dosis</label>
+        <label>{{localize "TQ.Consumible.Dosis"}}</label>
         <input type="number" name="system.dosis" value="{{system.dosis}}" min="0" />
       </div>
       <div class="tq-field-group">
-        <label>Dificultad (DIF)</label>
+        <label>{{localize "TQ.Consumible.DificultadLabel"}}</label>
         <input type="number" name="system.dificultad" value="{{system.dificultad}}" min="0" />
       </div>
     </div>
     <div class="item-fila-doble">
       <div class="tq-field-group">
-        <label>Carga</label>
+        <label>{{localize "TQ.Combate.carga"}}</label>
         <input type="number" name="system.carga" value="{{system.carga}}" step="0.1" min="0" />
       </div>
       <div class="tq-field-group">
-        <label>Precio (mb)</label>
+        <label>{{localize "TQ.General.PrecioMB"}}</label>
         <input type="number" name="system.precio" value="{{system.precio}}" min="0" />
       </div>
     </div>
     <div class="tq-field-group full-width">
-      <label>Efecto</label>
+      <label>{{localize "TQ.General.Efecto"}}</label>
       <input type="text" name="system.efecto" value="{{system.efecto}}" placeholder="ej. +4 PV" />
     </div>
     <div class="tq-field-group full-width">
-      <label>Descripción</label>
+      <label>{{localize "TQ.General.Descripcion"}}</label>
       <textarea name="system.descripcion" rows="4">{{system.descripcion}}</textarea>
     </div>
   </section>

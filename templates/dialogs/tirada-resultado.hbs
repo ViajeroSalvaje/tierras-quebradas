@@ -44,7 +44,7 @@
     </div>
   </div>
   <div class="tq-chat-exitos-fila">
-    {{#if (tq-gt exitos 0)}}+{{/if}}{{exitos}} éxitos
+    {{#if (tq-gt exitos 0)}}+{{/if}}{{exitos}} {{localize "TQ.Tirada.Exitos"}}
   </div>
 
   {{else if esMelee}}
@@ -73,7 +73,7 @@
     </div>
   </div>
   <div class="tq-chat-exitos-fila">
-    {{#if (tq-gt exitos 0)}}+{{/if}}{{exitos}} éxitos
+    {{#if (tq-gt exitos 0)}}+{{/if}}{{exitos}} {{localize "TQ.Tirada.Exitos"}}
   </div>
   {{#if resolucionTablas}}
   <div class="tq-chat-tablas-nota">{{resolucionTablas}}</div>
@@ -85,9 +85,13 @@
       <span class="tq-hechizo-etiq"><i class="fas fa-dice-d10"></i> {{dadoDisplay}}</span>
       {{#each desgloseHechizo.habilidades as |sk|}}{{#if sk.esMinimo}}
       <span class="tq-hechizo-etiq">+</span>
-      <span class="tq-hechizo-etiq">{{sk.nombre}}</span>
+      <span class="tq-hechizo-etiq">{{sk.tipo}} ({{sk.nombre}})</span>
       <span class="tq-hechizo-val">{{sk.puntuacion}}</span>
       {{/if}}{{/each}}
+      {{#unless desgloseHechizo.habilidades.length}}
+      <span class="tq-hechizo-etiq">+</span>
+      <span class="tq-hechizo-val">{{puntuacion}}</span>
+      {{/unless}}
       {{#each modDesglose as |m|}}
       <span class="tq-hechizo-val">{{m.signo}} {{m.valorAbs}} ({{m.label}})</span>
       {{/each}}
@@ -130,7 +134,7 @@
   {{#if pd}}
   <div class="tq-chat-danho">
     {{#if pd.total}}
-    {{pd.formula}} = <strong>{{pd.total}} PD</strong>{{#if pd.noLetal}} <em>(No letal)</em>{{/if}}
+    {{pd.formula}} = <strong>{{pd.total}} PD</strong>{{#if pd.noLetal}} <em>({{localize "TQ.Arma.NoLetal"}})</em>{{/if}}
     {{#if proteccionTarget}} — {{proteccionTarget}} prot. → <strong>{{danhoAplicado}} aplicados</strong>{{/if}}
     {{else}}
     {{pd.formula}}
@@ -152,9 +156,59 @@
   {{#if mostrarFortuna}}
   <div class="tq-fortuna-actions">
     <button class="tq-fortuna-repetir" type="button" data-actor-id="{{actorId}}">
-      Repetir Tirada - 1 Fortuna
+      {{localize "TQ.Botones.RepetirFortuna"}}
+    </button>
+    {{#if mostrarAplicarResultado}}
+    <button class="tq-aplicar-resultado" type="button"
+      data-actor-id="{{actorId}}"
+      data-etiqueta="{{etiqueta}}"
+      data-exitos="{{exitos}}"
+      data-requiere-espiritu="{{#if requiereTiradaEspiritu}}true{{else}}false{{/if}}">
+      {{localize "TQ.Botones.AplicarResultado"}}
+    </button>
+    {{/if}}
+    {{#if pd.total}}{{#if targetActorId}}
+    <button class="tq-aplicar-danho" type="button"
+      data-target-id="{{targetActorId}}"
+      data-danho-neto="{{danhoAplicado}}"
+      data-danho-bruto="{{pd.total}}">
+      {{localize "TQ.Botones.AplicarDanho"}}
+    </button>
+    {{/if}}{{/if}}
+  </div>
+  {{/if}}
+  {{#unless mostrarFortuna}}
+  {{#if mostrarAplicarResultado}}
+  <div class="tq-fortuna-actions">
+    <button class="tq-aplicar-resultado" type="button"
+      data-actor-id="{{actorId}}"
+      data-etiqueta="{{etiqueta}}"
+      data-exitos="{{exitos}}"
+      data-requiere-espiritu="{{#if requiereTiradaEspiritu}}true{{else}}false{{/if}}">
+      {{localize "TQ.Botones.AplicarResultado"}}
     </button>
   </div>
   {{/if}}
+  {{#if pd.total}}{{#if targetActorId}}
+  <div class="tq-fortuna-actions">
+    <button class="tq-aplicar-danho" type="button"
+      data-target-id="{{targetActorId}}"
+      data-danho-neto="{{danhoAplicado}}"
+      data-danho-bruto="{{pd.total}}">
+      {{localize "TQ.Botones.AplicarDanho"}}
+    </button>
+  </div>
+  {{/if}}{{/if}}
+  {{/unless}}
+  {{#if pdRival.total}}{{#if actorId}}
+  <div class="tq-fortuna-actions">
+    <button class="tq-aplicar-danho-rival" type="button"
+      data-actor-id="{{actorId}}"
+      data-danho-neto="{{danhoRivalAplicado}}"
+      data-danho-bruto="{{pdRival.total}}">
+      {{localize "TQ.Botones.AplicarDanho"}}
+    </button>
+  </div>
+  {{/if}}{{/if}}
 
 </div>

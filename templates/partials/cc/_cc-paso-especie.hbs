@@ -1,5 +1,5 @@
 <div class="cc-section">
-  <h3 class="cc-section-title">Especie</h3>
+  <h3 class="cc-section-title">{{localize "TQ.Actor.Especie"}}</h3>
   <div class="especie-grid">
     {{#each especies as |e|}}
     <div class="especie-card {{#if e.selected}}selected{{/if}}"
@@ -12,7 +12,7 @@
       </div>
       {{#if e.bonusPuntosStr}}<div class="especie-bonus-puntos">{{e.bonusPuntosStr}}</div>{{/if}}
       {{#if e.bonusCaract}}<div class="especie-bonus-caract">{{e.bonusCaract}}</div>{{/if}}
-      {{#if (tq-gt e.tamanoMax 0)}}<div class="especie-bonus-caract">TAM máx. +{{e.tamanoMax}}</div>{{/if}}
+      {{#if (tq-gt e.tamanoMax 0)}}<div class="especie-bonus-caract">{{localize "TQ.CC.TamMaxLabel"}} +{{e.tamanoMax}}</div>{{/if}}
       <p class="especie-desc">{{e.descripcion}}</p>
     </div>
     {{/each}}
@@ -22,11 +22,11 @@
 {{#if (tq-eq data.metodoCaract "distribuir")}}
 <div class="cc-section cc-atr-tam-section">
   <h3 class="cc-section-title">
-    Características
+    {{localize "TQ.Secciones.Caracteristicas"}}
     <span class="cc-pts-badge {{#if (tq-gt ptsRestantes 0)}}pendiente{{else if (tq-gt 0 ptsRestantes)}}exceso{{/if}}">
-      {{#if (tq-gt ptsRestantes 0)}}Faltan {{ptsRestantes}} pts.
-      {{else if (tq-gt 0 ptsRestantes)}}Exceso {{ptsRestantes}} pts.
-      {{else}}✓ Repartidos{{/if}}
+      {{#if (tq-gt ptsRestantes 0)}}{{localize "TQ.CC.FaltanLabel"}} {{ptsRestantes}} {{localize "TQ.CC.PtsLabel"}}
+      {{else if (tq-gt 0 ptsRestantes)}}{{localize "TQ.CC.ExcesoLabel"}} {{ptsRestantes}} {{localize "TQ.CC.PtsLabel"}}
+      {{else}}{{localize "TQ.CC.Repartidos"}}{{/if}}
     </span>
   </h3>
   <div class="cc-caract-grid">

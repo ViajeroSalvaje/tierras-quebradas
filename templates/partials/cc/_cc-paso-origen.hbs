@@ -1,5 +1,5 @@
 <div class="cc-section">
-  <h3 class="cc-section-title">Origen Étnico</h3>
+  <h3 class="cc-section-title">{{localize "TQ.Actor.OrigenEtnicoLabel"}}</h3>
   {{#if origenes}}
   <div class="origen-grid">
     {{#each origenes as |o|}}
@@ -9,8 +9,8 @@
         {{#if o.ppStr}}<span class="especie-pp-badge coste">{{o.ppStr}}</span>{{/if}}
       </div>
       <div class="origen-meta">
-        <span><strong>Idioma:</strong> {{o.idiomaNoativo}}</span>
-        <span><strong>Religión:</strong> {{o.religion}}</span>
+        <span><strong>{{localize "TQ.CC.IdiomaLabel"}}</strong> {{o.idiomaNoativo}}</span>
+        <span><strong>{{localize "TQ.CC.ReligionLabel"}}</strong> {{o.religion}}</span>
       </div>
       {{#if o.habStr}}
       <div class="origen-habs">{{o.habStr}}</div>
@@ -22,18 +22,18 @@
     {{/each}}
   </div>
   {{else}}
-  <p style="color:var(--tq-text-dim);font-size:13px;">Recarga el sistema para cargar el compendio de orígenes.</p>
+  <p style="color:var(--tq-text-dim);font-size:13px;">{{localize "TQ.CC.RecargaOrigenes"}}</p>
   {{/if}}
 </div>
 
 {{#if eleccionesIdiomaOrigen}}
 <div class="cc-section cc-elecciones-armas">
-  <h3 class="cc-section-title">Elige el idioma adicional</h3>
+  <h3 class="cc-section-title">{{localize "TQ.CC.EligeIdiomaAdicional"}}</h3>
   {{#each eleccionesIdiomaOrigen as |e|}}
   <div class="cc-eleccion-fila">
-    <span class="cc-eleccion-nombre">Idioma <span class="cc-eleccion-bonus">+{{e.bonus}}</span></span>
+    <span class="cc-eleccion-nombre">{{localize "TQ.CC.Idioma"}} <span class="cc-eleccion-bonus">+{{e.bonus}}</span></span>
     <select class="cc-idioma-origen-select" data-idx="{{e.idx}}">
-      <option value="">— Elige un idioma —</option>
+      <option value="">{{localize "TQ.CC.EligeUnIdioma"}}</option>
       {{#each e.opciones as |op|}}
       <option value="{{op.nombre}}" {{#if op.selected}}selected{{/if}}>{{op.nombre}}</option>
       {{/each}}

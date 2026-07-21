@@ -3034,9 +3034,13 @@
 .tq-blind-oculto { text-align: center; font-size: 20px; letter-spacing: 6px; color: #aaa; padding: 6px 0; }
 
 .tq-fortuna-actions { padding: 4px 8px 6px; border-top: 1px solid rgba(0,0,0,0.1); margin-top: 2px; }
-.tq-fortuna-repetir { width: 100%; font-size: 11px; padding: 3px 6px; cursor: pointer; background: rgba(180,140,20,0.12); border: 1px solid rgba(180,140,20,0.4); border-radius: 3px; color: #5a4200; }
+.tq-fortuna-repetir, .tq-aplicar-danho, .tq-aplicar-danho-rival, .tq-aplicar-resultado { width: 100%; font-size: 11px; padding: 3px 6px; cursor: pointer; border-radius: 3px; }
+.tq-fortuna-repetir { background: rgba(180,140,20,0.12); border: 1px solid rgba(180,140,20,0.4); color: #5a4200; }
 .tq-fortuna-repetir:hover:not(:disabled) { background: rgba(180,140,20,0.25); }
 .tq-fortuna-repetir:disabled { opacity: 0.4; cursor: not-allowed; }
+.tq-aplicar-danho, .tq-aplicar-danho-rival, .tq-aplicar-resultado { background: rgba(42,128,144,0.18); border: 1px solid rgba(42,128,144,0.5); color: var(--tq-teal-dark); margin-top: 3px; }
+.tq-aplicar-danho:hover:not(:disabled), .tq-aplicar-danho-rival:hover:not(:disabled), .tq-aplicar-resultado:hover:not(:disabled) { background: rgba(42,128,144,0.30); }
+.tq-aplicar-danho:disabled, .tq-aplicar-danho-rival:disabled, .tq-aplicar-resultado:disabled { opacity: 0.4; cursor: not-allowed; }
 
 .tq-fortuna-eleccion { display: flex; flex-direction: column; gap: 6px; }
 .tq-fortuna-eleccion-grid { display: flex; gap: 8px; padding: 6px 8px; }
@@ -4156,6 +4160,17 @@
 .rasgo-pos { border-left: 2px solid #2a7a3a; }
 .rasgo-neg { border-left: 2px solid #a03c28; }
 
+.rasgo-fila {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.rasgo-fila .rasgo-input {
+  flex: 1;
+  width: auto;
+}
+
 .rasgo-input {
   font-size: 11px;
   padding: 3px 6px;
@@ -5077,6 +5092,34 @@ li.chat-message .message-delete:hover {
   color: var(--tq-text-dim);
 }
 
+.pnj-salud-fila {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: nowrap;
+  margin: 4px 0 6px;
+}
+
+.pnj-heridas-sep {
+  width: 8px;
+}
+
+.pnj-salud-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--tq-text-dim);
+  white-space: nowrap;
+}
+
+#tooltip.tq-hab-tooltip {
+  font-size: 11px;
+  background: var(--tq-parchment);
+  color: var(--tq-text);
+  border: 1px solid var(--tq-teal);
+  font-family: var(--tq-font);
+}
+
 .lealtad-fondo {
   position: absolute;
   inset: 0;
@@ -5309,9 +5352,13 @@ li.chat-message .message-delete:hover {
 }
 
 .heridas-table th:nth-child(1), .heridas-table td:nth-child(1) { width: 18%; }
-.heridas-table th:nth-child(2), .heridas-table td:nth-child(2) { width: 58%; }
-.heridas-table th:nth-child(3), .heridas-table td:nth-child(3) { width: 14%; text-align: center; }
-.heridas-table th:nth-child(4), .heridas-table td:nth-child(4) { width: 10%; }
+.heridas-table th:nth-child(2), .heridas-table td:nth-child(2) { width: 46%; }
+.heridas-table th:nth-child(3), .heridas-table td:nth-child(3) { width: 10%; text-align: center; }
+.heridas-table th:nth-child(4), .heridas-table td:nth-child(4) { width: 14%; text-align: center; }
+.heridas-table th:nth-child(5), .heridas-table td:nth-child(5) { width: 10%; }
+
+.heridas-table td.herida-dano { text-align: center; }
+.heridas-table td.herida-dano input { width: 6ch; text-align: center; }
 
 .heridas-table thead th {
   background: var(--tq-teal);
@@ -5324,6 +5371,7 @@ li.chat-message .message-delete:hover {
 }
 
 .heridas-table thead th:nth-child(3) { text-align: center; }
+.heridas-table thead th:nth-child(4) { text-align: center; }
 
 .heridas-table tbody tr {
   border-bottom: 1px solid rgba(28,100,115,0.15);

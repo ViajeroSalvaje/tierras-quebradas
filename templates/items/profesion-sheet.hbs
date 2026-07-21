@@ -1,21 +1,21 @@
 <div style="height:100%;width:100%;display:flex;flex-direction:column;">
   <div class="item-body" style="flex:1;overflow-y:auto;padding:8px 12px;display:flex;flex-direction:column;gap:10px;">
 
-    <h1><input type="text" name="name" value="{{item.name}}" placeholder="Nombre de la profesión" /></h1>
+    <h1><input type="text" name="name" value="{{item.name}}" placeholder="{{localize "TQ.Placeholders.NombreProfesion"}}" /></h1>
 
     <div class="tq-field-group full">
-      <label>Descripción</label>
+      <label>{{localize "TQ.General.Descripcion"}}</label>
       <textarea name="system.descripcion" rows="4">{{system.descripcion}}</textarea>
     </div>
 
     {{!-- Habilidades --}}
     <div class="tq-field-group full">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
-        <label>Modificadores de Habilidades</label>
-        <a class="prof-hab-add" style="font-size:11px;color:var(--tq-teal);cursor:pointer;"><i class="fas fa-plus"></i> Añadir</a>
+        <label>{{localize "TQ.General.ModificadoresHabilidades"}}</label>
+        <a class="prof-hab-add" style="font-size:11px;color:var(--tq-teal);cursor:pointer;"><i class="fas fa-plus"></i> {{localize "TQ.Botones.Anadir"}}</a>
       </div>
       <table style="width:100%;font-size:12px;">
-        <thead><tr><th style="text-align:left;">Habilidad</th><th style="width:60px;text-align:center;">Bonus</th><th style="width:30px;"></th></tr></thead>
+        <thead><tr><th style="text-align:left;">{{localize "TQ.General.Habilidad"}}</th><th style="width:60px;text-align:center;">{{localize "TQ.General.Bonus"}}</th><th style="width:30px;"></th></tr></thead>
         <tbody>
           {{#each habilidades as |h|}}
           <tr>
@@ -36,8 +36,8 @@
     {{!-- Especializaciones --}}
     <div class="tq-field-group full">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
-        <label>Especializaciones</label>
-        <a class="prof-esp-add" style="font-size:11px;color:var(--tq-teal);cursor:pointer;"><i class="fas fa-plus"></i> Añadir</a>
+        <label>{{localize "TQ.Profesion.Especializaciones"}}</label>
+        <a class="prof-esp-add" style="font-size:11px;color:var(--tq-teal);cursor:pointer;"><i class="fas fa-plus"></i> {{localize "TQ.Botones.Anadir"}}</a>
       </div>
       {{#each especializaciones as |esp|}}
       <div style="border:1px solid rgba(28,100,115,0.3);border-radius:4px;padding:6px 8px;margin-bottom:6px;">
@@ -46,7 +46,7 @@
           <a class="prof-esp-del" data-esp-idx="{{esp.espIdx}}" style="color:var(--tq-red-dmg);cursor:pointer;font-size:12px;"><i class="fas fa-trash"></i></a>
         </div>
         <table style="width:100%;font-size:11px;">
-          <thead><tr><th style="text-align:left;">Habilidad</th><th style="width:60px;text-align:center;">Bonus</th><th style="width:30px;"></th></tr></thead>
+          <thead><tr><th style="text-align:left;">{{localize "TQ.General.Habilidad"}}</th><th style="width:60px;text-align:center;">{{localize "TQ.General.Bonus"}}</th><th style="width:30px;"></th></tr></thead>
           <tbody>
             {{#each esp.habilidades as |h|}}
             <tr>
@@ -62,7 +62,7 @@
             {{/each}}
           </tbody>
         </table>
-        <a class="prof-esp-hab-add" data-esp-idx="{{esp.espIdx}}" style="font-size:11px;color:var(--tq-teal);cursor:pointer;display:inline-block;margin-top:4px;"><i class="fas fa-plus"></i> Añadir habilidad</a>
+        <a class="prof-esp-hab-add" data-esp-idx="{{esp.espIdx}}" style="font-size:11px;color:var(--tq-teal);cursor:pointer;display:inline-block;margin-top:4px;"><i class="fas fa-plus"></i> {{localize "TQ.Tooltips.AnadirHabilidad"}}</a>
       </div>
       {{/each}}
     </div>
@@ -70,8 +70,8 @@
     {{!-- Ventajas --}}
     <div class="tq-field-group full prof-vent-section">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
-        <label>Ventajas otorgadas <span style="font-size:10px;color:var(--tq-text-dim);font-weight:normal;">(arrastra o añade manualmente)</span></label>
-        <a class="prof-vent-add" style="font-size:11px;color:var(--tq-teal);cursor:pointer;"><i class="fas fa-plus"></i> Añadir</a>
+        <label>{{localize "TQ.Profesion.VentajasOtorgadas"}} <span style="font-size:10px;color:var(--tq-text-dim);font-weight:normal;">(arrastra o añade manualmente)</span></label>
+        <a class="prof-vent-add" style="font-size:11px;color:var(--tq-teal);cursor:pointer;"><i class="fas fa-plus"></i> {{localize "TQ.Botones.Anadir"}}</a>
       </div>
       {{#each ventajas as |v|}}
       {{#if (tq-eq v.fuente "item")}}
@@ -86,13 +86,13 @@
       <div style="border:1px solid rgba(28,100,115,0.2);border-radius:4px;padding:6px;margin-bottom:4px;">
         <div style="display:flex;gap:6px;margin-bottom:4px;">
           <input type="text" class="prof-vent-field" data-index="{{v.index}}" data-field="nombre"
-                 value="{{v.nombre}}" placeholder="Nombre" style="flex:1;font-size:12px;" />
+                 value="{{v.nombre}}" placeholder="{{localize "TQ.Placeholders.Nombre"}}" style="flex:1;font-size:12px;" />
           <input type="number" class="prof-vent-field" data-index="{{v.index}}" data-field="coste"
-                 value="{{v.coste}}" placeholder="PP" style="width:50px;font-size:12px;" title="Coste PP" />
+                 value="{{v.coste}}" placeholder="PP" style="width:50px;font-size:12px;" title="{{localize "TQ.General.CostePP"}}" />
           <a class="prof-vent-del" data-index="{{v.index}}" style="color:var(--tq-red-dmg);cursor:pointer;font-size:12px;align-self:center;"><i class="fas fa-trash"></i></a>
         </div>
         <textarea class="prof-vent-field" data-index="{{v.index}}" data-field="efecto"
-                  rows="2" placeholder="Efecto" style="width:100%;font-size:11px;">{{v.efecto}}</textarea>
+                  rows="2" placeholder="{{localize "TQ.General.Efecto"}}" style="width:100%;font-size:11px;">{{v.efecto}}</textarea>
       </div>
       {{/if}}
       {{/each}}
