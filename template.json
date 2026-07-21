@@ -328,6 +328,7 @@
       "atractivoMax": 3,
       "esteril": false,
       "extraviado": false,
+      "accesoMagico": false,
       "descripcion": "",
       "rasgos": ""
     },
