@@ -1,3 +1,25 @@
+# Notas 21 de julio 2026 
+
+**Pendientes**
+
+**Cambios**
+
+- Cambios en el orden de la presentación en la pestaña de magia.
+- Añadidas descripciones e iconos en el compendio de habilidades.
+- Añadida ventana emergente (con retraso de 3 segundos) al pasar el ratón sobre las habilidades que muestra su descripción.
+- Cambios en las mecánicas de combate para reflejar la utilización del punto de fortuna para repetir.
+- Añadidas marcas en rasgos y motivaciones. Al pulsar fin de sesión se cuentan las marcas y se añaden tantos puntos de fortuna (sin superar el máximo) como marcas estén cubiertas.
+- Ahora los Rasguños también generan su entrada en la tabla de heridas (aunque no tienen checkbox circular).
+- Se añade a la tabla de heridas un campo numérico. Si se recibe daño de forma automática por el ruleset se autocompletará ese campo con la cantidad de PV perdidos.
+- Correcciones de localización.
+- Tiradas de lanzamiento de hechizo: Desglose completo de la tirada en la tarjeta del chat.
+
+
+
+
+
+
+
 # Notas 17 de julio 2026 
 
 **Pendientes**
