@@ -2,7 +2,7 @@
 
   <section class="item-body">
     <h1><input type="text" name="name" value="{{item.name}}" placeholder="{{localize "TQ.Placeholders.Nombre"}}" /></h1>
-    <div class="item-grid">
+    <div class="item-grid" style="margin-top:16px;">
       <div class="tq-field-group">
         <label>{{localize "TQ.General.Tipo"}}</label>
         <select name="system.tipo">
@@ -17,9 +17,9 @@
     </div>
     <div class="tq-field-group full-width">
       <label>{{localize "TQ.General.Efecto"}}</label>
-      <input type="text" name="system.efecto" value="{{system.efecto}}" />
+      <textarea name="system.efecto" rows="3">{{system.efecto}}</textarea>
     </div>
-    <div class="tq-field-group full-width">
+    <div class="tq-field-group full-width" style="margin-top:16px;">
       <label>{{localize "TQ.General.Descripcion"}}</label>
       <textarea name="system.descripcion" rows="5">{{system.descripcion}}</textarea>
     </div>

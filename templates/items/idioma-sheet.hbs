@@ -5,7 +5,7 @@
 
     <div style="display:flex;align-items:center;gap:8px;">
       <label style="margin:0;">{{localize "TQ.Idioma.FormaEscrita"}}</label>
-      <input type="checkbox" name="system.escrita" {{#if system.escrita}}checked{{/if}} />
+      <a class="tq-circulo toggle-estado {{#if system.escrita}}marcado{{/if}}" data-campo="system.escrita" style="width:16px;height:16px;flex-shrink:0;"></a>
     </div>
 
     <div class="tq-field-group full-width" style="flex:1;">

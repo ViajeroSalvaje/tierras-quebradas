@@ -175,6 +175,13 @@
       {{localize "TQ.Botones.AplicarDanho"}}
     </button>
     {{/if}}{{/if}}
+    {{#if mostrarRecuperarPM}}
+    <button class="tq-aplicar-recuperacion-pm" type="button"
+      data-actor-id="{{actorId}}"
+      data-pm-recuperado="{{pmRecuperado}}">
+      {{localize "TQ.Botones.AplicarRecuperacion"}} (+{{pmRecuperado}} PM)
+    </button>
+    {{/if}}
   </div>
   {{/if}}
   {{#unless mostrarFortuna}}
@@ -199,6 +206,15 @@
     </button>
   </div>
   {{/if}}{{/if}}
+  {{#if mostrarRecuperarPM}}
+  <div class="tq-fortuna-actions">
+    <button class="tq-aplicar-recuperacion-pm" type="button"
+      data-actor-id="{{actorId}}"
+      data-pm-recuperado="{{pmRecuperado}}">
+      {{localize "TQ.Botones.AplicarRecuperacion"}} (+{{pmRecuperado}} PM)
+    </button>
+  </div>
+  {{/if}}
   {{/unless}}
   {{#if pdRival.total}}{{#if actorId}}
   <div class="tq-fortuna-actions">

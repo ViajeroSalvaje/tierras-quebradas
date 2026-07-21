@@ -26,10 +26,14 @@
   {{/if}}
 
   {{!-- Blancos y duración --}}
-  <div class="lh-grid-2">
+  <div class="lh-grid-3">
     <div class="lh-campo">
-      <label>{{localize "TQ.Hechizo.BlancosTotales"}} <span class="lh-hint">(+{{pmBase}} PM/extra)</span></label>
+      <label>{{localize "TQ.Hechizo.Blancos"}} <span class="lh-hint">(+{{pmBase}} PM/extra)</span></label>
       <input type="number" name="blancos" value="1" min="1" max="10" class="lh-input-num" />
+    </div>
+    <div class="lh-campo">
+      <label>MD</label>
+      <input type="number" name="md" value="0" class="lh-input-num" />
     </div>
     <div class="lh-campo">
       <label>{{localize "TQ.Hechizo.Duracion"}}</label>
@@ -45,9 +49,9 @@
   <div class="lh-mod-box">
     <div class="lh-mod-titulo">{{localize "TQ.Hechizo.ModificadoresLanzamiento"}}</div>
     <div class="lh-checks">
-      <label class="lh-check"><input type="checkbox" name="ceremonia" /> {{localize "TQ.Hechizo.Ceremonia"}}</label>
-      <label class="lh-check"><input type="checkbox" name="grimorio" /> {{localize "TQ.Hechizo.Grimorio"}}</label>
-      <label class="lh-check"><input type="checkbox" name="acelerar" /> {{localize "TQ.Hechizo.Acelerar"}}</label>
+      <label class="lh-check"><input type="checkbox" name="ceremonia" class="lh-check-hidden" /><span class="tq-circulo lh-check-circulo"></span> {{localize "TQ.Hechizo.Ceremonia"}}</label>
+      <label class="lh-check"><input type="checkbox" name="grimorio" class="lh-check-hidden" /><span class="tq-circulo lh-check-circulo"></span> {{localize "TQ.Hechizo.Grimorio"}}</label>
+      <label class="lh-check"><input type="checkbox" name="acelerar" class="lh-check-hidden" /><span class="tq-circulo lh-check-circulo"></span> {{localize "TQ.Hechizo.Acelerar"}}</label>
     </div>
     <div class="lh-campo" style="margin-top:8px;">
       <label>{{localize "TQ.Hechizo.LimitacionFisica"}}</label>

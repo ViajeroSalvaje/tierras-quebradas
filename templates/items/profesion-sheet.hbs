@@ -10,12 +10,9 @@
 
     {{!-- Habilidades --}}
     <div class="tq-field-group full">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
-        <label>{{localize "TQ.General.ModificadoresHabilidades"}}</label>
-        <a class="prof-hab-add" style="font-size:11px;color:var(--tq-teal);cursor:pointer;"><i class="fas fa-plus"></i> {{localize "TQ.Botones.Anadir"}}</a>
-      </div>
+      <label>{{localize "TQ.General.ModificadoresHabilidades"}}</label>
       <table style="width:100%;font-size:12px;">
-        <thead><tr><th style="text-align:left;">{{localize "TQ.General.Habilidad"}}</th><th style="width:60px;text-align:center;">{{localize "TQ.General.Bonus"}}</th><th style="width:30px;"></th></tr></thead>
+        <thead class="origen-habs-thead"><tr><th style="text-align:left;">{{localize "TQ.General.Habilidad"}}</th><th style="width:60px;text-align:center;">{{localize "TQ.General.Bonus"}}</th><th style="width:30px;text-align:center;"><a class="prof-hab-add" title="{{localize "TQ.Botones.Anadir"}}">+</a></th></tr></thead>
         <tbody>
           {{#each habilidades as |h|}}
           <tr>
@@ -46,7 +43,7 @@
           <a class="prof-esp-del" data-esp-idx="{{esp.espIdx}}" style="color:var(--tq-red-dmg);cursor:pointer;font-size:12px;"><i class="fas fa-trash"></i></a>
         </div>
         <table style="width:100%;font-size:11px;">
-          <thead><tr><th style="text-align:left;">{{localize "TQ.General.Habilidad"}}</th><th style="width:60px;text-align:center;">{{localize "TQ.General.Bonus"}}</th><th style="width:30px;"></th></tr></thead>
+          <thead class="origen-habs-thead"><tr><th style="text-align:left;">{{localize "TQ.General.Habilidad"}}</th><th style="width:60px;text-align:center;">{{localize "TQ.General.Bonus"}}</th><th style="width:30px;text-align:center;"><a class="prof-esp-hab-add" data-esp-idx="{{esp.espIdx}}" title="{{localize "TQ.Tooltips.AnadirHabilidad"}}">+</a></th></tr></thead>
           <tbody>
             {{#each esp.habilidades as |h|}}
             <tr>
@@ -62,7 +59,6 @@
             {{/each}}
           </tbody>
         </table>
-        <a class="prof-esp-hab-add" data-esp-idx="{{esp.espIdx}}" style="font-size:11px;color:var(--tq-teal);cursor:pointer;display:inline-block;margin-top:4px;"><i class="fas fa-plus"></i> {{localize "TQ.Tooltips.AnadirHabilidad"}}</a>
       </div>
       {{/each}}
     </div>

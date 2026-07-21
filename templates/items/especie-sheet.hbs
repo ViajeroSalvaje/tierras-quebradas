@@ -3,11 +3,21 @@
   <section class="item-body">
     <h1><input type="text" name="name" value="{{item.name}}" placeholder="{{localize "TQ.Placeholders.NombreEspecie"}}" /></h1>
 
-    <div class="item-grid">
+    <div class="especie-fila-grid especie-fila-3">
       <div class="tq-field-group">
         <label>{{localize "TQ.Especie.CostePP"}}</label>
         <input type="number" name="system.costePP" value="{{system.costePP}}" min="0" />
       </div>
+      <div class="tq-field-group">
+        <label>{{localize "TQ.Especie.Esteril"}}</label>
+        <a class="tq-circulo toggle-estado {{#if system.esteril}}marcado{{/if}}" data-campo="system.esteril"></a>
+      </div>
+      <div class="tq-field-group">
+        <label>{{localize "TQ.Especie.Extraviado"}}</label>
+        <a class="tq-circulo toggle-estado {{#if system.extraviado}}marcado{{/if}}" data-campo="system.extraviado"></a>
+      </div>
+    </div>
+    <div class="especie-fila-grid especie-fila-4">
       <div class="tq-field-group">
         <label>{{localize "TQ.Especie.BonusPuntos"}}</label>
         <input type="number" name="system.bonusPuntos" value="{{system.bonusPuntos}}" min="0" />
@@ -24,6 +34,8 @@
         <label>{{localize "TQ.Especie.BonusEspiritu"}}</label>
         <input type="number" name="system.bonusEspiritu" value="{{system.bonusEspiritu}}" />
       </div>
+    </div>
+    <div class="especie-fila-grid especie-fila-4">
       <div class="tq-field-group">
         <label>{{localize "TQ.Especie.TamanoMin"}}</label>
         <input type="number" name="system.tamanoMin" value="{{system.tamanoMin}}" />
@@ -39,14 +51,6 @@
       <div class="tq-field-group">
         <label>{{localize "TQ.Especie.AtractivoMax"}}</label>
         <input type="number" name="system.atractivoMax" value="{{system.atractivoMax}}" />
-      </div>
-      <div class="tq-field-group">
-        <label>{{localize "TQ.Especie.Esteril"}}</label>
-        <input type="checkbox" name="system.esteril" {{checked system.esteril}} />
-      </div>
-      <div class="tq-field-group">
-        <label>{{localize "TQ.Especie.Extraviado"}}</label>
-        <input type="checkbox" name="system.extraviado" {{checked system.extraviado}} />
       </div>
     </div>
 

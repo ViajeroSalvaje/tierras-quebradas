@@ -4,6 +4,11 @@
     <span class="tq-enfrentada-valor">{{habTotalA}}</span>
   </div>
 
+  <div class="tq-enfrentada-mod">
+    <label>{{localize "TQ.Dialogo.Bonificador"}}</label>
+    <input type="number" name="modificador" value="0" step="1" style="width:60px;" />
+  </div>
+
   {{#if tieneTarget}}
   <div class="tq-enfrentada-oponente">
     <label>{{localize "TQ.Dialogo.HabilidadDe"}} <strong>{{nombreTarget}}</strong>:</label>

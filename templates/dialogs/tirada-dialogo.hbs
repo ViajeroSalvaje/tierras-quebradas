@@ -116,25 +116,27 @@
 
     {{else}}
     {{!-- Tirada genérica de habilidad --}}
-    <div class="tq-campo-grupo">
-      <label for="dificultad">{{localize "TQ.Tirada.Dificultad"}}</label>
-      <select name="dificultad" id="dificultad">
-        {{#if (tq-eq escalaDif "caracteristica")}}
-        <option value="9"  {{#if (tq-eq dificultadPorDefecto "9")}}selected{{/if}}>Fácil (9)</option>
-        <option value="12" {{#if (tq-eq dificultadPorDefecto "12")}}selected{{/if}}>Normal (12)</option>
-        <option value="15" {{#if (tq-eq dificultadPorDefecto "15")}}selected{{/if}}>Difícil (15)</option>
-        <option value="18" {{#if (tq-eq dificultadPorDefecto "18")}}selected{{/if}}>Muy Difícil (18)</option>
-        {{else}}
-        <option value="10"  {{#if (tq-eq dificultadPorDefecto "10")}}selected{{/if}}>{{localize "TQ.Tirada.Facil"}}</option>
-        <option value="15"  {{#if (tq-eq dificultadPorDefecto "15")}}selected{{/if}}>{{localize "TQ.Tirada.Normal"}}</option>
-        <option value="20"  {{#if (tq-eq dificultadPorDefecto "20")}}selected{{/if}}>{{localize "TQ.Tirada.Dificil"}}</option>
-        <option value="25"  {{#if (tq-eq dificultadPorDefecto "25")}}selected{{/if}}>{{localize "TQ.Tirada.MuyDificil"}}</option>
-        {{/if}}
-      </select>
-    </div>
-    <div class="tq-campo-grupo">
-      <label for="bonificador">{{localize "TQ.Dialogo.Bonificador"}}</label>
-      <input type="number" name="bonificador" id="bonificador" value="0" step="1" />
+    <div class="tq-melee-fila">
+      <div class="tq-campo-grupo">
+        <label for="dificultad">{{localize "TQ.Tirada.Dificultad"}}</label>
+        <select name="dificultad" id="dificultad">
+          {{#if (tq-eq escalaDif "caracteristica")}}
+          <option value="9"  {{#if (tq-eq dificultadPorDefecto "9")}}selected{{/if}}>Fácil (9)</option>
+          <option value="12" {{#if (tq-eq dificultadPorDefecto "12")}}selected{{/if}}>Normal (12)</option>
+          <option value="15" {{#if (tq-eq dificultadPorDefecto "15")}}selected{{/if}}>Difícil (15)</option>
+          <option value="18" {{#if (tq-eq dificultadPorDefecto "18")}}selected{{/if}}>Muy Difícil (18)</option>
+          {{else}}
+          <option value="10"  {{#if (tq-eq dificultadPorDefecto "10")}}selected{{/if}}>{{localize "TQ.Tirada.Facil"}}</option>
+          <option value="15"  {{#if (tq-eq dificultadPorDefecto "15")}}selected{{/if}}>{{localize "TQ.Tirada.Normal"}}</option>
+          <option value="20"  {{#if (tq-eq dificultadPorDefecto "20")}}selected{{/if}}>{{localize "TQ.Tirada.Dificil"}}</option>
+          <option value="25"  {{#if (tq-eq dificultadPorDefecto "25")}}selected{{/if}}>{{localize "TQ.Tirada.MuyDificil"}}</option>
+          {{/if}}
+        </select>
+      </div>
+      <div class="tq-campo-grupo">
+        <label for="bonificador">{{localize "TQ.Dialogo.Bonificador"}}</label>
+        <input type="number" name="bonificador" id="bonificador" value="0" step="1" />
+      </div>
     </div>
     {{/if}}
 
