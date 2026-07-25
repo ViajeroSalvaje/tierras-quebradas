@@ -1194,19 +1194,14 @@
   gap: 2px;
 }
 
-.lealtad-item label {
-  font-size: 8px;
-  font-weight: bold;
-  text-transform: uppercase;
-  color: var(--tq-text-dim);
+.lealtad-icono {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  filter: invert(28%) sepia(100%) saturate(350%) hue-rotate(160deg) brightness(82%);
 }
 
 .lealtad-circulo {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  border: 2px solid var(--tq-teal);
-  background: var(--tq-input);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1215,19 +1210,46 @@
 .lealtad-circulo input[type="number"] {
   width: 36px;
   border: none;
+  outline: none;
+  box-shadow: none;
   background: transparent;
   text-align: center;
-  font-size: 16px;
+  font-size: 18px;
   font-weight: bold;
   color: var(--tq-teal-dark);
   padding: 0;
   -moz-appearance: textfield;
+  cursor: default;
 }
 
 .lealtad-circulo input[type="number"]::-webkit-outer-spin-button,
 .lealtad-circulo input[type="number"]::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
+}
+
+.lealtad-modo-texto .lealtad-item label {
+  font-size: 8px;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: var(--tq-text-dim);
+}
+
+.lealtad-modo-texto .lealtad-circulo {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 2px solid var(--tq-teal);
+  background: var(--tq-input);
+}
+
+.lealtad-modo-texto .lealtad-circulo input[type="number"] {
+  font-size: 16px;
+  cursor: text;
+}
+
+.lealtad-modo-texto .lealtad-item.lealtad-alineada .lealtad-circulo {
+  border-color: var(--tq-red-dmg);
 }
 
 .tq-info-grid {
@@ -2221,6 +2243,21 @@
   pointer-events: none;
 }
 
+.tq-ga-debilitado-aviso {
+  font-size: 11px;
+  color: var(--tq-teal-dark);
+  font-style: italic;
+  align-self: center;
+}
+
+.tq-chat-contextual {
+  font-size: 11px;
+  font-style: italic;
+  color: var(--color-text-dark-secondary, #4a4a4a);
+  padding: 2px 8px 0;
+  text-align: center;
+}
+
 .tq-chat-tope {
   font-size: 11px;
   color: var(--tq-teal-dark);
@@ -2422,10 +2459,6 @@
 .tq-tirada-resultado .mod-longitud-valor { color: #2e7d32; font-weight: bold; }
 .tq-tirada-resultado .tirada-danho.rival .danho-total strong { color: var(--tq-red-dmg); }
 .tq-tirada-resultado .tirada-danho.rival { border-top: 1px solid var(--tq-border); margin-top: 4px; padding-top: 4px; }
-
-.lealtad-item.lealtad-alineada .lealtad-circulo {
-  border-color: var(--tq-red-dmg);
-}
 
 .lealtad-item.lealtad-alineada input {
   color: var(--tq-red-dmg) !important;
