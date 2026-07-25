@@ -1,10 +1,26 @@
+# Notas 25 de julio 2026 
+
+**Pendientes**
+
+- Opciones de escudo, cobertura y parada en armas a distancia
+
+  
+**Cambios**
+
+- Armas de proyectiles que sobrepasen su distancia máxima hacen mitad de daño.
+- Se pone por defecto que las lealtades estén representadas por su iconografía. En las opciones del ruleset se puede revertir a texto con círculo.
+- Opciones iniciales de combate cuerpo a cuerpo.
+
+
+
+
 # Notas 21 de julio 2026 
 
 **Pendientes**
 
 - Armas de proyectiles que sobrepasen su distancia máxima hacen mitad de daño.
 
-- 
+  
 **Cambios**
 
 - Cambios en el orden de la presentación en la pestaña de magia.
