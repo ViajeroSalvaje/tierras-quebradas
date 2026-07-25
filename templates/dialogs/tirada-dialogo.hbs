@@ -102,6 +102,11 @@
         <input type="checkbox" name="en_melee" id="en_melee" class="tq-apuntar-check" />
         <label for="en_melee" class="tq-circulo tq-apuntar-circulo" style="width:16px;height:16px;cursor:pointer;" title="El objetivo está trabado en melé con un aliado"></label>
       </div>
+      <div class="tq-campo-grupo" style="flex-direction:row;align-items:center;gap:4px;">
+        <label for="siguiente_rango">{{localize "TQ.Dialogo.SiguienteRango"}}</label>
+        <input type="checkbox" name="siguiente_rango" id="siguiente_rango" class="tq-apuntar-check" />
+        <label for="siguiente_rango" class="tq-circulo tq-apuntar-circulo" style="width:16px;height:16px;cursor:pointer;" title="Dificultad 25, daño ÷2 antes de protección"></label>
+      </div>
       {{#if aliados}}
       <div class="tq-campo-grupo">
         <label for="aliado_id">{{localize "TQ.Dialogo.Aliado"}}</label>
@@ -110,6 +115,74 @@
           <option value="{{this.id}}">{{this.name}}</option>
           {{/each}}
         </select>
+      </div>
+      {{/if}}
+    </div>
+
+    {{else if (tq-eq modo "trata-de-escapar")}}
+    {{!-- Trata de escapar: rival lanza dado, sin +2 por debilitado --}}
+    <div class="tq-melee-fila">
+      <div class="tq-campo-grupo">
+        <label for="bonificador">{{localize "TQ.Dialogo.Bonificador"}}</label>
+        <input type="number" name="bonificador" id="bonificador" value="0" step="1" />
+      </div>
+      <div class="tq-campo-grupo">
+        <label for="rival_bonificador">{{localize "TQ.Dialogo.BonificadorRival"}}</label>
+        <input type="number" name="rival_bonificador" id="rival_bonificador" value="0" step="1" />
+      </div>
+    </div>
+    <div class="tq-melee-fila">
+      {{#if rivalDatosGA.tieneTarget}}
+      <div class="tq-campo-grupo">
+        <label>{{rivalDatosGA.habLabel}} ({{rivalDatosGA.puntuacion}})</label>
+        <input type="hidden" name="rival_puntuacion" value="{{rivalDatosGA.puntuacion}}" />
+        <input type="hidden" name="target_actor_uuid" value="" />
+      </div>
+      {{else}}
+      <div class="tq-campo-grupo">
+        <label for="actor_objetivo">{{localize "TQ.Dialogo.EligeActor"}}</label>
+        <select name="actor_objetivo" id="actor_objetivo" class="tq-ga-actor-select">
+          <option value="">{{localize "TQ.Dialogo.EligeActorPrimero"}}</option>
+          {{#each rivalDatosGA.actoresEscena}}
+          <option value="{{this.uuid}}" data-puntuacion="{{this.puntuacion}}" data-hab-label="{{this.habLabel}}">{{this.name}} ({{this.habLabel}}: {{this.puntuacion}})</option>
+          {{/each}}
+        </select>
+        <input type="hidden" name="rival_puntuacion" id="rival_puntuacion_ga" value="0" />
+        <input type="hidden" name="target_actor_uuid" id="target_actor_uuid_ga" value="" />
+      </div>
+      {{/if}}
+    </div>
+
+    {{else if (tq-eq modo "golpe-aislado")}}
+    {{!-- Golpe aislado / Trata de escapar --}}
+    <div class="tq-melee-fila">
+      <div class="tq-campo-grupo">
+        <label for="bonificador">{{localize "TQ.Dialogo.Bonificador"}}</label>
+        <input type="number" name="bonificador" id="bonificador" value="0" step="1" />
+      </div>
+    </div>
+    <div class="tq-melee-fila">
+      {{#if rivalDatosGA.tieneTarget}}
+      <div class="tq-campo-grupo">
+        <label>{{rivalDatosGA.habLabel}} ({{rivalDatosGA.puntuacion}})</label>
+        <input type="hidden" name="rival_puntuacion" value="{{rivalDatosGA.puntuacion}}" />
+        <input type="hidden" name="debilitado_bonus" value="{{#if rivalDatosGA.debilitado}}2{{else}}0{{/if}}" />
+        <input type="hidden" name="target_actor_uuid" value="" />
+        {{#if rivalDatosGA.debilitado}}<span class="tq-ga-debilitado-aviso">{{localize "TQ.Melee.Debilitado"}}: +2</span>{{/if}}
+      </div>
+      {{else}}
+      <div class="tq-campo-grupo">
+        <label for="actor_objetivo">{{localize "TQ.Dialogo.EligeActor"}}</label>
+        <select name="actor_objetivo" id="actor_objetivo" class="tq-ga-actor-select">
+          <option value="">{{localize "TQ.Dialogo.EligeActorPrimero"}}</option>
+          {{#each rivalDatosGA.actoresEscena}}
+          <option value="{{this.uuid}}" data-puntuacion="{{this.puntuacion}}" data-hab-label="{{this.habLabel}}" data-debilitado="{{this.debilitado}}">{{this.name}} ({{this.habLabel}}: {{this.puntuacion}})</option>
+          {{/each}}
+        </select>
+        <input type="hidden" name="rival_puntuacion" id="rival_puntuacion_ga" value="0" />
+        <input type="hidden" name="debilitado_bonus" id="debilitado_bonus_ga" value="0" />
+        <input type="hidden" name="target_actor_uuid" id="target_actor_uuid_ga" value="" />
+        <span class="tq-ga-debilitado-aviso" id="tq-ga-deb-aviso" style="display:none;">{{localize "TQ.Melee.Debilitado"}}: +2</span>
       </div>
       {{/if}}
     </div>

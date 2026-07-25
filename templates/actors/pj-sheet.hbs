@@ -769,27 +769,27 @@
           <div class="tq-section-box" style="margin-bottom:0;">
             <div class="tq-section-header">{{localize "TQ.Secciones.Lealtad"}}</div>
             <div class="tq-section-content">
-              <div class="tq-lealtad-fila">
+              <div class="tq-lealtad-fila {{#if lealtadesEnTexto}}lealtad-modo-texto{{/if}}">
                 <div class="lealtad-item {{#if lealtad.alineado.caos}}lealtad-alineada{{/if}}">
-                  <label>{{localize "TQ.Lealtad.caos"}}</label>
+                  {{#if lealtadesEnTexto}}<label>{{localize "TQ.Lealtad.caos"}}</label>{{else}}<img class="lealtad-icono" src="systems/tierras-quebradas/images/lealtades/Caos.png" alt="{{localize "TQ.Lealtad.caos"}}" />{{/if}}
                   <div class="lealtad-circulo">
                     <input type="number" name="system.lealtad.caos" value="{{system.lealtad.caos}}" min="0" />
                   </div>
                 </div>
                 <div class="lealtad-item {{#if lealtad.alineado.ley}}lealtad-alineada{{/if}}">
-                  <label>{{localize "TQ.Lealtad.ley"}}</label>
+                  {{#if lealtadesEnTexto}}<label>{{localize "TQ.Lealtad.ley"}}</label>{{else}}<img class="lealtad-icono" src="systems/tierras-quebradas/images/lealtades/Ley.png" alt="{{localize "TQ.Lealtad.ley"}}" />{{/if}}
                   <div class="lealtad-circulo">
                     <input type="number" name="system.lealtad.ley" value="{{system.lealtad.ley}}" min="0" />
                   </div>
                 </div>
                 <div class="lealtad-item {{#if lealtad.alineado.elementos}}lealtad-alineada{{/if}}">
-                  <label>{{localize "TQ.Lealtad.elementos"}}</label>
+                  {{#if lealtadesEnTexto}}<label>{{localize "TQ.Lealtad.elementos"}}</label>{{else}}<img class="lealtad-icono" src="systems/tierras-quebradas/images/lealtades/Elementos.png" alt="{{localize "TQ.Lealtad.elementos"}}" />{{/if}}
                   <div class="lealtad-circulo">
                     <input type="number" name="system.lealtad.elementos" value="{{system.lealtad.elementos}}" min="0" />
                   </div>
                 </div>
                 <div class="lealtad-item {{#if lealtad.alineado.antepasados}}lealtad-alineada{{/if}}">
-                  <label>{{localize "TQ.Lealtad.antepasados"}}</label>
+                  {{#if lealtadesEnTexto}}<label>{{localize "TQ.Lealtad.antepasados"}}</label>{{else}}<img class="lealtad-icono" src="systems/tierras-quebradas/images/lealtades/Antepasados.png" alt="{{localize "TQ.Lealtad.antepasados"}}" />{{/if}}
                   <div class="lealtad-circulo">
                     <input type="number" name="system.lealtad.antepasados" value="{{system.lealtad.antepasados}}" min="0" />
                   </div>

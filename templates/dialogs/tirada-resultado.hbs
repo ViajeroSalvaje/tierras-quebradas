@@ -64,7 +64,7 @@
     <div class="tq-melee-col rival">
       <div class="tq-melee-titulo">{{rivalNombre}}</div>
       <div class="tq-melee-nums">
-        <span><i class="fas fa-dice-d10"></i> <strong>{{dadoDisplayRival}}</strong></span>
+        {{#if dadoDisplayRival}}<span><i class="fas fa-dice-d10"></i> <strong>{{dadoDisplayRival}}</strong></span>{{/if}}
         <span>+ {{puntuacionRival}}</span>
         {{#if bonificadorRival}}<span>{{#if (tq-gt bonificadorRival 0)}}+{{/if}}{{bonificadorRival}}</span>{{/if}}
         {{#if modLongitudRival}}<span>+{{modLongitudRival}} (long.)</span>{{/if}}
@@ -128,6 +128,10 @@
     <span class="tq-sep">→</span>
     <span class="tq-exitos">{{#if (tq-gt exitos 0)}}+{{/if}}{{exitos}}</span>
   </div>
+  {{/if}}
+
+  {{#if textoContextual}}
+  <div class="tq-chat-contextual">{{localize textoContextual}}</div>
   {{/if}}
 
   {{!-- Daño del PJ --}}
