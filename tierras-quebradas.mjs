@@ -66,6 +66,10 @@ Hooks.once("init", () => {
     name: "Lealtad en ficha (personal)", hint: "Activa o desactiva el símbolo de lealtad en las fichas para el jugador.", scope: "client", config: true, type: Boolean, default: true, onChange: reRenderPJSheets
   });
 
+  game.settings.register("tierras-quebradas", "lealtadesEnTexto", {
+    name: "Lealtades en texto", hint: "Muestra las lealtades con etiquetas de texto y valores en círculo, en lugar de los iconos por defecto.", scope: "client", config: true, type: Boolean, default: false, onChange: reRenderPJSheets
+  });
+
   CONFIG.TQ = {
     dificultades: {
       10: "TQ.Tirada.Facil", 15: "TQ.Tirada.Normal", 20: "TQ.Tirada.Dificil", 25: "TQ.Tirada.MuyDificil"
