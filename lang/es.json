@@ -592,6 +592,7 @@
       "ObjetivoAlerta": "Objetivo Alerta",
       "Apuntando": "Apuntando",
       "EnMeleeAliado": "En melé con aliado",
+      "SiguienteRango": "Siguiente rango",
       "Aliado": "Aliado",
       "AplicarTope": "Aplicar Tope",
       "Puntuacion": "Puntuación",
@@ -616,7 +617,15 @@
       "AtacanteImpacta": "Atacante impacta",
       "RivalImpacta": "Rival impacta",
       "AmbosImpactan": "Ambos impactan",
-      "NadieImpacta": "Nadie impacta"
+      "NadieImpacta": "Nadie impacta",
+      "TipoAccionTitulo": "Respuesta a la melé",
+      "TipoAccionDescripcion": "¿Reacción del enemigo?",
+      "AceptaMelee": "Acepta la melé",
+      "IgnoraMelee": "Ignora la melé",
+      "TrataDeEscapar": "Trata de escapar",
+      "Debilitado": "Debilitado",
+      "TextoIgnoraMelee": "Golpe aislado — el defensor ignora la melé y no contraataca.",
+      "TextoEscapa": "Golpe aislado — el defensor trata de escapar de la melé."
     },
     "Director": {
       "Infortunio": "Infortunio",

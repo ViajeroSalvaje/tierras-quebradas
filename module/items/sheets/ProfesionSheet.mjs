@@ -45,7 +45,6 @@ export class ProfesionSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
     super._onRender(context, options);
     const el = this.element;
 
-    // Habilidades
     el.querySelector(".prof-hab-add")?.addEventListener("click", async () => {
       const lista = [...(this.item.system.habilidades ?? []), { clave: "", bonus: 1 }];
       await this.item.update({ "system.habilidades": lista });
@@ -67,7 +66,6 @@ export class ProfesionSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
       });
     });
 
-    // Ventajas — añadir manual
     el.querySelector(".prof-vent-add")?.addEventListener("click", async () => {
       const lista = [...(this.item.system.ventajas ?? []), { nombre: "", efecto: "", coste: 0, tipo: "ventaja", fuente: "manual" }];
       await this.item.update({ "system.ventajas": lista });
@@ -89,7 +87,6 @@ export class ProfesionSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
       });
     });
 
-    // Especializaciones
     el.querySelector(".prof-esp-add")?.addEventListener("click", async () => {
       const lista = [...(this.item.system.especializaciones ?? []), { nombre: "Nueva especialización", habilidades: [] }];
       await this.item.update({ "system.especializaciones": lista });
@@ -137,7 +134,6 @@ export class ProfesionSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
       });
     });
 
-    // Ventajas — arrastrar desde compendio o mundo
     const dropZone = el.querySelector(".prof-vent-section");
     if (dropZone) {
       dropZone.addEventListener("dragover", ev => {

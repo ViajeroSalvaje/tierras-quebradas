@@ -71,7 +71,6 @@ export class PJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       })
       .filter(Boolean);
 
-    // Fórmulas de bases para mostrar en tabla
     const basesFormulas = {
       agilidad: "CUE − TAM", comunicacion: "ESP + ATR", cultura: "MEN", hechiceria: "(MEN+ESP)/3", percepcion: "(MEN+ESP)/2", tecnica: "(MEN+CUE)/2", vigor: "CUE"
     };
@@ -103,7 +102,6 @@ export class PJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
         return { item: arma, habTotal, md, mdStr };
       });
 
-    // Alineamiento e hitos de Lealtad
     const plealtad = this.actor.system.lealtad;
     const religiones = ["caos", "ley", "elementos", "antepasados"];
     const maxPL = Math.max(...religiones.map(r => plealtad[r] ?? 0));
@@ -130,7 +128,7 @@ export class PJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     return {
       actor: this.actor, system: this.actor.system, cssClass: this.options.classes.join(" "), activeTab: this._activeTab, imagenLealtad, destinoTotal, items: {
         armas: armasEnriquecidas, armaduras: this.actor.items.filter(i => i.type === "armadura"), hechizos: this.actor.items.filter(i => i.type === "hechizo"), ventajas: this.actor.items.filter(i => i.type === "ventaja"), rasgos: this.actor.items.filter(i => i.type === "rasgo"), pactos: this.actor.items.filter(i => i.type === "pacto"), bendiciones: this.actor.items.filter(i => i.type === "bendicion"), especie: this.actor.items.find(i => i.type === "especie") ?? null, entorno: this.actor.items.find(i => i.type === "entorno") ?? null, origen: this.actor.items.find(i => i.type === "origen") ?? null, profesion: this.actor.items.find(i => i.type === "profesion") ?? null, objetos: this.actor.items.filter(i => i.type === "objeto"), consumibles: this.actor.items.filter(i => i.type === "consumible")
-      }, lealtad: { alineado }, pasionAmorActiva: this.actor.system.pasionFlag === "amor", pasionOdioActiva: this.actor.system.pasionFlag === "odio", config: CONFIG.TQ, col1: makeCol(COL1), col2: makeCol(COL2), col3: makeCol(COL3), basesFormulas
+      }, lealtad: { alineado }, lealtadesEnTexto: game.settings.get("tierras-quebradas", "lealtadesEnTexto"), pasionAmorActiva: this.actor.system.pasionFlag === "amor", pasionOdioActiva: this.actor.system.pasionFlag === "odio", config: CONFIG.TQ, col1: makeCol(COL1), col2: makeCol(COL2), col3: makeCol(COL3), basesFormulas
     };
   }
 
@@ -178,14 +176,12 @@ export class PJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     const el = this.element;
     this._activarTab(el, this._activeTab);
 
-    // Imagen de perfil
     el.querySelector(".profile-img[data-edit]")?.addEventListener("click", () => {
       new foundry.applications.apps.FilePicker.implementation({
         type: "image", current: this.actor.img, callback: path => this.actor.update({ img: path })
       }).browse();
     });
 
-    // Tabs
     el.querySelectorAll(".sheet-tabs .item").forEach(tab => {
       tab.addEventListener("click", ev => {
         const id = ev.currentTarget.dataset.tab;
@@ -194,7 +190,6 @@ export class PJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       });
     });
 
-    // Toggle éxito manual (círculo)
     el.querySelectorAll(".toggle-exito").forEach(a => {
       a.addEventListener("click", ev => {
         ev.preventDefault();
@@ -202,7 +197,6 @@ export class PJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       });
     });
 
-    // Tiradas de habilidad (nombre)
     el.querySelectorAll(".tirar-habilidad").forEach(a => {
       let tooltipTimer = null;
       a.addEventListener("pointerenter", ev => {
@@ -234,7 +228,6 @@ export class PJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       });
     });
 
-    // Tiradas de base de habilidad
     el.querySelectorAll(".tirar-base").forEach(td => {
       td.addEventListener("click", ev => {
         const nombre = ev.currentTarget.dataset.nombre;
@@ -243,7 +236,6 @@ export class PJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       });
     });
 
-    // Tiradas de característica
     el.querySelectorAll(".tirar-caracteristica").forEach(a => {
       a.addEventListener("click", ev => {
         ev.preventDefault();
@@ -251,7 +243,6 @@ export class PJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       });
     });
 
-    // Tiradas de arma
     el.querySelectorAll(".tirar-arma").forEach(a => {
       a.addEventListener("click", ev => {
         ev.preventDefault();
@@ -259,7 +250,6 @@ export class PJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       });
     });
 
-    // Items: crear
     el.querySelectorAll(".item-create").forEach(a => {
       a.addEventListener("click", ev => {
         const tipo = ev.currentTarget.dataset.tipo ?? "arma";
@@ -277,7 +267,6 @@ export class PJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
         Item.create({ name: NOMBRES[tipo] ?? `${game.i18n.localize("TQ.Dialogo.Nuevo")} ${tipo}`, type: tipo }, { parent: this.actor });
       });
     });
-    // Items: editar
     el.querySelectorAll(".item-edit").forEach(a => {
       a.addEventListener("click", ev => {
         ev.preventDefault();
@@ -286,7 +275,6 @@ export class PJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
         this.actor.items.get(id)?.sheet.render(true);
       });
     });
-    // Items: borrar
     el.querySelectorAll(".item-delete").forEach(a => {
       a.addEventListener("click", ev => {
         ev.preventDefault();
@@ -296,7 +284,6 @@ export class PJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       });
     });
 
-    // Intervención Divina
     el.querySelectorAll(".tirar-intervencion").forEach(a => {
       a.addEventListener("click", ev => {
         ev.preventDefault();
@@ -305,7 +292,6 @@ export class PJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       });
     });
 
-    // Activar Bendición
     el.querySelectorAll(".activar-bendicion").forEach(a => {
       a.addEventListener("click", ev => {
         ev.preventDefault();
@@ -314,7 +300,6 @@ export class PJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       });
     });
 
-    // Experiencia: fin de sesión y fin de aventura
     el.querySelector(".fin-sesion-px")?.addEventListener("click", () => this.actor.aplicarFinDeSesionPX());
     el.querySelector(".fin-aventura-px")?.addEventListener("click", () => this.actor.asignarPXHito());
 
@@ -339,22 +324,18 @@ export class PJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       });
     });
 
-    // Fin de sesión por actitud
     el.querySelector(".fin-sesion-actitud")?.addEventListener("click", () => {
       this.actor.aplicarFinSesion();
     });
 
-    // Cambiar Lealtad por PM
     el.querySelector(".cambiar-lealtad-pm")?.addEventListener("click", () => {
       this.actor.cambiarLealtadPorPM();
     });
 
-    // Recuperar PM durmiendo
     el.querySelector(".recuperar-pm")?.addEventListener("click", () => {
       this.actor.recuperarPM();
     });
 
-    // Lanzar hechizo
     el.querySelectorAll(".tirar-hechizo").forEach(a => {
       a.addEventListener("click", ev => {
         ev.preventDefault();
@@ -362,7 +343,6 @@ export class PJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       });
     });
 
-    // Toggle espíritu consagrado en hechizos
     el.querySelectorAll(".hechizo-permanent").forEach(span => {
       span.addEventListener("click", ev => {
         ev.preventDefault();
@@ -382,14 +362,12 @@ export class PJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       });
     });
 
-    // Tabla de Lesiones
     el.querySelector(".tirar-lesion")?.addEventListener("click", ev => {
       ev.preventDefault();
       const objetivo = game.user.targets.first()?.actor ?? this.actor;
       objetivo.tirarLesion();
     });
 
-    // Añadir herida
     el.querySelector(".destino-punto-add")?.addEventListener("click", ev => {
       ev.preventDefault();
       const puntos = Object.values(foundry.utils.deepClone(this.actor.system.destino?.puntos ?? {}));
@@ -422,7 +400,6 @@ export class PJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       });
     });
 
-    // Borrar herida
     el.querySelectorAll(".herida-delete").forEach(a => {
       a.addEventListener("click", ev => {
         ev.preventDefault();
@@ -433,7 +410,6 @@ export class PJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       });
     });
 
-    // Toggle sanando en heridas
     el.querySelectorAll(".toggle-herida-sanando").forEach(a => {
       a.addEventListener("click", ev => {
         ev.preventDefault();
@@ -444,7 +420,6 @@ export class PJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       });
     });
 
-    // Pasiones
     el.querySelectorAll(".activar-pasion").forEach(a => {
       a.addEventListener("click", ev => {
         ev.preventDefault();
@@ -464,7 +439,6 @@ export class PJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       this.actor.resetearPasiones();
     });
 
-    // Marcas de La Mentira
     el.querySelectorAll(".marcar-mentira").forEach(a => {
       a.addEventListener("click", ev => {
         ev.preventDefault();
@@ -472,7 +446,6 @@ export class PJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       });
     });
 
-    // Círculos de salud (estados y heridas)
     el.querySelectorAll(".toggle-estado").forEach(a => {
       a.addEventListener("click", ev => {
         ev.preventDefault();
@@ -498,7 +471,6 @@ export class PJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       });
     });
 
-    // Toggle visera yelmo
     el.querySelectorAll(".toggle-visera").forEach(a => {
       a.addEventListener("click", ev => {
         ev.preventDefault();
@@ -508,7 +480,6 @@ export class PJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       });
     });
 
-    // Fortuna
     el.querySelector(".usar-fortuna")?.addEventListener("click", () => {
       const fortuna = this.actor.system.fortuna;
       if (fortuna.actual > 0) this.actor.update({ "system.fortuna.actual": fortuna.actual - 1 });

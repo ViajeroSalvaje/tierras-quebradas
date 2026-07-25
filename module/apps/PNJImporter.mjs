@@ -325,7 +325,6 @@ Rasgos: Intimidante, Ágil`;
     const pvGrave = parseInt(pvMatch?.[2]) || Math.ceil(pvMax / 2);
     const pvLeve = parseInt(pvMatch?.[3]) || Math.ceil(pvMax / 4);
 
-    // Dividir en secciones
     const secRe = /(Bendiciones[^:]*:|Hechizos:|Habilidades\s+m[áa]gicas:|Habilidades:|Armas:|Ventajas:|Desventajas:|Rasgos:)/gi;
     const partes = texto.split(secRe);
     const sec = {};
@@ -406,10 +405,7 @@ Rasgos: Intimidante, Ágil`;
       ...parsearVentajasDesventajas(sec.desventajas ?? "", "desventaja")
     ];
 
-    // Rasgos: "Nombre, Nombre2"
     const rasgos = (sec.rasgos ?? "").split(/[,.]/).map(s => s.trim()).filter(Boolean).map(nombre => ({ nombre }));
-
-    // Notas: descripción + datos sin campo propio
     const notasParts = [];
     if (desc) notasParts.push(desc);
     if (fuerza) notasParts.push(`FUE: ${fuerza}`);

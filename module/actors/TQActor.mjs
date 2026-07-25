@@ -219,6 +219,23 @@ export class TQActor extends Actor {
 
     const targetActor = game.user.targets.first()?.actor ?? null;
 
+    if (esMelee) {
+      const tipoAccion = await DialogV2.wait({
+        window: { title: game.i18n.localize("TQ.Melee.TipoAccionTitulo") },
+        content: `<p style="margin:0 0 8px 0;">${game.i18n.localize("TQ.Melee.TipoAccionDescripcion")}</p>`,
+        rejectClose: false,
+        buttons: [
+          { action: "acepta", label: game.i18n.localize("TQ.Melee.AceptaMelee"), default: true },
+          { action: "ignora", label: game.i18n.localize("TQ.Melee.IgnoraMelee") },
+          { action: "escapa", label: game.i18n.localize("TQ.Melee.TrataDeEscapar") }
+        ]
+      });
+      if (!tipoAccion) return;
+      if (tipoAccion === "ignora" || tipoAccion === "escapa") {
+        return this._tirarGolpeAislado(arma, puntuacion, md, tipoAccion, modDesglose, targetActor);
+      }
+    }
+
     const resultado = await TQRoll.dialogoTirada(arma.name, puntuacion, {
       actor: this, targetActor, modo, esCombate: true, longitudArma: arma.system.longitud ?? "media", habClave, extraTopes: arma.system.alcance === "arrojadiza" ? ["lanzar"] : [], modDesglose: modDesglose.length ? modDesglose : null, danho: {
         danoArma: arma.system.danoArma ?? "0", tipo: arma.system.tipo ?? "cortante", md, manos, noLetal: arma.system.noLetal ?? false
@@ -1649,6 +1666,115 @@ export class TQActor extends Actor {
     if (game.userId !== userId) return;
     const pvMax = this.system.salud?.pvMax?.valor ?? 0;
     if (pvMax > 0) await this.update({ "system.salud.pvActual.valor": pvMax });
+  }
+
+  async _tirarGolpeAislado(arma, puntuacion, md, tipoAccion, modDesglose, targetActor) {
+    const habClave = arma.system.habilidad;
+    const danho = {
+      danoArma: arma.system.danoArma ?? "0",
+      tipo: arma.system.tipo ?? "cortante",
+      md,
+      manos: arma.system.manos ?? "1m",
+      noLetal: arma.system.noLetal ?? false
+    };
+
+    const _getDefensorDatos = (actor) => {
+      if (!actor) return null;
+      if (actor.type === "pj") {
+        const esquivar = actor.system.habilidades?.esquivar;
+        const esquivarTotal = esquivar?.total ?? 0;
+        if (esquivarTotal > 0) return {
+          puntuacion: esquivarTotal,
+          habLabel: game.i18n.localize("TQ.Habilidades.esquivar"),
+          debilitado: actor.system.salud?.debilitado ?? false
+        };
+        const agilidad = actor.system.bases?.agilidad?.valor ?? 0;
+        return {
+          puntuacion: agilidad,
+          habLabel: game.i18n.localize("TQ.Bases.agilidad"),
+          debilitado: actor.system.salud?.debilitado ?? false
+        };
+      }
+      const habs = actor.system.habilidades ?? {};
+      for (const [k, v] of Object.entries(habs)) {
+        if (k.toLowerCase().includes("esquivar")) {
+          const total = typeof v === "number" ? v : (v.total ?? v.nivel ?? 0);
+          if (total > 0) return { puntuacion: total, habLabel: k, debilitado: actor.system.salud?.debilitado ?? false };
+        }
+      }
+      const agilidad = actor.system.bases?.agilidad?.valor ?? 0;
+      return { puntuacion: agilidad, habLabel: game.i18n.localize("TQ.Bases.agilidad"), debilitado: actor.system.salud?.debilitado ?? false };
+    };
+
+    const actoresEscena = [];
+    const actoresMap = new Map();
+    if (!targetActor) {
+      for (const token of (canvas.scene?.tokens ?? [])) {
+        const actor = token.actor;
+        if (!actor || actor.uuid === this.uuid) continue;
+        if (!actoresMap.has(actor.uuid)) {
+          const dd = _getDefensorDatos(actor);
+          actoresMap.set(actor.uuid, actor);
+          actoresEscena.push({ uuid: actor.uuid, name: actor.name, puntuacion: dd?.puntuacion ?? 0, habLabel: dd?.habLabel ?? "Esquivar", debilitado: dd?.debilitado ?? false });
+        }
+      }
+    }
+
+    const defDatos = targetActor ? _getDefensorDatos(targetActor) : null;
+    const rivalDatosGA = {
+      puntuacion: defDatos?.puntuacion ?? 0,
+      habLabel: defDatos?.habLabel ?? game.i18n.localize("TQ.Habilidades.esquivar"),
+      debilitado: defDatos?.debilitado ?? false,
+      tieneTarget: !!targetActor,
+      actoresEscena
+    };
+
+    if (!targetActor && actoresEscena.length > 0) {
+      const hookId = Hooks.on("renderDialogV2", (_app, html) => {
+        const actorSel = html.querySelector(".tq-ga-actor-select");
+        if (!actorSel) return;
+        Hooks.off("renderDialogV2", hookId);
+        const puntuacionInput = html.querySelector("#rival_puntuacion_ga");
+        const debilitadoInput = html.querySelector("#debilitado_bonus_ga");
+        const uuidInput = html.querySelector("#target_actor_uuid_ga");
+        const debAviso = html.querySelector("#tq-ga-deb-aviso");
+        const update = () => {
+          const opt = actorSel.options[actorSel.selectedIndex];
+          if (!opt?.value) return;
+          if (puntuacionInput) puntuacionInput.value = opt.dataset.puntuacion ?? "0";
+          if (debilitadoInput) debilitadoInput.value = opt.dataset.debilitado === "true" ? "2" : "0";
+          if (uuidInput) uuidInput.value = opt.value;
+          if (debAviso) debAviso.style.display = opt.dataset.debilitado === "true" ? "" : "none";
+        };
+        actorSel.addEventListener("change", update);
+        if (actorSel.options.length > 1) { actorSel.selectedIndex = 1; update(); }
+      });
+    }
+
+    const etiquetaAccion = tipoAccion === "ignora"
+      ? game.i18n.localize("TQ.Melee.IgnoraMelee")
+      : game.i18n.localize("TQ.Melee.TrataDeEscapar");
+    const textoContextual = tipoAccion === "ignora" ? "TQ.Melee.TextoIgnoraMelee" : null;
+
+    const resultado = await TQRoll.dialogoTirada(etiquetaAccion, puntuacion, {
+      actor: this,
+      targetActor,
+      modo: tipoAccion === "ignora" ? "golpe-aislado" : "trata-de-escapar",
+      esCombate: true,
+      habClave,
+      modDesglose: modDesglose.length ? modDesglose : null,
+      danho,
+      rivalDatosGA,
+      actoresMapGA: actoresMap,
+      textoContextual
+    });
+
+    if (this.type === "pj" && resultado && resultado.exitos >= 0) {
+      const habilidad = this.system.habilidades?.[habClave];
+      if (habilidad && !habilidad.exito) {
+        await this.update({ [`system.habilidades.${habClave}.exito`]: true });
+      }
+    }
   }
 
   async abrirDialogoEnfrentada(habNombreDisplay, habTotal, habClave = null) {

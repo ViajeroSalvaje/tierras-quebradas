@@ -172,7 +172,7 @@ Movimiento: Correr, medio.`;
     const atractivo = atrRaw === "-" ? 0 : (parseInt(atrRaw) || 0);
     const tamanyo = intSig(/TAM:\s*([+-]?\d+)/i);
     const fuerza = int(/FUE:\s*(\d+)/i);
-    const pm        = int(/PM:\s*(\d+)/i);
+    const pm = int(/PM:\s*(\d+)/i);
     const alImpacto = intSig(/Al\s+impacto:\s*([+-]?\d+)/i);
 
     const protLine = lineas.find(l => /protecc/i.test(l)) ?? "";
@@ -236,9 +236,9 @@ Movimiento: Correr, medio.`;
       }
     }
 
-    const poderes             = sec.poderes             ? sec.poderes.replace(/Movimiento:.*/i, "").trim()             : "";
+    const poderes = sec.poderes ? sec.poderes.replace(/Movimiento:.*/i, "").trim() : "";
     const habilidadesEspeciales = sec.habilidadesEspeciales ? sec.habilidadesEspeciales.replace(/Movimiento:.*/i, "").trim() : "";
-    const personalidad        = sec.personalidad        ? sec.personalidad.replace(/Movimiento:.*/i, "").trim()        : "";
+    const personalidad = sec.personalidad ? sec.personalidad.replace(/Movimiento:.*/i, "").trim() : "";
 
     const parsearEntradas = (texto) => {
       if (!texto) return [];
@@ -250,9 +250,9 @@ Movimiento: Correr, medio.`;
         return { nombre: entrada, efecto: "" };
       });
     };
-    const poderesItems             = parsearEntradas(poderes);
+    const poderesItems = parsearEntradas(poderes);
     const habilidadesEspecialesItems = parsearEntradas(habilidadesEspeciales);
-    const personalidadItems        = parsearEntradas(personalidad);
+    const personalidadItems = parsearEntradas(personalidad);
 
     return { nombre, tipo, cuerpo, mente, espiritu, atractivo, tamanyo, fuerza, pvMax, pvGrave, pvLeve, proteccion, proteccionTipo, mDano1m, mDano2m, pm, alImpacto, movimiento, habilidades, armas, poderes, habilidadesEspeciales, personalidad, poderesItems, habilidadesEspecialesItems, personalidadItems, notas: desc };
   }

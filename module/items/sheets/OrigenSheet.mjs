@@ -36,13 +36,11 @@ export class OrigenSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
     super._onRender(context, options);
     const el = this.element;
 
-    // Añadir fila de habilidad
     el.querySelector(".origen-hab-add")?.addEventListener("click", async () => {
       const lista = [...(this.item.system.habilidades ?? []), { clave: "", nombre: "", bonus: 1 }];
       await this.item.update({ "system.habilidades": lista });
     });
 
-    // Eliminar fila
     el.querySelectorAll(".origen-hab-del").forEach(btn => {
       btn.addEventListener("click", async () => {
         const i = parseInt(btn.dataset.index);
@@ -52,7 +50,6 @@ export class OrigenSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
       });
     });
 
-    // Editar clave o bonus
     el.querySelectorAll(".origen-hab-clave, .origen-hab-bonus").forEach(input => {
       input.addEventListener("change", async ev => {
         const i = parseInt(ev.target.dataset.index);

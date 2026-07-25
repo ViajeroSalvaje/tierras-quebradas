@@ -42,7 +42,7 @@ export class ArmaSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
   async _processSubmitData(event, form, submitData) {
     const norm = v => parseFloat(String(v).replace(",", ".")) || 0;
     const data = foundry.utils.expandObject(submitData);
-    if (data.system?.carga   !== undefined) data.system.carga   = norm(data.system.carga);
+    if (data.system?.carga !== undefined) data.system.carga = norm(data.system.carga);
     if (data.system?.recarga !== undefined) data.system.recarga = norm(data.system.recarga);
     const packId = this.item.pack;
     const realId = packId

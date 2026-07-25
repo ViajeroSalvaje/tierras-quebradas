@@ -37,7 +37,6 @@ const ACTITUDES = [
   { id: "servicial", label: "Servicial", desc: "Entiende la superioridad absoluta de los dioses y los sirve lealmente" }, { id: "atemorizado", label: "Atemorizado", desc: "Cumple con la religión por miedo al castigo divino" }, { id: "pragmatico", label: "Pragmático", desc: "Ve su servicio como un intercambio por poder y beneficios" }, { id: "rebelde", label: "Rebelde", desc: "Siente rencor hacia los dioses y busca un mundo libre de su influencia" }, { id: "indiferente", label: "Indiferente", desc: "Intenta permanecer ajeno a las disputas divinas" }
 ];
 
-// Mapeo de ideología a clave de lealtad en el schema del actor
 const IDEOLOGIA_A_LEALTAD = {
   ley: "ley", caos: "caos", elementales: "elementos", antepasados: "antepasados"
 };
@@ -80,21 +79,21 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
   _pasoIndex = 0;
 
   _charData = {
-    nombre: "", // Características
-    metodoCaract: "distribuir", cuerpo: 7, mente: 6, espiritu: 6, atractivo: 0, tamano: 0, tiradaAleatoria: null, tiradaBruta: null, cuerpoRolled: null, menteRolled: null, espirituRolled: null, // Edad
-    edadCategoria: "adulto", edadNumero: 25, puntosHab: 10, // Especie
-    especieId: null, especieCostePP: 0, especieBonusMente: 0, especieBonusEsp: 0, especieBonusPuntos: 0, especieAcMagico: false, // Entorno
-    entornoId: null, entornoNombre: "", entornoHabilidades: [], // Origen
-    origenId: null, origenNombre: "", origenPPBonus: 0, origenIdioma: "", origenReligion: "", origenHabilidades: [], origenElecciones: {}, // Profesión
-    profesionId: null, profesionNombre: "", profesionHabilidades: [], profesionVentajas: [], // Elecciones de arma
-    profesionElecciones: {}, entornoElecciones: {}, // Especialización de profesión
-    especializacionIdx: null, especializacionHabilidades: [], // Ventajas elegidas
-    ventajasElegidas: [], // Rasgos sobrenaturales/sociales elegidos
-    rasgosElegidos: [], // Rasgos de personalidad
-    rasgosPos: ["", ""], rasgosNeg: ["", ""], // Equipo
-    nivelAdquisitivo: null, fondosIniciales: 0, armaduraSeleccionadas: [], armasCaCSeleccionadas: [], armasProySeleccionadas: [], armasArrSeleccionadas: [], // Paso habilidades: puntos libres gastados por clave
-    habilidadesLibres: {}, // Religión
-    ideologiaReligion: null, deidad: "", actitudDivina: "indiferente", plRepartidos: { ley: 0, caos: 0, elementos: 0, antepasados: 0 }, // Magia
+    nombre: "",
+    metodoCaract: "distribuir", cuerpo: 7, mente: 6, espiritu: 6, atractivo: 0, tamano: 0, tiradaAleatoria: null, tiradaBruta: null, cuerpoRolled: null, menteRolled: null, espirituRolled: null,
+    edadCategoria: "adulto", edadNumero: 25, puntosHab: 10,
+    especieId: null, especieCostePP: 0, especieBonusMente: 0, especieBonusEsp: 0, especieBonusPuntos: 0, especieAcMagico: false,
+    entornoId: null, entornoNombre: "", entornoHabilidades: [],
+    origenId: null, origenNombre: "", origenPPBonus: 0, origenIdioma: "", origenReligion: "", origenHabilidades: [], origenElecciones: {},
+    profesionId: null, profesionNombre: "", profesionHabilidades: [], profesionVentajas: [],
+    profesionElecciones: {}, entornoElecciones: {},
+    especializacionIdx: null, especializacionHabilidades: [],
+    ventajasElegidas: [],
+    rasgosElegidos: [],
+    rasgosPos: ["", ""], rasgosNeg: ["", ""],
+    nivelAdquisitivo: null, fondosIniciales: 0, armaduraSeleccionadas: [], armasCaCSeleccionadas: [], armasProySeleccionadas: [], armasArrSeleccionadas: [],
+    habilidadesLibres: {},
+    ideologiaReligion: null, deidad: "", actitudDivina: "indiferente", plRepartidos: { ley: 0, caos: 0, elementos: 0, antepasados: 0 },
     tipoMagia: null, tipoMagiaAuto: false, hechizosElegidos: [], magiaLibres: {}
   };
 
@@ -116,23 +115,19 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
     return app.render(true);
   }
 
-  // Cálculos de PP
-
   get _edadActual() { return EDADES[this._charData.edadCategoria] ?? EDADES.adulto; }
 
   _ppAtractivo()  { return -(this._charData.atractivo * 2); }
 
-  /** PP que se guardan en el actor (antes de descontar especie, que lo hace el hook) */
+  // PP que se guardan en el actor (antes de descontar especie, que lo hace el hook)
   _calcPPBase() {
     return 10 + this._edadActual.ppBonus + this._ppAtractivo();
   }
 
-  /** PP de display: incluye todo lo decidido hasta ahora */
   _calcPP() {
     return this._calcPPBase() - this._charData.especieCostePP + this._charData.origenPPBonus;
   }
 
-  /** Número de rasgos positivos/negativos según ventajas elegidas */
   _calcNumRasgos() {
     const nombres = this._charData.ventajasElegidas.map(v => v.nombre);
     if (nombres.includes("Personalidad compleja")) return { pos: 3, neg: 3 };
@@ -140,7 +135,6 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
     return { pos: 2, neg: 2 };
   }
 
-  /** PP incluyendo ventajas, desventajas y rasgos elegidos */
   _calcPPConVentajas() {
     const sum = [...this._charData.ventajasElegidas, ...this._charData.rasgosElegidos]
       .reduce((acc, v) => acc + (v.coste ?? 0) * (v.cantidad ?? 1), 0);
@@ -223,8 +217,6 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
     return total - gastadosHab - gastadosMagia;
   }
 
-  // Dados al aleatorio
-
   _tirarCaracteristicasAleatorio() {
     const rolls = Array.from({ length: 4 }, () => Math.ceil(Math.random() * 6) + 3);
     rolls.sort((a, b) => a - b);
@@ -239,7 +231,6 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
     this.render();
   }
 
-  /** Aplica modificadores de edad y especie (aleatorio) a los valores rodados */
   _aplicarEdadAleatorio() {
     if (this._charData.metodoCaract !== "aleatorio" || !this._charData.tiradaAleatoria) return;
     const edad = this._edadActual;
@@ -247,8 +238,6 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
     this._charData.mente = Math.min(9, Math.max(3, this._charData.menteRolled    + edad.aleatorioMente  + this._charData.especieBonusMente));
     this._charData.espiritu = Math.min(9, Math.max(3, this._charData.espirituRolled + this._charData.especieBonusEsp));
   }
-
-  // Especies
 
   async _getEspecies() {
     if (this._especiesCache) return this._especiesCache;
@@ -304,7 +293,7 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
     if (!pack) return [];
     const docs = await pack.getDocuments();
     this._armaduraCache = docs.map(d => ({
-      id: d.id, name: d.name, precio: d.system.precio ?? 0, carga: d.system.carga  ?? 0
+      id: d.id, name: d.name, precio: d.system.precio ?? 0, carga: d.system.carga ?? 0
     })).sort((a, b) => a.name.localeCompare(b.name));
     return this._armaduraCache;
   }
@@ -315,7 +304,7 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
     if (!pack) return [];
     const docs = await pack.getDocuments();
     this._armasCaCCache = docs.map(d => ({
-      id: d.id, name: d.name, precio: d.system.precio ?? 0, carga: d.system.carga  ?? 0
+      id: d.id, name: d.name, precio: d.system.precio ?? 0, carga: d.system.carga ?? 0
     })).sort((a, b) => a.name.localeCompare(b.name));
     return this._armasCaCCache;
   }
@@ -326,7 +315,7 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
     if (!pack) return [];
     const docs = await pack.getDocuments();
     this._armasProyCache = docs.map(d => ({
-      id: d.id, name: d.name, precio: d.system.precio ?? 0, carga: d.system.carga  ?? 0
+      id: d.id, name: d.name, precio: d.system.precio ?? 0, carga: d.system.carga ?? 0
     })).sort((a, b) => a.name.localeCompare(b.name));
     return this._armasProyCache;
   }
@@ -337,7 +326,7 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
     if (!pack) return [];
     const docs = await pack.getDocuments();
     this._armasArrCache = docs.map(d => ({
-      id: d.id, name: d.name, precio: d.system.precio ?? 0, carga: d.system.carga  ?? 0
+      id: d.id, name: d.name, precio: d.system.precio ?? 0, carga: d.system.carga ?? 0
     })).sort((a, b) => a.name.localeCompare(b.name));
     return this._armasArrCache;
   }
@@ -386,8 +375,6 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
     return this._origenesCache;
   }
 
-  // Contexto
-
   async _prepareContext(options) {
     const pasoId = CharacterCreator.PASOS[this._pasoIndex].id;
     const pasoLabel = CharacterCreator.PASOS[this._pasoIndex].label;
@@ -401,7 +388,6 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
       key: k, ...v, selected: k === this._charData.edadCategoria, ppStr: (v.ppBonus >= 0 ? "+" : "") + v.ppBonus + " PP"
     }));
 
-    // Datos específicos de características
     const { cuerpo, mente, espiritu, atractivo, tamano } = this._charData;
     const sumCaract = cuerpo + mente + espiritu;
     const poolDistr = this._edadActual.puntosCaract + this._charData.especieBonusPuntos;
@@ -426,20 +412,17 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
         }))
       : null;
 
-    // Conflicto edad ↔ características (solo para distribución)
     const ptsExceso = sumCaract - poolDistr;
     const conflictoCuerpo = cuerpo > edad.maxCuerpo;
     const hayConflicto = this._charData.metodoCaract === "distribuir"
                             && (ptsExceso > 0 || conflictoCuerpo);
 
-    // Preview reducciones aleatorio (muestra rolled → final)
     const reduccionesAleatorias = (this._charData.metodoCaract === "aleatorio" && this._charData.tiradaAleatoria)
       ? [
           { label: "Cuerpo", base: this._charData.cuerpoRolled, mod: edad.aleatorioCuerpo, final: cuerpo   }, { label: "Mente", base: this._charData.menteRolled, mod: edad.aleatorioMente, final: mente    }
         ].filter(r => r.mod !== 0)
       : null;
 
-    // Datos de entorno
     let entornosData = null;
     let eleccionesEntorno = null;
     if (pasoId === "entorno") {
@@ -459,7 +442,6 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
       }
     }
 
-    // Datos de profesión
     let profesionesData = null;
     let eleccionesProfesion = null;
     let especializaciones = null;
@@ -489,7 +471,6 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
       }
     }
 
-    // Datos de origen
     let origenesData = null;
     let eleccionesIdiomaOrigen = null;
     if (pasoId === "origen") {
@@ -517,7 +498,6 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
       }
     }
 
-    // Datos de especie
     let especiesData = null;
     if (pasoId === "especie") {
       const especies = await this._getEspecies();
@@ -526,7 +506,6 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
       }));
     }
 
-    // Datos de ventajas
     let ventajasLista = null;
     let desventajasLista = null;
     const ventajasConteo = this._charData.ventajasElegidas.length;
@@ -544,11 +523,9 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
       desventajasLista = lista.filter(v => v.tipo === "desventaja").map(mapV);
     }
 
-    // Datos de rasgos (sobrenaturales/sociales + personalidad)
     let rasgosItemsData = null;
     let rasgosData = null;
     if (pasoId === "rasgos") {
-      // Seleccionables del compendio
       const lista = await this._getRasgos();
       const normH = s => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
       const elegidosMap = new Map(this._charData.rasgosElegidos.map(r => [r.id, r]));
@@ -563,7 +540,6 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
       rasgosItemsData = {
         sobrenaturales: lista.filter(r => r.tipo === "rasgoSobrenatural").map(mapR), sociales: lista.filter(r => r.tipo === "rasgoSocial").map(mapR)
       };
-      // Rasgos de personalidad
       const { pos, neg } = this._calcNumRasgos();
       while (this._charData.rasgosPos.length < pos) this._charData.rasgosPos.push("");
       while (this._charData.rasgosNeg.length < neg) this._charData.rasgosNeg.push("");
@@ -658,7 +634,6 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
       };
     }
 
-    // Datos de magia
     let magiaData = null;
     if (pasoId === "magia") {
       const esProfMagica = this._esProfesionMagica();
@@ -783,13 +758,11 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
 
   _formatBonusCaract(e) {
     const bonos = [];
-    if (e.bonusCuerpo)    bonos.push("CUE " + (e.bonusCuerpo   > 0 ? "+" : "") + e.bonusCuerpo);
-    if (e.bonusMente)     bonos.push("MEN " + (e.bonusMente    > 0 ? "+" : "") + e.bonusMente);
-    if (e.bonusEspiritu)  bonos.push("ESP " + (e.bonusEspiritu > 0 ? "+" : "") + e.bonusEspiritu);
+    if (e.bonusCuerpo) bonos.push("CUE " + (e.bonusCuerpo > 0 ? "+" : "") + e.bonusCuerpo);
+    if (e.bonusMente) bonos.push("MEN " + (e.bonusMente > 0 ? "+" : "") + e.bonusMente);
+    if (e.bonusEspiritu) bonos.push("ESP " + (e.bonusEspiritu > 0 ? "+" : "") + e.bonusEspiritu);
     return bonos.join(" · ") || null;
   }
-
-  // Eventos
 
   _onRender(context, options) {
     super._onRender(context, options);
@@ -801,7 +774,6 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
       if (span) span.textContent = this._charData[caract] ?? 0;
     }
 
-    // Características
     el.querySelectorAll(".cc-metodo-btn").forEach(btn => {
       btn.addEventListener("click", () => {
         this._charData.metodoCaract = btn.dataset.metodo;
@@ -819,7 +791,6 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
       this._tirarCaracteristicasAleatorio();
     });
 
-    // Spinners de características (distribuir y resolución conflicto en edad)
     el.querySelectorAll(".cc-caract-btn").forEach(btn => {
       btn.addEventListener("click", () => {
         const caract = btn.dataset.caract;
@@ -832,7 +803,6 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
       });
     });
 
-    // Select aleatorio
     el.querySelectorAll(".cc-aleatorio-select").forEach(sel => {
       sel.addEventListener("change", ev => {
         const caract = ev.target.dataset.caract;
@@ -842,7 +812,6 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
       });
     });
 
-    // Edad
     el.querySelector("#cc-nombre")?.addEventListener("input", ev => {
       this._charData.nombre = ev.target.value;
     });
@@ -858,7 +827,6 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
       });
     });
 
-    // Entorno
     el.querySelectorAll(".entorno-card").forEach(card => {
       card.addEventListener("click", () => {
         const id = card.dataset.entornoId;
@@ -872,7 +840,6 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
       });
     });
 
-    // Profesión
     el.querySelectorAll(".profesion-card").forEach(card => {
       card.addEventListener("click", () => {
         const id = card.dataset.profesionId;
@@ -889,7 +856,6 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
       });
     });
 
-    // Especialización de profesión
     el.querySelectorAll(".cc-especializacion-card").forEach(card => {
       card.addEventListener("click", () => {
         const idx = parseInt(card.dataset.idx);
@@ -902,7 +868,6 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
       });
     });
 
-    // Elecciones de arma
     el.querySelectorAll(".cc-arma-select").forEach(sel => {
       sel.addEventListener("change", ev => {
         const idx = parseInt(ev.target.dataset.idx);
@@ -915,7 +880,6 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
       });
     });
 
-    // Origen
     el.querySelectorAll(".origen-card").forEach(card => {
       card.addEventListener("click", () => {
         const id = card.dataset.origenId;
@@ -931,7 +895,6 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
       });
     });
 
-    // Origen: idioma
     el.querySelectorAll(".cc-idioma-origen-select").forEach(sel => {
       sel.addEventListener("change", ev => {
         const idx = parseInt(ev.target.dataset.idx);
@@ -939,21 +902,19 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
       });
     });
 
-    // Especie
     el.querySelectorAll(".especie-card").forEach(card => {
       card.addEventListener("click", () => {
         this._charData.especieId = card.dataset.especieId;
-        this._charData.especieCostePP = parseInt(card.dataset.costePp)       || 0;
-        this._charData.especieBonusMente = parseInt(card.dataset.bonusMente)  || 0;
-        this._charData.especieBonusEsp = parseInt(card.dataset.bonusEsp)      || 0;
-        this._charData.especieBonusPuntos = parseInt(card.dataset.bonusPuntos)|| 0;
+        this._charData.especieCostePP = parseInt(card.dataset.costePp) || 0;
+        this._charData.especieBonusMente = parseInt(card.dataset.bonusMente) || 0;
+        this._charData.especieBonusEsp = parseInt(card.dataset.bonusEsp) || 0;
+        this._charData.especieBonusPuntos = parseInt(card.dataset.bonusPuntos) || 0;
         this._charData.especieAcMagico = card.dataset.accesoMagico === "true";
         this._aplicarEdadAleatorio();
         this.render();
       });
     });
 
-    // Ventajas
     el.querySelectorAll(".ventaja-card").forEach(card => {
       card.addEventListener("click", () => {
         if (card.classList.contains("disabled")) return;
@@ -971,7 +932,6 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
       });
     });
 
-    // Rasgos
     const normR = s => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
     el.querySelectorAll(".rasgo-card").forEach(card => {
       card.addEventListener("click", () => {
@@ -1019,7 +979,6 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
       });
     });
 
-    // Rasgos de personalidad
     el.querySelectorAll(".cc-rasgo-input").forEach(inp => {
       inp.addEventListener("input", ev => {
         const tipo = ev.target.dataset.tipo;
@@ -1029,7 +988,6 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
       });
     });
 
-    // Habilidades
     el.querySelectorAll(".cc-hab-btn").forEach(btn => {
       btn.addEventListener("click", () => {
         if (btn.disabled) return;
@@ -1041,7 +999,6 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
       });
     });
 
-    // Religión
     el.querySelectorAll(".cc-ideologia-card").forEach(card => {
       card.addEventListener("click", () => {
         const id = card.dataset.ideologiaId;
@@ -1081,7 +1038,6 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
       });
     });
 
-    // Magia
     el.querySelectorAll(".cc-magia-tipo-card").forEach(card => {
       card.addEventListener("click", () => {
         const tipo = card.dataset.tipo;
@@ -1138,19 +1094,17 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
       });
     });
 
-    // Navegación
     el.querySelector(".cc-btn-anterior")?.addEventListener("click", () => {
       this._pasoIndex--;
       this.render();
     });
-    // equipo: armaduras
     el.querySelectorAll(".cc-armadura-check").forEach(circle => {
       circle.addEventListener("click", ev => {
-        const t      = ev.currentTarget;
-        const id     = t.dataset.armaduraId;
+        const t = ev.currentTarget;
+        const id = t.dataset.armaduraId;
         const nombre = t.dataset.nombre;
-        const precio = parseInt(t.dataset.precio)  || 0;
-        const carga  = parseFloat(t.dataset.carga) || 0;
+        const precio = parseInt(t.dataset.precio) || 0;
+        const carga = parseFloat(t.dataset.carga) || 0;
         if (!t.classList.contains("marcado")) {
           this._charData.armaduraSeleccionadas.push({ id, nombre, precio, carga });
         } else {
@@ -1161,14 +1115,13 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
       });
     });
 
-    // equipo: armas arrojadizas
     el.querySelectorAll(".cc-armaArr-check").forEach(circle => {
       circle.addEventListener("click", ev => {
-        const t      = ev.currentTarget;
-        const id     = t.dataset.armaId;
+        const t = ev.currentTarget;
+        const id = t.dataset.armaId;
         const nombre = t.dataset.nombre;
-        const precio = parseInt(t.dataset.precio)  || 0;
-        const carga  = parseFloat(t.dataset.carga) || 0;
+        const precio = parseInt(t.dataset.precio) || 0;
+        const carga = parseFloat(t.dataset.carga) || 0;
         if (!t.classList.contains("marcado")) {
           this._charData.armasArrSeleccionadas.push({ id, nombre, precio, carga });
         } else {
@@ -1179,14 +1132,13 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
       });
     });
 
-    // equipo: armas de proyectiles
     el.querySelectorAll(".cc-armaproy-check").forEach(circle => {
       circle.addEventListener("click", ev => {
-        const t      = ev.currentTarget;
-        const id     = t.dataset.armaId;
+        const t = ev.currentTarget;
+        const id = t.dataset.armaId;
         const nombre = t.dataset.nombre;
-        const precio = parseInt(t.dataset.precio)  || 0;
-        const carga  = parseFloat(t.dataset.carga) || 0;
+        const precio = parseInt(t.dataset.precio) || 0;
+        const carga = parseFloat(t.dataset.carga) || 0;
         if (!t.classList.contains("marcado")) {
           this._charData.armasProySeleccionadas.push({ id, nombre, precio, carga });
         } else {
@@ -1197,14 +1149,13 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
       });
     });
 
-    // equipo: armas cuerpo a cuerpo
     el.querySelectorAll(".cc-armacac-check").forEach(circle => {
       circle.addEventListener("click", ev => {
-        const t      = ev.currentTarget;
-        const id     = t.dataset.armaId;
+        const t = ev.currentTarget;
+        const id = t.dataset.armaId;
         const nombre = t.dataset.nombre;
-        const precio = parseInt(t.dataset.precio)  || 0;
-        const carga  = parseFloat(t.dataset.carga) || 0;
+        const precio = parseInt(t.dataset.precio) || 0;
+        const carga = parseFloat(t.dataset.carga) || 0;
         if (!t.classList.contains("marcado")) {
           this._charData.armasCaCSeleccionadas.push({ id, nombre, precio, carga });
         } else {
@@ -1215,7 +1166,6 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
       });
     });
 
-    // equipo: nivel adquisitivo
     el.querySelectorAll(".cc-nivel-adquisitivo-card").forEach(card => {
       card.addEventListener("click", () => {
         const id = card.dataset.nivelId;
@@ -1238,8 +1188,6 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
       if (this._validarPaso()) this._crearActor();
     });
   }
-
-  // Validación
 
   _validarPaso() {
     const id = CharacterCreator.PASOS[this._pasoIndex].id;
@@ -1348,8 +1296,6 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
     return true;
   }
 
-  // Crear actor
-
   async _crearActor() {
     const { cuerpo, mente, espiritu } = this._charData;
 
@@ -1363,7 +1309,6 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
 
     if (!actor) return;
 
-    // Aplicar entorno
     if (this._charData.entornoId) {
       const habEnt = {};
       for (const [i, h] of (this._charData.entornoHabilidades ?? []).entries()) {
@@ -1385,7 +1330,6 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
       }
     }
 
-    // Aplicar origen: idioma, religión y bonos de habilidad
     if (this._charData.origenId) {
       const habUpdates = {};
       if (this._charData.origenIdioma) {
@@ -1406,7 +1350,6 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
       }
       if (Object.keys(habUpdates).length) await actor.update(habUpdates);
 
-      // Añadir ítem de origen para mostrarlo en la ficha
       const pack = game.packs.get("tierras-quebradas.origenes");
       if (pack) {
         await pack.getIndex();
@@ -1418,7 +1361,6 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
       }
     }
 
-    // Aplicar profesión
     if (this._charData.profesionId) {
       const habProf = {};
       habProf["system.profesion"] = this._charData.profesionNombre;
@@ -1436,7 +1378,6 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
       }
       await actor.update(habProf);
 
-      // Ítem profesión (tqWizard: omite _aplicarProfesion)
       const packProf = game.packs.get("tierras-quebradas.profesiones");
       if (packProf) {
         await packProf.getIndex();
@@ -1447,7 +1388,6 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
         }
       }
 
-      // Ventajas de la profesión
       for (const v of (this._charData.profesionVentajas ?? [])) {
         await Item.create({
           name: v.nombre, type: "ventaja", system: { coste: v.coste ?? 0, tipo: v.tipo ?? "ventaja", efecto: v.efecto ?? "", fuente: "profesion" }
@@ -1455,7 +1395,6 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
       }
     }
 
-    // Añadir ítem de especie para mostrarlo en la ficha
     // tqWizard: true → el hook createItem salta _aplicarEspecie (ya aplicado por el wizard)
     if (this._charData.especieId) {
       const packEsp = game.packs.get("tierras-quebradas.especies");
@@ -1465,14 +1404,12 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
       }
     }
 
-    // Rasgos de personalidad
     const rasgoKeys = ["rasgoPos1","rasgoPos2","rasgoPos3","rasgoNeg1","rasgoNeg2","rasgoNeg3"];
     const rasgoUpdates = {};
     this._charData.rasgosPos.forEach((v, i) => { rasgoUpdates[`system.rasgoPos${i+1}`] = v; });
     this._charData.rasgosNeg.forEach((v, i) => { rasgoUpdates[`system.rasgoNeg${i+1}`] = v; });
     if (Object.keys(rasgoUpdates).length) await actor.update(rasgoUpdates);
 
-    // Rasgos sobrenaturales/sociales elegidos
     const habRasgos = {};
     for (const r of this._charData.rasgosElegidos) {
       await Item.create({
@@ -1487,14 +1424,12 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
     }
     if (Object.keys(habRasgos).length) await actor.update(habRasgos);
 
-    // Ventajas y desventajas elegidas
     for (const v of this._charData.ventajasElegidas) {
       await Item.create({
         name: v.nombre, type: "ventaja", system: { coste: v.coste, tipo: v.tipo, efecto: v.efecto ?? "", fuente: "creacion" }
       }, { parent: actor });
     }
 
-    // Armaduras seleccionadas
     const packArm = game.packs.get("tierras-quebradas.armamento-armaduras");
     if (packArm) {
       for (const a of this._charData.armaduraSeleccionadas) {
@@ -1503,7 +1438,6 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
       }
     }
 
-    // Armas cuerpo a cuerpo seleccionadas
     const packCaC = game.packs.get("tierras-quebradas.armamento-armas-cuerpo-a-cuerpo");
     if (packCaC) {
       for (const a of this._charData.armasCaCSeleccionadas) {
@@ -1512,7 +1446,6 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
       }
     }
 
-    // Armas de proyectiles seleccionadas
     const packProy = game.packs.get("tierras-quebradas.armamento-armas-proyectiles");
     if (packProy) {
       for (const a of this._charData.armasProySeleccionadas) {
@@ -1521,7 +1454,6 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
       }
     }
 
-    // Armas arrojadizas seleccionadas
     const packArr = game.packs.get("tierras-quebradas.armamento-armas-arrojadizas");
     if (packArr) {
       for (const a of this._charData.armasArrSeleccionadas) {
@@ -1530,7 +1462,6 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
       }
     }
 
-    // Habilidades libres (puntos repartidos en el paso habilidades)
     const habLibres = this._charData.habilidadesLibres ?? {};
     if (Object.keys(habLibres).length) {
       const libresUpdate = {};
@@ -1542,7 +1473,6 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
       if (Object.keys(libresUpdate).length) await actor.update(libresUpdate);
     }
 
-    // Aplicar religión y lealtad
     if (this._charData.ideologiaReligion) {
       const pl = { ...this._charData.plRepartidos };
       const lealtadClave = IDEOLOGIA_A_LEALTAD[this._charData.ideologiaReligion] ?? null;
@@ -1559,7 +1489,6 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
       });
     }
 
-    // Magia
     const tieneHechiceria = this._esProfesionMagica() || this._charData.tipoMagia === "hechiceria";
     const tieneTeurgia = this._charData.tipoMagia === "teurgia";
     if (tieneHechiceria || tieneTeurgia) {
@@ -1593,7 +1522,6 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
       }, { parent: actor });
     }
 
-    // Dinero restante tras compras
     const mbGastadoTotal = [
       ...this._charData.armaduraSeleccionadas, ...this._charData.armasCaCSeleccionadas, ...this._charData.armasProySeleccionadas, ...this._charData.armasArrSeleccionadas
     ].reduce((s, a) => s + a.precio, 0);

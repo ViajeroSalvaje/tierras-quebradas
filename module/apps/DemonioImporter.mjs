@@ -166,7 +166,7 @@ Movimiento: Correr, rápido.`;
     const atractivo = intSig(/ATR:\s*([+-]?\d+)/i);
     const tamanyo = intSig(/TAM:\s*([+-]?\d+)/i);
     const fuerza = int(/FUE:\s*(\d+)/i);
-    const pm        = int(/PM:\s*(\d+)/i);
+    const pm = int(/PM:\s*(\d+)/i);
     const alImpacto = intSig(/Al\s+impacto:\s*([+-]?\d+)/i);
 
     const protLine = lineas.find(l => /protecc/i.test(l)) ?? "";
@@ -225,10 +225,8 @@ Movimiento: Correr, rápido.`;
       }
     }
 
-    const poderes     = sec.poderes     ? sec.poderes.replace(/Movimiento:.*/i, "").trim()     : "";
+    const poderes = sec.poderes ? sec.poderes.replace(/Movimiento:.*/i, "").trim() : "";
     const debilidades = sec.debilidades ? sec.debilidades.replace(/Movimiento:.*/i, "").trim() : "";
-
-    // Parsear entradas individuales de poderes y debilidades
     const parsearEntradas = (texto) => {
       if (!texto) return [];
       return texto.split(/◆|•|\n/).map(s => s.trim()).filter(Boolean).map(entrada => {
@@ -239,7 +237,7 @@ Movimiento: Correr, rápido.`;
         return { nombre: entrada, efecto: "" };
       });
     };
-    const poderesItems     = parsearEntradas(poderes);
+    const poderesItems = parsearEntradas(poderes);
     const debilidadesItems = parsearEntradas(debilidades);
 
     const notasParts = [];
