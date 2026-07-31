@@ -13,7 +13,9 @@
         "derivadas": {
           "fuerza": { "valor": 0 },
           "mDano1m": { "valor": 0 },
-          "mDano2m": { "valor": 0 }
+          "mDano2m": { "valor": 0 },
+          "mDano1mExtra": 0,
+          "mDano2mExtra": 0
         },
         "bases": {
           "agilidad": { "valor": 0 },
@@ -67,6 +69,7 @@
           "ley": 0,
           "elementos": 0,
           "antepasados": 0,
+          "deidad": "",
           "divina1": 0,
           "divina2": 0,
           "divina3": 0,
@@ -183,7 +186,10 @@
         "descripcionFisica": "",
         "puntosPP": 0,
         "puntosHab": 0,
-        "idiomaNoativo": ""
+        "idiomaNoativo": "",
+        "donesPara": [],
+        "afinidadesCon": [],
+        "blancosDe": []
       }
     },
     "pj": {
@@ -224,7 +230,7 @@
     }
   },
   "Item": {
-    "types": ["arma", "armadura", "hechizo", "ventaja", "rasgo", "pacto", "bendicion", "especie", "entorno", "origen", "profesion", "idioma", "objeto", "consumible", "habilidad"],
+    "types": ["arma", "armadura", "hechizo", "ventaja", "rasgo", "pacto", "bendicion", "especie", "entorno", "origen", "profesion", "idioma", "objeto", "consumible", "habilidad", "objetoMagico", "deidad"],
     "templates": {
       "base": {
         "descripcion": "",
@@ -235,6 +241,7 @@
     "arma": {
       "templates": ["base"],
       "danoArma": "1d6",
+      "bonoDano": 0,
       "manos": "1m",
       "fue": 0,
       "tipo": "cortante",
@@ -305,8 +312,10 @@
     },
     "profesion": {
       "descripcion": "",
+      "costePP": 0,
       "habilidades": [],
       "ventajas": [],
+      "rasgos": [],
       "especializaciones": []
     },
     "rasgo": {
@@ -341,6 +350,17 @@
       "carga": 0,
       "precio": 0,
       "categoria": "",
+      "descripcion": ""
+    },
+    "objetoMagico": {
+      "espiritu": 0,
+      "pm": 0,
+      "efecto": "",
+      "descripcion": ""
+    },
+    "deidad": {
+      "tipo": "ley",
+      "principal": false,
       "descripcion": ""
     },
     "consumible": {
