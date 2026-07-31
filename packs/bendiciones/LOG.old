@@ -1,5 +1,14 @@
-2026/07/25-14:14:53.257 7cd0 Recovering log #584
-2026/07/25-14:14:53.258 7cd0 Level-0 table #587: started
-2026/07/25-14:14:53.262 7cd0 Level-0 table #587: 12720 bytes OK
-2026/07/25-14:14:53.269 7cd0 Delete type=0 #584
-2026/07/25-14:14:53.269 7cd0 Delete type=3 #582
+2026/07/31-16:24:55.848 49ac Recovering log #731
+2026/07/31-16:24:55.857 49ac Delete type=0 #731
+2026/07/31-16:24:55.859 49ac Delete type=3 #729
+2026/07/31-16:26:56.774 1f68 Level-0 table #737: started
+2026/07/31-16:26:56.779 1f68 Level-0 table #737: 12719 bytes OK
+2026/07/31-16:26:56.782 1f68 Delete type=0 #735
+2026/07/31-16:26:56.782 1f68 Manual compaction at level-0 from '!items!TQbend0001' @ 72057594037927935 : 1 .. '!items!null' @ 0 : 0; will stop at '!items!null' @ 11909 : 1
+2026/07/31-16:26:56.782 1f68 Compacting 1@0 + 1@1 files
+2026/07/31-16:26:56.788 1f68 Generated table #738@0: 53 keys, 11202 bytes
+2026/07/31-16:26:56.789 1f68 Compacted 1@0 + 1@1 files => 11202 bytes
+2026/07/31-16:26:56.792 1f68 compacted to: files[ 0 1 0 0 0 0 0 ]
+2026/07/31-16:26:56.792 1f68 Delete type=2 #733
+2026/07/31-16:26:56.794 1f68 Delete type=2 #737
+2026/07/31-16:26:56.804 1f68 Manual compaction at level-0 from '!items!null' @ 11909 : 1 .. '!items!null' @ 0 : 0; will stop at (end)
