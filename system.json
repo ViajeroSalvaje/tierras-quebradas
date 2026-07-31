@@ -50,6 +50,57 @@
     "profesion",
     "deidad"
   ],
+  "packFolders": [
+    {
+      "name": "Bestiario",
+      "sorting": "a",
+      "color": "#1c6473",
+	  "packs": ["criaturas", "demonios", "animales"]
+    },
+    {
+      "name": "Equipo",
+      "sorting": "a",
+      "color": "#1c6473",
+      "folders": [
+        {
+          "name": "Armamento",
+          "sorting": "a",
+          "color": "#1c6473",
+          "packs": ["armamento-armaduras", "armamento-armas-improvisadas", "armamento-armas-cuerpo-a-cuerpo", "armamento-armas-proyectiles", "armamento-armas-arrojadizas"]
+        },
+        {
+          "name": "Otro equipo",
+          "sorting": "a",
+          "color": "#1c6473",
+          "packs": ["equipo", "objetos", "objetos-magicos"]
+        }
+      ]
+    },
+    {
+      "name": "Mundo",
+      "sorting": "a",
+      "color": "#1c6473",
+	  "packs": ["deidades"]
+    },
+    {
+      "name": "Narrador",
+      "sorting": "a",
+      "color": "#1c6473",
+	  "packs": ["tablas-sucesos", "aventuras"]
+    },
+    {
+      "name": "Personajes",
+      "sorting": "a",
+      "color": "#1c6473",
+	  "packs": ["especies", "entornos", "origenes", "profesiones", "ventajas", "rasgos", "idiomas", "habilidades"]
+    },	
+    {
+      "name": "Religión y magia",
+      "sorting": "a",
+      "color": "#1c6473",
+	  "packs": ["bendiciones", "hechizos"]
+    }
+  ],
   "packs": [
     {
       "name": "bendiciones",
@@ -60,21 +111,21 @@
     },
     {
       "name": "criaturas",
-      "label": "Bestiario — Criaturas",
+      "label": "Criaturas",
       "path": "packs/criaturas",
       "type": "Actor",
       "system": "tierras-quebradas"
     },
     {
       "name": "demonios",
-      "label": "Bestiario — Demonios",
+      "label": "Demonios",
       "path": "packs/demonios",
       "type": "Actor",
       "system": "tierras-quebradas"
     },
     {
       "name": "animales",
-      "label": "Bestiario — Animales",
+      "label": "Animales",
       "path": "packs/animales",
       "type": "Actor",
       "system": "tierras-quebradas"
@@ -130,35 +181,35 @@
     },
     {
       "name": "armamento-armaduras",
-      "label": "Armamento: Armaduras",
+      "label": "Armaduras",
       "path": "packs/armamento-armaduras",
       "type": "Item",
       "system": "tierras-quebradas"
     },
     {
       "name": "armamento-armas-improvisadas",
-      "label": "Armamento: Armas Improvisadas",
+      "label": "Armas Improvisadas",
       "path": "packs/armamento-armas-improvisadas",
       "type": "Item",
       "system": "tierras-quebradas"
     },
     {
       "name": "armamento-armas-cuerpo-a-cuerpo",
-      "label": "Armamento: Armas Cuerpo a Cuerpo",
+      "label": "Armas Cuerpo a Cuerpo",
       "path": "packs/armamento-armas-cuerpo-a-cuerpo",
       "type": "Item",
       "system": "tierras-quebradas"
     },
     {
       "name": "armamento-armas-proyectiles",
-      "label": "Armamento: Armas de Proyectiles",
+      "label": "Armas de Proyectiles",
       "path": "packs/armamento-armas-proyectiles",
       "type": "Item",
       "system": "tierras-quebradas"
     },
     {
       "name": "armamento-armas-arrojadizas",
-      "label": "Armamento: Armas Arrojadizas",
+      "label": "Armas Arrojadizas",
       "path": "packs/armamento-armas-arrojadizas",
       "type": "Item",
       "system": "tierras-quebradas"
