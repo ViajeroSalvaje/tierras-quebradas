@@ -43,7 +43,7 @@ export class DemonioSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       return { nombre, total: hab.total ?? 0, nivel: hab.nivel ?? 0, base: hab.base ?? "" };
     });
     return {
-      actor: this.actor, system: this.actor.system, cssClass: this.options.classes.join(" "), caracteristicasOrdenadas, habilidades, armas: items.filter(i => i.type === "arma").map(i => ({ id: i.id, name: i.name, dano: i.system.danoArma, habilidad: i.system.habilidad, alcance: i.system.alcance, carga: i.system.carga })), armaduras: items.filter(i => i.type === "armadura").map(i => ({ id: i.id, name: i.name, proteccion: i.system.proteccion, zona: i.system.zona, tipo: i.system.tipo, carga: i.system.carga })), poderes: items.filter(i => i.type === "rasgo" && i.system.tipo !== "debilidad").map(i => ({ id: i.id, name: i.name })), debilidades: items.filter(i => i.type === "rasgo" && i.system.tipo === "debilidad").map(i => ({ id: i.id, name: i.name })), hechizos: items.filter(i => i.type === "hechizo")
+      actor: this.actor, system: this.actor.system, cssClass: this.options.classes.join(" "), caracteristicasOrdenadas, habilidades, armas: items.filter(i => i.type === "arma").map(i => ({ id: i.id, name: i.name, dano: i.system.danoArma, habilidad: i.system.habilidad, alcance: i.system.alcance, carga: i.system.carga })), armaduras: items.filter(i => i.type === "armadura").map(i => ({ id: i.id, name: i.name, proteccion: i.system.proteccion, zona: i.system.zona, tipo: i.system.tipo, carga: i.system.carga })), poderes: items.filter(i => i.type === "rasgo" && i.system.tipo !== "debilidad").map(i => ({ id: i.id, name: i.name, coste: i.system.coste ?? 0 })), debilidades: items.filter(i => i.type === "rasgo" && i.system.tipo === "debilidad").map(i => ({ id: i.id, name: i.name, coste: i.system.coste ?? 0 })), hechizos: items.filter(i => i.type === "hechizo"), objetos: items.filter(i => i.type === "objeto").map(i => ({ id: i.id, name: i.name })), objetosMagicos: items.filter(i => i.type === "objetoMagico").map(i => ({ id: i.id, name: i.name, espiritu: i.system.espiritu, pm: i.system.pm }))
     };
   }
 
@@ -169,6 +169,13 @@ export class DemonioSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       });
     });
 
+    el.querySelectorAll(".md-extra-input").forEach(input => {
+      input.addEventListener("change", ev => {
+        const campo = ev.currentTarget.dataset.campo;
+        this.actor.update({ [`system.derivadas.${campo}`]: parseInt(ev.currentTarget.value) || 0 });
+      });
+    });
+
     el.querySelector(".anadir-arma")?.addEventListener("click", async () => {
       const item = await Item.create({ name: game.i18n.localize("TQ.Nuevo.arma"), type: "arma" }, { parent: this.actor });
       item?.sheet.render(true);
@@ -176,6 +183,16 @@ export class DemonioSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 
     el.querySelector(".anadir-armadura")?.addEventListener("click", async () => {
       const item = await Item.create({ name: game.i18n.localize("TQ.Nuevo.armadura"), type: "armadura" }, { parent: this.actor });
+      item?.sheet.render(true);
+    });
+
+    el.querySelector(".anadir-objeto")?.addEventListener("click", async () => {
+      const item = await Item.create({ name: "Nuevo objeto", type: "objeto" }, { parent: this.actor });
+      item?.sheet.render(true);
+    });
+
+    el.querySelector(".anadir-objeto-magico")?.addEventListener("click", async () => {
+      const item = await Item.create({ name: "Nuevo objeto mágico", type: "objetoMagico" }, { parent: this.actor });
       item?.sheet.render(true);
     });
 

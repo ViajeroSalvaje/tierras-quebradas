@@ -35,7 +35,7 @@ export class PNJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       return { nombre, total: hab.total ?? 0, nivel: hab.nivel ?? 0, base: hab.base ?? "" };
     });
     return {
-      actor: this.actor, system: this.actor.system, cssClass: this.options.classes.join(" "), config: CONFIG.TQ, habilidades, armas: items.filter(i => i.type === "arma").map(i => ({ id: i.id, name: i.name, dano: i.system.danoArma, habilidad: i.system.habilidad, alcance: i.system.alcance, carga: i.system.carga })), armaduras: items.filter(i => i.type === "armadura").map(i => ({ id: i.id, name: i.name, proteccion: i.system.proteccion, tipo: i.system.tipo, zona: i.system.zona, carga: i.system.carga })), hechizos: items.filter(i => i.type === "hechizo"), rasgos: items.filter(i => i.type === "rasgo").map(i => ({ id: i.id, name: i.name })), ventajas: items.filter(i => i.type === "ventaja").map(i => ({ id: i.id, name: i.name })), objetos: items.filter(i => i.type === "objeto").map(i => ({ id: i.id, name: i.name, categoria: i.system.categoria, carga: i.system.carga })), consumibles: items.filter(i => i.type === "consumible").map(i => ({ id: i.id, name: i.name, dosis: i.system.dosis, efecto: i.system.efecto, carga: i.system.carga })), bendiciones: items.filter(i => i.type === "bendicion")
+      actor: this.actor, system: this.actor.system, cssClass: this.options.classes.join(" "), config: CONFIG.TQ, habilidades, armas: items.filter(i => i.type === "arma").map(i => ({ id: i.id, name: i.name, dano: i.system.danoArma, habilidad: i.system.habilidad, alcance: i.system.alcance, carga: i.system.carga })), armaduras: items.filter(i => i.type === "armadura").map(i => ({ id: i.id, name: i.name, proteccion: i.system.proteccion, tipo: i.system.tipo, zona: i.system.zona, carga: i.system.carga })), hechizos: items.filter(i => i.type === "hechizo"), rasgos: items.filter(i => i.type === "rasgo").map(i => ({ id: i.id, name: i.name, coste: i.system.coste ?? 0 })), ventajas: items.filter(i => i.type === "ventaja").map(i => ({ id: i.id, name: i.name })), objetos: items.filter(i => i.type === "objeto").map(i => ({ id: i.id, name: i.name, categoria: i.system.categoria, carga: i.system.carga })), consumibles: items.filter(i => i.type === "consumible").map(i => ({ id: i.id, name: i.name, dosis: i.system.dosis, efecto: i.system.efecto, carga: i.system.carga })), objetosMagicos: items.filter(i => i.type === "objetoMagico").map(i => ({ id: i.id, name: i.name, espiritu: i.system.espiritu, pm: i.system.pm })), bendiciones: items.filter(i => i.type === "bendicion")
     };
   }
 
@@ -129,6 +129,13 @@ export class PNJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       });
     });
 
+    el.querySelectorAll(".md-extra-input").forEach(input => {
+      input.addEventListener("change", ev => {
+        const campo = ev.currentTarget.dataset.campo;
+        this.actor.update({ [`system.derivadas.${campo}`]: parseInt(ev.currentTarget.value) || 0 });
+      });
+    });
+
     el.querySelector(".anadir-habilidad")?.addEventListener("click", async () => {
       const nombre = await DialogV2.prompt({
         window: { title: game.i18n.localize("TQ.Tooltips.AnadirHabilidad") }, content: `<input type="text" name="nombre" placeholder="${game.i18n.localize("TQ.Placeholders.NombreHabilidad")}" autofocus />`, ok: { label: game.i18n.localize("TQ.Botones.Anadir"), callback: (_ev, button) => button.form.elements.nombre.value.trim() }
@@ -164,6 +171,16 @@ export class PNJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 
     el.querySelector(".anadir-armadura")?.addEventListener("click", async () => {
       const item = await Item.create({ name: game.i18n.localize("TQ.Nuevo.armadura"), type: "armadura" }, { parent: this.actor });
+      item?.sheet.render(true);
+    });
+
+    el.querySelector(".anadir-objeto")?.addEventListener("click", async () => {
+      const item = await Item.create({ name: "Nuevo objeto", type: "objeto" }, { parent: this.actor });
+      item?.sheet.render(true);
+    });
+
+    el.querySelector(".anadir-objeto-magico")?.addEventListener("click", async () => {
+      const item = await Item.create({ name: "Nuevo objeto mágico", type: "objetoMagico" }, { parent: this.actor });
       item?.sheet.render(true);
     });
 

@@ -184,6 +184,14 @@ Rasgos: Intimidante, Ágil`;
       }
     }
 
+    const packOM = game.packs.get("tierras-quebradas.objetos-magicos");
+    const catalogoOM = packOM ? await packOM.getDocuments() : [];
+    for (const o of datos.objetosMagicos) {
+      const doc = catalogoOM.find(d => norm(d.name) === norm(o.nombre));
+      if (doc) await Item.create(doc.toObject(), { parent: actor });
+      else await Item.create({ name: o.nombre, type: "objetoMagico", system: { espiritu: o.espiritu, pm: o.pm, efecto: o.efecto } }, { parent: actor });
+    }
+
     ui.notifications.info(game.i18n.format("TQ.Importer.InfoPNJ", { nombre: datos.nombre }));
     this.close();
     actor.sheet.render(true);
@@ -194,7 +202,7 @@ Rasgos: Intimidante, Ágil`;
     const cue = datos.cuerpo, men = datos.mente, esp = datos.espiritu;
     const atr = datos.atractivo, tam = datos.tamano;
     const bases = {
-      agilidad: cue - tam, comunicacion: esp + atr, cultura: men, hechiceria: Math.round((men + esp) / 3), percepcion: Math.floor((men + esp) / 2), vigor: cue, tecnica: Math.floor((men + cue) / 2)
+      agilidad: cue - tam, comunicacion: esp + atr, cultura: men, hechiceria: Math.round((men + esp) / 3), percepcion: Math.round((men + esp) / 2), vigor: cue, tecnica: Math.round((men + cue) / 2)
     };
 
     const packHabs = game.packs.get("tierras-quebradas.habilidades");
@@ -325,7 +333,7 @@ Rasgos: Intimidante, Ágil`;
     const pvGrave = parseInt(pvMatch?.[2]) || Math.ceil(pvMax / 2);
     const pvLeve = parseInt(pvMatch?.[3]) || Math.ceil(pvMax / 4);
 
-    const secRe = /(Bendiciones[^:]*:|Hechizos:|Habilidades\s+m[áa]gicas:|Habilidades:|Armas:|Ventajas:|Desventajas:|Rasgos:)/gi;
+    const secRe = /(Bendiciones[^:]*:|Hechizos:|Habilidades\s+m[áa]gicas:|Habilidades:|Armas:|Ventajas:|Desventajas:|Rasgos:|Objetos\s+m[áa]gicos:)/gi;
     const partes = texto.split(secRe);
     const sec = {};
     for (let i = 1; i < partes.length; i += 2) {
@@ -406,12 +414,24 @@ Rasgos: Intimidante, Ágil`;
     ];
 
     const rasgos = (sec.rasgos ?? "").split(/[,.]/).map(s => s.trim()).filter(Boolean).map(nombre => ({ nombre }));
+
+    const objetosMagicos = [];
+    const secOM = sec["objetos_magicos"] ?? sec["objetos_m_gicos"] ?? "";
+    if (secOM) {
+      const entradas = secOM.split(/◆|•/).map(s => s.replace(/\s*\n\s*/g, " ").trim()).filter(Boolean);
+      for (const entrada of entradas) {
+        const m = entrada.match(/^(.+?)\s*\(ESP:?\s*(\d+)[,\s]+PM:?\s*(\d+)[^)]*\)\.\s*([\s\S]*)/i);
+        if (m) objetosMagicos.push({ nombre: m[1].trim(), espiritu: parseInt(m[2]) || 0, pm: parseInt(m[3]) || 0, efecto: m[4].trim() });
+        else objetosMagicos.push({ nombre: entrada.replace(/\([\s\S]*?\)/, "").trim(), espiritu: 0, pm: 0, efecto: "" });
+      }
+    }
+
     const notasParts = [];
     if (desc) notasParts.push(desc);
     if (fuerza) notasParts.push(`FUE: ${fuerza}`);
     if (modDanoStr) notasParts.push(`Mod. al Daño: ${modDanoStr}`);
     const notas = notasParts.join("\n");
 
-    return { nombre, cuerpo, mente, espiritu, atractivo, tamano, pvMax, pvGrave, pvLeve, proteccion, mDano1m, mDano2m, pm, habilidades, armas, hechizos, bendiciones, ventajas, rasgos, notas };
+    return { nombre, cuerpo, mente, espiritu, atractivo, tamano, pvMax, pvGrave, pvLeve, proteccion, mDano1m, mDano2m, pm, habilidades, armas, hechizos, bendiciones, ventajas, rasgos, objetosMagicos, notas };
   }
 }

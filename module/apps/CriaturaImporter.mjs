@@ -140,6 +140,14 @@ Movimiento: Correr, medio.`;
       else await Item.create({ name: p.nombre, type: "rasgo", system: { tipo: "personalidad", efecto: p.efecto } }, { parent: actor });
     }
 
+    const packOM = game.packs.get("tierras-quebradas.objetos-magicos");
+    const catalogoOM = packOM ? await packOM.getDocuments() : [];
+    for (const o of datos.objetosMagicos) {
+      const doc = catalogoOM.find(d => norm(d.name) === norm(o.nombre));
+      if (doc) await Item.create(doc.toObject(), { parent: actor });
+      else await Item.create({ name: o.nombre, type: "objetoMagico", system: { espiritu: o.espiritu, pm: o.pm, efecto: o.efecto } }, { parent: actor });
+    }
+
     ui.notifications.info(game.i18n.format("TQ.Importer.InfoCriatura", { nombre: datos.nombre }));
     this.close();
     actor.sheet.render(true);
@@ -200,12 +208,14 @@ Movimiento: Correr, medio.`;
       "armas": "armas",
       "poderes": "poderes",
       "debilidades": "debilidades",
-      "personalidad": "personalidad"
+      "personalidad": "personalidad",
+      "objetosmagicos": "objetosMagicos",
+      "objetosmágicos": "objetosMagicos"
     };
     const sec = {};
     let secKey = null;
     for (const l of lineas) {
-      const m = l.match(/^(Habilidades especiales|Habilidades|Armas|Poderes|Debilidades|Personalidad):/i);
+      const m = l.match(/^(Habilidades especiales|Habilidades|Armas|Poderes|Debilidades|Personalidad|Objetos m[áa]gicos):/i);
       if (m) {
         secKey = SEC_MAP[m[1].toLowerCase().replace(/\s+/g, "")] ?? m[1].toLowerCase();
         sec[secKey] = (sec[secKey] ?? "") + l.slice(m[0].length).trim();
@@ -254,6 +264,16 @@ Movimiento: Correr, medio.`;
     const habilidadesEspecialesItems = parsearEntradas(habilidadesEspeciales);
     const personalidadItems = parsearEntradas(personalidad);
 
-    return { nombre, tipo, cuerpo, mente, espiritu, atractivo, tamanyo, fuerza, pvMax, pvGrave, pvLeve, proteccion, proteccionTipo, mDano1m, mDano2m, pm, alImpacto, movimiento, habilidades, armas, poderes, habilidadesEspeciales, personalidad, poderesItems, habilidadesEspecialesItems, personalidadItems, notas: desc };
+    const objetosMagicos = [];
+    if (sec.objetosMagicos) {
+      const entradas = sec.objetosMagicos.split(/◆|•/).map(s => s.replace(/\s*\n\s*/g, " ").trim()).filter(Boolean);
+      for (const entrada of entradas) {
+        const m = entrada.match(/^(.+?)\s*\(ESP:?\s*(\d+)[,\s]+PM:?\s*(\d+)[^)]*\)\.\s*([\s\S]*)/i);
+        if (m) objetosMagicos.push({ nombre: m[1].trim(), espiritu: parseInt(m[2]) || 0, pm: parseInt(m[3]) || 0, efecto: m[4].trim() });
+        else objetosMagicos.push({ nombre: entrada.replace(/\([\s\S]*?\)/, "").trim(), espiritu: 0, pm: 0, efecto: "" });
+      }
+    }
+
+    return { nombre, tipo, cuerpo, mente, espiritu, atractivo, tamanyo, fuerza, pvMax, pvGrave, pvLeve, proteccion, proteccionTipo, mDano1m, mDano2m, pm, alImpacto, movimiento, habilidades, armas, poderes, habilidadesEspeciales, personalidad, poderesItems, habilidadesEspecialesItems, personalidadItems, objetosMagicos, notas: desc };
   }
 }

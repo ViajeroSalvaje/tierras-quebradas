@@ -142,6 +142,14 @@ Movimiento: Correr, rápido.`;
       }
     }
 
+    const packOM = game.packs.get("tierras-quebradas.objetos-magicos");
+    const catalogoOM = packOM ? await packOM.getDocuments() : [];
+    for (const o of datos.objetosMagicos) {
+      const doc = catalogoOM.find(d => norm(d.name) === norm(o.nombre));
+      if (doc) await Item.create(doc.toObject(), { parent: actor });
+      else await Item.create({ name: o.nombre, type: "objetoMagico", system: { espiritu: o.espiritu, pm: o.pm, efecto: o.efecto } }, { parent: actor });
+    }
+
     ui.notifications.info(game.i18n.format("TQ.Importer.InfoDemonio", { nombre: datos.nombre }));
     this.close();
     actor.sheet.render(true);
@@ -192,7 +200,7 @@ Movimiento: Correr, rápido.`;
     const sec = {};
     let secKey = null;
     for (const l of lineas) {
-      const m = l.match(/^(Habilidades|Armas|Poderes|Debilidades):/i);
+      const m = l.match(/^(Habilidades|Armas|Poderes|Debilidades|Objetos m[áa]gicos):/i);
       if (m) {
         secKey = m[1].toLowerCase();
         sec[secKey] = (sec[secKey] ?? "") + l.slice(m[0].length).trim();
@@ -244,6 +252,17 @@ Movimiento: Correr, rápido.`;
     if (desc) notasParts.push(desc);
     const notas = notasParts.join("\n");
 
-    return { nombre, cuerpo, mente, espiritu, atractivo, tamanyo, fuerza, pvMax, pvGrave, pvLeve, proteccion, proteccionTipo, mDano1m, mDano2m, pm, alImpacto, movimiento, habilidades, armas, poderes, debilidades, poderesItems, debilidadesItems, notas };
+    const objetosMagicos = [];
+    if (sec["objetos mágicos"] ?? sec["objetos magicos"]) {
+      const raw = sec["objetos mágicos"] ?? sec["objetos magicos"];
+      const entradas = raw.split(/◆|•/).map(s => s.replace(/\s*\n\s*/g, " ").trim()).filter(Boolean);
+      for (const entrada of entradas) {
+        const m = entrada.match(/^(.+?)\s*\(ESP:?\s*(\d+)[,\s]+PM:?\s*(\d+)[^)]*\)\.\s*([\s\S]*)/i);
+        if (m) objetosMagicos.push({ nombre: m[1].trim(), espiritu: parseInt(m[2]) || 0, pm: parseInt(m[3]) || 0, efecto: m[4].trim() });
+        else objetosMagicos.push({ nombre: entrada.replace(/\([\s\S]*?\)/, "").trim(), espiritu: 0, pm: 0, efecto: "" });
+      }
+    }
+
+    return { nombre, cuerpo, mente, espiritu, atractivo, tamanyo, fuerza, pvMax, pvGrave, pvLeve, proteccion, proteccionTipo, mDano1m, mDano2m, pm, alImpacto, movimiento, habilidades, armas, poderes, debilidades, poderesItems, debilidadesItems, objetosMagicos, notas };
   }
 }

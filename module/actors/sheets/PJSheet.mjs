@@ -1,4 +1,5 @@
 import { TQRoll } from "../../rolls/TQRoll.mjs";
+import { getDeidadesGrupos } from "../../helpers/deidades.mjs";
 
 const { HandlebarsApplicationMixin, DialogV2 } = foundry.applications.api;
 const { ActorSheetV2 } = foundry.applications.sheets;
@@ -124,11 +125,12 @@ export class PJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 
     const destinoTotal = Object.values(this.actor.system.destino?.puntos ?? {})
       .reduce((sum, p) => sum + (parseInt(p.valor) || 0), 0);
+    const deidadesGrupos = await getDeidadesGrupos();
 
     return {
       actor: this.actor, system: this.actor.system, cssClass: this.options.classes.join(" "), activeTab: this._activeTab, imagenLealtad, destinoTotal, items: {
-        armas: armasEnriquecidas, armaduras: this.actor.items.filter(i => i.type === "armadura"), hechizos: this.actor.items.filter(i => i.type === "hechizo"), ventajas: this.actor.items.filter(i => i.type === "ventaja"), rasgos: this.actor.items.filter(i => i.type === "rasgo"), pactos: this.actor.items.filter(i => i.type === "pacto"), bendiciones: this.actor.items.filter(i => i.type === "bendicion"), especie: this.actor.items.find(i => i.type === "especie") ?? null, entorno: this.actor.items.find(i => i.type === "entorno") ?? null, origen: this.actor.items.find(i => i.type === "origen") ?? null, profesion: this.actor.items.find(i => i.type === "profesion") ?? null, objetos: this.actor.items.filter(i => i.type === "objeto"), consumibles: this.actor.items.filter(i => i.type === "consumible")
-      }, lealtad: { alineado }, lealtadesEnTexto: game.settings.get("tierras-quebradas", "lealtadesEnTexto"), pasionAmorActiva: this.actor.system.pasionFlag === "amor", pasionOdioActiva: this.actor.system.pasionFlag === "odio", config: CONFIG.TQ, col1: makeCol(COL1), col2: makeCol(COL2), col3: makeCol(COL3), basesFormulas
+        armas: armasEnriquecidas, armaduras: this.actor.items.filter(i => i.type === "armadura"), hechizos: this.actor.items.filter(i => i.type === "hechizo"), ventajas: this.actor.items.filter(i => i.type === "ventaja"), rasgos: this.actor.items.filter(i => i.type === "rasgo"), pactos: this.actor.items.filter(i => i.type === "pacto"), bendiciones: this.actor.items.filter(i => i.type === "bendicion"), especie: this.actor.items.find(i => i.type === "especie") ?? null, entorno: this.actor.items.find(i => i.type === "entorno") ?? null, origen: this.actor.items.find(i => i.type === "origen") ?? null, profesion: this.actor.items.find(i => i.type === "profesion") ?? null, objetos: this.actor.items.filter(i => i.type === "objeto"), consumibles: this.actor.items.filter(i => i.type === "consumible"), objetosMagicos: this.actor.items.filter(i => i.type === "objetoMagico")
+      }, lealtad: { alineado }, lealtadesEnTexto: game.settings.get("tierras-quebradas", "lealtadesEnTexto"), pasionAmorActiva: this.actor.system.pasionFlag === "amor", pasionOdioActiva: this.actor.system.pasionFlag === "odio", config: CONFIG.TQ, col1: makeCol(COL1), col2: makeCol(COL2), col3: makeCol(COL3), basesFormulas, deidadesGrupos
     };
   }
 
@@ -144,6 +146,23 @@ export class PJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
         }
       });
       return;
+    }
+
+    if (["especie", "origen", "profesion"].includes(item?.type)) {
+      const eleccion = await DialogV2.wait({
+        window: { title: item.name },
+        content: `<p>${game.i18n.format("TQ.Dialogo.ImportarItem", { nombre: item.name })}</p>`,
+        rejectClose: false,
+        buttons: [
+          { action: "todo", label: game.i18n.localize("TQ.Botones.ImportarTodo"), default: true },
+          { action: "nombre", label: game.i18n.localize("TQ.Botones.SoloNombre") }
+        ]
+      });
+      if (!eleccion) return;
+      if (eleccion === "nombre") {
+        await Item.create({ name: item.name, type: item.type }, { parent: this.actor });
+        return;
+      }
     }
 
     const cargaItem = item?.system?.carga ?? 0;
@@ -262,7 +281,8 @@ export class PJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
           armadura: game.i18n.localize("TQ.Nuevo.armadura"),
           objeto: game.i18n.localize("TQ.Nuevo.objeto"),
           hechizo: game.i18n.localize("TQ.Nuevo.hechizo"),
-          consumible: game.i18n.localize("TQ.Nuevo.consumible")
+          consumible: game.i18n.localize("TQ.Nuevo.consumible"),
+          objetoMagico: "Nuevo objeto mágico"
         };
         Item.create({ name: NOMBRES[tipo] ?? `${game.i18n.localize("TQ.Dialogo.Nuevo")} ${tipo}`, type: tipo }, { parent: this.actor });
       });
@@ -334,6 +354,14 @@ export class PJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 
     el.querySelector(".recuperar-pm")?.addEventListener("click", () => {
       this.actor.recuperarPM();
+    });
+
+    el.querySelector(".recuperar-pm-meditando")?.addEventListener("click", () => {
+      this.actor.meditarPM();
+    });
+
+    el.querySelector(".recuperar-pm-rezando")?.addEventListener("click", () => {
+      this.actor.rezarPM();
     });
 
     el.querySelectorAll(".tirar-hechizo").forEach(a => {
@@ -480,6 +508,13 @@ export class PJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       });
     });
 
+    el.querySelectorAll(".md-extra-input").forEach(input => {
+      input.addEventListener("change", ev => {
+        const campo = ev.currentTarget.dataset.campo;
+        this.actor.update({ [`system.derivadas.${campo}`]: parseInt(ev.currentTarget.value) || 0 });
+      });
+    });
+
     el.querySelector(".usar-fortuna")?.addEventListener("click", () => {
       const fortuna = this.actor.system.fortuna;
       if (fortuna.actual > 0) this.actor.update({ "system.fortuna.actual": fortuna.actual - 1 });
@@ -487,6 +522,35 @@ export class PJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     el.querySelector(".recuperar-fortuna")?.addEventListener("click", () => {
       const fortuna = this.actor.system.fortuna;
       if (fortuna.actual < fortuna.max) this.actor.update({ "system.fortuna.actual": fortuna.actual + 1 });
+    });
+
+    el.querySelector(".tirar-fortuna")?.addEventListener("click", async () => {
+      const actor = this.actor;
+      const fortActual = actor.system.fortuna?.actual ?? 0;
+      const content = await foundry.applications.handlebars.renderTemplate(
+        "systems/tierras-quebradas/templates/dialogs/fortuna-dialogo.hbs", { fortActual }
+      );
+      const eleccion = await DialogV2.wait({
+        window: { title: "Tirada por Fortuna" },
+        classes: ["tq-tirada-dialog"],
+        content,
+        rejectClose: false,
+        buttons: [
+          {
+            action: "tirar", label: game.i18n.localize("TQ.Botones.Lanzar"), default: true,
+            callback: (_ev, button) => {
+              const campos = button.form.elements;
+              return {
+                dificultad: parseInt(campos.dificultad?.value) || 15,
+                bonificador: parseInt(campos.bonificador?.value) || 0
+              };
+            }
+          },
+          { action: "cancelar", label: game.i18n.localize("TQ.Cancelar") || "Cancelar", callback: () => null }
+        ]
+      });
+      if (!eleccion) return;
+      await TQRoll.tirar("Fortuna", fortActual, eleccion.dificultad, { actor, bonificador: eleccion.bonificador });
     });
   }
 

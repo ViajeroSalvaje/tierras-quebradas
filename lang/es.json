@@ -18,7 +18,8 @@
       "entorno": "Entorno",
       "origen": "Origen Étnico",
       "profesion": "Profesión",
-      "idioma": "Idioma"
+      "idioma": "Idioma",
+      "deidad": "Deidad"
     }
   },
   "TQ": {
@@ -46,8 +47,14 @@
         "ventaja": "Ventaja/Desventaja",
         "entorno": "Entorno",
         "origen": "Origen Étnico",
-        "profesion": "Profesión"
-      }
+        "profesion": "Profesión",
+        "deidad": "Deidad"
+      },
+      "deidad": "Deidad"
+    },
+    "Deidad": {
+      "Tipo": "Tipo",
+      "Principal": "Principal"
     },
     "Caracteristicas": {
       "cuerpo": "Cuerpo",
@@ -180,6 +187,15 @@
       "HorasSueno": "Horas de sueño",
       "TiradaSuenos": "Intentar tirada de Sueños (Dif 15)"
     },
+    "Rezo": {
+      "ReduccionTitulo": "Reducción de Lealtad",
+      "ReduccionTexto": "{nombre} pierde 1 punto de Lealtad. Elige cuál reducir:",
+      "ConversionTitulo": "Conversión de Lealtad",
+      "ConversionTexto": "Puedes convertir hasta {exitos} puntos de Lealtad en PM.",
+      "Cantidad": "Cantidad",
+      "LealtadInsuficiente": "Lealtad {tipo} insuficiente ({disponible} disponible).",
+      "ExcedeLimite": "No puedes convertir más de {max} puntos (límite de éxitos obtenidos)."
+    },
     "Hechiceria": {
       "Verbos": "Verbos",
       "Esferas": "Esferas",
@@ -289,6 +305,7 @@
       "MD": "MD",
       "ProtAbrev": "Prot.",
       "PM": "PM",
+      "Espiritu": "Espíritu",
       "EspConsagradoAbrev": "Esp. Consagrado",
       "Valor": "Valor"
     },
@@ -323,7 +340,9 @@
       "Personalidad": "Personalidad",
       "PoderesRasgos": "Poderes y Rasgos",
       "Debilidades": "Debilidades",
-      "Destino": "Destino"
+      "Destino": "Destino",
+      "Objetos": "Objetos",
+      "ObjetosMagicos": "Objetos Mágicos"
     },
     "Botones": {
       "FinSesion": "Fin de Sesión",
@@ -354,11 +373,14 @@
       "Convertir": "Convertir",
       "Transferir": "Transferir",
       "RecuperarPM": "Recuperar PM",
-      "AplicarRecuperacion": "Aplicar Recuperación",
+      "AplicarRecuperacion": "Aplicar Regeneración",
       "RecuperacionAplicada": "Recuperación aplicada",
+      "AplicarRezo": "Aplicar",
       "Cancelar": "Cancelar",
       "Tirar": "Tirar",
-      "Asignar": "Asignar"
+      "Asignar": "Asignar",
+      "ImportarTodo": "Importar todo",
+      "SoloNombre": "Solo el nombre"
     },
     "Tooltips": {
       "AnadirArma": "Añadir arma",
@@ -412,6 +434,7 @@
     "Arma": {
       "TipoDano": "Tipo de daño",
       "NoLetal": "No letal",
+      "BonoDano": "Bono al daño",
       "FUEMin": "FUE mín.",
       "Recarga": "Recarga (turnos)",
       "Propiedades": "Propiedades",
@@ -530,7 +553,8 @@
     },
     "Profesion": {
       "Especializaciones": "Especializaciones",
-      "VentajasOtorgadas": "Ventajas otorgadas"
+      "VentajasOtorgadas": "Ventajas otorgadas",
+      "RasgosOtorgados": "Rasgos otorgados"
     },
     "VentajaDesventaja": {
       "ventaja": "Ventaja",
@@ -541,6 +565,8 @@
       "ley": "Ley",
       "elementos": "Elementos",
       "antepasados": "Antepasados",
+      "Deidad": "Deidad",
+      "SinDeterminar": "Sin determinar",
       "ActitudDivina": "Actitud ante lo divino",
       "Actitud": {
         "servicial": "Servicial",
@@ -577,9 +603,11 @@
     },
     "Rasgos": {
       "Positivos": "Positivos",
-      "Negativos": "Negativos"
+      "Negativos": "Negativos",
+      "CostePP": "Coste PP"
     },
     "Dialogo": {
+      "ImportarItem": "¿Cómo quieres añadir «{nombre}» a la ficha?",
       "TuArma": "Tu arma",
       "Bonificador": "Modificador",
       "PuntuacionRival": "Punt. rival",
@@ -601,6 +629,9 @@
       "EligeActor": "— Elige actor —",
       "Habilidad": "Habilidad:",
       "EligeActorPrimero": "— Elige actor primero —",
+      "PuntuacionDefensor": "Punt. defensor",
+      "BonificadorDefensor": "Mod. defensor",
+      "PenalizadorProyectil": "−2 (proyectil)",
       "PXAcumulados": "PX acumulados",
       "PXAnadir": "PX a añadir: ",
       "EligeEspecializacion": "Elige una especialización:"
@@ -609,7 +640,12 @@
       "corta": "Corta — 0-14 m (10)",
       "media": "Media — 15-49 m (15)",
       "larga": "Larga — 50-99 m (20)",
-      "muyLarga": "Muy larga — 100+ m (25)"
+      "muyLarga": "Muy larga — 100+ m (25)",
+      "ReaccionTitulo": "Reacción del objetivo",
+      "NoCubre": "No se cubre",
+      "EscudoCubre": "Se cubre con el escudo",
+      "PoneACubierto": "Se pone a cubierto",
+      "EscudoDetiene": "Usa el escudo para detener"
     },
     "Melee": {
       "TablasEnMele": "Tablas en melé",
@@ -707,6 +743,7 @@
       "PuntosLabel": "Puntos:",
       "BaseHabilidad": "base",
       "VentajasProf": "Ventajas:",
+      "Incluida": "Incluida",
       "RecargaProfesiones": "Recarga el sistema para cargar el compendio de profesiones.",
       "EligeTusArmas": "Elige tus armas",
       "Especializacion": "Especialización",
@@ -900,6 +937,28 @@
     },
     "Mentira": {
       "Titulo": "5ª marca de La Mentira"
+    },
+    "LinkCreator": {
+      "Titulo": "Crear Enlace a Tirada",
+      "Tipo": "Tipo",
+      "Valor": "Valor",
+      "Dificultad": "Dificultad",
+      "Modificador": "Modificador",
+      "Modo": "Modo de tirada",
+      "Jugador": "Jugador",
+      "ElegirJugador": "elegir jugador",
+      "CopiarChat": "Copiar al chat",
+      "EnviarJugador": "Enviar a jugador",
+      "CopiarPortapapeles": "Copiar al portapapeles",
+      "ClickParaTirar": "Haz clic para realizar la tirada",
+      "Copiado": "Enlace copiado al portapapeles.",
+      "SinPersonaje": "No tienes ningún personaje asignado.",
+      "EligeJugador": "Elige un jugador antes de enviar.",
+      "DialogTirada": "Tirada",
+      "DialogValor": "Valor",
+      "DialogDificultad": "Dificultad",
+      "DialogModificador": "Modificador",
+      "DialogModExtra": "Modificador adicional"
     }
   }
 }

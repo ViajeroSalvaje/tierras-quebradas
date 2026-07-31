@@ -19,4 +19,13 @@ export class ObjetoSheet extends BaseItemSheet {
   static PARTS = {
     form: { template: "systems/tierras-quebradas/templates/items/objeto-sheet.hbs", scrollable: [".item-body"] }
   };
+
+  _onRender(context, options) {
+    super._onRender(context, options);
+    this.element.querySelector(".item-img")?.addEventListener("click", () => {
+      new foundry.applications.apps.FilePicker.implementation({
+        type: "image", current: this.item.img, callback: path => this.item.update({ img: path })
+      }).browse();
+    });
+  }
 }

@@ -49,9 +49,9 @@ export class TQActor extends Actor {
     this.system.bases.comunicacion.valor = esp + atr;
     this.system.bases.cultura.valor = men;
     this.system.bases.hechiceria.valor = Math.round((men + esp) / 3);
-    this.system.bases.percepcion.valor = Math.floor((men + esp) / 2);
+    this.system.bases.percepcion.valor = Math.round((men + esp) / 2);
     this.system.bases.vigor.valor = cue;
-    this.system.bases.tecnica.valor = Math.floor((men + cue) / 2);
+    this.system.bases.tecnica.valor = Math.round((men + cue) / 2);
   }
 
   updateSalud() {
@@ -75,17 +75,17 @@ export class TQActor extends Actor {
 
   calcMD() {
     const fuerza = this.system.derivadas.fuerza.valor;
-    const md1m = Math.floor(fuerza / 3);
-    let md2m;
-    if (md1m >= 10) {
-      md2m = md1m + 3;
-    } else if (md1m >= 5) {
-      md2m = md1m + 2;
+    const md1mBase = Math.round(fuerza / 3);
+    let md2mBase;
+    if (md1mBase >= 10) {
+      md2mBase = md1mBase + 3;
+    } else if (md1mBase >= 5) {
+      md2mBase = md1mBase + 2;
     } else {
-      md2m = md1m + 1;
+      md2mBase = md1mBase + 1;
     }
-    this.system.derivadas.mDano1m.valor = md1m;
-    this.system.derivadas.mDano2m.valor = md2m;
+    this.system.derivadas.mDano1m.valor = md1mBase + (this.system.derivadas.mDano1mExtra ?? 0);
+    this.system.derivadas.mDano2m.valor = md2mBase + (this.system.derivadas.mDano2mExtra ?? 0);
   }
 
   _calcularEstorbo() {
@@ -219,6 +219,96 @@ export class TQActor extends Actor {
 
     const targetActor = game.user.targets.first()?.actor ?? null;
 
+    if (!esMelee) {
+      const esArrojadiza = arma.system.alcance === "arrojadiza";
+      if (!esArrojadiza) {
+        const hookId = Hooks.on("renderDialogV2", (_app, html) => {
+          Hooks.off("renderDialogV2", hookId);
+          const btn = [...html.querySelectorAll("button")].find(b => b.dataset.action === "escudo-detiene");
+          if (btn) { btn.disabled = true; btn.style.opacity = "0.5"; }
+        });
+      }
+      const reaccion = await DialogV2.wait({
+        window: { title: game.i18n.localize("TQ.Distancia.ReaccionTitulo") },
+        content: "",
+        rejectClose: false,
+        buttons: [
+          { action: "no-cubre", label: game.i18n.localize("TQ.Distancia.NoCubre"), default: true },
+          { action: "escudo-cubre", label: game.i18n.localize("TQ.Distancia.EscudoCubre") },
+          { action: "a-cubierto", label: game.i18n.localize("TQ.Distancia.PoneACubierto") },
+          { action: "escudo-detiene", label: game.i18n.localize("TQ.Distancia.EscudoDetiene") }
+        ]
+      });
+      if (!reaccion) return;
+
+      if (reaccion === "a-cubierto" || reaccion === "escudo-detiene") {
+        return this._tirarDistanciaEnfrentada(arma, puntuacion, md, reaccion, modDesglose, targetActor);
+      }
+
+      const escudoDoble = reaccion === "escudo-cubre";
+      const resultado = await TQRoll.dialogoTirada(arma.name, puntuacion, {
+        actor: this, targetActor, modo: "distancia", esCombate: true, longitudArma: arma.system.longitud ?? "media", habClave,
+        extraTopes: arma.system.alcance === "arrojadiza" ? ["lanzar"] : [],
+        modDesglose: modDesglose.length ? modDesglose : null,
+        escudoDoble,
+        danho: { danoArma: arma.system.danoArma ?? "0", bonoDano: arma.system.bonoDano ?? 0, tipo: arma.system.tipo ?? "cortante", md, manos, noLetal: arma.system.noLetal ?? false }
+      });
+
+      if (this.type === "pj" && resultado && resultado.exitos >= 0) {
+        const habilidad = this.system.habilidades?.[habClave];
+        if (habilidad && !habilidad.exito) {
+          await this.update({ [`system.habilidades.${habClave}.exito`]: true });
+        }
+      }
+
+      if (resultado && resultado.enMelee && resultado.exitos >= 0 && resultado.exitos < 3) {
+        const aliadoActor = resultado.aliadoId ? game.actors.get(resultado.aliadoId) : null;
+        const pd = TQRoll.calcDanho(arma.system.danoArma ?? "0", 0, resultado.exitos, arma.system.noLetal ?? false);
+        const tipoArma = arma.system.tipo ?? "cortante";
+        let proteccion = 0;
+        let nombreProteccion = null;
+        if (aliadoActor) {
+          const armaduras = aliadoActor.items.filter(i => i.type === "armadura");
+          for (const arm of armaduras) {
+            let p = arm.system.proteccion ?? 0;
+            if (arm.system.tipo === "blanda" && tipoArma === "contundente") p = Math.floor(p / 2);
+            if (arm.system.esYelmo && !arm.system.viseraBajada) p = Math.max(0, p - 1);
+            proteccion += p;
+          }
+          if (armaduras.length === 1) nombreProteccion = armaduras[0].name;
+          else if (armaduras.length > 1) nombreProteccion = armaduras.map(a => a.name).join(", ");
+        }
+        const danhoNeto = pd.total !== null ? Math.max(0, pd.total - proteccion) : null;
+        const nombreAliado = aliadoActor?.name ?? "el aliado";
+
+        let cardContent = `<div class="tq-result-card complicacion">
+          <div class="tq-card-titulo">${game.i18n.localize("TQ.Combate.FuegoAmigo")}</div>
+          <hr/>
+          <p><strong>${nombreAliado}</strong> es alcanzado.</p>`;
+
+        if (pd.total !== null) {
+          cardContent += `<p>Daño: ${pd.formula} = <strong>${pd.total} PD</strong>`;
+          if (proteccion > 0) {
+            const labelProt = nombreProteccion ? `${proteccion} (${nombreProteccion})` : `${proteccion}`;
+            cardContent += ` − ${labelProt} → <strong>${danhoNeto} de daño aplicado</strong>`;
+          }
+          cardContent += `</p>`;
+          if (aliadoActor && danhoNeto !== null) {
+            cardContent += `<div class="tq-card-botones"><button class="tq-fuego-amigo-aplicar" data-actor-id="${aliadoActor.id}" data-danho="${danhoNeto}" data-danho-bruto="${pd.total}">${game.i18n.format("TQ.Combate.AplicarDanho", { danho: danhoNeto, nombre: nombreAliado })}</button></div>`;
+          }
+        } else {
+          cardContent += `<p>Daño: ${pd.formula} (aplica el daño del arma + ${resultado.exitos} éxitos, menos la protección de ${nombreAliado}).</p>`;
+        }
+
+        cardContent += `</div>`;
+        await ChatMessage.create({
+          speaker: ChatMessage.getSpeaker({ actor: this }), content: cardContent, ...TQRoll._rollModeData()
+        });
+      }
+
+      return resultado;
+    }
+
     if (esMelee) {
       const tipoAccion = await DialogV2.wait({
         window: { title: game.i18n.localize("TQ.Melee.TipoAccionTitulo") },
@@ -238,7 +328,7 @@ export class TQActor extends Actor {
 
     const resultado = await TQRoll.dialogoTirada(arma.name, puntuacion, {
       actor: this, targetActor, modo, esCombate: true, longitudArma: arma.system.longitud ?? "media", habClave, extraTopes: arma.system.alcance === "arrojadiza" ? ["lanzar"] : [], modDesglose: modDesglose.length ? modDesglose : null, danho: {
-        danoArma: arma.system.danoArma ?? "0", tipo: arma.system.tipo ?? "cortante", md, manos, noLetal: arma.system.noLetal ?? false
+        danoArma: arma.system.danoArma ?? "0", bonoDano: arma.system.bonoDano ?? 0, tipo: arma.system.tipo ?? "cortante", md, manos, noLetal: arma.system.noLetal ?? false
       }
     });
 
@@ -740,6 +830,18 @@ export class TQActor extends Actor {
     mod += config.limFisica;
     if (config.md) mod += config.md;
 
+    const afinidadesCon = this.system.afinidadesCon ?? [];
+    let bonusAfinidad = 0;
+    if (afinidadesCon.length && hechizo.system.esfera) {
+      const esfNorm = norm(hechizo.system.esfera);
+      const tieneAfinidad = afinidadesCon.some(a => norm(a) === esfNorm);
+      if (tieneAfinidad) {
+        const esferaIdx = claves.indexOf(esfNorm);
+        if (esferaIdx >= 0 && niveles[esferaIdx] === Math.min(...niveles)) bonusAfinidad = 2;
+      }
+    }
+    mod += bonusAfinidad;
+
     const dolorExtremo = this.system.salud?.dolorExtremo ?? false;
     if (dolorExtremo) mod -= 2;
 
@@ -800,6 +902,7 @@ export class TQActor extends Actor {
     if (config.limFisica < 0) modDesglose.push({ label: "Lim. física", valor: config.limFisica });
     if (dolorExtremo) modDesglose.push({ label: "Dolor extremo", valor: -2 });
     if (config.md) modDesglose.push({ label: "MD", valor: config.md });
+    if (bonusAfinidad) modDesglose.push({ label: "Afinidad con", valor: bonusAfinidad });
     modDesglose.forEach(m => { m.signo = m.valor >= 0 ? "+" : "−"; m.valorAbs = Math.abs(m.valor); });
 
     const mostrarAplicarResultado = !fallo;
@@ -934,6 +1037,92 @@ export class TQActor extends Actor {
     });
   }
 
+
+  async meditarPM() {
+    const valor = this.system.caracteristicas?.espiritu?.valor ?? 0;
+    const etiqueta = game.i18n.localize("TQ.Caracteristicas.espiritu");
+    return TQRoll.dialogoTirada(etiqueta, valor, {
+      actor: this, escalaDif: "meditacion", dificultadPorDefecto: 15,
+      pmRecuperadoBase: 0, pmRecuperadoExito: 1, pmRecuperadoCritico: 2, dialogClasses: ["tq-tirada-meditacion"], dialogTitle: game.i18n.localize("TQ.Magia.RecuperarTitulo")
+    });
+  }
+
+  async rezarPM() {
+    const valor = this.system.caracteristicas?.espiritu?.valor ?? 0;
+    const etiqueta = game.i18n.localize("TQ.Caracteristicas.espiritu");
+    return TQRoll.dialogoTirada(etiqueta, valor, {
+      actor: this, escalaDif: "meditacion", dificultadPorDefecto: 15,
+      dialogClasses: ["tq-tirada-meditacion"], dialogTitle: game.i18n.localize("TQ.Magia.RecuperarTitulo"),
+      modoRezo: true
+    });
+  }
+
+  async abrirReduccionLealtad() {
+    const lealtad = this.system.lealtad ?? {};
+    const elegido = await DialogV2.wait({
+      window: { title: game.i18n.localize("TQ.Rezo.ReduccionTitulo"), width: 340 },
+      classes: ["tq-conversion-lealtad"],
+      content: `<p>${game.i18n.format("TQ.Rezo.ReduccionTexto", { nombre: this.name })}</p>`,
+      rejectClose: false,
+      buttons: [
+        { action: "ley", label: lealtad.ley ? `Ley — ${lealtad.ley}` : "Ley", disabled: !(lealtad.ley ?? 0) },
+        { action: "elementos", label: lealtad.elementos ? `Elementos — ${lealtad.elementos}` : "Elementos", disabled: !(lealtad.elementos ?? 0) },
+        { action: "caos", label: lealtad.caos ? `Caos — ${lealtad.caos}` : "Caos", disabled: !(lealtad.caos ?? 0) },
+        { action: "antepasados", label: lealtad.antepasados ? `Antepasados — ${lealtad.antepasados}` : "Antepasados", disabled: !(lealtad.antepasados ?? 0) }
+      ]
+    });
+    if (!elegido) return;
+    await this.update({ [`system.lealtad.${elegido}`]: Math.max(0, (lealtad[elegido] ?? 0) - 1) });
+  }
+
+  async abrirConversionLealtad(exitos) {
+    const lealtadBase = this.system.lealtad ?? {};
+    let advertencia = "";
+
+    while (true) {
+      const lealtad = this.system.lealtad ?? {};
+      const result = await DialogV2.wait({
+        window: { title: game.i18n.localize("TQ.Rezo.ConversionTitulo"), width: 360 },
+        classes: ["tq-conversion-lealtad"],
+        content: `
+          <p class="tq-conv-advertencia">${advertencia}</p>
+          <p>${game.i18n.format("TQ.Rezo.ConversionTexto", { exitos })}</p>
+          <div style="margin-top:8px;">
+            <label style="font-size:12px;">${game.i18n.localize("TQ.Rezo.Cantidad")}:
+              <input type="number" name="cantidad" min="1" max="${exitos}" value="1" style="width:60px;margin-left:4px;">
+            </label>
+          </div>`,
+        rejectClose: false,
+        buttons: [
+          { action: "ley", label: lealtad.ley ? `Ley — ${lealtad.ley}` : "Ley", disabled: !(lealtad.ley ?? 0), callback: (_ev, b) => ({ tipo: "ley", cantidad: parseInt(b.form.elements.cantidad.value) || 1 }) },
+          { action: "elementos", label: lealtad.elementos ? `Elementos — ${lealtad.elementos}` : "Elementos", disabled: !(lealtad.elementos ?? 0), callback: (_ev, b) => ({ tipo: "elementos", cantidad: parseInt(b.form.elements.cantidad.value) || 1 }) },
+          { action: "caos", label: lealtad.caos ? `Caos — ${lealtad.caos}` : "Caos", disabled: !(lealtad.caos ?? 0), callback: (_ev, b) => ({ tipo: "caos", cantidad: parseInt(b.form.elements.cantidad.value) || 1 }) },
+          { action: "antepasados", label: lealtad.antepasados ? `Antepasados — ${lealtad.antepasados}` : "Antepasados", disabled: !(lealtad.antepasados ?? 0), callback: (_ev, b) => ({ tipo: "antepasados", cantidad: parseInt(b.form.elements.cantidad.value) || 1 }) }
+        ]
+      });
+
+      if (!result) return;
+
+      const { tipo, cantidad } = result;
+      if (cantidad > exitos) {
+        advertencia = game.i18n.format("TQ.Rezo.ExcedeLimite", { max: exitos });
+        continue;
+      }
+      const lealtadActual = lealtad[tipo] ?? 0;
+      if (lealtadActual < cantidad) {
+        advertencia = game.i18n.format("TQ.Rezo.LealtadInsuficiente", { tipo: tipo.charAt(0).toUpperCase() + tipo.slice(1), disponible: lealtadActual });
+        continue;
+      }
+
+      const pmActual = this.system.hechiceria?.pmActual ?? 0;
+      const pmMax = this.system.hechiceria?.pmMax ?? 0;
+      await this.update({
+        [`system.lealtad.${tipo}`]: lealtadActual - cantidad,
+        "system.hechiceria.pmActual": Math.min(pmActual + cantidad, pmMax)
+      });
+      return;
+    }
+  }
 
   async recibirDanho(pd, pdBruto) {
 
@@ -1441,16 +1630,18 @@ export class TQActor extends Actor {
     const conPX = [];
     const subidas = [];
 
+    const donesPara = this.system.donesPara ?? [];
     for (const [clave, habilidad] of Object.entries(habs)) {
       if (!habilidad.exito) continue;
-      const resultado = this.calcPX(clave, 1);
+      const px = donesPara.includes(clave) ? 2 : 1;
+      const resultado = this.calcPX(clave, px);
       if (!resultado) continue;
       Object.assign(updates, resultado.updates);
       updates[`system.habilidades.${clave}.exito`] = false;
       const etiqueta = habilidad.nombre && clave.startsWith("idioma")
         ? habilidad.nombre
         : (game.i18n.localize(`TQ.Habilidades.${clave}`) || clave);
-      conPX.push(etiqueta);
+      conPX.push({ etiqueta, px });
       if (resultado.subio) subidas.push({ etiqueta, nivelNuevo: resultado.nivelNuevo });
     }
 
@@ -1476,7 +1667,12 @@ export class TQActor extends Actor {
     await this.update(updates);
 
     let msg = `<div class="tq-result-card complicacion"><div class="tq-card-titulo">${game.i18n.format("TQ.FinSesion.TituloNombre", { nombre: this.name })}</div><hr/>`;
-    if (conPX.length) msg += `<p><strong>+1 PX:</strong> ${conPX.join(", ")}</p>`;
+    if (conPX.length) {
+      const px1 = conPX.filter(e => e.px === 1).map(e => e.etiqueta);
+      const px2 = conPX.filter(e => e.px === 2).map(e => e.etiqueta);
+      if (px1.length) msg += `<p><strong>+1 PX:</strong> ${px1.join(", ")}</p>`;
+      if (px2.length) msg += `<p><strong>+2 PX:</strong> ${px2.join(", ")}</p>`;
+    }
     if (subidas.length) msg += `<p><strong>Subida de nivel:</strong> ${subidas.map(s => `${s.etiqueta} → Nv. ${s.nivelNuevo}`).join(", ")}</p>`;
     if (fortunaGanada > 0) msg += `<p><strong>+${fortunaGanada} Fortuna</strong> por marcas de trasfondo.</p>`;
     msg += `</div>`;
@@ -1775,6 +1971,115 @@ export class TQActor extends Actor {
         await this.update({ [`system.habilidades.${habClave}.exito`]: true });
       }
     }
+  }
+
+  async _tirarDistanciaEnfrentada(arma, puntuacion, md, reaccion, modDesglose, targetActor) {
+    const habClave = arma.system.habilidad;
+    const modos = reaccion === "a-cubierto" ? "distancia-cubierto" : "distancia-escudo";
+    const esProyectil = arma.system.alcance === "proyectil";
+    const danho = {
+      danoArma: arma.system.danoArma ?? "0",
+      tipo: arma.system.tipo ?? "cortante",
+      md,
+      manos: arma.system.manos ?? "1m",
+      noLetal: arma.system.noLetal ?? false
+    };
+
+    const _getDefensorDatos = (actor) => {
+      if (!actor) return null;
+      if (modos === "distancia-cubierto") {
+        if (actor.type === "pj") {
+          const esquivar = actor.system.habilidades?.esquivar;
+          const total = esquivar?.total ?? 0;
+          if (total > 0) return { puntuacion: total, habLabel: game.i18n.localize("TQ.Habilidades.esquivar") };
+          return { puntuacion: actor.system.bases?.agilidad?.valor ?? 0, habLabel: game.i18n.localize("TQ.Bases.agilidad") };
+        }
+        const habs = actor.system.habilidades ?? {};
+        for (const [k, v] of Object.entries(habs)) {
+          if (k.toLowerCase().includes("esquivar")) {
+            const total = typeof v === "number" ? v : (v.total ?? v.nivel ?? 0);
+            if (total > 0) return { puntuacion: total, habLabel: k };
+          }
+        }
+        return { puntuacion: actor.system.bases?.agilidad?.valor ?? 0, habLabel: game.i18n.localize("TQ.Bases.agilidad") };
+      } else {
+        if (actor.type === "pj") {
+          const escudo = actor.system.habilidades?.escudo;
+          return { puntuacion: escudo?.total ?? 0, habLabel: game.i18n.localize("TQ.Habilidades.escudo") };
+        }
+        const habs = actor.system.habilidades ?? {};
+        for (const [k, v] of Object.entries(habs)) {
+          if (k.toLowerCase().includes("escudo")) {
+            const total = typeof v === "number" ? v : (v.total ?? v.nivel ?? 0);
+            return { puntuacion: total, habLabel: k };
+          }
+        }
+        return { puntuacion: 0, habLabel: game.i18n.localize("TQ.Habilidades.escudo") };
+      }
+    };
+
+    const actoresEscena = [];
+    const actoresMap = new Map();
+    if (!targetActor) {
+      for (const token of (canvas.scene?.tokens ?? [])) {
+        const actor = token.actor;
+        if (!actor || actor.uuid === this.uuid) continue;
+        if (!actoresMap.has(actor.uuid)) {
+          const dd = _getDefensorDatos(actor);
+          actoresMap.set(actor.uuid, actor);
+          actoresEscena.push({ uuid: actor.uuid, name: actor.name, puntuacion: dd?.puntuacion ?? 0, habLabel: dd?.habLabel ?? "Esquivar" });
+        }
+      }
+    }
+
+    const defDatos = targetActor ? _getDefensorDatos(targetActor) : null;
+    const rivalDatosDA = {
+      puntuacion: defDatos?.puntuacion ?? 0,
+      habLabel: defDatos?.habLabel ?? game.i18n.localize("TQ.Habilidades.esquivar"),
+      tieneTarget: !!targetActor,
+      actoresEscena,
+      mostrarPenalizador: modos === "distancia-cubierto" && esProyectil
+    };
+
+    if (!targetActor && actoresEscena.length > 0) {
+      const hookId = Hooks.on("renderDialogV2", (_app, html) => {
+        const actorSel = html.querySelector(".tq-da-actor-select");
+        if (!actorSel) return;
+        Hooks.off("renderDialogV2", hookId);
+        const puntuacionInput = html.querySelector("#defensor_puntuacion_da");
+        const uuidInput = html.querySelector("#target_actor_uuid_da");
+        const update = () => {
+          const opt = actorSel.options[actorSel.selectedIndex];
+          if (!opt?.value) return;
+          if (puntuacionInput) puntuacionInput.value = opt.dataset.puntuacion ?? "0";
+          if (uuidInput) uuidInput.value = opt.value;
+        };
+        actorSel.addEventListener("change", update);
+        if (actorSel.options.length > 1) { actorSel.selectedIndex = 1; update(); }
+      });
+    }
+
+    const resultado = await TQRoll.dialogoTirada(arma.name, puntuacion, {
+      actor: this,
+      targetActor,
+      modo: modos,
+      esCombate: true,
+      habClave,
+      modDesglose: modDesglose.length ? modDesglose : null,
+      danho,
+      rivalDatosDA,
+      actoresMapDA: actoresMap,
+      esProyectil
+    });
+
+    if (this.type === "pj" && resultado && resultado.exitos > 0) {
+      const habilidad = this.system.habilidades?.[habClave];
+      if (habilidad && !habilidad.exito) {
+        await this.update({ [`system.habilidades.${habClave}.exito`]: true });
+      }
+    }
+
+    return resultado;
   }
 
   async abrirDialogoEnfrentada(habNombreDisplay, habTotal, habClave = null) {
