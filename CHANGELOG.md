@@ -1,3 +1,19 @@
+# Notas 21 de julio 2026 
+
+ 
+**Cambios**
+
+- Implementadas las opciones de tirada en las armas de proyectiles.
+- Implementadas las otras dos formas de recuperación de puntos de magia.
+- Se crea el tipo de item objeto mágico y el tipo de item deidad.
+- Añadido compendio de deidades y cambios derivados en el creador de personajes.
+- Implementado creador de enlaces.
+- Diversos cambios estéticos.
+- Resuelto el modal que se disparaba al importar un pj de una aventura.
+- Cambios menores en diversas parte del ruleset para mejorar la visibilidad.
+
+
+
 # Notas 25 de julio 2026 
 
 **Pendientes**
