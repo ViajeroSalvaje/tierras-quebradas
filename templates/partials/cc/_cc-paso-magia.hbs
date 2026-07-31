@@ -114,11 +114,29 @@
   {{#if magiaData.esTeurgia}}
   <p class="cc-hint">Teúrgia: solo hechizos de Esfera Ley. Límite estricto de {{magiaData.baseHechizos}} hechizos.</p>
   {{else}}
-  <p class="cc-hint">Los hechizos de DIF 25 no están disponibles en creación. Hechizos adicionales cuestan −1 PP cada uno.</p>
+  <p class="cc-hint">Los hechizos de DIF 25 no están disponibles en creación.</p>
+  {{/if}}
+  {{#if magiaData.hechizosElegidos.length}}
+  <div class="cc-hechizo-lista cc-hechizos-seleccionados">
+    {{#each magiaData.hechizosElegidos as |h|}}
+    <div class="cc-hechizo-card selected" data-hechizo-id="{{h.id}}">
+      <div class="cc-hechizo-nombre">{{h.name}}</div>
+      <div class="cc-hechizo-meta">
+        <span class="cc-hechizo-sintaxis">{{h.verbo}} {{h.esfera}}</span>
+        <span class="cc-hechizo-dif">DIF {{h.dificultad}}</span>
+        <span class="cc-hechizo-pm">PM {{h.pmStr}}</span>
+      </div>
+      <div class="cc-hechizo-perm-fila">
+        <a class="tq-circulo cc-hechizo-perm {{#if h.permanent}}marcado{{/if}}" data-hechizo-id="{{h.id}}"></a>
+        Permanente (consagra {{h.pmCoste}} ESP)
+      </div>
+    </div>
+    {{/each}}
+  </div>
   {{/if}}
   {{#each magiaData.listaHechizosAgrupada as |grupo|}}
   <details class="cc-hechizo-grupo">
-    <summary class="cc-hechizo-grupo-titulo">{{grupo.label}}</summary>
+    <summary class="cc-hechizo-grupo-titulo"><img class="cc-hechizo-esfera-icon" src="systems/tierras-quebradas/images/esferas/sin fondo/{{grupo.icono}}.png" alt="">{{grupo.label}}</summary>
     <div class="cc-hechizo-lista">
       {{#each grupo.hechizos as |h|}}
       <div class="cc-hechizo-card {{#if h.selected}}selected{{/if}} {{#if h.bloqueado}}bloqueado{{/if}}"

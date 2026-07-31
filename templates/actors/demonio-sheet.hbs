@@ -165,6 +165,7 @@
         {{#each poderes as |p|}}
         <li data-item-id="{{p.id}}" class="ventaja-item">
           <strong>{{p.name}}</strong>
+          {{#if p.coste}}<span class="coste">({{p.coste}} PP)</span>{{/if}}
           <span class="item-controls">
             <a class="item-edit" data-item-id="{{p.id}}"><i class="fas fa-edit"></i></a>
             <a class="pnj-item-borrar" data-id="{{p.id}}"><i class="fas fa-trash"></i></a>

@@ -1,0 +1,28 @@
+<div class="{{cssClass}} flexcol" autocomplete="off" style="height:100%;width:100%;">
+  <section class="item-body">
+    <div class="tq-item-header-fila" style="align-items:flex-start;margin-bottom:12px;">
+      <img class="item-img" src="{{item.img}}" title="{{item.name}}" />
+      <div style="flex:1;">
+        <h1><input type="text" name="name" value="{{item.name}}" placeholder="{{localize "TQ.Placeholders.Nombre"}}" /></h1>
+        <div style="display:flex;gap:12px;margin-top:6px;">
+          <div class="tq-field-group inline">
+            <label>{{localize "TQ.General.Espiritu"}}</label>
+            <input type="number" name="system.espiritu" value="{{system.espiritu}}" min="0" style="width:52px;" />
+          </div>
+          <div class="tq-field-group inline">
+            <label>{{localize "TQ.General.PM"}}</label>
+            <input type="number" name="system.pm" value="{{system.pm}}" min="0" style="width:52px;" />
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="tq-field-group full-width">
+      <label>{{localize "TQ.General.Efecto"}}</label>
+      <textarea name="system.efecto" rows="3">{{system.efecto}}</textarea>
+    </div>
+    <div class="tq-field-group full-width" style="margin-top:8px;">
+      <label>{{localize "TQ.General.Descripcion"}}</label>
+      <textarea name="system.descripcion" rows="5">{{system.descripcion}}</textarea>
+    </div>
+  </section>
+</div>

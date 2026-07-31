@@ -119,6 +119,114 @@
       {{/if}}
     </div>
 
+    {{else if (tq-eq modo "distancia-cubierto")}}
+    {{!-- Distancia enfrentada: esquivar / agilidad --}}
+    <div class="tq-campo-grupo">
+      <label for="distancia">{{localize "TQ.Dialogo.Distancia"}}</label>
+      <select name="distancia" id="distancia">
+        <option value="10">{{localize "TQ.Distancia.corta"}}</option>
+        <option value="15" selected>{{localize "TQ.Distancia.media"}}</option>
+        <option value="20">{{localize "TQ.Distancia.larga"}}</option>
+        <option value="25">{{localize "TQ.Distancia.muyLarga"}}</option>
+      </select>
+    </div>
+    <div class="tq-melee-fila">
+      <div class="tq-campo-grupo">
+        <label for="bonificador">{{localize "TQ.Dialogo.Bonificador"}}</label>
+        <input type="number" name="bonificador" id="bonificador" value="0" step="1" />
+      </div>
+      <div class="tq-campo-grupo" style="flex-direction:row;align-items:center;gap:4px;">
+        <label for="apuntando">{{localize "TQ.Dialogo.Apuntando"}}</label>
+        <input type="checkbox" name="apuntando" id="apuntando" class="tq-apuntar-check" />
+        <label for="apuntando" class="tq-circulo tq-apuntar-circulo" style="width:16px;height:16px;cursor:pointer;" title="+2 al ataque"></label>
+      </div>
+      <div class="tq-campo-grupo" style="flex-direction:row;align-items:center;gap:4px;">
+        <label for="siguiente_rango">{{localize "TQ.Dialogo.SiguienteRango"}}</label>
+        <input type="checkbox" name="siguiente_rango" id="siguiente_rango" class="tq-apuntar-check" />
+        <label for="siguiente_rango" class="tq-circulo tq-apuntar-circulo" style="width:16px;height:16px;cursor:pointer;" title="Dificultad 25, daño ÷2 antes de protección"></label>
+      </div>
+    </div>
+    <div class="tq-melee-fila">
+      {{#if rivalDatosDA.tieneTarget}}
+      <div class="tq-campo-grupo">
+        <label>{{rivalDatosDA.habLabel}} ({{rivalDatosDA.puntuacion}})</label>
+        <input type="hidden" name="defensor_puntuacion" value="{{rivalDatosDA.puntuacion}}" />
+        <input type="hidden" name="target_actor_uuid_da" value="" />
+        {{#if rivalDatosDA.mostrarPenalizador}}<span class="tq-ga-debilitado-aviso">{{localize "TQ.Dialogo.PenalizadorProyectil"}}</span>{{/if}}
+      </div>
+      {{else}}
+      <div class="tq-campo-grupo">
+        <label for="actor_objetivo_da">{{localize "TQ.Dialogo.EligeActor"}}</label>
+        <select name="actor_objetivo_da" id="actor_objetivo_da" class="tq-da-actor-select">
+          <option value="">{{localize "TQ.Dialogo.EligeActorPrimero"}}</option>
+          {{#each rivalDatosDA.actoresEscena}}
+          <option value="{{this.uuid}}" data-puntuacion="{{this.puntuacion}}">{{this.name}} ({{this.habLabel}}: {{this.puntuacion}})</option>
+          {{/each}}
+        </select>
+        <input type="hidden" name="defensor_puntuacion" id="defensor_puntuacion_da" value="0" />
+        <input type="hidden" name="target_actor_uuid_da" id="target_actor_uuid_da" value="" />
+        {{#if rivalDatosDA.mostrarPenalizador}}<span class="tq-ga-debilitado-aviso">{{localize "TQ.Dialogo.PenalizadorProyectil"}}</span>{{/if}}
+      </div>
+      {{/if}}
+      <div class="tq-campo-grupo">
+        <label for="defensor_bonificador">{{localize "TQ.Dialogo.BonificadorDefensor"}}</label>
+        <input type="number" name="defensor_bonificador" id="defensor_bonificador" value="0" step="1" />
+      </div>
+    </div>
+
+    {{else if (tq-eq modo "distancia-escudo")}}
+    {{!-- Distancia enfrentada: escudo --}}
+    <div class="tq-campo-grupo">
+      <label for="distancia">{{localize "TQ.Dialogo.Distancia"}}</label>
+      <select name="distancia" id="distancia">
+        <option value="10">{{localize "TQ.Distancia.corta"}}</option>
+        <option value="15" selected>{{localize "TQ.Distancia.media"}}</option>
+        <option value="20">{{localize "TQ.Distancia.larga"}}</option>
+        <option value="25">{{localize "TQ.Distancia.muyLarga"}}</option>
+      </select>
+    </div>
+    <div class="tq-melee-fila">
+      <div class="tq-campo-grupo">
+        <label for="bonificador">{{localize "TQ.Dialogo.Bonificador"}}</label>
+        <input type="number" name="bonificador" id="bonificador" value="0" step="1" />
+      </div>
+      <div class="tq-campo-grupo" style="flex-direction:row;align-items:center;gap:4px;">
+        <label for="apuntando">{{localize "TQ.Dialogo.Apuntando"}}</label>
+        <input type="checkbox" name="apuntando" id="apuntando" class="tq-apuntar-check" />
+        <label for="apuntando" class="tq-circulo tq-apuntar-circulo" style="width:16px;height:16px;cursor:pointer;" title="+2 al ataque"></label>
+      </div>
+      <div class="tq-campo-grupo" style="flex-direction:row;align-items:center;gap:4px;">
+        <label for="siguiente_rango">{{localize "TQ.Dialogo.SiguienteRango"}}</label>
+        <input type="checkbox" name="siguiente_rango" id="siguiente_rango" class="tq-apuntar-check" />
+        <label for="siguiente_rango" class="tq-circulo tq-apuntar-circulo" style="width:16px;height:16px;cursor:pointer;" title="Dificultad 25, daño ÷2 antes de protección"></label>
+      </div>
+    </div>
+    <div class="tq-melee-fila">
+      {{#if rivalDatosDA.tieneTarget}}
+      <div class="tq-campo-grupo">
+        <label>{{rivalDatosDA.habLabel}} ({{rivalDatosDA.puntuacion}})</label>
+        <input type="hidden" name="defensor_puntuacion" value="{{rivalDatosDA.puntuacion}}" />
+        <input type="hidden" name="target_actor_uuid_da" value="" />
+      </div>
+      {{else}}
+      <div class="tq-campo-grupo">
+        <label for="actor_objetivo_da">{{localize "TQ.Dialogo.EligeActor"}}</label>
+        <select name="actor_objetivo_da" id="actor_objetivo_da" class="tq-da-actor-select">
+          <option value="">{{localize "TQ.Dialogo.EligeActorPrimero"}}</option>
+          {{#each rivalDatosDA.actoresEscena}}
+          <option value="{{this.uuid}}" data-puntuacion="{{this.puntuacion}}">{{this.name}} ({{this.habLabel}}: {{this.puntuacion}})</option>
+          {{/each}}
+        </select>
+        <input type="hidden" name="defensor_puntuacion" id="defensor_puntuacion_da" value="0" />
+        <input type="hidden" name="target_actor_uuid_da" id="target_actor_uuid_da" value="" />
+      </div>
+      {{/if}}
+      <div class="tq-campo-grupo">
+        <label for="defensor_bonificador">{{localize "TQ.Dialogo.BonificadorDefensor"}}</label>
+        <input type="number" name="defensor_bonificador" id="defensor_bonificador" value="0" step="1" />
+      </div>
+    </div>
+
     {{else if (tq-eq modo "trata-de-escapar")}}
     {{!-- Trata de escapar: rival lanza dado, sin +2 por debilitado --}}
     <div class="tq-melee-fila">
@@ -185,6 +293,24 @@
         <span class="tq-ga-debilitado-aviso" id="tq-ga-deb-aviso" style="display:none;">{{localize "TQ.Melee.Debilitado"}}: +2</span>
       </div>
       {{/if}}
+    </div>
+
+    {{else if (tq-eq escalaDif "meditacion")}}
+    {{!-- Tirada de meditación: radio buttons con texto largo --}}
+    <div class="tq-med-dificultad">
+      <span class="tq-med-label">{{localize "TQ.Tirada.Dificultad"}}</span>
+      <div class="tq-med-opciones" style="max-width:300px;">
+        <label class="tq-med-opcion"><input type="radio" name="dificultad" value="9"  {{#if (tq-eq dificultadPorDefecto "9")}}checked{{/if}}><span>9 — Lugar con fuerte significado místico, como un templo afín o las ruinas de este, un lugar de peregrinaje, una capilla en el camino, etc.</span></label>
+        <label class="tq-med-opcion"><input type="radio" name="dificultad" value="12" {{#if (tq-eq dificultadPorDefecto "12")}}checked{{/if}}><span>12 — Lugar tranquilo y acogedor, en plena naturaleza o aislado de su entorno. O un lugar mundano con la simbología religiosa adecuada.</span></label>
+        <label class="tq-med-opcion"><input type="radio" name="dificultad" value="15" {{#if (tq-eq dificultadPorDefecto "15")}}checked{{/if}}><span>15 — Sitio corriente y frecuentado, donde es habitual oír ruidos súbitos o voces humanas.</span></label>
+        <label class="tq-med-opcion"><input type="radio" name="dificultad" value="18" {{#if (tq-eq dificultadPorDefecto "18")}}checked{{/if}}><span>18 — Entorno ruidoso, estridente y desagradable, como un mercado, una fiesta o una batalla.</span></label>
+      </div>
+    </div>
+    <div class="tq-melee-fila" style="margin-top:6px;">
+      <div class="tq-campo-grupo">
+        <label for="bonificador">{{localize "TQ.Dialogo.Bonificador"}}</label>
+        <input type="number" name="bonificador" id="bonificador" value="0" step="1" />
+      </div>
     </div>
 
     {{else}}

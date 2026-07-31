@@ -1,3 +1,20 @@
+{{#if rasgosProfesion.length}}
+<div class="cc-section">
+  <h3 class="cc-section-title">{{localize "TQ.CC.VentajasProf"}} <span class="cc-hint">(incluidos, sin coste adicional)</span></h3>
+  <div class="ventaja-grid">
+    {{#each rasgosProfesion as |r|}}
+    <div class="ventaja-card de-profesion selected">
+      <div class="ventaja-card-header">
+        <span class="ventaja-nombre">{{r.nombre}}</span>
+        <span class="ventaja-pp">{{localize "TQ.CC.Incluida"}}</span>
+      </div>
+      {{#if r.efecto}}<p class="ventaja-efecto">{{r.efecto}}</p>{{/if}}
+    </div>
+    {{/each}}
+  </div>
+</div>
+{{/if}}
+
 {{#if rasgosItemsData}}
 
 {{#if rasgosItemsData.sobrenaturales.length}}
@@ -8,10 +25,30 @@
     <div class="ventaja-card rasgo-card {{#if r.selected}}selected{{/if}} {{#if r.deshabilitada}}disabled{{/if}}"
          data-rasgo-id="{{r.id}}">
       <div class="ventaja-card-header">
-        <span class="ventaja-nombre">{{r.name}}</span>
+        <span class="ventaja-nombre">{{r.nombreMostrado}}</span>
         <span class="ventaja-pp {{#if (tq-gt 0 r.coste)}}coste{{else}}bonus{{/if}}">{{r.costeBadge}}</span>
         {{#if r.esHechizos}}{{#if r.selected}}<span class="rasgo-cantidad">×{{r.cantidad}}</span><button class="rasgo-menos" type="button">−</button>{{/if}}{{/if}}
       </div>
+      {{#if r.selected}}{{#if r.tieneAfinidad}}
+      <select class="rasgo-afinidad-select">
+        <option value="">— Elige poder —</option>
+        <option value="Caos" {{selected r.afinidad "Caos"}}>Caos</option>
+        <option value="Ley" {{selected r.afinidad "Ley"}}>Ley</option>
+        <option value="Agua" {{selected r.afinidad "Agua"}}>Agua</option>
+        <option value="Aire" {{selected r.afinidad "Aire"}}>Aire</option>
+        <option value="Fuego" {{selected r.afinidad "Fuego"}}>Fuego</option>
+        <option value="Tierra" {{selected r.afinidad "Tierra"}}>Tierra</option>
+        <option value="Espíritu" {{selected r.afinidad "Espíritu"}}>Espíritu</option>
+      </select>
+      {{/if}}{{/if}}
+      {{#if r.selected}}{{#if r.tieneBlanco}}
+      <select class="rasgo-blanco-select">
+        <option value="">— Elige poder —</option>
+        <option value="Ley" {{selected r.blanco "Ley"}}>Ley</option>
+        <option value="Caos" {{selected r.blanco "Caos"}}>Caos</option>
+        <option value="Elementales" {{selected r.blanco "Elementales"}}>Elementales</option>
+      </select>
+      {{/if}}{{/if}}
       <p class="ventaja-efecto">{{r.efecto}}</p>
     </div>
     {{/each}}
@@ -27,10 +64,30 @@
     <div class="ventaja-card rasgo-card {{#if r.selected}}selected{{/if}} {{#if r.deshabilitada}}disabled{{/if}}"
          data-rasgo-id="{{r.id}}">
       <div class="ventaja-card-header">
-        <span class="ventaja-nombre">{{r.name}}</span>
+        <span class="ventaja-nombre">{{r.nombreMostrado}}</span>
         <span class="ventaja-pp {{#if (tq-gt 0 r.coste)}}coste{{else}}bonus{{/if}}">{{r.costeBadge}}</span>
         {{#if r.esHechizos}}{{#if r.selected}}<span class="rasgo-cantidad">×{{r.cantidad}}</span><button class="rasgo-menos" type="button">−</button>{{/if}}{{/if}}
       </div>
+      {{#if r.selected}}{{#if r.tieneAfinidad}}
+      <select class="rasgo-afinidad-select">
+        <option value="">— Elige poder —</option>
+        <option value="Caos" {{selected r.afinidad "Caos"}}>Caos</option>
+        <option value="Ley" {{selected r.afinidad "Ley"}}>Ley</option>
+        <option value="Agua" {{selected r.afinidad "Agua"}}>Agua</option>
+        <option value="Aire" {{selected r.afinidad "Aire"}}>Aire</option>
+        <option value="Fuego" {{selected r.afinidad "Fuego"}}>Fuego</option>
+        <option value="Tierra" {{selected r.afinidad "Tierra"}}>Tierra</option>
+        <option value="Espíritu" {{selected r.afinidad "Espíritu"}}>Espíritu</option>
+      </select>
+      {{/if}}{{/if}}
+      {{#if r.selected}}{{#if r.tieneBlanco}}
+      <select class="rasgo-blanco-select">
+        <option value="">— Elige poder —</option>
+        <option value="Ley" {{selected r.blanco "Ley"}}>Ley</option>
+        <option value="Caos" {{selected r.blanco "Caos"}}>Caos</option>
+        <option value="Elementales" {{selected r.blanco "Elementales"}}>Elementales</option>
+      </select>
+      {{/if}}{{/if}}
       <p class="ventaja-efecto">{{r.efecto}}</p>
     </div>
     {{/each}}

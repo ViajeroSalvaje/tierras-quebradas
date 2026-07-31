@@ -68,7 +68,7 @@
         <span>+ {{puntuacionRival}}</span>
         {{#if bonificadorRival}}<span>{{#if (tq-gt bonificadorRival 0)}}+{{/if}}{{bonificadorRival}}</span>{{/if}}
         {{#if modLongitudRival}}<span>+{{modLongitudRival}} (long.)</span>{{/if}}
-        <span class="tq-melee-total">= <strong>{{totalRival}}</strong></span>
+        {{#if defRawTotal}}<span class="tq-melee-total">= <strong>{{defRawTotal}}</strong> → <strong>{{totalRival}}</strong> (dist.)</span>{{else}}<span class="tq-melee-total">= <strong>{{totalRival}}</strong></span>{{/if}}
       </div>
     </div>
   </div>
@@ -186,6 +186,13 @@
       {{localize "TQ.Botones.AplicarRecuperacion"}} (+{{pmRecuperado}} PM)
     </button>
     {{/if}}
+    {{#if mostrarRezo}}
+    <button class="tq-aplicar-rezo" type="button"
+      data-actor-id="{{actorId}}"
+      data-exitos="{{exitos}}">
+      {{localize "TQ.Botones.AplicarRezo"}}
+    </button>
+    {{/if}}
   </div>
   {{/if}}
   {{#unless mostrarFortuna}}
@@ -216,6 +223,15 @@
       data-actor-id="{{actorId}}"
       data-pm-recuperado="{{pmRecuperado}}">
       {{localize "TQ.Botones.AplicarRecuperacion"}} (+{{pmRecuperado}} PM)
+    </button>
+  </div>
+  {{/if}}
+  {{#if mostrarRezo}}
+  <div class="tq-fortuna-actions">
+    <button class="tq-aplicar-rezo" type="button"
+      data-actor-id="{{actorId}}"
+      data-exitos="{{exitos}}">
+      {{localize "TQ.Botones.AplicarRezo"}}
     </button>
   </div>
   {{/if}}

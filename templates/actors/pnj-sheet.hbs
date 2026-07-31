@@ -167,6 +167,7 @@
         {{#each rasgos as |r|}}
         <li data-item-id="{{r.id}}" class="ventaja-item">
           <strong>{{r.name}}</strong>
+          {{#if r.coste}}<span class="coste">({{r.coste}} PP)</span>{{/if}}
           <span class="item-controls">
             <a class="item-edit" data-item-id="{{r.id}}"><i class="fas fa-edit"></i></a>
             <a class="pnj-item-borrar" data-id="{{r.id}}"><i class="fas fa-trash"></i></a>

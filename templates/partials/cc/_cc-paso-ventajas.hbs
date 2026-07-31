@@ -1,3 +1,20 @@
+{{#if ventajasProfesion.length}}
+<div class="cc-section">
+  <h3 class="cc-section-title">{{localize "TQ.CC.VentajasProf"}} <span class="cc-hint">(incluidas, sin coste adicional)</span></h3>
+  <div class="ventaja-grid">
+    {{#each ventajasProfesion as |v|}}
+    <div class="ventaja-card de-profesion selected">
+      <div class="ventaja-card-header">
+        <span class="ventaja-nombre">{{v.nombre}}</span>
+        <span class="ventaja-pp">{{localize "TQ.CC.Incluida"}}</span>
+      </div>
+      {{#if v.efecto}}<p class="ventaja-efecto">{{v.efecto}}</p>{{/if}}
+    </div>
+    {{/each}}
+  </div>
+</div>
+{{/if}}
+
 <div class="cc-section">
   <div class="cc-ventajas-info">
     {{localize "TQ.CC.Seleccionadas"}} <strong>{{ventajasConteo}}/4</strong>
@@ -11,9 +28,17 @@
     <div class="ventaja-card {{#if v.selected}}selected{{/if}} {{#if v.deshabilitada}}disabled{{/if}}"
          data-ventaja-id="{{v.id}}">
       <div class="ventaja-card-header">
-        <span class="ventaja-nombre">{{v.name}}</span>
+        <span class="ventaja-nombre">{{v.nombreMostrado}}</span>
         <span class="ventaja-pp coste">{{v.costeBadge}}</span>
       </div>
+      {{#if v.selected}}{{#if v.tieneEspecialidad}}
+      <select class="ventaja-especialidad-select">
+        <option value="">— Elige habilidad —</option>
+        {{#each ../habilidadesOpciones as |hab|}}
+        <option value="{{hab.label}}" {{selected v.especialidad hab.label}}>{{hab.label}}</option>
+        {{/each}}
+      </select>
+      {{/if}}{{/if}}
       <p class="ventaja-efecto">{{v.efecto}}</p>
     </div>
     {{/each}}
@@ -29,9 +54,25 @@
     <div class="ventaja-card desventaja {{#if v.selected}}selected{{/if}} {{#if v.deshabilitada}}disabled{{/if}}"
          data-ventaja-id="{{v.id}}">
       <div class="ventaja-card-header">
-        <span class="ventaja-nombre">{{v.name}}</span>
+        <span class="ventaja-nombre">{{v.nombreMostrado}}</span>
         <span class="ventaja-pp bonus">{{v.costeBadge}}</span>
       </div>
+      {{#if v.selected}}{{#if v.tieneEspecialidad}}
+      <select class="ventaja-especialidad-select">
+        <option value="">— Elige habilidad —</option>
+        {{#each ../habilidadesOpciones as |hab|}}
+        <option value="{{hab.label}}" {{selected v.especialidad hab.label}}>{{hab.label}}</option>
+        {{/each}}
+      </select>
+      {{/if}}{{/if}}
+      {{#if v.selected}}{{#if v.tieneNegadoPara}}
+      <select class="ventaja-negado-select">
+        <option value="">— Elige habilidad (libre > 3) —</option>
+        {{#each v.opcionesNegado as |hab|}}
+        <option value="{{hab.label}}" {{selected v.especialidad hab.label}}>{{hab.label}}</option>
+        {{/each}}
+      </select>
+      {{/if}}{{/if}}
       <p class="ventaja-efecto">{{v.efecto}}</p>
     </div>
     {{/each}}

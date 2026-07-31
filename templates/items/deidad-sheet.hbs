@@ -1,0 +1,27 @@
+<div class="{{cssClass}} flexcol" autocomplete="off" style="height:100%;width:100%;">
+  <section class="item-body">
+    <div class="tq-item-header-fila">
+      <img class="item-img" src="{{item.img}}" title="{{item.name}}" />
+      <h1><input type="text" name="name" value="{{item.name}}" placeholder="{{localize "TQ.Placeholders.Nombre"}}" /></h1>
+    </div>
+    <div style="display:flex;align-items:flex-end;gap:16px;margin-top:12px;">
+      <div class="tq-field-group">
+        <label>{{localize "TQ.Deidad.Tipo"}}</label>
+        <select name="system.tipo">
+          <option value="ley"         {{selected system.tipo "ley"}}>{{localize "TQ.Lealtad.ley"}}</option>
+          <option value="caos"        {{selected system.tipo "caos"}}>{{localize "TQ.Lealtad.caos"}}</option>
+          <option value="elementos"   {{selected system.tipo "elementos"}}>{{localize "TQ.Lealtad.elementos"}}</option>
+          <option value="antepasados" {{selected system.tipo "antepasados"}}>{{localize "TQ.Lealtad.antepasados"}}</option>
+        </select>
+      </div>
+      <div class="tq-field-group" style="display:flex;align-items:center;gap:6px;padding-bottom:4px;">
+        <a class="tq-circulo toggle-estado {{#if system.principal}}marcado{{/if}}" data-campo="system.principal" title="{{localize "TQ.Deidad.Principal"}}"></a>
+        <label style="margin:0;">{{localize "TQ.Deidad.Principal"}}</label>
+      </div>
+    </div>
+    <div class="tq-field-group full-width" style="margin-top:12px;">
+      <label>{{localize "TQ.General.Descripcion"}}</label>
+      <textarea name="system.descripcion" rows="10">{{system.descripcion}}</textarea>
+    </div>
+  </section>
+</div>

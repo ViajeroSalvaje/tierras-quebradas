@@ -73,6 +73,45 @@
         </div>
       </div>
 
+      {{#if objetos}}
+      <div class="tq-section-box">
+        <div class="tq-section-header">
+          <span>{{localize "TQ.Secciones.Objetos"}}</span>
+          <a class="anadir-objeto" title="{{localize "TQ.Tooltips.AnadirObjeto"}}"><i class="fas fa-plus"></i></a>
+        </div>
+        <div class="tq-section-content">
+          <div class="pnj-items-lista">
+            {{#each objetos as |o|}}
+            <div class="pnj-item-fila">
+              <a class="item-edit" data-item-id="{{o.id}}">{{o.name}}</a>
+              <a class="pnj-item-borrar" data-id="{{o.id}}" title="{{localize "TQ.Tooltips.Eliminar"}}"><i class="fas fa-trash"></i></a>
+            </div>
+            {{/each}}
+          </div>
+        </div>
+      </div>
+      {{/if}}
+
+      {{#if objetosMagicos}}
+      <div class="tq-section-box">
+        <div class="tq-section-header">
+          <span>{{localize "TQ.Secciones.ObjetosMagicos"}}</span>
+          <a class="anadir-objeto-magico" title="{{localize "TQ.Tooltips.AnadirObjetoMagico"}}"><i class="fas fa-plus"></i></a>
+        </div>
+        <div class="tq-section-content">
+          <div class="pnj-items-lista">
+            {{#each objetosMagicos as |o|}}
+            <div class="pnj-item-fila">
+              <a class="item-edit" data-item-id="{{o.id}}">{{o.name}}</a>
+              {{#if o.espiritu}}<span class="pnj-item-detalle">ESP {{o.espiritu}} · PM {{o.pm}}</span>{{/if}}
+              <a class="pnj-item-borrar" data-id="{{o.id}}" title="{{localize "TQ.Tooltips.Eliminar"}}"><i class="fas fa-trash"></i></a>
+            </div>
+            {{/each}}
+          </div>
+        </div>
+      </div>
+      {{/if}}
+
       {{#if rasgos}}
       <div class="tq-section-box">
         <div class="tq-section-header"><span>{{localize "TQ.Secciones.Rasgos"}}</span></div>
@@ -81,6 +120,7 @@
             {{#each rasgos as |r|}}
             <div class="pnj-item-fila">
               <a class="pnj-item-nombre" data-id="{{r.id}}">{{r.name}}</a>
+              {{#if r.coste}}<span class="pnj-item-detalle">{{r.coste}} PP</span>{{/if}}
               <a class="pnj-item-borrar" data-id="{{r.id}}" title="{{localize "TQ.Tooltips.Eliminar"}}"><i class="fas fa-trash"></i></a>
             </div>
             {{/each}}

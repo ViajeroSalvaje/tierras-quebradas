@@ -1,0 +1,24 @@
+<div class="tirada-dialogo">
+  <div class="tirada-info">
+    <span class="tirada-nombre">Fortuna</span>
+    <span class="tirada-puntuacion">{{localize "TQ.Dialogo.Puntuacion"}}: <strong>{{fortActual}}</strong></span>
+  </div>
+
+  <div class="tirada-campos">
+    <div class="tq-melee-fila">
+      <div class="tq-campo-grupo">
+        <label for="dificultad">{{localize "TQ.Tirada.Dificultad"}}</label>
+        <select name="dificultad" id="dificultad">
+          <option value="9">Fácil (9)</option>
+          <option value="12">Medio (12)</option>
+          <option value="15" selected>Difícil (15)</option>
+          <option value="18">Muy difícil (18)</option>
+        </select>
+      </div>
+      <div class="tq-campo-grupo">
+        <label for="bonificador">{{localize "TQ.Dialogo.Bonificador"}}</label>
+        <input type="number" name="bonificador" id="bonificador" value="0" step="1" />
+      </div>
+    </div>
+  </div>
+</div>

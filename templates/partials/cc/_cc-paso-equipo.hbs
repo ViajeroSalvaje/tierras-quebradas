@@ -24,6 +24,19 @@
   {{/if}}
 </div>
 
+<div class="cc-section cc-carga-resumen">
+  <div class="cc-carga-fila">
+    <span class="cc-carga-label">Carga:</span>
+    <strong class="cc-carga-valor {{#if (tq-eq equipoData.estadoCarga "Incapacitado")}}cc-carga-peligro{{else if (tq-eq equipoData.estadoCarga "Debilitado")}}cc-carga-peligro{{else if (tq-gt equipoData.cargaActual equipoData.cargaNormal)}}cc-carga-aviso{{/if}}">{{equipoData.cargaActual}}</strong>
+    <span class="cc-carga-limite">/ {{equipoData.fuerza}} · {{equipoData.cargaMucha}} · {{equipoData.cargaDebilita}} · {{equipoData.cargaMaxima}}</span>
+    <span class="cc-carga-sep">|</span>
+    <span class="cc-carga-label">Estorbo:</span>
+    <strong class="cc-carga-valor {{#if (tq-eq equipoData.estorboActual 0)}}{{else}}cc-carga-aviso{{/if}}">{{equipoData.estorboActual}}</strong>
+    <span class="cc-carga-limite">·</span>
+    <strong class="cc-carga-valor {{#if (tq-eq equipoData.estadoCarga "Normal")}}{{else}}cc-carga-peligro{{/if}}">{{equipoData.estadoCarga}}</strong>
+  </div>
+</div>
+
 {{#if armadurasData}}
 <div class="cc-section">
   <h3 class="cc-section-title">Armadura</h3>

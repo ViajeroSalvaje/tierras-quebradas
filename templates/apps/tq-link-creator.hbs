@@ -1,0 +1,62 @@
+<form class="tq-link-creator-form flexcol" autocomplete="off">
+  <div class="form-group">
+    <label>{{localize "TQ.LinkCreator.Tipo"}}</label>
+    <div class="form-fields">
+      <select name="tipo">
+        {{#each tipos}}<option value="{{key}}"{{#if (tq-eq key ../tipo)}} selected{{/if}}>{{label}}</option>{{/each}}
+      </select>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label>{{localize "TQ.LinkCreator.Valor"}}</label>
+    <div class="form-fields">
+      <select name="valor">
+        {{#each opciones}}<option value="{{key}}"{{#if (tq-eq key ../valor)}} selected{{/if}}>{{label}}</option>{{/each}}
+      </select>
+    </div>
+  </div>
+
+  <div class="form-group tq-dificultad-group">
+    <label>{{localize "TQ.LinkCreator.Dificultad"}}: <span class="tq-dif-display">{{dificultad}}</span></label>
+    <div class="form-fields">
+      <input type="range" name="dificultad" min="1" max="20" value="{{dificultad}}">
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label>{{localize "TQ.LinkCreator.Modificador"}}</label>
+    <div class="form-fields">
+      <input type="number" name="modificador" value="{{modificador}}" style="width:70px;">
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label>{{localize "TQ.LinkCreator.Modo"}}</label>
+    <div class="form-fields">
+      <select name="rollMode">
+        {{#each rollModes}}<option value="{{key}}"{{#if (tq-eq key ../rollMode)}} selected{{/if}}>{{label}}</option>{{/each}}
+      </select>
+    </div>
+  </div>
+
+  {{#if jugadores.length}}
+  <div class="form-group">
+    <label>{{localize "TQ.LinkCreator.Jugador"}}</label>
+    <div class="form-fields">
+      <select name="jugadorId">
+        <option value="">— {{localize "TQ.LinkCreator.ElegirJugador"}} —</option>
+        {{#each jugadores}}<option value="{{key}}"{{#if (tq-eq key ../jugadorId)}} selected{{/if}}>{{label}}</option>{{/each}}
+      </select>
+    </div>
+  </div>
+  {{/if}}
+
+  <div class="tq-link-acciones">
+    <button type="button" data-action="copiar-chat">{{localize "TQ.LinkCreator.CopiarChat"}}</button>
+    {{#if jugadores.length}}
+    <button type="button" data-action="enviar-jugador">{{localize "TQ.LinkCreator.EnviarJugador"}}</button>
+    {{/if}}
+    <button type="button" data-action="copiar-portapapeles">{{localize "TQ.LinkCreator.CopiarPortapapeles"}}</button>
+  </div>
+</form>

@@ -1,7 +1,11 @@
 <div style="height:100%;width:100%;display:flex;flex-direction:column;">
   <div class="item-body" style="flex:1;overflow-y:auto;padding:8px 12px;display:flex;flex-direction:column;gap:10px;">
 
-    <h1><input type="text" name="name" value="{{item.name}}" placeholder="{{localize "TQ.Placeholders.NombreProfesion"}}" /></h1>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <h1 style="flex:1;margin:0;"><input type="text" name="name" value="{{item.name}}" placeholder="{{localize "TQ.Placeholders.NombreProfesion"}}" /></h1>
+      <label style="font-size:11px;white-space:nowrap;color:var(--tq-text-dim);">Coste PP</label>
+      <input type="number" name="system.costePP" value="{{system.costePP}}" style="width:52px;text-align:center;font-size:13px;" title="Coste en PP de esta profesión (positivo = cuesta PP)" />
+    </div>
 
     <div class="tq-field-group full">
       <label>{{localize "TQ.General.Descripcion"}}</label>
@@ -10,24 +14,103 @@
 
     {{!-- Habilidades --}}
     <div class="tq-field-group full">
-      <label>{{localize "TQ.General.ModificadoresHabilidades"}}</label>
-      <table style="width:100%;font-size:12px;">
-        <thead class="origen-habs-thead"><tr><th style="text-align:left;">{{localize "TQ.General.Habilidad"}}</th><th style="width:60px;text-align:center;">{{localize "TQ.General.Bonus"}}</th><th style="width:30px;text-align:center;"><a class="prof-hab-add" title="{{localize "TQ.Botones.Anadir"}}">+</a></th></tr></thead>
-        <tbody>
-          {{#each habilidades as |h|}}
-          <tr>
-            <td>
-              <select class="prof-hab-clave" data-index="{{h.index}}" data-field="clave" style="width:100%;">
-                <option value="">— Seleccionar —</option>
-                {{#each h.opciones as |op|}}<option value="{{op.clave}}" {{#if op.selected}}selected{{/if}}>{{op.label}}</option>{{/each}}
-              </select>
-            </td>
-            <td><input type="number" class="prof-hab-bonus" data-index="{{h.index}}" data-field="bonus" value="{{h.bonus}}" style="width:55px;text-align:center;" /></td>
-            <td><a class="prof-hab-del" data-index="{{h.index}}" style="color:var(--tq-red-dmg);cursor:pointer;"><i class="fas fa-trash"></i></a></td>
-          </tr>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+        <label>{{localize "TQ.General.ModificadoresHabilidades"}}</label>
+        <a class="prof-hab-add" style="font-size:11px;color:var(--tq-teal);cursor:pointer;"><i class="fas fa-plus"></i> {{localize "TQ.Botones.Anadir"}}</a>
+      </div>
+      {{#each habilidades as |h|}}
+      <div class="prof-hab-bloque" style="border:1px solid rgba(28,100,115,0.25);border-radius:4px;padding:6px 8px;margin-bottom:6px;">
+        <div style="display:flex;gap:6px;align-items:center;">
+          <select class="prof-hab-clave" data-index="{{h.index}}" data-field="clave" style="flex:1;font-size:12px;">
+            <option value="">— Seleccionar —</option>
+            {{#each h.opciones as |op|}}<option value="{{op.clave}}" {{#if op.selected}}selected{{/if}}>{{op.label}}</option>{{/each}}
+          </select>
+          <input type="number" class="prof-hab-bonus" data-index="{{h.index}}" data-field="bonus" value="{{h.bonus}}" style="width:52px;text-align:center;font-size:12px;" title="Bonus" />
+          <a class="prof-hab-del" data-index="{{h.index}}" style="color:var(--tq-red-dmg);cursor:pointer;font-size:12px;"><i class="fas fa-trash"></i></a>
+        </div>
+        <div style="margin-top:4px;display:flex;gap:6px;align-items:center;">
+          <span style="font-size:10px;color:var(--tq-text-dim);white-space:nowrap;">Etiqueta para jugador:</span>
+          <input type="text" class="prof-hab-nombre" data-index="{{h.index}}" value="{{h.nombre}}" placeholder="(opcional)" style="flex:1;font-size:11px;" />
+        </div>
+        {{#if h.tieneOpciones}}
+        <div style="margin-top:5px;padding-top:4px;border-top:1px dashed rgba(28,100,115,0.2);">
+          <span style="font-size:10px;color:var(--tq-text-dim);">Opciones de elección:</span>
+          {{#each h.opcionesList as |op|}}
+          <div style="display:flex;gap:4px;align-items:center;margin-top:3px;">
+            <select class="prof-hab-opcion-clave" data-hab-idx="{{h.index}}" data-op-idx="{{op.opIdx}}" style="flex:1;font-size:11px;">
+              <option value="">— Seleccionar —</option>
+              {{#each op.opciones as |o|}}<option value="{{o.clave}}" {{#if o.selected}}selected{{/if}}>{{o.label}}</option>{{/each}}
+            </select>
+            <a class="prof-hab-opcion-del" data-hab-idx="{{h.index}}" data-op-idx="{{op.opIdx}}" style="color:var(--tq-red-dmg);cursor:pointer;font-size:11px;"><i class="fas fa-times"></i></a>
+          </div>
           {{/each}}
-        </tbody>
-      </table>
+        </div>
+        {{/if}}
+        <div style="margin-top:4px;">
+          <a class="prof-hab-opcion-add" data-index="{{h.index}}" style="font-size:10px;color:var(--tq-teal);cursor:pointer;"><i class="fas fa-plus"></i> Añadir opción alternativa</a>
+        </div>
+      </div>
+      {{/each}}
+    </div>
+
+    {{!-- Rasgos --}}
+    <div class="tq-field-group full prof-rasgo-section">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+        <label>{{localize "TQ.Profesion.RasgosOtorgados"}} <span style="font-size:10px;color:var(--tq-text-dim);font-weight:normal;">(arrastra o añade manualmente)</span></label>
+        <a class="prof-rasgo-add" style="font-size:11px;color:var(--tq-teal);cursor:pointer;"><i class="fas fa-plus"></i> {{localize "TQ.Botones.Anadir"}}</a>
+      </div>
+      {{#each rasgos as |r|}}
+      {{#if (tq-eq r.fuente "item")}}
+      <div style="border:1px solid rgba(28,100,115,0.2);border-radius:4px;padding:6px 8px;margin-bottom:4px;display:flex;justify-content:space-between;align-items:flex-start;gap:6px;">
+        <div style="flex:1;">
+          <strong style="font-size:12px;">{{r.nombre}}</strong>
+          {{#if r.efecto}}<p style="margin:2px 0 0;font-size:11px;color:var(--tq-text-dim);">{{r.efecto}}</p>{{/if}}
+        </div>
+        <a class="prof-rasgo-del" data-index="{{r.index}}" style="color:var(--tq-red-dmg);cursor:pointer;font-size:12px;flex-shrink:0;"><i class="fas fa-trash"></i></a>
+      </div>
+      {{else}}
+      <div style="border:1px solid rgba(28,100,115,0.2);border-radius:4px;padding:6px;margin-bottom:4px;">
+        <div style="display:flex;gap:6px;margin-bottom:4px;">
+          <input type="text" class="prof-rasgo-field" data-index="{{r.index}}" data-field="nombre"
+                 value="{{r.nombre}}" placeholder="{{localize "TQ.Placeholders.Nombre"}}" style="flex:1;font-size:12px;" />
+          <a class="prof-rasgo-del" data-index="{{r.index}}" style="color:var(--tq-red-dmg);cursor:pointer;font-size:12px;align-self:center;"><i class="fas fa-trash"></i></a>
+        </div>
+        <textarea class="prof-rasgo-field" data-index="{{r.index}}" data-field="efecto"
+                  rows="2" placeholder="{{localize "TQ.General.Efecto"}}" style="width:100%;font-size:11px;">{{r.efecto}}</textarea>
+      </div>
+      {{/if}}
+      {{/each}}
+    </div>
+
+    {{!-- Ventajas --}}
+    <div class="tq-field-group full prof-vent-section">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+        <label>{{localize "TQ.Profesion.VentajasOtorgadas"}} <span style="font-size:10px;color:var(--tq-text-dim);font-weight:normal;">(arrastra o añade manualmente)</span></label>
+        <a class="prof-vent-add" style="font-size:11px;color:var(--tq-teal);cursor:pointer;"><i class="fas fa-plus"></i> {{localize "TQ.Botones.Anadir"}}</a>
+      </div>
+      {{#each ventajas as |v|}}
+      {{#if (tq-eq v.fuente "item")}}
+      <div style="border:1px solid rgba(28,100,115,0.2);border-radius:4px;padding:6px 8px;margin-bottom:4px;display:flex;justify-content:space-between;align-items:flex-start;gap:6px;">
+        <div style="flex:1;">
+          <strong style="font-size:12px;">{{v.nombre}}</strong>
+          {{#if v.efecto}}<p style="margin:2px 0 0;font-size:11px;color:var(--tq-text-dim);">{{v.efecto}}</p>{{/if}}
+        </div>
+        <a class="prof-vent-del" data-index="{{v.index}}" style="color:var(--tq-red-dmg);cursor:pointer;font-size:12px;flex-shrink:0;"><i class="fas fa-trash"></i></a>
+      </div>
+      {{else}}
+      <div style="border:1px solid rgba(28,100,115,0.2);border-radius:4px;padding:6px;margin-bottom:4px;">
+        <div style="display:flex;gap:6px;margin-bottom:4px;">
+          <input type="text" class="prof-vent-field" data-index="{{v.index}}" data-field="nombre"
+                 value="{{v.nombre}}" placeholder="{{localize "TQ.Placeholders.Nombre"}}" style="flex:1;font-size:12px;" />
+          <input type="number" class="prof-vent-field" data-index="{{v.index}}" data-field="coste"
+                 value="{{v.coste}}" placeholder="PP" style="width:50px;font-size:12px;" title="{{localize "TQ.General.CostePP"}}" />
+          <a class="prof-vent-del" data-index="{{v.index}}" style="color:var(--tq-red-dmg);cursor:pointer;font-size:12px;align-self:center;"><i class="fas fa-trash"></i></a>
+        </div>
+        <textarea class="prof-vent-field" data-index="{{v.index}}" data-field="efecto"
+                  rows="2" placeholder="{{localize "TQ.General.Efecto"}}" style="width:100%;font-size:11px;">{{v.efecto}}</textarea>
+      </div>
+      {{/if}}
+      {{/each}}
     </div>
 
     {{!-- Especializaciones --}}
@@ -60,37 +143,6 @@
           </tbody>
         </table>
       </div>
-      {{/each}}
-    </div>
-
-    {{!-- Ventajas --}}
-    <div class="tq-field-group full prof-vent-section">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
-        <label>{{localize "TQ.Profesion.VentajasOtorgadas"}} <span style="font-size:10px;color:var(--tq-text-dim);font-weight:normal;">(arrastra o añade manualmente)</span></label>
-        <a class="prof-vent-add" style="font-size:11px;color:var(--tq-teal);cursor:pointer;"><i class="fas fa-plus"></i> {{localize "TQ.Botones.Anadir"}}</a>
-      </div>
-      {{#each ventajas as |v|}}
-      {{#if (tq-eq v.fuente "item")}}
-      <div style="border:1px solid rgba(28,100,115,0.2);border-radius:4px;padding:6px 8px;margin-bottom:4px;display:flex;justify-content:space-between;align-items:flex-start;gap:6px;">
-        <div style="flex:1;">
-          <strong style="font-size:12px;">{{v.nombre}}</strong>
-          {{#if v.efecto}}<p style="margin:2px 0 0;font-size:11px;color:var(--tq-text-dim);">{{v.efecto}}</p>{{/if}}
-        </div>
-        <a class="prof-vent-del" data-index="{{v.index}}" style="color:var(--tq-red-dmg);cursor:pointer;font-size:12px;flex-shrink:0;"><i class="fas fa-trash"></i></a>
-      </div>
-      {{else}}
-      <div style="border:1px solid rgba(28,100,115,0.2);border-radius:4px;padding:6px;margin-bottom:4px;">
-        <div style="display:flex;gap:6px;margin-bottom:4px;">
-          <input type="text" class="prof-vent-field" data-index="{{v.index}}" data-field="nombre"
-                 value="{{v.nombre}}" placeholder="{{localize "TQ.Placeholders.Nombre"}}" style="flex:1;font-size:12px;" />
-          <input type="number" class="prof-vent-field" data-index="{{v.index}}" data-field="coste"
-                 value="{{v.coste}}" placeholder="PP" style="width:50px;font-size:12px;" title="{{localize "TQ.General.CostePP"}}" />
-          <a class="prof-vent-del" data-index="{{v.index}}" style="color:var(--tq-red-dmg);cursor:pointer;font-size:12px;align-self:center;"><i class="fas fa-trash"></i></a>
-        </div>
-        <textarea class="prof-vent-field" data-index="{{v.index}}" data-field="efecto"
-                  rows="2" placeholder="{{localize "TQ.General.Efecto"}}" style="width:100%;font-size:11px;">{{v.efecto}}</textarea>
-      </div>
-      {{/if}}
       {{/each}}
     </div>
 

@@ -6,6 +6,7 @@
     <div class="profesion-card origen-card {{#if p.selected}}selected{{/if}}" data-profesion-id="{{p.id}}">
       <div class="origen-card-header">
         <span class="origen-nombre">{{p.name}}</span>
+        {{#if p.costePPStr}}<span class="cc-coste-pp-badge">{{p.costePPStr}}</span>{{/if}}
       </div>
       {{#if p.habStr}}
       <div class="origen-habs">{{p.habStr}}</div>

@@ -1,6 +1,9 @@
 <div class="{{cssClass}} flexcol" autocomplete="off" style="height:100%;width:100%;">
   <section class="item-body">
-    <h1><input type="text" name="name" value="{{item.name}}" placeholder="{{localize "TQ.Placeholders.Nombre"}}" /></h1>
+    <div class="tq-item-header-fila">
+      <img class="item-img" src="{{item.img}}" title="{{item.name}}" />
+      <h1><input type="text" name="name" value="{{item.name}}" placeholder="{{localize "TQ.Placeholders.Nombre"}}" /></h1>
+    </div>
     <div class="item-grid">
       <div class="tq-field-group">
         <label>{{localize "TQ.Combate.carga"}}</label>

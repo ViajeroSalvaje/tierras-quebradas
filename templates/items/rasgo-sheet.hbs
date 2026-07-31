@@ -1,0 +1,28 @@
+<div class="{{cssClass}} flexcol" autocomplete="off" style="height:100%;width:100%;">
+
+  <section class="item-body">
+    <h1><input type="text" name="name" value="{{item.name}}" placeholder="{{localize "TQ.Placeholders.Nombre"}}" /></h1>
+    <div class="item-grid" style="margin-top:16px;">
+      <div class="tq-field-group">
+        <label>{{localize "TQ.Rasgos.CostePP"}}</label>
+        <input type="number" name="system.coste" value="{{system.coste}}" />
+      </div>
+      <div class="tq-field-group">
+        <label>{{localize "TQ.General.Tipo"}}</label>
+        <select name="system.tipo">
+          <option value="rasgoSobrenatural" {{selected system.tipo "rasgoSobrenatural"}}>Poder / Inmunidad</option>
+          <option value="habilidadEspecial" {{selected system.tipo "habilidadEspecial"}}>Habilidad especial</option>
+          <option value="personalidad"      {{selected system.tipo "personalidad"}}>Personalidad</option>
+        </select>
+      </div>
+    </div>
+    <div class="tq-field-group full-width">
+      <label>{{localize "TQ.General.Efecto"}}</label>
+      <textarea name="system.efecto" rows="3">{{system.efecto}}</textarea>
+    </div>
+    <div class="tq-field-group full-width" style="margin-top:16px;">
+      <label>{{localize "TQ.General.Descripcion"}}</label>
+      <textarea name="system.descripcion" rows="5">{{system.descripcion}}</textarea>
+    </div>
+  </section>
+</div>
