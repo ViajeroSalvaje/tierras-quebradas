@@ -1,3 +1,7 @@
-2026/07/25-14:14:53.582 6730 Recovering log #257
-2026/07/25-14:14:53.587 6730 Delete type=0 #257
-2026/07/25-14:14:53.587 6730 Delete type=3 #256
+2026/07/31-16:24:56.135 72c4 Recovering log #362
+2026/07/31-16:24:56.145 72c4 Delete type=0 #362
+2026/07/31-16:24:56.146 72c4 Delete type=3 #360
+2026/07/31-16:26:56.852 1f68 Level-0 table #367: started
+2026/07/31-16:26:56.852 1f68 Level-0 table #367: 0 bytes OK
+2026/07/31-16:26:56.856 1f68 Delete type=0 #365
+2026/07/31-16:26:56.873 1f68 Manual compaction at level-0 from '!items!b1tofYlBF194wxds' @ 72057594037927935 : 1 .. '!items!b1tofYlBF194wxds' @ 0 : 0; will stop at (end)
