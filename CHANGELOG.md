@@ -1,4 +1,17 @@
-# Notas 21 de julio 2026 
+# Notas 8 de agosto 2026 
+
+ 
+**Cambios**
+
+- Mejoras en el importador de PNJ.
+- Cambios en la estructura de PNJ.
+- Cambios en las fichas de todos los actores en la parte de equipamiento.
+- Implementados objetos mágicos encantados y virtuosos.
+- Implementada zona trey donde quedan reflejados los dados.
+
+
+
+# Notas 1 de agosto 2026 
 
  
 **Cambios**
