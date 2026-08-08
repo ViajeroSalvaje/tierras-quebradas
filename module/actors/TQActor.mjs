@@ -26,6 +26,7 @@ export class TQActor extends Actor {
         if (this.system.habilidades) this._calcularTotalesHabilidades();
       }
       if (this.system.hechiceria)          this.updatePM();
+      if (this.system.hechiceria && this.type === "pj") this._derivarModsMagia();
       if (this.system.fortuna !== undefined) this._calcularFortuna();
     } catch(e) {
       console.error("TQ | prepareDerivedData error:", e);
@@ -120,9 +121,13 @@ export class TQActor extends Actor {
   updatePM() {
     const espiritu = this.system.caracteristicas.espiritu.valor;
     this.system.hechiceria.pmMax = espiritu * 2;
-    this.system.hechiceria.espirituConsagrado = this.items
+    const espHechizos = this.items
       .filter(i => i.type === "hechizo" && i.system.permanent)
       .reduce((s, i) => s + (i.system.pmCoste || 1), 0);
+    const espSintonizados = this.items
+      .filter(i => i.type === "objetoMagico" && i.system.equipped !== false && i.system.categoria === "encantado" && i.system.sintonizado)
+      .reduce((s, i) => s + (i.system.sintonizacion || 0), 0);
+    this.system.hechiceria.espirituConsagrado = espHechizos + espSintonizados;
   }
 
   _calcularFortuna() {
@@ -156,7 +161,8 @@ export class TQActor extends Actor {
     const modDesglose = (this.system.salud?.ceguera && TQActor.HABILIDADES_CEGUERA.has(clave))
       ? [{ label: "Ceguera", valor: -4, signo: "−", valorAbs: 4 }]
       : null;
-    const resultado = await TQRoll.dialogoTirada(etiqueta, total, { actor: this, habClave: clave, modDesglose });
+    const bonificadorDefecto = this._sumModsMagicosHabilidad(clave);
+    const resultado = await TQRoll.dialogoTirada(etiqueta, total, { actor: this, habClave: clave, modDesglose, bonificadorDefecto });
     if (resultado && resultado.exitos >= 0 && !resultado.autoExito && !habilidad.exito) {
       await this.update({ [`system.habilidades.${clave}.exito`]: true });
     }
@@ -175,10 +181,116 @@ export class TQActor extends Actor {
     return TQRoll.dialogoTirada(etiqueta, valor, { actor: this, escalaDif: "caracteristica", dificultadPorDefecto: 15 });
   }
 
+  _derivarModsMagia() {
+    const norm = s => s ? s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "") : "";
+    const modVerbos = {};
+    const modEsferas = {};
+    for (const i of this.items) {
+      if (i.type !== "objetoMagico" || i.system.equipped === false) continue;
+      if (i.system.categoria === "encantado" && !i.system.sintonizado) continue;
+      if (i.system.categoria === "virtuoso" && !this._esAlineadoLey()) continue;
+      const mV = i.system.modVerbo ?? 0;
+      const kV = norm(i.system.modVerboClave);
+      if (mV && kV) modVerbos[kV] = (modVerbos[kV] ?? 0) + mV;
+      const mE = i.system.modEsfera ?? 0;
+      const kE = norm(i.system.modEsferaClave);
+      if (mE && kE) modEsferas[kE] = (modEsferas[kE] ?? 0) + mE;
+    }
+    this.system.hechiceria.modVerbos = modVerbos;
+    this.system.hechiceria.modEsferas = modEsferas;
+  }
+
+  _sumModsMagicosMagia(verbo, esfera) {
+    const norm = s => s ? s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "") : "";
+    const vNorm = norm(verbo);
+    const eNorm = norm(esfera);
+    const verbosActor = this.system.hechiceria?.verbos ?? {};
+    const esferasActor = this.system.hechiceria?.esferas ?? {};
+    const modVerbos = this.system.hechiceria?.modVerbos ?? {};
+    const modEsferas = this.system.hechiceria?.modEsferas ?? {};
+    let checkVerbo = false, checkEsfera = false;
+    if (vNorm && eNorm) {
+      const vNivel = verbosActor[vNorm] ?? 0;
+      const eNivel = esferasActor[eNorm] ?? 0;
+      if (vNivel < eNivel) {
+        checkVerbo = true;
+      } else if (eNivel < vNivel) {
+        checkEsfera = true;
+      } else {
+        const mV = modVerbos[vNorm] ?? 0;
+        checkVerbo = mV !== 0;
+        checkEsfera = !checkVerbo;
+      }
+    } else if (vNorm) {
+      checkVerbo = true;
+    } else if (eNorm) {
+      checkEsfera = true;
+    }
+    if (checkVerbo) return modVerbos[vNorm] ?? 0;
+    if (checkEsfera) return modEsferas[eNorm] ?? 0;
+    return 0;
+  }
+
+  _sumModsMagicosHabilidad(clave, excluirId = null) {
+    let suma = 0;
+    for (const i of this.items) {
+      if (i.type !== "objetoMagico") continue;
+      if (excluirId && i.id === excluirId) continue;
+      if (i.system.equipped === false) continue;
+      if ((i.system.modHabilidad ?? 0) === 0) continue;
+      const claveItem = i.system.modHabilidadClave;
+      if (!claveItem) continue;
+      if (claveItem !== clave) {
+        const loc = game.i18n.localize(`TQ.Habilidades.${claveItem}`);
+        if (loc === `TQ.Habilidades.${claveItem}` || loc !== clave) continue;
+      }
+      if (i.system.categoria === "encantado" && !i.system.sintonizado) continue;
+      if (i.system.categoria === "virtuoso" && !this._esAlineadoLey()) continue;
+      suma += i.system.modHabilidad;
+    }
+    return suma;
+  }
+
+  _esAlineadoLey() {
+    if (this.type === "pj") {
+      const p = this.system.lealtad;
+      if (!p) return false;
+      const otrasMax = Math.max(p.caos ?? 0, p.elementos ?? 0, p.antepasados ?? 0);
+      return (p.ley ?? 0) - otrasMax >= 10;
+    }
+    return this.system.filiacion === "ley";
+  }
+
+  async _dialogoVirtud(nombreArma, pmMax, pmActual) {
+    const opciones = Array.from({ length: pmMax + 1 }, (_, i) =>
+      `<option value="${i}">${i === 0 ? "Sin gasto" : `+${i} (${i} PM)`}</option>`
+    ).join("");
+    const resultado = await DialogV2.wait({
+      window: { title: `${nombreArma} — Virtud` },
+      content: `<p style="margin:0 0 8px;">PM disponibles de la virtud: <strong>${pmActual}</strong></p>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <label>PM a invertir:</label>
+          <select id="tq-pm-virtud" style="flex:1;">${opciones}</select>
+        </div>`,
+      rejectClose: false,
+      buttons: [
+        { action: "confirmar", label: "Confirmar", default: true, callback: (_e, _b, dialog) => parseInt(dialog.element.querySelector("#tq-pm-virtud").value) },
+        { action: "cancelar", label: "Sin virtud" }
+      ]
+    });
+    if (resultado === null || resultado === "cancelar") return 0;
+    return resultado;
+  }
+
   async tirarArma(itemId) {
 
     const arma = this.items.get(itemId);
     if (!arma) return;
+
+    const tipoDano = arma.type === "objetoMagico" ? (arma.system.tipoArma ?? "cortante") : (arma.system.tipo ?? "cortante");
+    const bonoDanoTotal = (arma.system.bonoDano ?? 0)
+      + (arma.type === "objetoMagico" ? (arma.system.modDanho ?? 0) : 0)
+      + (arma.type === "objetoMagico" && arma.system.categoria === "demoniaco" ? parseInt(arma.system.poderesDemoniacos?.bonoDanho ?? 0) : 0);
 
     const habClave = arma.system.habilidad;
     const manos = arma.system.manos ?? "1m";
@@ -208,6 +320,38 @@ export class TQActor extends Actor {
     }
 
     const modDesglose = [];
+
+    const bonusMagicoActivo = arma.type === "objetoMagico"
+      && arma.system.equipped !== false
+      && (arma.system.categoria !== "encantado" || arma.system.sintonizado)
+      && (arma.system.categoria !== "virtuoso" || this._esAlineadoLey());
+
+    if (bonusMagicoActivo) {
+      const modC = arma.system.modCombate ?? 0;
+      if (modC !== 0) {
+        modDesglose.push({ label: "Bono mágico (combate)", valor: modC, signo: modC >= 0 ? "+" : "−", valorAbs: Math.abs(modC) });
+        puntuacion += modC;
+      }
+      const modH = arma.system.modHabilidad ?? 0;
+      const modHClave = arma.system.modHabilidadClave ?? "";
+      if (modH !== 0 && modHClave && modHClave === habClave) {
+        modDesglose.push({ label: game.i18n.localize(`TQ.Habilidades.${modHClave}`) + " (mágico)", valor: modH, signo: modH >= 0 ? "+" : "−", valorAbs: Math.abs(modH) });
+        puntuacion += modH;
+      }
+    }
+
+    if (arma.type === "objetoMagico" && arma.system.categoria === "virtuoso") {
+      if (this._esAlineadoLey() && (arma.system.pmActual ?? 0) > 0) {
+        const pmMax = Math.min(5, arma.system.pmActual);
+        const pmInvertidos = await this._dialogoVirtud(arma.name, pmMax, arma.system.pmActual);
+        if (pmInvertidos > 0) {
+          modDesglose.push({ label: "Virtud", valor: pmInvertidos, signo: "+", valorAbs: pmInvertidos });
+          puntuacion += pmInvertidos;
+          await arma.update({ "system.pmActual": arma.system.pmActual - pmInvertidos });
+        }
+      }
+    }
+
     const fueMinimaArma = arma.system.fue ?? 0;
     if (fueMinimaArma > 0 && this.type === "pj") {
       const fuerzaActor = this.system.derivadas?.fuerza?.valor ?? 0;
@@ -251,7 +395,8 @@ export class TQActor extends Actor {
         extraTopes: arma.system.alcance === "arrojadiza" ? ["lanzar"] : [],
         modDesglose: modDesglose.length ? modDesglose : null,
         escudoDoble,
-        danho: { danoArma: arma.system.danoArma ?? "0", bonoDano: arma.system.bonoDano ?? 0, tipo: arma.system.tipo ?? "cortante", md, manos, noLetal: arma.system.noLetal ?? false }
+        bonificadorDefecto: this._sumModsMagicosHabilidad(habClave, arma.id),
+        danho: { danoArma: arma.system.danoArma ?? "0", bonoDano: bonoDanoTotal, tipo: tipoDano, md, manos, noLetal: arma.system.noLetal ?? false }
       });
 
       if (this.type === "pj" && resultado && resultado.exitos >= 0) {
@@ -264,11 +409,11 @@ export class TQActor extends Actor {
       if (resultado && resultado.enMelee && resultado.exitos >= 0 && resultado.exitos < 3) {
         const aliadoActor = resultado.aliadoId ? game.actors.get(resultado.aliadoId) : null;
         const pd = TQRoll.calcDanho(arma.system.danoArma ?? "0", 0, resultado.exitos, arma.system.noLetal ?? false);
-        const tipoArma = arma.system.tipo ?? "cortante";
+        const tipoArma = tipoDano;
         let proteccion = 0;
         let nombreProteccion = null;
         if (aliadoActor) {
-          const armaduras = aliadoActor.items.filter(i => i.type === "armadura");
+          const armaduras = aliadoActor.items.filter(i => i.type === "armadura" && i.system.equipped !== false);
           for (const arm of armaduras) {
             let p = arm.system.proteccion ?? 0;
             if (arm.system.tipo === "blanda" && tipoArma === "contundente") p = Math.floor(p / 2);
@@ -327,8 +472,8 @@ export class TQActor extends Actor {
     }
 
     const resultado = await TQRoll.dialogoTirada(arma.name, puntuacion, {
-      actor: this, targetActor, modo, esCombate: true, longitudArma: arma.system.longitud ?? "media", habClave, extraTopes: arma.system.alcance === "arrojadiza" ? ["lanzar"] : [], modDesglose: modDesglose.length ? modDesglose : null, danho: {
-        danoArma: arma.system.danoArma ?? "0", bonoDano: arma.system.bonoDano ?? 0, tipo: arma.system.tipo ?? "cortante", md, manos, noLetal: arma.system.noLetal ?? false
+      actor: this, targetActor, modo, esCombate: true, longitudArma: arma.system.longitud ?? "media", habClave, extraTopes: arma.system.alcance === "arrojadiza" ? ["lanzar"] : [], modDesglose: modDesglose.length ? modDesglose : null, bonificadorDefecto: this._sumModsMagicosHabilidad(habClave, arma.id), danho: {
+        danoArma: arma.system.danoArma ?? "0", bonoDano: bonoDanoTotal, tipo: tipoDano, md, manos, noLetal: arma.system.noLetal ?? false
       }
     });
 
@@ -344,11 +489,11 @@ export class TQActor extends Actor {
     if (resultado && resultado.enMelee && resultado.exitos >= 0 && resultado.exitos < 3) {
       const aliadoActor = resultado.aliadoId ? game.actors.get(resultado.aliadoId) : null;
       const pd = TQRoll.calcDanho(arma.system.danoArma ?? "0", 0, resultado.exitos, arma.system.noLetal ?? false);
-      const tipoArma = arma.system.tipo ?? "cortante";
+      const tipoArma = tipoDano;
       let proteccion = 0;
       let nombreProteccion = null;
       if (aliadoActor) {
-        const armaduras = aliadoActor.items.filter(i => i.type === "armadura");
+        const armaduras = aliadoActor.items.filter(i => i.type === "armadura" && i.system.equipped !== false);
         for (const arm of armaduras) {
           let p = arm.system.proteccion ?? 0;
           if (arm.system.tipo === "blanda" && tipoArma === "contundente") p = Math.floor(p / 2);
@@ -797,8 +942,12 @@ export class TQActor extends Actor {
     const pmActual = esPJ ? (this.system.hechiceria.pmActual ?? 0) : (this.system.pm ?? 0);
     const pmMaxTotal = esPJ ? (this.system.hechiceria.pmMax ?? 0) : (this.system.pm ?? 0);
 
+    const mdDefecto = this.type === "pj"
+      ? this._sumModsMagicosMagia(hechizo.system.verbo, hechizo.system.esfera)
+      : 0;
+    console.log("[md]", hechizo.system.verbo, hechizo.system.esfera, "→", mdDefecto, this.system.hechiceria?.modEsferas);
     const contenidoDialogo = await foundry.applications.handlebars.renderTemplate(
-      "systems/tierras-quebradas/templates/dialogs/lanzar-hechizo.hbs", { hechizo, puntuacion, dif, pmBase, pmMin, pmMax, pmVariable: pmMax > 0, pmActual, pmMaxTotal }
+      "systems/tierras-quebradas/templates/dialogs/lanzar-hechizo.hbs", { hechizo, puntuacion, dif, pmBase, pmMin, pmMax, pmVariable: pmMax > 0, pmActual, pmMaxTotal, mdDefecto }
     );
 
     const fortunaActual = this.system.fortuna?.actual ?? 0;

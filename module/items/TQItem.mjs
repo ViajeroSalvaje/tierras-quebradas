@@ -3,6 +3,9 @@ import { TQRoll } from "../rolls/TQRoll.mjs";
 export class TQItem extends Item {
   prepareDerivedData() {
     super.prepareDerivedData();
+    if (this.type === "objetoMagico") {
+      this.system.pmMax = (this.system.espiritu || 0) * 2;
+    }
   }
 
   async tirar(actor) {

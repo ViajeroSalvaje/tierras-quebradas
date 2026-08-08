@@ -42,8 +42,11 @@ export class CriaturaSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       if (typeof hab === "number") return { nombre, total: hab, nivel: hab, base: "" };
       return { nombre, total: hab.total ?? 0, nivel: hab.nivel ?? 0, base: hab.base ?? "" };
     });
+    const espHechizos = items.filter(i => i.type === "hechizo" && i.system.permanent).reduce((s, i) => s + (i.system.pmCoste || 1), 0);
+    const espSintonizados = items.filter(i => i.type === "objetoMagico" && i.system.categoria === "encantado" && i.system.sintonizado).reduce((s, i) => s + (i.system.sintonizacion || 0), 0);
+    const espirituConsagrado = espHechizos + espSintonizados;
     return {
-      actor: this.actor, system: this.actor.system, cssClass: this.options.classes.join(" "), caracteristicasOrdenadas, habilidades, armas: items.filter(i => i.type === "arma").map(i => ({ id: i.id, name: i.name, dano: i.system.danoArma, habilidad: i.system.habilidad, alcance: i.system.alcance, carga: i.system.carga })), armaduras: items.filter(i => i.type === "armadura").map(i => ({ id: i.id, name: i.name, proteccion: i.system.proteccion, zona: i.system.zona, tipo: i.system.tipo, carga: i.system.carga })), objetos: items.filter(i => i.type === "objeto").map(i => ({ id: i.id, name: i.name })), objetosMagicos: items.filter(i => i.type === "objetoMagico").map(i => ({ id: i.id, name: i.name, espiritu: i.system.espiritu, pm: i.system.pm })), poderes: items.filter(i => i.type === "rasgo" && i.system.tipo === "rasgoSobrenatural").map(i => ({ id: i.id, name: i.name, coste: i.system.coste ?? 0 })), habilidadesEspeciales: items.filter(i => i.type === "rasgo" && i.system.tipo === "habilidadEspecial").map(i => ({ id: i.id, name: i.name, coste: i.system.coste ?? 0 })), personalidad: items.filter(i => i.type === "rasgo" && i.system.tipo === "personalidad").map(i => ({ id: i.id, name: i.name, coste: i.system.coste ?? 0 })), ventajas: items.filter(i => i.type === "ventaja").map(i => ({ id: i.id, name: i.name })), hechizos: items.filter(i => i.type === "hechizo")
+      actor: this.actor, system: this.actor.system, cssClass: this.options.classes.join(" "), caracteristicasOrdenadas, habilidades, espirituConsagrado, armas: [...items.filter(i => i.type === "arma").map(i => ({ id: i.id, name: i.name, dano: i.system.danoArma, habilidad: i.system.habilidad, alcance: i.system.alcance, carga: i.system.carga, equipped: i.system.equipped !== false })), ...items.filter(i => i.type === "objetoMagico" && i.system.tipoObjeto === "arma").map(i => ({ id: i.id, name: i.name, dano: i.system.danoArma, habilidad: i.system.habilidad, alcance: i.system.alcance, carga: 0, magico: true, equipped: i.system.equipped !== false }))], armaduras: [...items.filter(i => i.type === "armadura").map(i => ({ id: i.id, name: i.name, proteccion: i.system.proteccion, zona: i.system.zona, tipo: i.system.tipo, carga: i.system.carga, equipped: i.system.equipped !== false })), ...items.filter(i => i.type === "objetoMagico" && i.system.tipoObjeto === "armadura").map(i => ({ id: i.id, name: i.name, proteccion: i.system.proteccion, zona: "—", tipo: i.system.tipoProteccion, carga: i.system.carga ?? 0, equipped: i.system.equipped !== false }))], objetos: items.filter(i => i.type === "objeto").map(i => ({ id: i.id, name: i.name, equipped: i.system.equipped !== false })), objetosMagicos: items.filter(i => i.type === "objetoMagico"), poderes: items.filter(i => i.type === "rasgo" && i.system.tipo === "rasgoSobrenatural").map(i => ({ id: i.id, name: i.name, coste: i.system.coste ?? 0 })), habilidadesEspeciales: items.filter(i => i.type === "rasgo" && i.system.tipo === "habilidadEspecial").map(i => ({ id: i.id, name: i.name, coste: i.system.coste ?? 0 })), personalidad: items.filter(i => i.type === "rasgo" && i.system.tipo === "personalidad").map(i => ({ id: i.id, name: i.name, coste: i.system.coste ?? 0 })), ventajas: items.filter(i => i.type === "ventaja").map(i => ({ id: i.id, name: i.name })), hechizos: items.filter(i => i.type === "hechizo")
     };
   }
 
@@ -56,16 +59,15 @@ export class CriaturaSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     );
   }
 
-  async _onDrop(event) {
-    event.preventDefault();
-    let data;
-    try { data = JSON.parse(event.dataTransfer.getData("text/plain")); } catch { return; }
-    if (data?.type !== "Item") return;
+  async _onDropItem(event, data) {
     const item = await fromUuid(data.uuid);
     if (!item) return;
     if (item.type === "habilidad") {
-      if (this.actor.system.habilidades?.[item.name] !== undefined) return;
-      await this.actor.update({ [`system.habilidades.${item.name}`]: {
+      const clave = item.system?.clave;
+      const loc = clave ? game.i18n.localize(`TQ.Habilidades.${clave}`) : null;
+      const nombre = (loc && loc !== `TQ.Habilidades.${clave}`) ? loc : item.name;
+      if (this.actor.system.habilidades?.[nombre] !== undefined) return;
+      await this.actor.update({ [`system.habilidades.${nombre}`]: {
         base: item.system.base, nivel: 0, puntosFijos: item.system.puntosFijos ?? 0, estorbo: item.system.estorbo ?? 0
       }});
       return;
@@ -139,7 +141,8 @@ export class CriaturaSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       a.addEventListener("click", async ev => {
         const nombre = ev.currentTarget.dataset.nombre;
         const valor = parseInt(ev.currentTarget.dataset.total) || 5;
-        TQRoll.dialogoTirada(nombre, valor, { actor: this.actor });
+        const bonificadorDefecto = this.actor._sumModsMagicosHabilidad(nombre);
+        TQRoll.dialogoTirada(nombre, valor, { actor: this.actor, bonificadorDefecto });
       });
       a.addEventListener("contextmenu", ev => {
         ev.preventDefault();
@@ -215,8 +218,28 @@ export class CriaturaSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       });
     });
 
+    el.querySelectorAll(".toggle-equipado").forEach(a => {
+      a.addEventListener("click", async ev => {
+        ev.preventDefault();
+        const id = ev.currentTarget.dataset.itemId;
+        const item = this.actor.items.get(id);
+        if (!item) return;
+        const newVal = !(item.system.equipped ?? true);
+        const ops = [item.update({ "system.equipped": newVal })];
+        const vinculada = this.actor.items.find(i => i.type === "armadura" && i.getFlag("tierras-quebradas", "fromArmaId") === id);
+        if (vinculada) ops.push(vinculada.update({ "system.equipped": newVal }, { tqFromArma: true }));
+        const fromArmaId = item.getFlag("tierras-quebradas", "fromArmaId");
+        if (fromArmaId) {
+          const fuente = this.actor.items.get(fromArmaId);
+          if (fuente) ops.push(fuente.update({ "system.equipped": newVal }, { tqFromArma: true }));
+        }
+        await Promise.all(ops);
+      });
+    });
+
     el.querySelectorAll(".pnj-tirar-arma").forEach(a => {
       a.addEventListener("click", ev => {
+        if (ev.currentTarget.classList.contains("tq-desequipado")) return;
         this.actor.tirarArma(ev.currentTarget.dataset.id);
       });
     });
@@ -232,6 +255,25 @@ export class CriaturaSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     el.querySelectorAll(".pnj-tirar-hechizo").forEach(a => {
       a.addEventListener("click", ev => {
         this.actor.lanzarHechizo(ev.currentTarget.dataset.id);
+      });
+    });
+
+    el.querySelectorAll(".hechizo-permanent").forEach(span => {
+      span.addEventListener("click", ev => {
+        ev.preventDefault();
+        const hechizo = this.actor.items.get(ev.currentTarget.dataset.itemId);
+        if (!hechizo) return;
+        const nuevoPermanent = !hechizo.system.permanent;
+        if (nuevoPermanent) {
+          const pmCoste = hechizo.system.pmCoste || 1;
+          const espActual = this.actor.system.espirituConsagrado ?? 0;
+          const espMax = this.actor.system.caracteristicas?.espiritu?.valor ?? 0;
+          if (espActual + pmCoste > espMax) {
+            ui.notifications.warn(game.i18n.format("TQ.Magia.EspirituConsagradoMaximo", { max: espMax }));
+            return;
+          }
+        }
+        hechizo.update({ "system.permanent": nuevoPermanent });
       });
     });
 

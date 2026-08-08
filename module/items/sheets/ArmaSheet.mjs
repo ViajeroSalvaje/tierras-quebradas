@@ -1,5 +1,6 @@
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 const { ItemSheetV2 } = foundry.applications.sheets;
+import { ARMA_A_HABILIDAD_PNJ } from "../../helpers/habilidades.mjs";
 
 export class ArmaSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
   static DEFAULT_OPTIONS = {
@@ -26,8 +27,17 @@ export class ArmaSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
   get title() { return this.item.name; }
 
   async _prepareContext(options) {
+    const actor = this.item.actor;
+    let habilidadesPNJ = [];
+    if (actor && actor.type !== "pj") {
+      const nombresEstandar = new Set(Object.values(ARMA_A_HABILIDAD_PNJ));
+      habilidadesPNJ = Object.keys(actor.system.habilidades ?? {})
+        .filter(n => !nombresEstandar.has(n))
+        .sort((a, b) => a.localeCompare(b, "es"))
+        .map(n => ({ clave: n, nombre: n }));
+    }
     return {
-      item: this.item, system: this.item.system, cssClass: this.options.classes.join(" ")
+      item: this.item, system: this.item.system, cssClass: this.options.classes.join(" "), habilidadesPNJ
     };
   }
 

@@ -88,4 +88,8 @@ export function registerHandlebarsHelpers() {
   Handlebars.registerHelper("tq-esferas", function () {
     return ["Agua", "Aire", "Caos", "Cuerpo", "Espíritu", "Fuego", "Ley", "Mente", "Planta", "Tierra"];
   });
+
+  Handlebars.registerHelper("tq-equipped", function (val) {
+    return val !== false;
+  });
 }

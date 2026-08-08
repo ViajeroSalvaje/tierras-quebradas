@@ -139,7 +139,7 @@
   <div class="tq-chat-danho">
     {{#if pd.total}}
     {{pd.formula}} = <strong>{{pd.total}} PD</strong>{{#if pd.noLetal}} <em>({{localize "TQ.Arma.NoLetal"}})</em>{{/if}}
-    {{#if proteccionTarget}} — {{proteccionTarget}} prot. → <strong>{{danhoAplicado}} aplicados</strong>{{/if}}
+    {{#if proteccionTarget}} — {{proteccionTarget}} prot. → <strong>{{danhoAplicado}} daño</strong>{{/if}}
     {{else}}
     {{pd.formula}}
     {{/if}}
@@ -152,7 +152,7 @@
     {{rivalNombre}}: {{pdRival.formula}}
     {{#if pdRival.total}}
     = <strong>{{pdRival.total}} PD</strong>
-    {{#if proteccionJugador}} — {{proteccionJugador}} prot. → <strong>{{danhoRivalAplicado}} aplicados</strong>{{/if}}
+    {{#if proteccionJugador}} — {{proteccionJugador}} prot. → <strong>{{danhoRivalAplicado}} daño</strong>{{/if}}
     {{/if}}
   </div>
   {{/if}}

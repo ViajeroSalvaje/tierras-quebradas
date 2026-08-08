@@ -1,4 +1,5 @@
 import { ARMA_A_HABILIDAD_PNJ } from "../helpers/habilidades.mjs";
+import { resolverHabilidadesArma, aplicarResolucionesArma, normalizarHabilidades } from "../helpers/importerArmaResolver.mjs";
 
 const { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api;
 
@@ -52,37 +53,7 @@ Rasgos: Intimidante, Ágil`;
     const datos = PNJImporter._parsear(raw);
     if (!datos.nombre) return ui.notifications.warn(game.i18n.localize("TQ.Importer.WarnNombrePNJ"));
 
-    let updHabilidades = null;
-    if (Object.keys(datos.habilidades).length) {
-      updHabilidades = await PNJImporter._elegirHabilidadCorrecta(datos);
-      if (updHabilidades === null) return;
-    }
-
-    const actor = await Actor.create({
-      name: datos.nombre, type: "pnj", img: "icons/svg/mystery-man.svg", system: {
-        caracteristicas: {
-          cuerpo: { valor: datos.cuerpo }, mente: { valor: datos.mente }, espiritu: { valor: datos.espiritu }, atractivo: { valor: datos.atractivo }, tamano: { valor: datos.tamano }
-        }, derivadas: {
-          mDano1m: { valor: datos.mDano1m }, mDano2m: { valor: datos.mDano2m }
-        }, salud: {
-          pvMax: { valor: datos.pvMax }, pvActual: { valor: datos.pvMax }, pvGrave: { valor: datos.pvGrave }, pvLeve: { valor: datos.pvLeve }
-        }, pm: datos.pm, notas: datos.notas
-      }
-    });
-    if (!actor) return;
-
-    if (updHabilidades && Object.keys(updHabilidades).length) {
-      await actor.update(updHabilidades);
-    }
-
-    if (datos.proteccion > 0) {
-      await Item.create({
-        name: "Protección", type: "armadura", system: { proteccion: datos.proteccion, tipo: "blanda" }
-      }, { parent: actor });
-    }
-
     const norm = s => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").trim();
-
     const packNombres = [
       "tierras-quebradas.armamento-armas-cuerpo-a-cuerpo", "tierras-quebradas.armamento-armas-proyectiles", "tierras-quebradas.armamento-armas-arrojadizas", "tierras-quebradas.armamento-armas-improvisadas"
     ];
@@ -98,6 +69,40 @@ Rasgos: Intimidante, Ágil`;
       }
       return catalogoArmas;
     };
+
+    normalizarHabilidades(datos);
+    const armaAHab = await resolverHabilidadesArma(datos, getCatalogo);
+    if (armaAHab === null) return;
+    aplicarResolucionesArma(datos, armaAHab);
+
+    let updHabilidades = null;
+    if (Object.keys(datos.habilidades).length) {
+      updHabilidades = await PNJImporter._elegirHabilidadCorrecta(datos);
+      if (updHabilidades === null) return;
+    }
+
+    const actor = await Actor.create({
+      name: datos.nombre, type: "pnj", img: "icons/svg/mystery-man.svg", system: {
+        caracteristicas: {
+          cuerpo: { valor: datos.cuerpo }, mente: { valor: datos.mente }, espiritu: { valor: datos.espiritu }, atractivo: { valor: datos.atractivo }, tamano: { valor: datos.tamano }
+        }, derivadas: {
+          mDano1m: { valor: datos.mDano1m }, mDano2m: { valor: datos.mDano2m }
+        }, salud: {
+          pvMax: { valor: datos.pvMax }, pvActual: { valor: datos.pvMax }, pvGrave: { valor: datos.pvGrave }, pvLeve: { valor: datos.pvLeve }
+        }, pm: datos.pm, notas: datos.notas, filiacion: datos.filiacion, deidad: datos.deidad, deidad2: datos.deidad2
+      }
+    });
+    if (!actor) return;
+
+    if (updHabilidades && Object.keys(updHabilidades).length) {
+      await actor.update(updHabilidades);
+    }
+
+    if (datos.proteccion > 0) {
+      await Item.create({
+        name: "Protección", type: "armadura", system: { proteccion: datos.proteccion, tipo: datos.proteccionTipo }
+      }, { parent: actor });
+    }
 
     for (const a of datos.armas) {
       const catalogo = await getCatalogo();
@@ -119,13 +124,14 @@ Rasgos: Intimidante, Ágil`;
           await actor.update({ [`system.habilidades.${habNombre}`]: a.nivel });
         }
       } else {
+        const habNombreResuelto = armaAHab.get(norm(a.nombre)) ?? a.nombre;
         const habMatch = Object.entries(datos.habilidades).find(([h]) => norm(h) === norm(a.nombre));
         const nivel = habMatch ? habMatch[1] : a.nivel;
         await Item.create({
-          name: a.nombre, type: "arma", system: { danoArma: a.dano, habilidad: a.nombre }
+          name: a.nombre, type: "arma", system: { danoArma: a.dano, habilidad: habNombreResuelto, propiedades: a.propiedades }
         }, { parent: actor });
         if (nivel) {
-          await actor.update({ [`system.habilidades.${a.nombre}`]: nivel });
+          await actor.update({ [`system.habilidades.${habNombreResuelto}`]: nivel });
         }
       }
     }
@@ -189,7 +195,11 @@ Rasgos: Intimidante, Ágil`;
     for (const o of datos.objetosMagicos) {
       const doc = catalogoOM.find(d => norm(d.name) === norm(o.nombre));
       if (doc) await Item.create(doc.toObject(), { parent: actor });
-      else await Item.create({ name: o.nombre, type: "objetoMagico", system: { espiritu: o.espiritu, pm: o.pm, efecto: o.efecto } }, { parent: actor });
+      else await Item.create({ name: o.nombre, type: "objetoMagico", system: { espiritu: o.espiritu, pmActual: o.pm, pmMax: o.pm, sintonizacion: o.sintonizacion, efecto: o.efecto } }, { parent: actor });
+    }
+
+    for (const o of datos.objetos) {
+      await Item.create({ name: o.nombre, type: "objeto", system: { descripcion: o.descripcion, precio: o.precio, carga: o.peso } }, { parent: actor });
     }
 
     ui.notifications.info(game.i18n.format("TQ.Importer.InfoPNJ", { nombre: datos.nombre }));
@@ -275,7 +285,7 @@ Rasgos: Intimidante, Ágil`;
     const aplicar = (nombre, total, habItem) => {
       const baseValor = bases[habItem.system.base] ?? 0;
       upd[`system.habilidades.${nombre}`] = {
-        base: habItem.system.base, nivel: Math.max(0, total - baseValor), estorbo: habItem.system.estorbo ?? 0
+        base: habItem.system.base, nivel: Math.max(0, total - baseValor), puntosFijos: habItem.system.puntosFijos ?? 0, estorbo: habItem.system.estorbo ?? 0
       };
     };
 
@@ -313,7 +323,17 @@ Rasgos: Intimidante, Ágil`;
     const desc = lineas.slice(1, caractIdx > 1 ? caractIdx : 1).join(" ");
 
     const int = (re, t = texto) => parseInt(t.match(re)?.[1]) || 0;
-    const intSig = (re, t = texto) => parseInt(t.match(re)?.[1]) ?? 0;
+    const intSig = (re, t = texto) => { const m = t.match(re); return m ? (parseInt(m[1]) || 0) : 0; };
+
+    const campoLinea = (etiqueta) => lineas.find(l => new RegExp(`^${etiqueta}:`, "i").test(l))?.replace(new RegExp(`^${etiqueta}:\\s*`, "i"), "").trim() ?? "";
+    const normFiliacion = (s) => {
+      const norm = s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").trim();
+      const validas = ["ley", "caos", "elementos", "antepasados", "sincretismo"];
+      return validas.includes(norm) ? norm : "";
+    };
+    const filiacion = normFiliacion(campoLinea("Filiaci[oó]n"));
+    const deidad = campoLinea("Deidad");
+    const deidad2 = campoLinea("Deidad2");
 
     const cuerpo = int(/CUE:\s*(\d+)/i);
     const mente = int(/MEN:\s*(\d+)/i);
@@ -322,7 +342,11 @@ Rasgos: Intimidante, Ágil`;
     const tamano = intSig(/TAM:\s*([+-]?\d+)/i);
     const fuerza = int(/FUE:\s*(\d+)/i);
     const pm = int(/PM:\s*(\d+)/i);
-    const proteccion = int(/Protecci[oó]n:\s*(\d+)/i);
+    const protLine = lineas.find(l => /protecc/i.test(l)) ?? "";
+    const protMatch = protLine.normalize("NFC").match(/Protecci[oó]n:?\s*(\d+)\s*(?:\(([^)]+)\))?/i)
+      ?? texto.normalize("NFC").match(/Protecci[oó]n:?\s*(\d+)\s*(?:\(([^)]+)\))?/i);
+    const proteccion = parseInt(protMatch?.[1]) || 0;
+    const proteccionTipo = protMatch?.[2]?.toLowerCase().includes("dura") ? "dura" : "blanda";
     const modDanoStr = texto.match(/Mod\.\s*al\s*Da[ñn]o:\s*([^\s,]+)/i)?.[1] ?? "";
     const modDanoParts = modDanoStr.split("/");
     const mDano1m = parseInt(modDanoParts[0]) || 0;
@@ -333,7 +357,7 @@ Rasgos: Intimidante, Ágil`;
     const pvGrave = parseInt(pvMatch?.[2]) || Math.ceil(pvMax / 2);
     const pvLeve = parseInt(pvMatch?.[3]) || Math.ceil(pvMax / 4);
 
-    const secRe = /(Bendiciones[^:]*:|Hechizos:|Habilidades\s+m[áa]gicas:|Habilidades:|Armas:|Ventajas:|Desventajas:|Rasgos:|Objetos\s+m[áa]gicos:)/gi;
+    const secRe = /(Bendiciones[^:]*:|Hechizos:|Habilidades\s+m[áa]gicas:|Habilidades:|Armas:|Ventajas:|Desventajas:|Rasgos:|Objetos\s+m[áa]gicos:|Objetos:)/gi;
     const partes = texto.split(secRe);
     const sec = {};
     for (let i = 1; i < partes.length; i += 2) {
@@ -367,10 +391,10 @@ Rasgos: Intimidante, Ágil`;
     // Armas: "Cuchillo 11. Daño: 2+2."
     const armas = [];
     if (sec.armas) {
-      const re = /([A-Za-záéíóúñÁÉÍÓÚÑ][A-Za-záéíóúñÁÉÍÓÚÑ\s]*?)\s+(\d+)\.\s*Da[ñn]o:?\s*([^.]+)\./g;
+      const re = /([A-Za-záéíóúñÁÉÍÓÚÑ][A-Za-záéíóúñÁÉÍÓÚÑ\s]*?)\s+(?:[12]M\s+)?(\d+)\.\s*Da[ñn]o:?\s*([^.]+)\.\s*([^A-Z]*?(?=[A-ZÁÉÍÓÚÑ]|$))?/g;
       let m;
       while ((m = re.exec(sec.armas)) !== null) {
-        armas.push({ nombre: m[1].trim(), nivel: parseInt(m[2]), dano: m[3].trim() });
+        armas.push({ nombre: m[1].trim(), nivel: parseInt(m[2]), dano: m[3].trim(), propiedades: m[4]?.trim() ?? "" });
       }
     }
 
@@ -420,9 +444,21 @@ Rasgos: Intimidante, Ágil`;
     if (secOM) {
       const entradas = secOM.split(/◆|•/).map(s => s.replace(/\s*\n\s*/g, " ").trim()).filter(Boolean);
       for (const entrada of entradas) {
-        const m = entrada.match(/^(.+?)\s*\(ESP:?\s*(\d+)[,\s]+PM:?\s*(\d+)[^)]*\)\.\s*([\s\S]*)/i);
-        if (m) objetosMagicos.push({ nombre: m[1].trim(), espiritu: parseInt(m[2]) || 0, pm: parseInt(m[3]) || 0, efecto: m[4].trim() });
-        else objetosMagicos.push({ nombre: entrada.replace(/\([\s\S]*?\)/, "").trim(), espiritu: 0, pm: 0, efecto: "" });
+        const m = entrada.match(/^(.+?)\s*\(ESP:?\s*(\d+)[,\s]+PM:?\s*(\d+)(?:[,\s]+Sint(?:onizaci[oó]n)?:?\s*(\d+))?[^)]*\)\.\s*([\s\S]*)/i);
+        if (m) objetosMagicos.push({ nombre: m[1].trim(), espiritu: parseInt(m[2]) || 0, pm: parseInt(m[3]) || 0, sintonizacion: parseInt(m[4]) || 0, efecto: m[5].trim() });
+        else objetosMagicos.push({ nombre: entrada.replace(/\([\s\S]*?\)/, "").trim(), espiritu: 0, pm: 0, sintonizacion: 0, efecto: "" });
+      }
+    }
+
+    // Objetos (equipo mundano): "Nombre (Precio: X, Carga: Y). Descripción" o simplemente "Nombre"
+    const objetos = [];
+    const secObj = sec["objetos"] ?? "";
+    if (secObj) {
+      const entradas = secObj.split(/◆|•/).map(s => s.replace(/\s*\n\s*/g, " ").trim()).filter(Boolean);
+      for (const entrada of entradas) {
+        const m = entrada.match(/^(.+?)\s*\(Precio:?\s*([\d,.]+)(?:[,\s]+Carga:?\s*([\d,.]+))?[^)]*\)\.\s*([\s\S]*)/i);
+        if (m) objetos.push({ nombre: m[1].trim(), precio: parseFloat(m[2].replace(",", ".")) || 0, peso: parseFloat((m[3] ?? "0").replace(",", ".")) || 0, descripcion: m[4].trim() });
+        else objetos.push({ nombre: entrada.replace(/\([\s\S]*?\)/, "").trim(), precio: 0, peso: 0, descripcion: "" });
       }
     }
 
@@ -432,6 +468,6 @@ Rasgos: Intimidante, Ágil`;
     if (modDanoStr) notasParts.push(`Mod. al Daño: ${modDanoStr}`);
     const notas = notasParts.join("\n");
 
-    return { nombre, cuerpo, mente, espiritu, atractivo, tamano, pvMax, pvGrave, pvLeve, proteccion, mDano1m, mDano2m, pm, habilidades, armas, hechizos, bendiciones, ventajas, rasgos, objetosMagicos, notas };
+    return { nombre, cuerpo, mente, espiritu, atractivo, tamano, pvMax, pvGrave, pvLeve, proteccion, proteccionTipo, mDano1m, mDano2m, pm, habilidades, armas, hechizos, bendiciones, ventajas, rasgos, objetosMagicos, objetos, notas, filiacion, deidad, deidad2 };
   }
 }

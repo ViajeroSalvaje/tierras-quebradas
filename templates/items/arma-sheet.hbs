@@ -57,6 +57,13 @@
         <label>{{localize "TQ.General.Habilidad"}}</label>
         <select name="system.habilidad">
           <option value="">{{localize "TQ.General.Ninguna"}}</option>
+          {{#if habilidadesPNJ.length}}
+          <optgroup label="De este PNJ">
+            {{#each habilidadesPNJ as |h|}}
+            <option value="{{h.clave}}" {{selected ../system.habilidad h.clave}}>{{h.nombre}}</option>
+            {{/each}}
+          </optgroup>
+          {{/if}}
           <option value="arco"         {{selected system.habilidad "arco"}}>{{localize "TQ.Habilidades.arco"}}</option>
           <option value="armasAsta"    {{selected system.habilidad "armasAsta"}}>{{localize "TQ.Habilidades.armasAsta"}}</option>
           <option value="armasEspada"  {{selected system.habilidad "armasEspada"}}>{{localize "TQ.Habilidades.armasEspada"}}</option>

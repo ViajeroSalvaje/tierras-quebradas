@@ -1,4 +1,5 @@
 import { ARMA_A_HABILIDAD_PNJ } from "../helpers/habilidades.mjs";
+import { resolverHabilidadesArma, aplicarResolucionesArma, normalizarHabilidades } from "../helpers/importerArmaResolver.mjs";
 
 const { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api;
 
@@ -45,6 +46,33 @@ Movimiento: Correr, medio.`;
     const datos = CriaturaImporter._parsear(raw);
     if (!datos.nombre) return ui.notifications.warn(game.i18n.localize("TQ.Importer.WarnNombreCriatura"));
 
+    const norm = s => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").trim();
+    const packNombres = [
+      "tierras-quebradas.armamento-armas-cuerpo-a-cuerpo", "tierras-quebradas.armamento-armas-proyectiles", "tierras-quebradas.armamento-armas-arrojadizas", "tierras-quebradas.armamento-armas-improvisadas"
+    ];
+    let catalogoArmas = null;
+    const getCatalogo = async () => {
+      if (catalogoArmas) return catalogoArmas;
+      catalogoArmas = [];
+      for (const nombre of packNombres) {
+        const pack = game.packs.get(nombre);
+        if (!pack) continue;
+        catalogoArmas.push(...await pack.getDocuments());
+      }
+      return catalogoArmas;
+    };
+
+    normalizarHabilidades(datos);
+    const armaAHab = await resolverHabilidadesArma(datos, getCatalogo);
+    if (armaAHab === null) return;
+    aplicarResolucionesArma(datos, armaAHab);
+
+    let updHabilidades = null;
+    if (Object.keys(datos.habilidades).length) {
+      updHabilidades = await CriaturaImporter._elegirHabilidadCorrecta(datos);
+      if (updHabilidades === null) return;
+    }
+
     const actor = await Actor.create({
       name: datos.nombre, type: "criatura", img: "icons/svg/mystery-man.svg", system: {
         tipo: datos.tipo, caracteristicas: {
@@ -64,28 +92,9 @@ Movimiento: Correr, medio.`;
       }, { parent: actor });
     }
 
-    if (Object.keys(datos.habilidades).length) {
-      const upd = {};
-      for (const [nombre, valor] of Object.entries(datos.habilidades)) {
-        upd[`system.habilidades.${nombre}`] = valor;
-      }
-      await actor.update(upd);
+    if (updHabilidades && Object.keys(updHabilidades).length) {
+      await actor.update(updHabilidades);
     }
-
-    const packNombres = [
-      "tierras-quebradas.armamento-armas-cuerpo-a-cuerpo", "tierras-quebradas.armamento-armas-proyectiles", "tierras-quebradas.armamento-armas-arrojadizas", "tierras-quebradas.armamento-armas-improvisadas"
-    ];
-    let catalogoArmas = null;
-    const getCatalogo = async () => {
-      if (catalogoArmas) return catalogoArmas;
-      catalogoArmas = [];
-      for (const nombre of packNombres) {
-        const pack = game.packs.get(nombre);
-        if (!pack) continue;
-        catalogoArmas.push(...await pack.getDocuments());
-      }
-      return catalogoArmas;
-    };
 
     for (const a of datos.armas) {
       const catalogo = await getCatalogo();
@@ -107,18 +116,18 @@ Movimiento: Correr, medio.`;
           await actor.update({ [`system.habilidades.${habNombre}`]: a.nivel });
         }
       } else {
-        const habMatch = datos.habilidades[a.nombre] ?? 0;
+        const habNombreResuelto = armaAHab.get(norm(a.nombre)) ?? a.nombre;
+        const habMatch = datos.habilidades[habNombreResuelto] ?? 0;
         const nivelFinal = a.nivel || habMatch;
         await Item.create({
-          name: a.nombre, type: "arma", system: { habilidad: a.nombre, danoArma: a.dano, propiedades: a.propiedades }
+          name: a.nombre, type: "arma", system: { habilidad: habNombreResuelto, danoArma: a.dano, propiedades: a.propiedades }
         }, { parent: actor });
         if (nivelFinal) {
-          await actor.update({ [`system.habilidades.${a.nombre}`]: nivelFinal });
+          await actor.update({ [`system.habilidades.${habNombreResuelto}`]: nivelFinal });
         }
       }
     }
 
-    const norm = s => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").trim();
     const packRasgos = game.packs.get("tierras-quebradas.rasgos");
     const catalogoRasgos = packRasgos ? await packRasgos.getDocuments() : [];
 
@@ -145,7 +154,7 @@ Movimiento: Correr, medio.`;
     for (const o of datos.objetosMagicos) {
       const doc = catalogoOM.find(d => norm(d.name) === norm(o.nombre));
       if (doc) await Item.create(doc.toObject(), { parent: actor });
-      else await Item.create({ name: o.nombre, type: "objetoMagico", system: { espiritu: o.espiritu, pm: o.pm, efecto: o.efecto } }, { parent: actor });
+      else await Item.create({ name: o.nombre, type: "objetoMagico", system: { espiritu: o.espiritu, pmActual: o.pm, efecto: o.efecto } }, { parent: actor });
     }
 
     ui.notifications.info(game.i18n.format("TQ.Importer.InfoCriatura", { nombre: datos.nombre }));
@@ -275,5 +284,108 @@ Movimiento: Correr, medio.`;
     }
 
     return { nombre, tipo, cuerpo, mente, espiritu, atractivo, tamanyo, fuerza, pvMax, pvGrave, pvLeve, proteccion, proteccionTipo, mDano1m, mDano2m, pm, alImpacto, movimiento, habilidades, armas, poderes, habilidadesEspeciales, personalidad, poderesItems, habilidadesEspecialesItems, personalidadItems, objetosMagicos, notas: desc };
+  }
+
+  static async _elegirHabilidadCorrecta(datos) {
+    const { DialogV2 } = foundry.applications.api;
+    const cue = datos.cuerpo, men = datos.mente, esp = datos.espiritu;
+    const atr = datos.atractivo, tam = datos.tamanyo;
+    const bases = {
+      agilidad: cue - tam, comunicacion: esp + atr, cultura: men, hechiceria: Math.round((men + esp) / 3), percepcion: Math.round((men + esp) / 2), vigor: cue, tecnica: Math.round((men + cue) / 2)
+    };
+
+    const packHabs = game.packs.get("tierras-quebradas.habilidades");
+    const catalogoHabs = packHabs ? await packHabs.getDocuments() : [];
+    const norm = s => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").trim();
+    const palabras = s => norm(s).split(/\s+/).filter(w => w.length > 2);
+
+    const exactas = {};
+    const sinMatch = {};
+
+    for (const [nombre, total] of Object.entries(datos.habilidades)) {
+      const habItem = catalogoHabs.find(d => norm(d.name) === norm(nombre));
+      if (habItem) exactas[nombre] = { total, habItem };
+      else sinMatch[nombre] = total;
+    }
+
+    const conCandidatos = {};
+    for (const [nombre, total] of Object.entries(sinMatch)) {
+      const pals = new Set(palabras(nombre));
+      const candidatos = catalogoHabs
+        .map(d => ({ d, score: palabras(d.name).filter(w => pals.has(w)).length }))
+        .filter(x => x.score > 0)
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 5)
+        .map(x => x.d);
+      conCandidatos[nombre] = { total, candidatos };
+    }
+
+    const necesitaDialogo = Object.values(conCandidatos).some(v => v.candidatos.length > 0);
+
+    let resoluciones = {};
+    if (necesitaDialogo) {
+      const entradas = Object.entries(conCandidatos).filter(([, v]) => v.candidatos.length > 0);
+      const filas = entradas.map(([nombre, { total, candidatos }], i) => `
+        <tr>
+          <td style="padding:4px 8px;font-weight:bold;">${nombre} <span style="color:#888;font-weight:normal;">(${total})</span></td>
+          <td style="padding:4px 8px;">
+            <select name="h${i}" style="width:100%;">
+              <option value="">— Valor numérico —</option>
+              ${candidatos.map(c => `<option value="${c.name}">${c.name}</option>`).join("")}
+            </select>
+          </td>
+        </tr>`).join("");
+
+      const html = `
+        <p style="margin:0 0 8px;font-size:13px;color:#555;">
+          Estas habilidades no coinciden exactamente con el compendio. Elige a cuál corresponde cada una, o déjala como valor numérico.
+        </p>
+        <table style="width:100%;border-collapse:collapse;">
+          <thead><tr>
+            <th style="text-align:left;padding:4px 8px;border-bottom:1px solid #ccc;">Texto</th>
+            <th style="text-align:left;padding:4px 8px;border-bottom:1px solid #ccc;">Habilidad del compendio</th>
+          </tr></thead>
+          <tbody>${filas}</tbody>
+        </table>`;
+
+      const resultado = await DialogV2.prompt({
+        window: { title: game.i18n.localize("TQ.Importer.ResolverHabilidades"), resizable: true }, position: { width: 500 }, content: html, ok: { label: game.i18n.localize("TQ.Botones.Importar"), callback: (_ev, button) => {
+          const form = button.form;
+          return Object.fromEntries(entradas.map(([nombre], i) => [nombre, form.elements[`h${i}`]?.value ?? ""]));
+        }}
+      }).catch(() => null);
+
+      if (resultado === null) return null;
+      resoluciones = resultado;
+    }
+
+    const upd = {};
+
+    const aplicar = (nombre, total, habItem) => {
+      const baseValor = bases[habItem.system.base] ?? 0;
+      upd[`system.habilidades.${nombre}`] = {
+        base: habItem.system.base, nivel: Math.max(0, total - baseValor), puntosFijos: habItem.system.puntosFijos ?? 0, estorbo: habItem.system.estorbo ?? 0
+      };
+    };
+
+    for (const [nombre, { total, habItem }] of Object.entries(exactas)) {
+      aplicar(nombre, total, habItem);
+    }
+
+    for (const [nombre, { total, candidatos }] of Object.entries(conCandidatos)) {
+      const seleccion = resoluciones[nombre] ?? "";
+      if (seleccion) {
+        const habItem = catalogoHabs.find(d => d.name === seleccion);
+        if (habItem) { aplicar(nombre, total, habItem); continue; }
+      }
+      upd[`system.habilidades.${nombre}`] = total;
+    }
+
+    for (const [nombre, total] of Object.entries(sinMatch)) {
+      if (conCandidatos[nombre]) continue;
+      upd[`system.habilidades.${nombre}`] = total;
+    }
+
+    return upd;
   }
 }

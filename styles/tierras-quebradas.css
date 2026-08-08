@@ -43,15 +43,25 @@
 .tierras-quebradas.sheet.demonio form {
   display: flex;
   flex-direction: column;
+  flex: 1;
+  min-height: 0;
 }
 
 .tierras-quebradas.sheet.pnj [data-application-part],
 .tierras-quebradas.sheet.criatura [data-application-part],
-.tierras-quebradas.sheet.demonio [data-application-part] {
+.tierras-quebradas.sheet.demonio [data-application-part],
+.tierras-quebradas.sheet.objeto-magico [data-application-part] {
   flex: 1;
   min-height: 0;
   display: flex;
   flex-direction: column;
+}
+
+.tierras-quebradas.sheet.objeto-magico form {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
 }
 
 .application.tierras-quebradas .window-content,
@@ -1705,6 +1715,12 @@
 .item-controls a:hover { opacity: 1; }
 .item-controls .item-delete:hover { color: var(--tq-red-dmg); }
 
+.item-controls .toggle-equipado { transition: color 0.15s, opacity 0.15s; }
+.item-controls .toggle-equipado.equipado { color: var(--tq-green) !important; opacity: 1 !important; }
+.item-controls .toggle-equipado.equipado:hover { color: var(--tq-green) !important; opacity: 0.8 !important; }
+
+.tq-desequipado { opacity: 0.2 !important; pointer-events: none !important; cursor: default !important; }
+
 .tq-btn-lanzar {
   font-size: 10px;
   font-weight: bold;
@@ -1771,6 +1787,13 @@
 .tierras-quebradas.item .item-body {
   padding: 10px;
   background: var(--tq-parchment);
+}
+
+.tierras-quebradas.sheet.objeto-magico .item-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding-bottom: 48px;
 }
 .tierras-quebradas.item .item-body h1 { margin: 0; flex: none; }
 
@@ -2457,6 +2480,8 @@
   transition: background 0.15s;
 }
 .tirar-arma:hover { background: var(--tq-teal-dark); }
+.tirar-arma-magico { background: var(--color-border-light, #fff); color: var(--tq-teal); }
+.tirar-arma-magico:hover { background: #e8e8e8; }
 
 .arma-hab { display: flex; align-items: center; gap: 4px; }
 .arma-hab-clave { font-size: 12px; color: var(--tq-text-dim); }

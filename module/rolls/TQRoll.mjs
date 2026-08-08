@@ -89,7 +89,7 @@ export class TQRoll {
     const message = game.messages.get(messageId);
     if (!message) return;
     const flags = message.flags?.["tierras-quebradas"] ?? {};
-    const { etiqueta, puntuacion, dificultad, bonificador: bonOrig, actorId, tablaComplicacion: tablaOrig, totalOriginal, exitosOriginales, resultadoCssOriginal, resultadoLabelOriginal, dadoDisplayOriginal, bonusFinalOriginal, debilitadoOriginal, dolorExtremoOriginal, rollMode: modoTirada, danoArma, danhoMd, danhoNoLetal, danhoTipo, targetActorId, proteccionTargetOriginal, danhoAplicadoOriginal, danoRival, mdRival, tipoRival, desgloseHechizo, requiereTiradaEspiritu, bonusEspiritu: bonusEspirituOrig, pmRecuperadoBase, pmRecuperadoExito, pmRecuperadoCritico = null, atacanteNombre, rivalNombre, dadoDisplayRival, puntuacionRival, bonificadorRival, modLongitud, modLongitudRival, siguienteRango: sigRango, escudoDoble = false, esDistanciaEnfrentada = false, defEfectivo = null, defRawTotal = null, modoRezo = false } = flags;
+    const { etiqueta, puntuacion, dificultad, bonificador: bonOrig, actorId, tablaComplicacion: tablaOrig, totalOriginal, exitosOriginales, resultadoCssOriginal, resultadoLabelOriginal, dadoDisplayOriginal, bonusFinalOriginal, debilitadoOriginal, dolorExtremoOriginal, rollMode: modoTirada, danoArma, danhoMd, danhoNoLetal, danhoTipo, danhoBono = 0, targetActorId, proteccionTargetOriginal, danhoAplicadoOriginal, danoRival, mdRival, tipoRival, desgloseHechizo, requiereTiradaEspiritu, bonusEspiritu: bonusEspirituOrig, pmRecuperadoBase, pmRecuperadoExito, pmRecuperadoCritico = null, atacanteNombre, rivalNombre, dadoDisplayRival, puntuacionRival, bonificadorRival, modLongitud, modLongitudRival, siguienteRango: sigRango, escudoDoble = false, esDistanciaEnfrentada = false, defEfectivo = null, defRawTotal = null, modoRezo = false } = flags;
 
     const actor = game.actors.get(actorId);
     if (!actor) return;
@@ -289,7 +289,7 @@ export class TQRoll {
   }
 
   static async dialogoTirada(etiqueta, puntuacion, opciones = {}) {
-    const { modo = "normal", longitudArma = "media", targetActor = null, dificultadPorDefecto = 15, danho = null, actor = null, habClave = null, extraTopes = [], rivalDatosDA = null, actoresMapDA = null, esProyectil = false, dialogWidth = null, dialogClasses = [], dialogTitle = null } = opciones;
+    const { modo = "normal", longitudArma = "media", targetActor = null, dificultadPorDefecto = 15, dificultadForzada = null, danho = null, actor = null, habClave = null, extraTopes = [], rivalDatosDA = null, actoresMapDA = null, esProyectil = false, dialogWidth = null, dialogClasses = [], dialogTitle = null, bonificadorDefecto = 0 } = opciones;
 
     const forzarBlind = !game.user.isGM
       && habClave
@@ -327,7 +327,7 @@ export class TQRoll {
           .map(t => ({ id: t.actor.id, name: t.name }))
       : [];
     const content = await foundry.applications.handlebars.renderTemplate(
-      "systems/tierras-quebradas/templates/dialogs/tirada-dialogo.hbs", { etiqueta, puntuacion, modo, longitudArma, jugadorDatos, rivalDatos, rivalDatosGA: opciones.rivalDatosGA ?? null, rivalDatosDA, dificultadPorDefecto: String(dificultadPorDefecto), topesOpciones, escalaDif, aliados }
+      "systems/tierras-quebradas/templates/dialogs/tirada-dialogo.hbs", { etiqueta, puntuacion, modo, longitudArma, jugadorDatos, rivalDatos, rivalDatosGA: opciones.rivalDatosGA ?? null, rivalDatosDA, dificultadPorDefecto: String(dificultadPorDefecto), topesOpciones, escalaDif, aliados, bonificadorDefecto }
     );
 
     const eleccion = await DialogV2.wait({
@@ -456,7 +456,7 @@ export class TQRoll {
     puntuacionFinal += modDesgloseTotal;
 
     if (eleccion.autoExito) {
-      const margen = puntuacionFinal + (eleccion.bonificador ?? 0) - eleccion.dificultad;
+      const margen = puntuacionFinal + (eleccion.bonificador ?? 0) - (dificultadForzada ?? eleccion.dificultad);
       if (margen < -1) {
         const msg = game.i18n.format("TQ.Warn.ExitoAutoNoDisponible", { margen });
         ui.notifications.warn(msg);
@@ -486,7 +486,7 @@ export class TQRoll {
       return TQRoll.tirarDistanciaEnfrentada(etiqueta, puntuacionFinal, eleccion, { ...opciones, targetActor: targetActorDA, topeInfo, puntuacionMostrada, rollMode: rollModeEfectivo, dosFortuna: eleccion.dosFortuna ?? false, modo });
     }
 
-    const resultado = await TQRoll.tirar(etiqueta, puntuacionFinal, eleccion.dificultad, {
+    const resultado = await TQRoll.tirar(etiqueta, puntuacionFinal, dificultadForzada ?? eleccion.dificultad, {
       ...opciones, bonificador: eleccion.bonificador, topeInfo, puntuacionMostrada, autoExito: eleccion.autoExito ?? false, rollMode: rollModeEfectivo, dosFortuna: eleccion.dosFortuna ?? false, siguienteRango: eleccion.siguienteRango ?? false
     });
     if (!resultado) return null;
@@ -804,7 +804,7 @@ export class TQRoll {
   }
 
   static async calcDanho(danoArma, md, exitos, noLetal, bonoDano = 0) {
-    const danoNum = parseInt(danoArma);
+    const danoNum = Number(danoArma);
     const exitosDanho = Math.min(exitos, 10);
     const mdStr = md >= 0 ? `+ ${md}` : `- ${Math.abs(md)}`;
     const bonoStr = bonoDano > 0 ? ` + ${bonoDano}` : bonoDano < 0 ? ` - ${Math.abs(bonoDano)}` : "";
@@ -830,8 +830,10 @@ export class TQRoll {
   static _calcularProteccion(actor, tipoArma, escudoDoble = false) {
     let total = 0;
     for (const item of actor.items) {
-      if (item.type !== "armadura") continue;
-      let prot = item.system.proteccion ?? 0;
+      const esArmadura = item.type === "armadura" || (item.type === "objetoMagico" && item.system.tipoObjeto === "armadura");
+      if (!esArmadura || item.system.equipped === false) continue;
+      const modProt = item.system.categoria === "encantado" && !item.system.sintonizado ? 0 : (item.system.modProteccion ?? 0);
+      let prot = (item.system.proteccion ?? 0) + modProt;
       if (item.system.tipo === "blanda" && tipoArma === "contundente") prot = Math.floor(prot / 2);
       if (item.system.esYelmo && !item.system.viseraBajada) prot = Math.max(0, prot - 1);
       if (escudoDoble && item.system.zona === "Escudo") prot *= 2;

@@ -1,28 +1,331 @@
 <div class="{{cssClass}} flexcol" autocomplete="off" style="height:100%;width:100%;">
   <section class="item-body">
+
     <div class="tq-item-header-fila" style="align-items:flex-start;margin-bottom:12px;">
       <img class="item-img" src="{{item.img}}" title="{{item.name}}" />
       <div style="flex:1;">
-        <h1><input type="text" name="name" value="{{item.name}}" placeholder="{{localize "TQ.Placeholders.Nombre"}}" /></h1>
-        <div style="display:flex;gap:12px;margin-top:6px;">
-          <div class="tq-field-group inline">
-            <label>{{localize "TQ.General.Espiritu"}}</label>
-            <input type="number" name="system.espiritu" value="{{system.espiritu}}" min="0" style="width:52px;" />
+        <h1><input type="text" name="name" value="{{item.name}}" placeholder="Nombre del objeto" /></h1>
+        <div style="display:flex;gap:12px;margin-top:6px;flex-wrap:wrap;">
+          <div class="tq-field-group">
+            <label>{{localize "TQ.ObjetoMagico.TipoObjeto"}}</label>
+            <select name="system.tipoObjeto">
+              <option value="arma"     {{selected system.tipoObjeto "arma"}}>{{localize "TQ.ObjetoMagico.Arma"}}</option>
+              <option value="armadura" {{selected system.tipoObjeto "armadura"}}>{{localize "TQ.ObjetoMagico.Armadura"}}</option>
+              <option value="otro"     {{selected system.tipoObjeto "otro"}}>{{localize "TQ.ObjetoMagico.Otro"}}</option>
+            </select>
           </div>
-          <div class="tq-field-group inline">
-            <label>{{localize "TQ.General.PM"}}</label>
-            <input type="number" name="system.pm" value="{{system.pm}}" min="0" style="width:52px;" />
+          <div class="tq-field-group">
+            <label>{{localize "TQ.ObjetoMagico.Categoria"}}</label>
+            <select name="system.categoria">
+              <option value="encantado" {{selected system.categoria "encantado"}}>{{localize "TQ.ObjetoMagico.Encantado"}}</option>
+              <option value="virtuoso"  {{selected system.categoria "virtuoso"}}>{{localize "TQ.ObjetoMagico.Virtuoso"}}</option>
+            </select>
           </div>
         </div>
       </div>
     </div>
-    <div class="tq-field-group full-width">
+
+    {{#if (tq-eq system.tipoObjeto "arma")}}
+    <div class="arma-fila-dano">
+      <div class="tq-field-group">
+        <label>{{localize "TQ.General.Dano"}}</label>
+        <input type="text" name="system.danoArma" value="{{system.danoArma}}" placeholder="ej: 1d6+2" />
+      </div>
+      <div class="tq-field-group">
+        <label>{{localize "TQ.Arma.BonoDano"}}</label>
+        <input type="number" name="system.bonoDano" value="{{system.bonoDano}}" />
+      </div>
+      <label class="arma-prot-label">
+        <input type="checkbox" name="system.noLetal" {{checked system.noLetal}} />
+        <span class="tq-circulo {{#if system.noLetal}}marcado{{/if}}"></span>
+        {{localize "TQ.Arma.NoLetal"}}
+      </label>
+      <label class="arma-prot-label">
+        <input type="checkbox" name="system.tieneProteccion" {{checked system.tieneProteccion}} />
+        <span class="tq-circulo {{#if system.tieneProteccion}}marcado{{/if}}"></span>
+        {{localize "TQ.General.Proteccion"}}
+      </label>
+      <input type="number" name="system.proteccionValor" value="{{system.proteccionValor}}" min="0" class="arma-prot-valor" {{#unless system.tieneProteccion}}disabled{{/unless}} />
+    </div>
+    <div class="item-grid">
+      <div class="tq-field-group">
+        <label>{{localize "TQ.Arma.TipoDano"}}</label>
+        <select name="system.tipoArma">
+          <option value="cortante"     {{selected system.tipoArma "cortante"}}>{{localize "TQ.Arma.Tipo.cortante"}}</option>
+          <option value="contundente"  {{selected system.tipoArma "contundente"}}>{{localize "TQ.Arma.Tipo.contundente"}}</option>
+          <option value="desgarradora" {{selected system.tipoArma "desgarradora"}}>{{localize "TQ.Arma.Tipo.desgarradora"}}</option>
+          <option value="penetrante"   {{selected system.tipoArma "penetrante"}}>{{localize "TQ.Arma.Tipo.penetrante"}}</option>
+        </select>
+      </div>
+      <div class="tq-field-group">
+        <label>{{localize "TQ.Arma.Manos.label"}}</label>
+        <select name="system.manos">
+          <option value="1m"    {{selected system.manos "1m"}}>{{localize "TQ.Arma.Manos.1m"}}</option>
+          <option value="2m"    {{selected system.manos "2m"}}>{{localize "TQ.Arma.Manos.2m"}}</option>
+          <option value="ambas" {{selected system.manos "ambas"}}>{{localize "TQ.Arma.Manos.ambas"}}</option>
+        </select>
+      </div>
+      <div class="tq-field-group">
+        <label>{{localize "TQ.Arma.Longitud.label"}}</label>
+        <select name="system.longitud">
+          <option value="corta"     {{selected system.longitud "corta"}}>{{localize "TQ.Arma.Longitud.corta"}}</option>
+          <option value="media"     {{selected system.longitud "media"}}>{{localize "TQ.Arma.Longitud.media"}}</option>
+          <option value="larga"     {{selected system.longitud "larga"}}>{{localize "TQ.Arma.Longitud.larga"}}</option>
+          <option value="muy larga" {{selected system.longitud "muy larga"}}>{{localize "TQ.Arma.Longitud.muyLarga"}}</option>
+        </select>
+      </div>
+      <div class="tq-field-group">
+        <label>{{localize "TQ.General.Habilidad"}}</label>
+        <select name="system.habilidad">
+          <option value="">{{localize "TQ.General.Ninguna"}}</option>
+          {{#if habilidadesPNJ.length}}
+          <optgroup label="De este PNJ">
+            {{#each habilidadesPNJ as |h|}}
+            <option value="{{h.clave}}" {{#if (tq-eq ../system.habilidad h.clave)}}selected{{/if}}>{{h.nombre}}</option>
+            {{/each}}
+          </optgroup>
+          {{/if}}
+          {{#each habilidades as |h|}}
+          <option value="{{h.clave}}" {{#if (tq-eq ../system.habilidad h.clave)}}selected{{/if}}>{{h.nombre}}</option>
+          {{/each}}
+        </select>
+      </div>
+      <div class="tq-field-group">
+        <label>{{localize "TQ.General.Alcance"}}</label>
+        <select name="system.alcance">
+          <option value="contacto"   {{selected system.alcance "contacto"}}>{{localize "TQ.Arma.AlcanceTipo.contacto"}}</option>
+          <option value="arrojadiza" {{selected system.alcance "arrojadiza"}}>{{localize "TQ.Arma.AlcanceTipo.arrojadiza"}}</option>
+          <option value="proyectil"  {{selected system.alcance "proyectil"}}>{{localize "TQ.Arma.AlcanceTipo.proyectil"}}</option>
+        </select>
+      </div>
+      <div class="tq-field-group">
+        <label>{{localize "TQ.General.Precio"}}</label>
+        <input type="number" name="system.precio" value="{{system.precio}}" min="0" />
+      </div>
+    </div>
+    <div class="arma-fila-numeros">
+      <div class="tq-field-group">
+        <label>{{localize "TQ.Arma.FUEMin"}}</label>
+        <input type="number" name="system.fue" value="{{system.fue}}" min="0" />
+      </div>
+      <div class="tq-field-group">
+        <label>{{localize "TQ.Combate.carga"}}</label>
+        <input type="number" name="system.carga" value="{{system.carga}}" min="0" />
+      </div>
+      <div class="tq-field-group">
+        <label>{{localize "TQ.Arma.Recarga"}}</label>
+        <input type="number" name="system.recarga" value="{{system.recarga}}" min="0" />
+      </div>
+    </div>
+    {{/if}}
+
+    {{#if (tq-eq system.tipoObjeto "armadura")}}
+    <div class="item-grid">
+      <div class="tq-field-group">
+        <label>{{localize "TQ.General.Proteccion"}}</label>
+        <input type="number" name="system.proteccion" value="{{system.proteccion}}" min="0" />
+      </div>
+      <div class="tq-field-group">
+        <label>{{localize "TQ.General.Zona"}}</label>
+        <select name="system.zona">
+          <option value="cuerpo"  {{selected system.zona "cuerpo"}}>{{localize "TQ.Armadura.Zona.cuerpo"}}</option>
+          <option value="cabeza"  {{selected system.zona "cabeza"}}>{{localize "TQ.Armadura.Zona.cabeza"}}</option>
+          <option value="brazos"  {{selected system.zona "brazos"}}>{{localize "TQ.Armadura.Zona.brazos"}}</option>
+          <option value="piernas" {{selected system.zona "piernas"}}>{{localize "TQ.Armadura.Zona.piernas"}}</option>
+          <option value="escudo"  {{selected system.zona "escudo"}}>{{localize "TQ.Armadura.Zona.escudo"}}</option>
+        </select>
+      </div>
+      <div class="tq-field-group">
+        <label>{{localize "TQ.General.Tipo"}}</label>
+        <select name="system.tipoProteccion">
+          <option value="blanda" {{selected system.tipoProteccion "blanda"}}>{{localize "TQ.Armadura.Blanda"}}</option>
+          <option value="dura"   {{selected system.tipoProteccion "dura"}}>{{localize "TQ.Armadura.Dura"}}</option>
+        </select>
+      </div>
+      <div class="tq-field-group">
+        <label>{{localize "TQ.Armadura.EsYelmo"}}</label>
+        <a class="tq-circulo toggle-estado {{#if system.esYelmo}}marcado{{/if}}" data-campo="system.esYelmo"></a>
+      </div>
+      {{#if system.esYelmo}}
+      <div class="tq-field-group">
+        <label>{{localize "TQ.Armadura.ViseraBajada"}}</label>
+        <a class="tq-circulo toggle-estado {{#if system.viseraBajada}}marcado{{/if}}" data-campo="system.viseraBajada"></a>
+      </div>
+      {{/if}}
+      <div class="tq-field-group">
+        <label>{{localize "TQ.Combate.carga"}}</label>
+        <input type="number" name="system.carga" value="{{system.carga}}" min="0" />
+      </div>
+      <div class="tq-field-group">
+        <label>{{localize "TQ.General.Precio"}}</label>
+        <input type="number" name="system.precio" value="{{system.precio}}" min="0" />
+      </div>
+    </div>
+    {{/if}}
+
+    <hr style="border:none;border-top:1px solid var(--color-border-dark, #888);margin:12px 0;" />
+
+    <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;">
+      {{#if (tq-eq system.categoria "encantado")}}
+      <label class="arma-prot-label" style="align-self:center;">
+        <input type="checkbox" name="system.sintonizado" {{checked system.sintonizado}} />
+        <span class="tq-circulo {{#if system.sintonizado}}marcado{{/if}}"></span>
+        {{localize "TQ.ObjetoMagico.Sintonizado"}}
+      </label>
+      <div class="tq-field-group inline">
+        <label>{{localize "TQ.ObjetoMagico.EspSintonizacion"}}</label>
+        <input type="number" name="system.sintonizacion" value="{{system.sintonizacion}}" min="0" style="width:52px;" />
+      </div>
+      {{/if}}
+      <div class="tq-field-group inline">
+        {{#if (tq-eq system.categoria "virtuoso")}}
+        <label class="tirar-espiritu-objeto" style="cursor:pointer;text-decoration:underline dotted;">{{localize "TQ.ObjetoMagico.EspirituObjeto"}}</label>
+        {{else}}
+        <label>{{localize "TQ.ObjetoMagico.EspirituObjeto"}}</label>
+        {{/if}}
+        <input type="number" name="system.espiritu" value="{{system.espiritu}}" min="0" style="width:52px;" />
+      </div>
+      <div class="tq-field-group inline">
+        <label>{{localize "TQ.ObjetoMagico.PMActual"}}</label>
+        <input type="number" name="system.pmActual" value="{{system.pmActual}}" min="0" style="width:52px;" />
+      </div>
+      <div class="tq-field-group inline">
+        <label>{{localize "TQ.ObjetoMagico.PMMax"}}</label>
+        <input type="number" name="system.pmMax" value="{{system.pmMax}}" min="0" style="width:52px;" disabled />
+      </div>
+      <div class="tq-field-group inline" style="flex:1;min-width:120px;">
+        <label>{{localize "TQ.ObjetoMagico.Requisito"}}</label>
+        <input type="text" name="system.requisito" value="{{system.requisito}}" />
+      </div>
+    </div>
+
+    {{#unless (tq-eq system.tipoObjeto "otro")}}
+    <div style="display:flex;gap:10px;align-items:flex-end;margin-top:8px;flex-wrap:nowrap;">
+      {{#if (tq-eq system.tipoObjeto "arma")}}
+      <div class="tq-field-group inline">
+        <label>{{localize "TQ.ObjetoMagico.ModCombate"}}</label>
+        <input type="number" name="system.modCombate" value="{{system.modCombate}}" style="width:50px;" />
+      </div>
+      <div class="tq-field-group inline">
+        <label>{{localize "TQ.ObjetoMagico.ModDanho"}}</label>
+        <input type="number" name="system.modDanho" value="{{system.modDanho}}" style="width:50px;" />
+      </div>
+      {{else}}
+      <div class="tq-field-group inline">
+        <label>{{localize "TQ.ObjetoMagico.ModProteccion"}}</label>
+        <input type="number" name="system.modProteccion" value="{{system.modProteccion}}" style="width:50px;" />
+      </div>
+      {{/if}}
+      <div class="tq-field-group inline" style="flex:1;">
+        <label>{{localize "TQ.General.Habilidad"}}</label>
+        <select name="system.modHabilidadClave">
+          <option value="">—</option>
+          {{#if habilidadesPNJ.length}}
+          <optgroup label="De este PNJ">
+            {{#each habilidadesPNJ as |h|}}
+            <option value="{{h.clave}}" {{#if (tq-eq ../system.modHabilidadClave h.clave)}}selected{{/if}}>{{h.nombre}}</option>
+            {{/each}}
+          </optgroup>
+          {{/if}}
+          {{#each habilidades as |h|}}
+          <option value="{{h.clave}}" {{#if (tq-eq ../system.modHabilidadClave h.clave)}}selected{{/if}}>{{h.nombre}}</option>
+          {{/each}}
+        </select>
+      </div>
+      <div class="tq-field-group inline">
+        <label>{{localize "TQ.ObjetoMagico.ModHabilidad"}}</label>
+        <input type="number" name="system.modHabilidad" value="{{system.modHabilidad}}" style="width:50px;" />
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;align-items:flex-end;margin-top:8px;flex-wrap:nowrap;">
+      <div class="tq-field-group inline" style="flex:1;">
+        <label>{{localize "TQ.Hechizo.Esfera"}}</label>
+        <select name="system.modEsferaClave">
+          <option value="">—</option>
+          {{#each esferas as |e|}}
+          <option value="{{e}}" {{#if (tq-eq ../system.modEsferaClave e)}}selected{{/if}}>{{e}}</option>
+          {{/each}}
+        </select>
+      </div>
+      <div class="tq-field-group inline">
+        <label>{{localize "TQ.ObjetoMagico.ModEsfera"}}</label>
+        <input type="number" data-campo="system.modEsfera" value="{{system.modEsfera}}" style="width:50px;" />
+      </div>
+      <div class="tq-field-group inline" style="flex:1;">
+        <label>{{localize "TQ.Hechizo.Verbo"}}</label>
+        <select name="system.modVerboClave">
+          <option value="">—</option>
+          {{#each verbos as |v|}}
+          <option value="{{v}}" {{#if (tq-eq ../system.modVerboClave v)}}selected{{/if}}>{{v}}</option>
+          {{/each}}
+        </select>
+      </div>
+      <div class="tq-field-group inline">
+        <label>{{localize "TQ.ObjetoMagico.ModVerbo"}}</label>
+        <input type="number" data-campo="system.modVerbo" value="{{system.modVerbo}}" style="width:50px;" />
+      </div>
+    </div>
+    {{/unless}}
+
+    {{#if (tq-eq system.categoria "demoniaco")}}
+    <div class="tq-section-header" style="margin-top:10px;">
+      <span>{{localize "TQ.ObjetoMagico.PoderesDemoniacos"}}</span>
+    </div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:6px;align-items:flex-end;">
+      <div class="tq-field-group inline">
+        <label>{{localize "TQ.ObjetoMagico.VM"}}</label>
+        <input type="number" name="system.vm" value="{{system.vm}}" min="0" style="width:52px;" />
+      </div>
+      <div class="tq-field-group inline">
+        <label>{{localize "TQ.ObjetoMagico.BonoDanho"}}</label>
+        <select name="system.poderesDemoniacos.bonoDanho" style="width:70px;">
+          <option value="0" {{#if (tq-eq system.poderesDemoniacos.bonoDanho 0)}}selected{{/if}}>+0</option>
+          <option value="1" {{#if (tq-eq system.poderesDemoniacos.bonoDanho 1)}}selected{{/if}}>+1</option>
+          <option value="2" {{#if (tq-eq system.poderesDemoniacos.bonoDanho 2)}}selected{{/if}}>+2</option>
+        </select>
+      </div>
+      <div class="tq-field-group inline">
+        <label>{{localize "TQ.ObjetoMagico.BonoHabilidad"}}</label>
+        <input type="number" name="system.poderesDemoniacos.bonoHabilidad" value="{{system.poderesDemoniacos.bonoHabilidad}}" style="width:52px;" />
+      </div>
+      <div class="tq-field-group inline">
+        <label>{{localize "TQ.ObjetoMagico.Habilidad"}}</label>
+        <select name="system.poderesDemoniacos.bonoHabilidadClave">
+          <option value="">—</option>
+          {{#each habilidades as |h|}}
+          <option value="{{h.clave}}" {{#if (tq-eq ../system.poderesDemoniacos.bonoHabilidadClave h.clave)}}selected{{/if}}>{{h.nombre}}</option>
+          {{/each}}
+        </select>
+      </div>
+    </div>
+    <div style="display:flex;gap:16px;flex-wrap:wrap;margin-top:8px;align-items:center;">
+      <div style="display:flex;align-items:center;gap:6px;">
+        <a class="tq-circulo toggle-estado {{#if system.poderesDemoniacos.danhoMagico}}marcado{{/if}}" data-campo="system.poderesDemoniacos.danhoMagico"></a>
+        <label style="margin:0;">{{localize "TQ.ObjetoMagico.DanhoMagico"}}</label>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;">
+        <a class="tq-circulo toggle-estado {{#if system.poderesDemoniacos.danhoEspiritual}}marcado{{/if}}" data-campo="system.poderesDemoniacos.danhoEspiritual"></a>
+        <label style="margin:0;">{{localize "TQ.ObjetoMagico.DanhoEspiritual"}}</label>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;">
+        <a class="tq-circulo toggle-estado {{#if system.poderesDemoniacos.vampiro}}marcado{{/if}}" data-campo="system.poderesDemoniacos.vampiro"></a>
+        <label style="margin:0;">{{localize "TQ.ObjetoMagico.Vampiro"}}</label>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;">
+        <a class="tq-circulo toggle-estado {{#if system.poderesDemoniacos.irrompible}}marcado{{/if}}" data-campo="system.poderesDemoniacos.irrompible"></a>
+        <label style="margin:0;">{{localize "TQ.ObjetoMagico.Irrompible"}}</label>
+      </div>
+    </div>
+    {{/if}}
+
+    <div class="tq-field-group full-width" style="margin-top:10px;">
       <label>{{localize "TQ.General.Efecto"}}</label>
       <textarea name="system.efecto" rows="3">{{system.efecto}}</textarea>
     </div>
     <div class="tq-field-group full-width" style="margin-top:8px;">
       <label>{{localize "TQ.General.Descripcion"}}</label>
-      <textarea name="system.descripcion" rows="5">{{system.descripcion}}</textarea>
+      <textarea name="system.descripcion" rows="4">{{system.descripcion}}</textarea>
     </div>
+
   </section>
 </div>

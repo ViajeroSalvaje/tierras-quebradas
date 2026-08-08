@@ -465,7 +465,7 @@
                 {{#each items.armas as |arma|}}
                 <tr data-item-id="{{arma.item.id}}">
                   <td>
-                    <a class="tirar-arma" data-item-id="{{arma.item.id}}" title="Tirar {{arma.item.name}}">
+                    <a class="tirar-arma{{#unless arma.equipped}} tq-desequipado{{/unless}}" data-item-id="{{arma.item.id}}" title="Tirar {{arma.item.name}}">
                       <i class="fas fa-dice-d10"></i>
                     </a>
                   </td>
@@ -479,6 +479,30 @@
                   <td>{{arma.item.system.alcance}}</td>
                   <td>{{arma.item.system.carga}}</td>
                   <td class="item-controls">
+                    <a class="toggle-equipado{{#if arma.equipped}} equipado{{/if}}" data-item-id="{{arma.item.id}}" title="{{#if arma.equipped}}Equipado{{else}}Sin equipar{{/if}}"><i class="fas fa-shirt"></i></a>
+                    <a class="item-edit" data-item-id="{{arma.item.id}}" title="{{localize "TQ.Tooltips.Editar"}}"><i class="fas fa-edit"></i></a>
+                    <a class="item-delete" data-item-id="{{arma.item.id}}" title="{{localize "TQ.Tooltips.Eliminar"}}"><i class="fas fa-trash"></i></a>
+                  </td>
+                </tr>
+                {{/each}}
+                {{#each items.armasMagicas as |arma|}}
+                <tr data-item-id="{{arma.item.id}}">
+                  <td>
+                    <a class="tirar-arma tirar-arma-magico{{#unless arma.equipped}} tq-desequipado{{/unless}}" data-item-id="{{arma.item.id}}" title="Tirar {{arma.item.name}}">
+                      <i class="fas fa-dice-d10"></i>
+                    </a>
+                  </td>
+                  <td>{{arma.item.name}}</td>
+                  <td class="arma-hab">
+                    <span class="arma-hab-clave" title="{{localize (concat "TQ.Habilidades." arma.item.system.habilidad)}}">{{localize (concat "TQ.Habilidades." arma.item.system.habilidad)}}</span>
+                    {{#if arma.habTotal}}<span class="arma-hab-total">({{arma.habTotal}})</span>{{/if}}
+                  </td>
+                  <td>{{arma.item.system.danoArma}}</td>
+                  <td>{{arma.mdStr}}</td>
+                  <td>{{arma.item.system.alcance}}</td>
+                  <td>—</td>
+                  <td class="item-controls">
+                    <a class="toggle-equipado{{#if arma.equipped}} equipado{{/if}}" data-item-id="{{arma.item.id}}" title="{{#if arma.equipped}}Equipado{{else}}Sin equipar{{/if}}"><i class="fas fa-shirt"></i></a>
                     <a class="item-edit" data-item-id="{{arma.item.id}}" title="{{localize "TQ.Tooltips.Editar"}}"><i class="fas fa-edit"></i></a>
                     <a class="item-delete" data-item-id="{{arma.item.id}}" title="{{localize "TQ.Tooltips.Eliminar"}}"><i class="fas fa-trash"></i></a>
                   </td>
@@ -536,6 +560,7 @@
                   {{#if arm.system.esYelmo}}
                   <a class="toggle-visera {{#if arm.system.viseraBajada}}visera-bajada{{/if}}" data-item-id="{{arm.id}}" title="{{#if arm.system.viseraBajada}}Visera bajada (−2 Perc.) — clic para subir{{else}}Visera subida (−1 Perc.) — clic para bajar{{/if}}">{{#if arm.system.viseraBajada}}Bajada{{else}}Subida{{/if}}</a>
                   {{/if}}
+                  <a class="toggle-equipado{{#if (tq-equipped arm.system.equipped)}} equipado{{/if}}" data-item-id="{{arm.id}}" title="{{#if (tq-equipped arm.system.equipped)}}Equipado{{else}}Sin equipar{{/if}}"><i class="fas fa-shirt"></i></a>
                   <a class="item-edit" data-item-id="{{arm.id}}" title="{{localize "TQ.Tooltips.Editar"}}"><i class="fas fa-edit"></i></a>
                   <a class="item-delete" data-item-id="{{arm.id}}" title="{{localize "TQ.Tooltips.Eliminar"}}"><i class="fas fa-trash"></i></a>
                 </td>
@@ -607,6 +632,7 @@
             {{#if obj.system.categoria}}<span class="equipo-cat">{{obj.system.categoria}}</span>{{/if}}
             <span class="equipo-carga">{{obj.system.carga}}</span>
             <span class="item-controls">
+              <a class="toggle-equipado{{#if (tq-equipped obj.system.equipped)}} equipado{{/if}}" data-item-id="{{obj.id}}" title="{{#if (tq-equipped obj.system.equipped)}}Equipado{{else}}Sin equipar{{/if}}"><i class="fas fa-shirt"></i></a>
               <a class="item-edit" data-item-id="{{obj.id}}"><i class="fas fa-edit"></i></a>
               <a class="item-delete" data-item-id="{{obj.id}}"><i class="fas fa-trash"></i></a>
             </span>
@@ -619,6 +645,7 @@
             {{#if con.system.efecto}}<span class="equipo-efecto">{{con.system.efecto}}</span>{{/if}}
             <span class="equipo-carga">{{con.system.carga}}</span>
             <span class="item-controls">
+              <a class="toggle-equipado{{#if (tq-equipped con.system.equipped)}} equipado{{/if}}" data-item-id="{{con.id}}" title="{{#if (tq-equipped con.system.equipped)}}Equipado{{else}}Sin equipar{{/if}}"><i class="fas fa-shirt"></i></a>
               <a class="item-edit" data-item-id="{{con.id}}"><i class="fas fa-edit"></i></a>
               <a class="item-delete" data-item-id="{{con.id}}"><i class="fas fa-trash"></i></a>
             </span>
@@ -640,8 +667,9 @@
           {{#each items.objetosMagicos as |o|}}
           <div class="tq-equipo-fila" data-item-id="{{o.id}}">
             <span class="equipo-nombre">{{o.name}}</span>
-            {{#if o.system.espiritu}}<span class="equipo-cat">ESP {{o.system.espiritu}} · PM {{o.system.pm}}</span>{{/if}}
+            {{#if o.system.espiritu}}<span class="equipo-cat">ESP {{o.system.espiritu}} · PM {{o.system.pmActual}}</span>{{/if}}
             <span class="item-controls">
+              <a class="toggle-equipado{{#if (tq-equipped o.system.equipped)}} equipado{{/if}}" data-item-id="{{o.id}}" title="{{#if (tq-equipped o.system.equipped)}}Equipado{{else}}Sin equipar{{/if}}"><i class="fas fa-shirt"></i></a>
               <a class="item-edit" data-item-id="{{o.id}}"><i class="fas fa-edit"></i></a>
               <a class="item-delete" data-item-id="{{o.id}}"><i class="fas fa-trash"></i></a>
             </span>

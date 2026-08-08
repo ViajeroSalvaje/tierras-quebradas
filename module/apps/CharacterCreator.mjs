@@ -241,7 +241,7 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
   _aplicarEdadAleatorio() {
     if (this._charData.metodoCaract !== "aleatorio" || !this._charData.tiradaAleatoria) return;
     const edad = this._edadActual;
-    this._charData.cuerpo = Math.max(3, this._charData.cuerpoRolled   + edad.aleatorioCuerpo);
+    this._charData.cuerpo = Math.min(edad.maxCuerpo, Math.max(3, this._charData.cuerpoRolled + edad.aleatorioCuerpo));
     this._charData.mente = Math.min(9, Math.max(3, this._charData.menteRolled    + edad.aleatorioMente  + this._charData.especieBonusMente));
     this._charData.espiritu = Math.min(9, Math.max(3, this._charData.espirituRolled + this._charData.especieBonusEsp));
   }

@@ -122,32 +122,64 @@
         {{/each}}
       </div>
 
-      <div class="tq-section-header">
-        <span>{{localize "TQ.Secciones.Bendiciones"}}</span>
-        <a class="pnj-anadir-bendicion" title="{{localize "TQ.Tooltips.AnadirBendicion"}}"><i class="fas fa-plus"></i></a>
+    </div>
+
+    <div class="tab" data-tab="combate">
+      {{> "systems/tierras-quebradas/templates/partials/_tab-combate-magia.hbs"}}
+    </div>
+
+    <div class="tab" data-tab="notas">
+      <div style="display:flex;gap:12px;margin-bottom:12px;flex-wrap:wrap;align-items:flex-end;">
+        <div class="tq-field-group">
+          <label>{{localize "TQ.General.Filiacion"}}</label>
+          <select name="system.filiacion">
+            <option value="" {{selected system.filiacion ""}}>— {{localize "TQ.General.SinFiliacion"}} —</option>
+            <option value="ley"          {{selected system.filiacion "ley"}}>{{localize "TQ.Lealtad.ley"}}</option>
+            <option value="caos"         {{selected system.filiacion "caos"}}>{{localize "TQ.Lealtad.caos"}}</option>
+            <option value="elementos"    {{selected system.filiacion "elementos"}}>{{localize "TQ.Lealtad.elementos"}}</option>
+            <option value="antepasados"  {{selected system.filiacion "antepasados"}}>{{localize "TQ.Lealtad.antepasados"}}</option>
+            <option value="sincretismo"  {{selected system.filiacion "sincretismo"}}>{{localize "TQ.Lealtad.sincretismo"}}</option>
+          </select>
+        </div>
+        {{#if esSincretismo}}
+        <div class="tq-field-group">
+          <label>{{localize "TQ.Lealtad.Deidad"}} 1</label>
+          <select name="system.deidad">
+            <option value="">{{localize "TQ.CC.SinDeidad"}}</option>
+            {{#each deidadesActuales as |d|}}
+            <option value="{{d}}" {{selected ../system.deidad d}}>{{d}}</option>
+            {{/each}}
+          </select>
+        </div>
+        <div class="tq-field-group">
+          <label>{{localize "TQ.Lealtad.Deidad"}} 2</label>
+          <select name="system.deidad2">
+            <option value="">{{localize "TQ.CC.SinDeidad"}}</option>
+            {{#each deidadesActuales as |d|}}
+            <option value="{{d}}" {{selected ../system.deidad2 d}}>{{d}}</option>
+            {{/each}}
+          </select>
+        </div>
+        {{else}}
+        {{#if deidadesActuales.length}}
+        <div class="tq-field-group">
+          <label>{{localize "TQ.Lealtad.Deidad"}}</label>
+          <select name="system.deidad">
+            <option value="">{{localize "TQ.CC.SinDeidad"}}</option>
+            {{#each deidadesActuales as |d|}}
+            <option value="{{d}}" {{selected ../system.deidad d}}>{{d}}</option>
+            {{/each}}
+          </select>
+        </div>
+        {{/if}}
+        {{/if}}
       </div>
-      <ul class="bendiciones-list">
-        {{#each bendiciones as |bend|}}
-        <li class="bendicion-item tipo-{{bend.system.tipo}}">
-          <span class="bend-nombre">{{bend.name}}</span>
-          <span class="bend-coste">{{bend.system.coste}} ESP</span>
-          {{#if (tq-eq bend.system.tipo "activa")}}
-          <span class="bend-pm">{{bend.system.pmCoste}} PM</span>
-          <a class="pnj-activar-bendicion" data-id="{{bend.id}}" title="{{localize "TQ.Botones.Activar"}}">{{localize "TQ.Botones.Activar"}}</a>
-          {{/if}}
-          <span class="item-controls">
-            <a class="item-edit" data-item-id="{{bend.id}}"><i class="fas fa-edit"></i></a>
-            <a class="pnj-item-borrar" data-id="{{bend.id}}"><i class="fas fa-trash"></i></a>
-          </span>
-        </li>
-        {{/each}}
-      </ul>
 
       <div class="tq-section-header" style="margin-top:6px;">
         <span>{{localize "TQ.Secciones.VentajasDesventajas"}}</span>
         <a class="pnj-anadir-ventaja" title="{{localize "TQ.Tooltips.AnadirVentaja"}}"><i class="fas fa-plus"></i></a>
       </div>
-      <ul class="ventajas-list">
+      <ul class="ventajas-list" style="display:grid;grid-template-columns:1fr 1fr;gap:0 8px;">
         {{#each ventajas as |vent|}}
         <li data-item-id="{{vent.id}}" class="ventaja-item">
           <strong>{{vent.name}}</strong>
@@ -163,7 +195,7 @@
         <span>{{localize "TQ.Secciones.Rasgos"}}</span>
         <a class="pnj-anadir-rasgo" title="{{localize "TQ.Tooltips.AnadirRasgo"}}"><i class="fas fa-plus"></i></a>
       </div>
-      <ul class="ventajas-list">
+      <ul class="ventajas-list" style="display:grid;grid-template-columns:1fr 1fr;gap:0 8px;">
         {{#each rasgos as |r|}}
         <li data-item-id="{{r.id}}" class="ventaja-item">
           <strong>{{r.name}}</strong>
@@ -175,14 +207,8 @@
         </li>
         {{/each}}
       </ul>
-    </div>
 
-    <div class="tab" data-tab="combate">
-      {{> "systems/tierras-quebradas/templates/partials/_tab-combate-magia.hbs"}}
-    </div>
-
-    <div class="tab" data-tab="notas">
-      <textarea name="system.notas" rows="15" class="tq-notas">{{system.notas}}</textarea>
+      <textarea name="system.notas" rows="8" class="tq-notas">{{system.notas}}</textarea>
     </div>
   </section>
 </section>
