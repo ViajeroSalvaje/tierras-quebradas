@@ -158,7 +158,7 @@
             "planta": 0,
             "caos": 0,
             "ley": 0
-          }
+          },
         },
         "heridas": [],
         "motivacion": "",
@@ -199,6 +199,10 @@
       "templates": ["base"],
       "habilidades": {},
       "pm": 0,
+      "espirituConsagrado": 0,
+      "filiacion": "",
+      "deidad": "",
+      "deidad2": "",
       "notas": ""
     },
     "criatura": {
@@ -212,6 +216,7 @@
       "alImpacto": 0,
       "movimiento": "",
       "pm": 0,
+      "espirituConsagrado": 0,
       "notas": ""
     },
     "demonio": {
@@ -224,6 +229,7 @@
       "alImpacto": 0,
       "movimiento": "",
       "pm": 0,
+      "espirituConsagrado": 0,
       "valorMagico": 0,
       "vinculo": "",
       "notas": ""
@@ -254,7 +260,8 @@
       "tieneProteccion": false,
       "proteccionValor": 0,
       "propiedades": "",
-      "precio": 0
+      "precio": 0,
+      "equipped": true
     },
     "armadura": {
       "templates": ["base"],
@@ -264,7 +271,8 @@
       "zona": "cuerpo",
       "precio": 0,
       "esYelmo": false,
-      "viseraBajada": false
+      "viseraBajada": false,
+      "equipped": true
     },
     "hechizo": {
       "templates": ["base"],
@@ -350,13 +358,59 @@
       "carga": 0,
       "precio": 0,
       "categoria": "",
-      "descripcion": ""
+      "descripcion": "",
+      "equipped": true
     },
     "objetoMagico": {
+      "tipoObjeto": "otro",
+      "categoria": "encantado",
       "espiritu": 0,
-      "pm": 0,
+      "pmActual": 0,
+      "pmMax": 0,
+      "requisito": "",
+      "sintonizacion": 0,
+      "sintonizado": false,
+      "vm": 0,
+      "poderesDemoniacos": {
+        "bonoDanho": 0,
+        "bonoHabilidad": 0,
+        "bonoHabilidadClave": "",
+        "danhoMagico": false,
+        "danhoEspiritual": false,
+        "vampiro": false,
+        "irrompible": false
+      },
+      "danoArma": "1d6",
+      "bonoDano": 0,
+      "manos": "1m",
+      "fue": 0,
+      "tipoArma": "cortante",
+      "longitud": "media",
+      "alcance": "contacto",
+      "habilidad": "",
+      "noLetal": false,
+      "tieneProteccion": false,
+      "proteccionValor": 0,
+      "zona": "cuerpo",
+      "esYelmo": false,
+      "viseraBajada": false,
+      "precio": 0,
+      "carga": 0,
+      "recarga": 0,
+      "modHabilidadClave": "",
+      "modHabilidad": 0,
+      "modEsferaClave": "",
+      "modEsfera": 0,
+      "modVerboClave": "",
+      "modVerbo": 0,
+      "modCombate": 0,
+      "modDanho": 0,
+      "modProteccion": 0,
+      "proteccion": 0,
+      "tipoProteccion": "blanda",
       "efecto": "",
-      "descripcion": ""
+      "descripcion": "",
+      "equipped": true
     },
     "deidad": {
       "tipo": "ley",
@@ -370,7 +424,8 @@
       "dosis": 1,
       "carga": 0,
       "efecto": "",
-      "descripcion": ""
+      "descripcion": "",
+      "equipped": true
     },
     "habilidad": {
       "clave": "",

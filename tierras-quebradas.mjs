@@ -37,6 +37,7 @@ import { DemonioImporter } from "./module/apps/DemonioImporter.mjs";
 import { CriaturaImporter } from "./module/apps/CriaturaImporter.mjs";
 import { DirectorWidget } from "./module/apps/DirectorWidget.mjs";
 import { TQLinkCreator } from "./module/apps/TQLinkCreator.mjs";
+import { ModoTrey } from "./module/apps/ModoTrey.mjs";
 
 const { Actors, Items } = foundry.documents.collections;
 const { loadTemplates } = foundry.applications.handlebars;
@@ -72,6 +73,13 @@ Hooks.once("init", () => {
 
   game.settings.register("tierras-quebradas", "lealtadesEnTexto", {
     name: "Lealtades en texto", hint: "Muestra las lealtades con etiquetas de texto y valores en círculo, en lugar de los iconos por defecto.", scope: "client", config: true, type: Boolean, default: false, onChange: reRenderPJSheets
+  });
+
+  game.settings.register("tierras-quebradas", "modoTrey", {
+    name: "Activar modo Trey",
+    hint: "Muestra una zona de lanzamiento de dados en la esquina inferior izquierda. Añade un botón en los controles para lanzar D6+D8+D10.",
+    scope: "client", config: true, type: Boolean, default: false,
+    onChange: value => value ? ModoTrey.activar() : ModoTrey.desactivar()
   });
 
   CONFIG.TQ = {
@@ -130,6 +138,7 @@ Hooks.once("init", () => {
 
 Hooks.once("ready", async () => {
   console.log("Tierras Quebradas | Sistema listo");
+  if (game.settings.get("tierras-quebradas", "modoTrey")) ModoTrey.activar();
   if (!game.user.isGM) return;
   for (const pack of game.packs.filter(p => p.metadata.system === "tierras-quebradas")) {
     if (pack.locked) await pack.configure({ locked: false });
@@ -224,45 +233,59 @@ async function _poblarDeidades() {
 }
 
 Hooks.on("renderSceneControls", (_app, html) => {
-  if (!game.user.isGM) return;
   const el = (html instanceof HTMLElement) ? html : html[0];
   if (!el?.querySelector) return;
 
   const menu = el.querySelector("#scene-controls-layers") ?? el.querySelector("menu");
   if (!menu) return;
 
-  if (!el.querySelector("#tq-director-toggle")) {
-    const li = document.createElement("li");
-    const btn = document.createElement("button");
-    btn.type = "button";
-    btn.id = "tq-director-toggle";
-    btn.className = "control ui-control layer icon fa-solid fa-crown";
-    btn.setAttribute("data-tooltip", "Widget del Director");
-    btn.setAttribute("aria-label", "Widget del Director");
-    btn.addEventListener("click", () => {
-      const w = game.tq?.directorWidget;
-      if (!w) return;
-      if (w.rendered) w.close();
-      else w.render(true);
-    });
-    li.appendChild(btn);
-    menu.appendChild(li);
+  if (game.user.isGM) {
+    if (!el.querySelector("#tq-director-toggle")) {
+      const li = document.createElement("li");
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.id = "tq-director-toggle";
+      btn.className = "control ui-control layer icon fa-solid fa-crown";
+      btn.setAttribute("data-tooltip", "Widget del Director");
+      btn.setAttribute("aria-label", "Widget del Director");
+      btn.addEventListener("click", () => {
+        const w = game.tq?.directorWidget;
+        if (!w) return;
+        if (w.rendered) w.close();
+        else w.render(true);
+      });
+      li.appendChild(btn);
+      menu.appendChild(li);
+    }
+
+    if (!el.querySelector("#tq-link-creator-toggle")) {
+      const li = document.createElement("li");
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.id = "tq-link-creator-toggle";
+      btn.className = "control ui-control layer icon fa-solid fa-link";
+      btn.setAttribute("data-tooltip", game.i18n.localize("TQ.LinkCreator.Titulo"));
+      btn.setAttribute("aria-label", game.i18n.localize("TQ.LinkCreator.Titulo"));
+      btn.addEventListener("click", () => {
+        const w = game.tq?.linkCreator;
+        if (!w) return;
+        if (w.rendered) w.close();
+        else w.render(true);
+      });
+      li.appendChild(btn);
+      menu.appendChild(li);
+    }
   }
 
-  if (!el.querySelector("#tq-link-creator-toggle")) {
+  if (game.settings.get("tierras-quebradas", "modoTrey") && !el.querySelector("#tq-modo-trey-lanzar")) {
     const li = document.createElement("li");
     const btn = document.createElement("button");
     btn.type = "button";
-    btn.id = "tq-link-creator-toggle";
-    btn.className = "control ui-control layer icon fa-solid fa-link";
-    btn.setAttribute("data-tooltip", game.i18n.localize("TQ.LinkCreator.Titulo"));
-    btn.setAttribute("aria-label", game.i18n.localize("TQ.LinkCreator.Titulo"));
-    btn.addEventListener("click", () => {
-      const w = game.tq?.linkCreator;
-      if (!w) return;
-      if (w.rendered) w.close();
-      else w.render(true);
-    });
+    btn.id = "tq-modo-trey-lanzar";
+    btn.className = "control ui-control layer icon fa-solid fa-dice";
+    btn.setAttribute("data-tooltip", "Modo Trey — Lanzar D6+D8+D10");
+    btn.setAttribute("aria-label", "Modo Trey — Lanzar D6+D8+D10");
+    btn.addEventListener("click", () => ModoTrey.lanzar());
     li.appendChild(btn);
     menu.appendChild(li);
   }
@@ -412,21 +435,54 @@ Hooks.on("deleteItem", async (item, options, userId) => {
   await actor._revertirOrigen(item);
 });
 
+function _esArmaConPosibleProteccion(item) {
+  return item.type === "arma" || (item.type === "objetoMagico" && item.system.tipoObjeto === "arma");
+}
+
 Hooks.on("createItem", async (item, options, userId) => {
   if (game.userId !== userId) return;
-  if (item.type !== "arma") return;
+  if (!_esArmaConPosibleProteccion(item)) return;
   if (!item.system.tieneProteccion) return;
   if (options.tqFromArma) return;
   const actor = item.parent;
   if (!actor) return;
-  const arm = await Item.create({ name: item.name, type: "armadura", system: { proteccion: item.system.proteccionValor ?? 0, tipo: "dura", zona: "Escudo", carga: 0 } }, { parent: actor, tqFromArma: true });
+  const arm = await Item.create({ name: item.name, type: "armadura", system: { proteccion: item.system.proteccionValor ?? 0, tipo: "dura", zona: "Escudo", carga: 0, equipped: item.system.equipped !== false } }, { parent: actor, tqFromArma: true });
   if (arm) await arm.setFlag("tierras-quebradas", "fromArmaId", item.id);
+});
+
+Hooks.on("updateItem", async (item, changes, options, userId) => {
+  if (game.userId !== userId) return;
+  if (options.tqFromArma) return;
+  const actor = item.parent;
+  if (!actor) return;
+
+  // Armadura vinculada → sincronizar equipped de vuelta al arma fuente
+  const fromArmaId = item.getFlag("tierras-quebradas", "fromArmaId");
+  if (fromArmaId && changes.system?.equipped !== undefined) {
+    const armaFuente = actor.items.get(fromArmaId);
+    if (armaFuente) await armaFuente.update({ "system.equipped": changes.system.equipped }, { tqFromArma: true });
+    return;
+  }
+
+  if (!_esArmaConPosibleProteccion(item)) return;
+  const armaduraVinculada = actor.items.find(i => i.type === "armadura" && i.getFlag("tierras-quebradas", "fromArmaId") === item.id);
+  const tieneProteccion = item.system.tieneProteccion;
+  if (tieneProteccion && !armaduraVinculada) {
+    const arm = await Item.create({ name: item.name, type: "armadura", system: { proteccion: item.system.proteccionValor ?? 0, tipo: "dura", zona: "Escudo", carga: 0, equipped: item.system.equipped !== false } }, { parent: actor, tqFromArma: true });
+    if (arm) await arm.setFlag("tierras-quebradas", "fromArmaId", item.id);
+  } else if (!tieneProteccion && armaduraVinculada) {
+    await armaduraVinculada.delete({ tqFromArma: true });
+  } else if (tieneProteccion && armaduraVinculada) {
+    const upd = { "system.proteccion": item.system.proteccionValor ?? 0 };
+    if (changes.system?.equipped !== undefined) upd["system.equipped"] = changes.system.equipped;
+    await armaduraVinculada.update(upd, { tqFromArma: true });
+  }
 });
 
 Hooks.on("deleteItem", async (item, options, userId) => {
   if (game.userId !== userId) return;
-  if (item.type !== "arma") return;
-  if (!item.system.tieneProteccion) return;
+  if (!_esArmaConPosibleProteccion(item)) return;
+  if (options.tqFromArma) return;
   const actor = item.parent;
   if (!actor) return;
   const armadura = actor.items.find(i => i.type === "armadura" && i.getFlag("tierras-quebradas", "fromArmaId") === item.id);

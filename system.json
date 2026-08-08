@@ -2,7 +2,7 @@
   "id": "tierras-quebradas",
   "title": "Tierras Quebradas",
   "description": "Tierras Quebradas: Edición Revisada",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "background": "systems/tierras-quebradas/images/default/Espada_blanca.png",
   "url": "https://github.com/ViajeroSalvaje/tierras-quebradas",
   "manifest": "https://raw.githubusercontent.com/ViajeroSalvaje/tierras-quebradas/main/system.json",
