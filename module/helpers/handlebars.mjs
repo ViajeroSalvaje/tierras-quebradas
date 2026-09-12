@@ -1,11 +1,11 @@
 export function registerHandlebarsHelpers() {
   Handlebars.registerHelper("concat", function (...args) {
-    args.pop(); // remove options object
+    args.pop();
     return args.join("");
   });
 
   Handlebars.registerHelper("tq-sum", function (...args) {
-    args.pop(); // remove options object
+    args.pop();
     return args.reduce((s, v) => s + (parseInt(v) || 0), 0);
   });
 
@@ -13,13 +13,11 @@ export function registerHandlebarsHelpers() {
     return bases?.[baseNombre]?.valor ?? 0;
   });
 
-  Handlebars.registerHelper("tq-habilidad-total", function (habilidad, bases, estorbo) {
+  Handlebars.registerHelper("tq-habilidad-total", function (habilidad, bases) {
     if (!habilidad || !bases) return 0;
     const base = bases[habilidad.base]?.valor ?? 0;
     const nivel = habilidad.nivel ?? 0;
-    const multiplicacionEstorbo = habilidad.estorbo ?? 0;
-    const penalizacionEstorbo = multiplicacionEstorbo * (estorbo ?? 0);
-    return base + nivel - penalizacionEstorbo;
+    return base + nivel;
   });
 
   Handlebars.registerHelper("tq-base-abrev", function (base) {
@@ -35,6 +33,10 @@ export function registerHandlebarsHelpers() {
 
   Handlebars.registerHelper("tq-gt", function (a, b) {
     return a > b;
+  });
+
+  Handlebars.registerHelper("tq-lt", function (a, b) {
+    return a < b;
   });
 
   Handlebars.registerHelper("tq-add", function (...args) {
@@ -60,7 +62,6 @@ export function registerHandlebarsHelpers() {
     return out;
   });
 
-  // Compatibility fallbacks for helpers Foundry may or may not provide
   if (!Handlebars.helpers["checked"]) {
     Handlebars.registerHelper("checked", function (value) {
       return value ? "checked" : "";
@@ -70,7 +71,7 @@ export function registerHandlebarsHelpers() {
   // Crea un array literal: {{#each (array "a" "b" "c")}}
   if (!Handlebars.helpers["array"]) {
     Handlebars.registerHelper("array", function (...args) {
-      args.pop(); // remove options object
+      args.pop();
       return args;
     });
   }

@@ -1,5 +1,6 @@
 import { ARMA_A_HABILIDAD_PNJ } from "../helpers/habilidades.mjs";
 import { resolverHabilidadesArma, aplicarResolucionesArma, normalizarHabilidades } from "../helpers/importerArmaResolver.mjs";
+import { tqRound } from "../helpers/utils.mjs";
 
 const { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api;
 
@@ -14,16 +15,34 @@ export class CriaturaImporter extends HandlebarsApplicationMixin(ApplicationV2) 
 
   get title() { return game.i18n.localize("TQ.Importer.TituloCriatura"); }
 
-  static EJEMPLO = `Gólem de hierro AUTÓMATA
-El gólem de hierro es un hombre metálico articulado de cráneo tachonado en hierro.
-CUE: 10 ATR: - PV: 24 | 12 | 6
-MEN: 3 FUE: 14 Mod al Daño: +5/+7
-ESP: 6 TAM: +4 Al impacto: 0
-Protección: 5 (dura).
+  static EJEMPLO = `Gul MUERTO VIVIENTE
+Los gules fueron en su día seres humanos que, por su
+pasión por la muerte, por sus tratos impíos con entidades sobrenaturales o por efecto de maldiciones o brujerías, degeneraron hasta convertirse en gules.
+Ahora sus cuerpos están en realidad muertos, y es
+la magia lo que los conserva. Su corazón no late, no
+respiran y no necesitan comer ni beber ni dormir. Su
+apariencia es la de seres humanos pálidos y flacos,
+huesudos, encorvados, de ojos hundidos y salvajes,
+uñas largas y endurecidas, y apenas unos mechones
+de pelo grasiento en lo que fuera su cabellera.
+Conservan solo vagos recuerdos de su vida anterior, y no pueden utilizar la hechicería ni habilidades
+complejas. Su sed de vida ajena los consume, y devoran cuerpos humanos tanto vivos como muertos.
+Cuando un gul acaba con la vida de otro ser humano, puede decidir transformarlo. Para ello enfrenta su
+Espíritu con el de la víctima recién asesinada. Si tiene
+éxito, el alma del muerto no viajará hasta el más allá,
+sino que permanecerá en su cuerpo muerto en forma
+de gul. Pasado un día, la locura y el ansia de carne
+humana se apoderan de él, olvida su propio yo y la
+transformación culmina.
+Por su naturaleza de ultratumba, los gules no sufren
+Desangres ni quedan Debilitados por la acumulación de
+heridas leves.
+CUE: 7 ATR: -3 PV: 16 | 8 | 4
+MEN: 4 FUE: 6 Mod al Daño: +2/+3
+ESP: 6 TAM: -1 Al impacto: 0
+Protección: 0.
 Armas:
-Púas 14. Daño 2+5.
-Habilidades: Atletismo 12, Esquivar 10, Pelea 14.
-Movimiento: Correr, medio.`;
+Garras 12. Daño 1+2. Combo.`;
 
   static open() {
     return new CriaturaImporter().render(true);
@@ -291,7 +310,7 @@ Movimiento: Correr, medio.`;
     const cue = datos.cuerpo, men = datos.mente, esp = datos.espiritu;
     const atr = datos.atractivo, tam = datos.tamanyo;
     const bases = {
-      agilidad: cue - tam, comunicacion: esp + atr, cultura: men, hechiceria: Math.round((men + esp) / 3), percepcion: Math.round((men + esp) / 2), vigor: cue, tecnica: Math.round((men + cue) / 2)
+      agilidad: cue - tam, comunicacion: esp + atr, cultura: men, hechiceria: Math.round((men + esp) / 3), percepcion: tqRound((men + esp) / 2), vigor: cue, tecnica: tqRound((men + cue) / 2)
     };
 
     const packHabs = game.packs.get("tierras-quebradas.habilidades");

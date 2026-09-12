@@ -1,5 +1,6 @@
 import { ARMA_A_HABILIDAD_PNJ } from "../helpers/habilidades.mjs";
 import { resolverHabilidadesArma, aplicarResolucionesArma, normalizarHabilidades } from "../helpers/importerArmaResolver.mjs";
+import { tqRound } from "../helpers/utils.mjs";
 
 const { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api;
 
@@ -287,7 +288,7 @@ Movimiento: Correr, rápido.`;
     const cue = datos.cuerpo, men = datos.mente, esp = datos.espiritu;
     const atr = datos.atractivo, tam = datos.tamanyo;
     const bases = {
-      agilidad: cue - tam, comunicacion: esp + atr, cultura: men, hechiceria: Math.round((men + esp) / 3), percepcion: Math.round((men + esp) / 2), vigor: cue, tecnica: Math.round((men + cue) / 2)
+      agilidad: cue - tam, comunicacion: esp + atr, cultura: men, hechiceria: Math.round((men + esp) / 3), percepcion: tqRound((men + esp) / 2), vigor: cue, tecnica: tqRound((men + cue) / 2)
     };
 
     const packHabs = game.packs.get("tierras-quebradas.habilidades");

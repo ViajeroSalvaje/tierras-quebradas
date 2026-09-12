@@ -212,6 +212,33 @@ export class CriaturaSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       item?.sheet.render(true);
     });
 
+    el.querySelector(".herida-add")?.addEventListener("click", ev => {
+      ev.preventDefault();
+      const heridas = Object.values(foundry.utils.deepClone(this.actor.system.heridas ?? {}));
+      heridas.push({ tipo: "rasguño", descripcion: "", dano: 0, sanando: false });
+      this.actor.update({ "system.heridas": heridas });
+    });
+
+    el.querySelectorAll(".herida-delete").forEach(a => {
+      a.addEventListener("click", ev => {
+        ev.preventDefault();
+        const idx = parseInt(ev.currentTarget.dataset.idx);
+        const heridas = Object.values(foundry.utils.deepClone(this.actor.system.heridas ?? {}));
+        heridas.splice(idx, 1);
+        this.actor.update({ "system.heridas": heridas });
+      });
+    });
+
+    el.querySelectorAll(".toggle-herida-sanando").forEach(a => {
+      a.addEventListener("click", ev => {
+        ev.preventDefault();
+        const idx = parseInt(ev.currentTarget.dataset.idx);
+        const heridas = Object.values(foundry.utils.deepClone(this.actor.system.heridas ?? {}));
+        if (heridas[idx]) heridas[idx].sanando = !heridas[idx].sanando;
+        this.actor.update({ "system.heridas": heridas });
+      });
+    });
+
     el.querySelectorAll(".pnj-item-borrar").forEach(a => {
       a.addEventListener("click", ev => {
         this.actor.items.get(ev.currentTarget.dataset.id)?.delete();
@@ -238,9 +265,26 @@ export class CriaturaSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     });
 
     el.querySelectorAll(".pnj-tirar-arma").forEach(a => {
-      a.addEventListener("click", ev => {
+      a.addEventListener("click", async ev => {
         if (ev.currentTarget.classList.contains("tq-desequipado")) return;
-        this.actor.tirarArma(ev.currentTarget.dataset.id);
+        const itemId = ev.currentTarget.dataset.id;
+        const item = this.actor.items.get(itemId);
+        const macroNombre = item?.getFlag("tierras-quebradas", "macroNombre");
+        if (macroNombre) {
+          let macro = game.macros.getName(macroNombre);
+          if (!macro) {
+            const pack = game.packs.get("tierras-quebras-tres-secretos.tres-secretos-macros");
+            const entry = pack?.index.find(e => e.name === macroNombre);
+            if (entry) macro = await pack.getDocument(entry._id);
+          }
+          if (macro) {
+            globalThis._tqLakunaMacroCtx = { actorId: this.actor.id, itemId };
+            await macro.execute();
+            globalThis._tqLakunaMacroCtx = null;
+            return;
+          }
+        }
+        this.actor.tirarArma(itemId);
       });
     });
 

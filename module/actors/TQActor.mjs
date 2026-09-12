@@ -1,6 +1,7 @@
 import { TQRoll } from "../rolls/TQRoll.mjs";
 import { tirarComplicacion, TABLA_COMPLICACIONES_MAGIA } from "../tablas/TQTablasSucesos.mjs";
 import { ARMA_A_HABILIDAD_PNJ } from "../helpers/habilidades.mjs";
+import { tqRound } from "../helpers/utils.mjs";
 
 const { DialogV2 } = foundry.applications.api;
 
@@ -49,10 +50,10 @@ export class TQActor extends Actor {
     this.system.bases.agilidad.valor = cue - tam;
     this.system.bases.comunicacion.valor = esp + atr;
     this.system.bases.cultura.valor = men;
-    this.system.bases.hechiceria.valor = Math.round((men + esp) / 3);
-    this.system.bases.percepcion.valor = Math.round((men + esp) / 2);
+    this.system.bases.hechiceria.valor = tqRound((men + esp) / 3);
+    this.system.bases.percepcion.valor = tqRound((men + esp) / 2);
     this.system.bases.vigor.valor = cue;
-    this.system.bases.tecnica.valor = Math.round((men + cue) / 2);
+    this.system.bases.tecnica.valor = tqRound((men + cue) / 2);
   }
 
   updateSalud() {
@@ -62,21 +63,21 @@ export class TQActor extends Actor {
       ? this.system.derivadas.fuerza.valor
       : cuerpo + tamano + 10;
     this.system.salud.pvMax.valor = pvMax;
-    this.system.salud.pvRagunos.valor = Math.round(pvMax / 5);
+    this.system.salud.pvRagunos.valor = tqRound(pvMax / 5);
     this.system.salud.pvLeve.valor = Math.floor(Math.floor(pvMax / 2) / 2);
     this.system.salud.pvGrave.valor = Math.floor(pvMax / 2);
   }
 
   _calcularUmbralesSalud() {
     const pvMax = this.system.salud.pvMax?.valor ?? 0;
-    this.system.salud.pvRagunos.valor = Math.round(pvMax / 5);
+    this.system.salud.pvRagunos.valor = tqRound(pvMax / 5);
     this.system.salud.pvLeve.valor = Math.floor(Math.floor(pvMax / 2) / 2);
     this.system.salud.pvGrave.valor = Math.floor(pvMax / 2);
   }
 
   calcMD() {
     const fuerza = this.system.derivadas.fuerza.valor;
-    const md1mBase = Math.round(fuerza / 3);
+    const md1mBase = tqRound(fuerza / 3);
     let md2mBase;
     if (md1mBase >= 10) {
       md2mBase = md1mBase + 3;
@@ -91,10 +92,13 @@ export class TQActor extends Actor {
 
   _calcularEstorbo() {
       const cargaItems = this.items.reduce((total, item) => {
+
+      if (item.system.equipped === false) return total;
       const cargaItem = item.system.carga ?? 0;
       return total + (cargaItem >= 0.3 ? cargaItem : 0);
     }, 0);
-    const carga = cargaItems + Math.floor((this.system.dinero ?? 0) / 200);
+    const totalMonedas = (this.system.dineroCobre ?? 0) + (this.system.dinero ?? 0) + (this.system.dineroPlata ?? 0) + (this.system.dineroOro ?? 0);
+    const carga = cargaItems + Math.floor(totalMonedas / 200);
     this.system.carga.valor = Math.round(carga * 10) / 10;
 
     const fuerza = this.system.derivadas.fuerza.valor;
@@ -106,15 +110,21 @@ export class TQActor extends Actor {
     if (carga > fuerza * 4) this.system.salud.incapacitado = true;
   }
 
+  static ESTORBO_HABILIDADES = {
+    atletismo: 1, armasAsta: 1, armasEspada: 1, armasMangos: 1, armasPunhal: 1,
+    escudo: 1, pelea: 1, lanzar: 1, arco: 1, ballesta: 1, canonDeMano: 1, honda: 1,
+    esquivar: 1, hurtar: 1, nadar: 2, sigilo: 1, trepar: 1
+  };
+
   _calcularTotalesHabilidades() {
     const habs = this.system.habilidades;
     const bases = this.system.bases;
-    const actorEstorbo = this.type === "pj" ? (this.system.estorbo?.valor ?? 0) : 0;
     for (const [clave, hab] of Object.entries(habs)) {
       if (!hab || typeof hab !== "object") continue;
+      const estorboCanon = TQActor.ESTORBO_HABILIDADES[clave];
+      if (estorboCanon !== undefined) hab.estorbo = estorboCanon;
       const baseValor = bases[hab.base]?.valor ?? 0;
-      const multiplicador = this.type === "pj" ? (hab.estorbo ?? 0) : 0;
-      hab.total = baseValor + (hab.nivel ?? 0)  - actorEstorbo * multiplicador;
+      hab.total = baseValor + (hab.nivel ?? 0);
     }
   }
 
@@ -130,9 +140,17 @@ export class TQActor extends Actor {
     this.system.hechiceria.espirituConsagrado = espHechizos + espSintonizados;
   }
 
+  static _hasLucky(actor) {
+    return actor?.items.some(i => i.type === "rasgo" && i.name === "Buena suerte") ?? false;
+  }
+
   _calcularFortuna() {
     const espiritu = this.system.caracteristicas.espiritu.valor;
+    const mente = this.system.caracteristicas.mente.valor;
     this.system.fortuna.max = espiritu;
+    const luckyMax = TQActor._hasLucky(this) ? Math.floor(mente / 2) : 0;
+    this.system.fortuna.luckyMax = luckyMax;
+    if ((this.system.fortuna.lucky ?? 0) > luckyMax) this.system.fortuna.lucky = luckyMax;
   }
 
   // Habillidad de Primeros Auxilios. Tiene distinto diálogo que otras habilidades
@@ -153,14 +171,15 @@ export class TQActor extends Actor {
     const multiplicacionEstorbo = habilidad.estorbo ?? 0;
     const penalizacionEstorbo = (this.system.estorbo?.valor ?? 0) * multiplicacionEstorbo;
     const penalizacionYelmo = habilidad.base === "percepcion" ? this._penalizacionPercepcionYelmo() : 0;
-    const total = base + (habilidad.nivel ?? 0)  - penalizacionEstorbo - penalizacionYelmo;
+    const total = base + (habilidad.nivel ?? 0) - penalizacionYelmo;
     const etiqueta = (habilidad.nombre && clave.startsWith("idioma"))
       ? habilidad.nombre
       : game.i18n.localize(`TQ.Habilidades.${clave}`);
 
-    const modDesglose = (this.system.salud?.ceguera && TQActor.HABILIDADES_CEGUERA.has(clave))
-      ? [{ label: "Ceguera", valor: -4, signo: "−", valorAbs: 4 }]
-      : null;
+    const mods = [];
+    if (penalizacionEstorbo > 0) mods.push({ label: "Estorbo", valor: -penalizacionEstorbo, signo: "−", valorAbs: penalizacionEstorbo });
+    if (this.system.salud?.ceguera && TQActor.HABILIDADES_CEGUERA.has(clave)) mods.push({ label: "Ceguera", valor: -4, signo: "−", valorAbs: 4 });
+    const modDesglose = mods.length > 0 ? mods : null;
     const bonificadorDefecto = this._sumModsMagicosHabilidad(clave);
     const resultado = await TQRoll.dialogoTirada(etiqueta, total, { actor: this, habClave: clave, modDesglose, bonificadorDefecto });
     if (resultado && resultado.exitos >= 0 && !resultado.autoExito && !habilidad.exito) {
@@ -169,7 +188,8 @@ export class TQActor extends Actor {
     return resultado;
   }
 
-  async alternarExitoHabilidad(clave) {   /** Ojo. Sin esto no se pueden marcar/desmarcar manualmente */
+  // Ojo: sin esto no se pueden marcar/desmarcar manualmente
+  async alternarExitoHabilidad(clave) {
     const habilidad = this.system.habilidades?.[clave];
     if (!habilidad) return;
     await this.update({ [`system.habilidades.${clave}.exito`]: !habilidad.exito });
@@ -307,8 +327,7 @@ export class TQActor extends Actor {
       const habilidad = this.system.habilidades?.[habClave];
       if (habilidad) {
         const base = this.system.bases[habilidad.base]?.valor ?? 0;
-        const multiplicacionEstorbo = habilidad.estorbo ?? 0;
-        puntuacion = base + (habilidad.nivel ?? 0)  - (this.system.estorbo?.valor ?? 0) * multiplicacionEstorbo;
+        puntuacion = base + (habilidad.nivel ?? 0);
       }
       if (TQActor.HABILIDADES_ESPECIALIZADAS.has(habClave) && (habilidad?.nivel ?? 0) === 0) {
         return ui.notifications.warn(game.i18n.format("TQ.Warn.ArmaEspecializada", { nombre: arma.name }));
@@ -320,6 +339,12 @@ export class TQActor extends Actor {
     }
 
     const modDesglose = [];
+
+    if (this.type === "pj") {
+      const habilidad = this.system.habilidades?.[habClave];
+      const penalizacionEstorboArma = (habilidad?.estorbo ?? 0) * (this.system.estorbo?.valor ?? 0);
+      if (penalizacionEstorboArma > 0) modDesglose.push({ label: "Estorbo", valor: -penalizacionEstorboArma, signo: "−", valorAbs: penalizacionEstorboArma });
+    }
 
     const bonusMagicoActivo = arma.type === "objetoMagico"
       && arma.system.equipped !== false
@@ -462,12 +487,16 @@ export class TQActor extends Actor {
         buttons: [
           { action: "acepta", label: game.i18n.localize("TQ.Melee.AceptaMelee"), default: true },
           { action: "ignora", label: game.i18n.localize("TQ.Melee.IgnoraMelee") },
-          { action: "escapa", label: game.i18n.localize("TQ.Melee.TrataDeEscapar") }
+          { action: "escapa", label: game.i18n.localize("TQ.Melee.TrataDeEscapar") },
+          { action: "multiple", label: game.i18n.localize("TQ.Melee.MeleeMultiple") }
         ]
       });
       if (!tipoAccion) return;
       if (tipoAccion === "ignora" || tipoAccion === "escapa") {
         return this._tirarGolpeAislado(arma, puntuacion, md, tipoAccion, modDesglose, targetActor);
+      }
+      if (tipoAccion === "multiple") {
+        return this._tirarMeleeMultiple(arma, puntuacion, md, modDesglose, targetActor);
       }
     }
 
@@ -696,6 +725,7 @@ export class TQActor extends Actor {
     let fortunaBonus = 0;
     if (this.system.pasionAmorUsada) { fortunaBonus++; guiasUpdates["system.pasionAmorUsada"] = false; }
     if (this.system.pasionOdioUsada) { fortunaBonus++; guiasUpdates["system.pasionOdioUsada"] = false; }
+    if (this.system.pasionExtraUsada) { fortunaBonus++; guiasUpdates["system.pasionExtraUsada"] = false; }
     guiasUpdates["system.pasionFlag"] = "";
     if (fortunaBonus > 0) {
       guiasUpdates["system.fortuna.actual"] = Math.min(fortuna.actual + fortunaBonus, fortuna.max);
@@ -715,28 +745,33 @@ export class TQActor extends Actor {
       ui.notifications.warn(game.i18n.localize("TQ.Warn.PasionActiva"));
       return;
     }
-    const campo = tipo === "amor" ? "pasionAmorUsada" : "pasionOdioUsada";
+    const campo = tipo === "amor" ? "pasionAmorUsada" : tipo === "odio" ? "pasionOdioUsada" : "pasionExtraUsada";
     if (this.system[campo]) {
       ui.notifications.warn(game.i18n.localize("TQ.Warn.PasionUsada"));
       return;
     }
     await this.update({ "system.pasionFlag": tipo, [`system.${campo}`]: true });
-    const nombre = tipo === "amor" ? this.system.pasionAmor : this.system.pasionOdio;
+    const nombre = tipo === "amor" ? this.system.pasionAmor : tipo === "odio" ? this.system.pasionOdio : this.system.pasionExtra;
     ui.notifications.info(game.i18n.format("TQ.Info.PasionActivada", { nombre: nombre || tipo }));
   }
 
   async forzarPasion(tipo) {
-    const campo = tipo === "amor" ? "pasionAmorUsada" : "pasionOdioUsada";
+    const campo = tipo === "amor" ? "pasionAmorUsada" : tipo === "odio" ? "pasionOdioUsada" : "pasionExtraUsada";
     await this.update({ "system.pasionFlag": tipo, [`system.${campo}`]: true });
-    const nombre = tipo === "amor" ? this.system.pasionAmor : this.system.pasionOdio;
+    const nombre = tipo === "amor" ? this.system.pasionAmor : tipo === "odio" ? this.system.pasionOdio : this.system.pasionExtra;
     ui.notifications.info(game.i18n.format("TQ.Info.PasionForzada", { actor: this.name, nombre: nombre || tipo }));
   }
 
   async resetearPasiones() {
     await this.update({
-      "system.pasionAmorUsada": false, "system.pasionOdioUsada": false, "system.pasionFlag": ""
+      "system.pasionAmorUsada": false, "system.pasionOdioUsada": false, "system.pasionExtraUsada": false, "system.pasionFlag": ""
     });
     ui.notifications.info(game.i18n.localize("TQ.Info.PasionReseteada"));
+  }
+
+  async resistirPasion() {
+    const espiritu = this.system.caracteristicas?.espiritu?.valor ?? 0;
+    await TQRoll.dialogoTirada(game.i18n.localize("TQ.Pasion.Resistir"), espiritu, { actor: this });
   }
 
   _penalizacionPercepcionYelmo() {
@@ -945,25 +980,27 @@ export class TQActor extends Actor {
     const mdDefecto = this.type === "pj"
       ? this._sumModsMagicosMagia(hechizo.system.verbo, hechizo.system.esfera)
       : 0;
-    console.log("[md]", hechizo.system.verbo, hechizo.system.esfera, "→", mdDefecto, this.system.hechiceria?.modEsferas);
     const contenidoDialogo = await foundry.applications.handlebars.renderTemplate(
       "systems/tierras-quebradas/templates/dialogs/lanzar-hechizo.hbs", { hechizo, puntuacion, dif, pmBase, pmMin, pmMax, pmVariable: pmMax > 0, pmActual, pmMaxTotal, mdDefecto }
     );
 
     const fortunaActual = this.system.fortuna?.actual ?? 0;
+    const luckyActual = TQActor._hasLucky(this) ? (this.system.fortuna?.lucky ?? 0) : 0;
     const leerCamposHechizo = campos => ({
       pmElegido: parseInt(campos.pmElegido?.value) || pmMin, blancos: Math.max(1, parseInt(campos.blancos?.value) || 1), duracion: campos.duracion?.value   || "standard", ceremonia: campos.ceremonia?.checked ?? false, grimorio: campos.grimorio?.checked ?? false, acelerar: campos.acelerar?.checked ?? false, limFisica: parseInt(campos.limFisica?.value) || 0, md: parseInt(campos.md?.value) || 0
     });
     const config = await DialogV2.wait({
       window: { title: `Lanzar: ${hechizo.name}`, width: 420 }, classes: [
-        "lh-dialog-window", "tq-tirada-dialog", ...(fortunaActual < 2 ? ["tq-fort-insuf"] : [])
+        "lh-dialog-window", "tq-tirada-dialog", ...(fortunaActual < 2 && luckyActual < 2 && !(fortunaActual >= 1 && luckyActual >= 1) ? ["tq-fort-insuf"] : [])
       ], content: contenidoDialogo, rejectClose: false, buttons: [
         {
           action: "lanzar", label: "Lanzar hechizo", default: true, callback: (_ev, button) => leerCamposHechizo(button.form.elements)
         }, {
           action: "dos-fortuna", label: "Usar 2 Fortuna", callback: (_ev, button) => {
-            if (fortunaActual < 2) return null;
-            return { ...leerCamposHechizo(button.form.elements), dosFortuna: true };
+            if (fortunaActual < 2 && luckyActual < 2 && !(fortunaActual >= 1 && luckyActual >= 1)) return null;
+            const luckyDosFortuna = fortunaActual < 2 && luckyActual >= 2;
+            const mixedDosFortuna = !luckyDosFortuna && fortunaActual < 2 && fortunaActual >= 1 && luckyActual >= 1;
+            return { ...leerCamposHechizo(button.form.elements), dosFortuna: true, luckyDosFortuna, mixedDosFortuna };
           }
         }, { action: "cancelar", label: "Cancelar" }, {
           action: "auto", label: "Éxito Automático", callback: (_ev, button) => ({ ...leerCamposHechizo(button.form.elements), autoExito: true })
@@ -1004,7 +1041,13 @@ export class TQActor extends Actor {
     } else if (config.dosFortuna) {
       const roll1 = await TQRoll._tirarExplosivo(dadoSize, modoTirada);
       const roll2 = await TQRoll._tirarExplosivo(dadoSize, modoTirada);
-      await this.update({ "system.fortuna.actual": Math.max(0, fortunaActual - 2) });
+      if (config.mixedDosFortuna) {
+        await this.update({ "system.fortuna.actual": Math.max(0, fortunaActual - 1), "system.fortuna.lucky": Math.max(0, (this.system.fortuna?.lucky ?? 0) - 1) });
+      } else if (config.luckyDosFortuna) {
+        await this.update({ "system.fortuna.lucky": Math.max(0, (this.system.fortuna?.lucky ?? 0) - 2) });
+      } else {
+        await this.update({ "system.fortuna.actual": Math.max(0, fortunaActual - 2) });
+      }
       dadoTotal = roll1.total + roll2.total;
       tiradas = roll1.tiradas;
       numComplicaciones = (roll1.dado === 1 ? 1 : 0) + (roll2.dado === 1 ? 1 : 0);
@@ -1056,7 +1099,7 @@ export class TQActor extends Actor {
 
     const mostrarAplicarResultado = !fallo;
     const datosChat = {
-      etiqueta: hechizo.name, puntuacion, bonificador: mod, dificultad: dif, debilitado, dolorExtremo, dado: dadoTotal, dadoDisplay: config.autoExito ? "—" : (dadoDisplayCustom ?? TQRoll._dadoDisplay(dadoTotal, tiradas)), total, exitos, resultado, css: resultado.css, pd: null, desgloseHechizo, modDesglose, mostrarFortuna: !config.autoExito && !config.dosFortuna, actorId: this.id, mostrarAplicarResultado, bonusEspiritu, requiereTiradaEspiritu: hechizo.system.requiereTiradaEspiritu ?? false
+      etiqueta: hechizo.name, puntuacion, bonificador: mod, dificultad: dif, debilitado, dolorExtremo, dado: dadoTotal, dadoDisplay: config.autoExito ? "—" : (dadoDisplayCustom ?? TQRoll._dadoDisplay(dadoTotal, tiradas)), total, exitos, resultado, css: resultado.css, pd: null, desgloseHechizo, modDesglose, mostrarFortuna: !config.autoExito && !config.dosFortuna, mostrarLucky: !config.autoExito && !config.dosFortuna && TQRoll._hasLucky(this), actorId: this.id, mostrarAplicarResultado, bonusEspiritu, requiereTiradaEspiritu: hechizo.system.requiereTiradaEspiritu ?? false
     };
     const contenido = await foundry.applications.handlebars.renderTemplate(
       "systems/tierras-quebradas/templates/dialogs/tirada-resultado.hbs", datosChat
@@ -2011,6 +2054,159 @@ export class TQActor extends Actor {
     if (game.userId !== userId) return;
     const pvMax = this.system.salud?.pvMax?.valor ?? 0;
     if (pvMax > 0) await this.update({ "system.salud.pvActual.valor": pvMax });
+  }
+
+  async _dialogoSeleccionTokens(titulo, tokens) {
+    if (!tokens.length) return [];
+    const filas = tokens.map(t => `
+      <div style="display:flex;align-items:center;gap:8px;margin:4px 0;">
+        <input type="checkbox" id="tok-${t.id}" data-id="${t.id}" />
+        <label for="tok-${t.id}" style="flex:1;cursor:pointer;">${t.name}</label>
+        <span style="font-size:0.85em;opacity:0.7;">${t.melee}</span>
+      </div>`).join("");
+    return await foundry.applications.api.DialogV2.wait({
+      window: { title: titulo, width: 320 },
+      content: `<div style="padding:4px 0;">${filas}</div>`,
+      rejectClose: false,
+      buttons: [
+        { action: "ok", label: "OK", default: true, callback: (_ev, btn) => {
+          return [...btn.form.querySelectorAll("input[type=checkbox]:checked")].map(cb => cb.dataset.id);
+        }},
+        { action: "cancel", label: game.i18n.localize("TQ.Cancelar"), callback: () => null }
+      ]
+    }) ?? [];
+  }
+
+  async _tirarMeleeMultiple(arma, puntuacion, md, modDesglose, targetActor) {
+    const modo = await new Promise(resolve => {
+      const lbl1 = game.i18n.localize("TQ.Melee.YoElUnico");
+      const lbl2 = game.i18n.localize("TQ.Melee.DefensorElUnico");
+      const btnStyle = "flex:1;white-space:nowrap;padding:8px 10px;cursor:pointer;";
+      Hooks.once("renderDialogV2", (app, html) => {
+        const root = html?.element ?? html;
+        root?.querySelectorAll?.("[data-modo-choice]")?.forEach(btn => {
+          btn.addEventListener("click", () => { resolve(btn.dataset.modoChoice); app.close(); });
+        });
+      });
+      foundry.applications.api.DialogV2.wait({
+        window: { title: game.i18n.localize("TQ.Melee.MeleeMultipleTitulo"), width: 420 },
+        content: `<p style="margin:0 0 10px;">${game.i18n.localize("TQ.Melee.Inferioridad")}</p><div style="display:flex;gap:8px;padding-bottom:4px;"><button data-modo-choice="1vsN" type="button" style="${btnStyle}">${lbl1}</button><button data-modo-choice="Nvs1" type="button" style="${btnStyle}">${lbl2}</button></div>`,
+        buttons: [{ action: "cancel", label: game.i18n.localize("TQ.Cancelar") }],
+        rejectClose: false,
+      }).then(() => resolve(null));
+    });
+    if (!modo) return;
+
+    const todosTokens = (game.scenes.active?.tokens ?? [])
+      .filter(t => t.actor && t.actor.id !== this.id)
+      .map(t => {
+        const rival = TQRoll._prepararDatosRival(t.actor);
+        return { id: t.actor.id, name: t.name, melee: rival.puntuacion, danho: rival };
+      });
+
+    const danhoArma = {
+      danoArma: arma.system.danoArma ?? "0",
+      tipo: arma.system.tipo ?? "cortante",
+      md,
+      manos: arma.system.manos ?? "1m",
+      noLetal: arma.system.noLetal ?? false
+    };
+
+    if (modo === "1vsN") {
+      const candidatos = todosTokens;
+      const ids = await this._dialogoSeleccionTokens(game.i18n.localize("TQ.Melee.SeleccionarOponentes"), candidatos);
+      if (!ids?.length) return;
+      const oponentes = ids.map(id => candidatos.find(t => t.id === id)).filter(Boolean)
+        .map(o => ({ actorId: o.id, nombre: o.name, puntuacion: o.melee, danho: o.danho ?? null }));
+      if (!oponentes.length) return;
+
+      const bonoSuperioridad1vsN = (oponentes.length - 1) * 2;
+      const filasOponentes = await TQRoll.rollOponentesMultiple(oponentes, bonoSuperioridad1vsN);
+
+      const optsDialogo = await TQRoll.dialogoTirada(arma.name, puntuacion, {
+        actor: this, modo: "melee-multiple", esCombate: true, habClave: arma.system.habilidad,
+        modDesglose: modDesglose.length ? modDesglose : null,
+        bonificadorDefecto: this._sumModsMagicosHabilidad(arma.system.habilidad, arma.id),
+        danho: danhoArma
+      });
+      if (!optsDialogo) return;
+
+      await TQRoll.tirarMeleeMultiple({
+        unico: this, unicoPuntuacion: optsDialogo.puntuacionFinal + (optsDialogo.bonificador ?? 0),
+        unicoDanho: danhoArma, unicoNombre: this.name, filasOponentes, modo: "1vsN",
+        modDesglose: optsDialogo.modDesgloseLocal?.length ? optsDialogo.modDesgloseLocal : null,
+        dosFortuna: optsDialogo.dosFortuna
+      });
+    } else {
+      if (!targetActor) {
+        ui.notifications.warn(game.i18n.localize("TQ.Warn.Nvs1SinDefensor"));
+        return;
+      }
+      const candidatos = todosTokens.filter(t => t.id !== (targetActor?.id ?? ""));
+      const idsAliados = await this._dialogoSeleccionTokens(game.i18n.localize("TQ.Melee.SeleccionarAliados"), candidatos);
+      const aliados = (idsAliados ?? []).map(id => candidatos.find(t => t.id === id)).filter(Boolean);
+
+      const defRival = TQRoll._prepararDatosRival(targetActor);
+
+      const [filaDefensor] = await TQRoll.rollOponentesMultiple(
+        [{ actorId: targetActor.id, nombre: targetActor.name, puntuacion: defRival.puntuacion, danho: null }]
+      );
+
+      const bonoSuperioridad = aliados.length * 2;
+      const aliadosOponentes = aliados.map(a => ({ actorId: a.id, nombre: a.name, puntuacion: a.melee, danho: danhoArma }));
+      const filasAliados = aliadosOponentes.length ? await TQRoll.rollOponentesMultiple(aliadosOponentes, bonoSuperioridad) : [];
+
+      const optsJugador = await TQRoll.dialogoTirada(arma.name, puntuacion, {
+        actor: this, modo: "melee-multiple", esCombate: true, habClave: arma.system.habilidad,
+        modDesglose: modDesglose.length ? modDesglose : null,
+        bonificadorDefecto: this._sumModsMagicosHabilidad(arma.system.habilidad, arma.id),
+        danho: danhoArma
+      });
+      if (!optsJugador) return;
+
+      let filaPJ;
+      if (optsJugador.dosFortuna) {
+        const modoTiradaPJ = game.settings.get("core", "rollMode");
+        const debPJ = this.system?.salud?.debilitado ?? false;
+        const carasPJ = debPJ ? 6 : 10;
+        const rPJ1 = await TQRoll._tirarExplosivo(carasPJ, modoTiradaPJ);
+        const rPJ2 = await TQRoll._tirarExplosivo(carasPJ, modoTiradaPJ);
+        await this.update({ "system.fortuna.actual": Math.max(0, (this.system.fortuna?.actual ?? 0) - 2) });
+        const pjDiceTotal = rPJ1.total + rPJ2.total;
+        const pjDadoDisplay = `${TQRoll._dadoDisplay(rPJ1.total, rPJ1.tiradas)} + ${TQRoll._dadoDisplay(rPJ2.total, rPJ2.tiradas)}`;
+        const pjPuntuacion = optsJugador.puntuacionFinal + (optsJugador.bonificador ?? 0);
+        const pjTotal = pjDiceTotal + pjPuntuacion + bonoSuperioridad;
+        const pjContenido = await foundry.applications.handlebars.renderTemplate(
+          "systems/tierras-quebradas/templates/dialogs/tirada-multimelee-rivales.hbs",
+          { filas: [{ nombre: this.name, dadoDisplay: pjDadoDisplay, puntuacion: pjPuntuacion, bonoSuperioridad: bonoSuperioridad || null, total: pjTotal }] }
+        );
+        await ChatMessage.create({ content: pjContenido, ...TQRoll._rollModeData(modoTiradaPJ) });
+        filaPJ = {
+          actorId: this.id, nombre: this.name, puntuacion: pjPuntuacion, danho: danhoArma,
+          dadoDisplay: pjDadoDisplay, bonoSuperioridad: bonoSuperioridad || null, total: pjTotal,
+          diceTotal: pjDiceTotal, tiradas: [...rPJ1.tiradas, ...rPJ2.tiradas]
+        };
+      } else {
+        const pjPuntuacion = optsJugador.puntuacionFinal + (optsJugador.bonificador ?? 0);
+        [filaPJ] = await TQRoll.rollOponentesMultiple(
+          [{ actorId: this.id, nombre: this.name, puntuacion: pjPuntuacion, danho: danhoArma }],
+          bonoSuperioridad
+        );
+      }
+
+      const filasOponentes = [filaPJ, ...filasAliados];
+      const defDanho = { danoArma: defRival.danoArma, tipo: defRival.tipo, md: defRival.md, manos: "1m", noLetal: false, bonoDano: 0 };
+
+      await TQRoll.tirarMeleeMultiple({
+        unico: targetActor, unicoPuntuacion: defRival.puntuacion, unicoDanho: defDanho,
+        unicoNombre: targetActor?.name ?? "Defensor",
+        filasOponentes, modo: "Nvs1",
+        modDesglose: null, dosFortuna: false, pjActorId: this.id,
+        unicoDicePreroll: filaDefensor.diceTotal,
+        unicoTiradasPreroll: filaDefensor.tiradas,
+        unicoDadoDisplayPreroll: filaDefensor.dadoDisplay
+      });
+    }
   }
 
   async _tirarGolpeAislado(arma, puntuacion, md, tipoAccion, modDesglose, targetActor) {

@@ -50,6 +50,7 @@ export class DirectorWidget extends HandlebarsApplicationMixin(ApplicationV2) {
     const pjs = game.actors.filter(a => a.type === "pj");
     if (!pjs.length) return ui.notifications.warn(game.i18n.localize("TQ.Director.NoPJs"));
 
+    const actoresConExtra = new Set(pjs.filter(a => a.items.some(i => i.type === "ventaja" && i.name === "Pasión extra")).map(a => a.id));
     const pjOptions = pjs.map(a => `<option value="${a.id}">${a.name}</option>`).join("");
     const html = `<div style="display:grid;gap:8px;padding:4px;">
       <div>
@@ -61,6 +62,7 @@ export class DirectorWidget extends HandlebarsApplicationMixin(ApplicationV2) {
         <select id="tq-dp-tipo" style="width:100%;">
           <option value="amor">Amor</option>
           <option value="odio">Odio</option>
+          <option value="extra" id="tq-dp-extra" hidden>Pasión Extra</option>
         </select>
       </div>
       <div>
@@ -74,6 +76,18 @@ export class DirectorWidget extends HandlebarsApplicationMixin(ApplicationV2) {
       </div>
     </div>`;
 
+    Hooks.once("renderDialogV2", (_app, html) => {
+      const pjSel = html.querySelector("#tq-dp-pj");
+      const extraOpt = html.querySelector("#tq-dp-extra");
+      const tipoSel = html.querySelector("#tq-dp-tipo");
+      if (!pjSel || !extraOpt) return;
+      const update = () => {
+        extraOpt.hidden = !actoresConExtra.has(pjSel.value);
+        if (extraOpt.hidden && tipoSel?.value === "extra") tipoSel.value = "amor";
+      };
+      pjSel.addEventListener("change", update);
+      update();
+    });
     const result = await DialogV2.prompt({
       window: { title: game.i18n.localize("TQ.Botones.DespertarPasion"), width: 280 }, content: html, ok: { label: game.i18n.localize("TQ.Director.Despertar"), callback: () => ({
         actorId: document.getElementById("tq-dp-pj").value, tipo: document.getElementById("tq-dp-tipo").value, dificultad: parseInt(document.getElementById("tq-dp-dif").value) || 15
@@ -85,7 +99,9 @@ export class DirectorWidget extends HandlebarsApplicationMixin(ApplicationV2) {
     if (!actor) return;
     const pasionNombre = result.tipo === "amor"
       ? (actor.system.pasionAmor || "Amor")
-      : (actor.system.pasionOdio || "Odio");
+      : result.tipo === "odio"
+      ? (actor.system.pasionOdio || "Odio")
+      : (actor.system.pasionExtra || "Pasión Extra");
 
     await ChatMessage.create({
       content: `<div class="tq-result-card complicacion">

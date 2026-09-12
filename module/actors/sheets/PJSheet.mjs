@@ -26,7 +26,7 @@ export class PJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     }
   };
 
-  /** Active tab survives re-renders (actor updates) */
+  // persiste entre re-renders
   _activeTab = "hoja1";
 
   get title() {
@@ -98,7 +98,7 @@ export class PJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
         let habTotal = "—";
         if (habilidad) {
           const base = this.actor.system.bases[habilidad.base]?.valor ?? 0;
-          habTotal = base + (habilidad.nivel ?? 0) - (this.actor.system.estorbo?.valor ?? 0);
+          habTotal = base + (habilidad.nivel ?? 0);
         }
         return { item: arma, habTotal, md, mdStr, equipped: arma.system.equipped !== false };
       });
@@ -125,7 +125,7 @@ export class PJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
         let habTotal = "—";
         if (habilidad) {
           const base = this.actor.system.bases[habilidad.base]?.valor ?? 0;
-          habTotal = base + (habilidad.nivel ?? 0) - (this.actor.system.estorbo?.valor ?? 0);
+          habTotal = base + (habilidad.nivel ?? 0);
         }
         return { item: arma, habTotal, md, mdStr, equipped: arma.system.equipped !== false };
       });
@@ -154,17 +154,22 @@ export class PJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       .reduce((sum, p) => sum + (parseInt(p.valor) || 0), 0);
     const deidadesGrupos = await getDeidadesGrupos();
 
+    const armaduras = [
+      ...this.actor.items.filter(i => i.type === "armadura"),
+      ...this.actor.items.filter(i => i.type === "objetoMagico" && i.system.tipoObjeto === "armadura")
+        .map(i => {
+          const modProt = i.system.categoria === "encantado" && !i.system.sintonizado ? 0 : (i.system.modProteccion ?? 0);
+          return { id: i.id, name: i.name, system: { proteccion: (i.system.proteccion ?? 0) + modProt, zona: "—", tipo: i.system.tipoProteccion, carga: i.system.carga ?? 0, equipped: i.system.equipped } };
+        })
+    ];
+    const armaduraEquipadas = armaduras.filter(a => a.system.equipped !== false);
+    const proteccionTotal = armaduraEquipadas.reduce((s, a) => s + (a.system.proteccion ?? 0), 0);
+    const cargaProteccionTotal = armaduraEquipadas.reduce((s, a) => s + (a.system.carga ?? 0), 0);
+
     return {
       actor: this.actor, system: this.actor.system, cssClass: this.options.classes.join(" "), activeTab: this._activeTab, imagenLealtad, destinoTotal, items: {
-        armas: armasEnriquecidas, armasMagicas: armasMagicasEnriquecidas, armaduras: [
-          ...this.actor.items.filter(i => i.type === "armadura"),
-          ...this.actor.items.filter(i => i.type === "objetoMagico" && i.system.tipoObjeto === "armadura")
-            .map(i => {
-              const modProt = i.system.categoria === "encantado" && !i.system.sintonizado ? 0 : (i.system.modProteccion ?? 0);
-              return { id: i.id, name: i.name, system: { proteccion: (i.system.proteccion ?? 0) + modProt, zona: "—", tipo: i.system.tipoProteccion, carga: i.system.carga ?? 0, equipped: i.system.equipped } };
-            })
-        ], hechizos: this.actor.items.filter(i => i.type === "hechizo"), ventajas: this.actor.items.filter(i => i.type === "ventaja"), rasgos: this.actor.items.filter(i => i.type === "rasgo"), pactos: this.actor.items.filter(i => i.type === "pacto"), bendiciones: this.actor.items.filter(i => i.type === "bendicion"), especie: this.actor.items.find(i => i.type === "especie") ?? null, entorno: this.actor.items.find(i => i.type === "entorno") ?? null, origen: this.actor.items.find(i => i.type === "origen") ?? null, profesion: this.actor.items.find(i => i.type === "profesion") ?? null, objetos: this.actor.items.filter(i => i.type === "objeto"), consumibles: this.actor.items.filter(i => i.type === "consumible"), objetosMagicos: this.actor.items.filter(i => i.type === "objetoMagico")
-      }, lealtad: { alineado }, lealtadesEnTexto: game.settings.get("tierras-quebradas", "lealtadesEnTexto"), pasionAmorActiva: this.actor.system.pasionFlag === "amor", pasionOdioActiva: this.actor.system.pasionFlag === "odio", config: CONFIG.TQ, col1: makeCol(COL1), col2: makeCol(COL2), col3: makeCol(COL3), basesFormulas, deidadesGrupos
+        armas: armasEnriquecidas, armasMagicas: armasMagicasEnriquecidas, armaduras, proteccionTotal, cargaProteccionTotal, hechizos: this.actor.items.filter(i => i.type === "hechizo"), ventajas: this.actor.items.filter(i => i.type === "ventaja"), rasgos: this.actor.items.filter(i => i.type === "rasgo"), pactos: this.actor.items.filter(i => i.type === "pacto"), bendiciones: this.actor.items.filter(i => i.type === "bendicion"), especie: this.actor.items.find(i => i.type === "especie") ?? null, entorno: this.actor.items.find(i => i.type === "entorno") ?? null, origen: this.actor.items.find(i => i.type === "origen") ?? null, profesion: this.actor.items.find(i => i.type === "profesion") ?? null, objetos: this.actor.items.filter(i => i.type === "objeto"), consumibles: this.actor.items.filter(i => i.type === "consumible"), objetosMagicos: this.actor.items.filter(i => i.type === "objetoMagico")
+      }, lealtad: { alineado }, lealtadesEnTexto: game.settings.get("tierras-quebradas", "lealtadesEnTexto"), pasionAmorActiva: this.actor.system.pasionFlag === "amor", pasionOdioActiva: this.actor.system.pasionFlag === "odio", pasionExtraActiva: this.actor.system.pasionFlag === "extra", tienePasionExtra: this.actor.items.some(i => i.type === "ventaja" && i.name === "Pasión extra"), hasLucky: this.actor.items.some(i => i.type === "rasgo" && i.name === "Buena suerte"), luckyMax: this.actor.items.some(i => i.type === "rasgo" && i.name === "Buena suerte") ? Math.floor((this.actor.system.caracteristicas?.mente?.valor ?? 0) / 2) : 0, config: CONFIG.TQ, col1: makeCol(COL1), col2: makeCol(COL2), col3: makeCol(COL3), basesFormulas, deidadesGrupos
     };
   }
 
@@ -295,6 +300,7 @@ export class PJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
         this.actor.tirarCaracteristica(ev.currentTarget.dataset.caracteristica);
       });
     });
+
 
     el.querySelectorAll(".toggle-equipado").forEach(a => {
       a.addEventListener("click", async ev => {
@@ -521,6 +527,11 @@ export class PJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       this.actor.resetearPasiones();
     });
 
+    el.querySelector(".resistir-pasion")?.addEventListener("click", ev => {
+      ev.preventDefault();
+      this.actor.resistirPasion();
+    });
+
     el.querySelectorAll(".marcar-mentira").forEach(a => {
       a.addEventListener("click", ev => {
         ev.preventDefault();
@@ -576,6 +587,11 @@ export class PJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     el.querySelector(".recuperar-fortuna")?.addEventListener("click", () => {
       const fortuna = this.actor.system.fortuna;
       if (fortuna.actual < fortuna.max) this.actor.update({ "system.fortuna.actual": fortuna.actual + 1 });
+    });
+    el.querySelector(".restaurar-lucky")?.addEventListener("click", () => {
+      const mente = this.actor.system.caracteristicas?.mente?.valor ?? 0;
+      const luckyMax = Math.floor(mente / 2);
+      this.actor.update({ "system.fortuna.lucky": luckyMax });
     });
 
     el.querySelector(".tirar-fortuna")?.addEventListener("click", async () => {

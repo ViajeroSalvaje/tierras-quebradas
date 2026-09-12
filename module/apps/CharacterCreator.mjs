@@ -1,5 +1,6 @@
 const { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api;
 import { HABILIDADES_OPCIONES } from "../helpers/habilidades.mjs";
+import { tqRound } from "../helpers/utils.mjs";
 import { getDeidadesPorIdeologia } from "../helpers/deidades.mjs";
 
 const GRUPOS_HABILIDADES = [
@@ -430,6 +431,21 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
         ].filter(r => r.mod !== 0)
       : null;
 
+    const loc = k => game.i18n.localize(k);
+    const fuerzaCC = Math.max(3, cuerpo + tamano);
+    const derivadasCC = {
+      fuerza: fuerzaCC, dm: Math.round(fuerzaCC / 3),
+      bases: [
+        { key: "agilidad", label: loc("TQ.Bases.agilidad"), formula: "CUE-TAM", valor: cuerpo - tamano },
+        { key: "comunicacion", label: loc("TQ.Bases.comunicacion"), formula: "ESP+ATR", valor: espiritu + atractivo },
+        { key: "cultura", label: loc("TQ.Bases.cultura"), formula: "MEN", valor: mente },
+        { key: "percepcion", label: loc("TQ.Bases.percepcion"), formula: "(MEN+ESP)/2", valor: tqRound((mente + espiritu) / 2) },
+        { key: "vigor", label: loc("TQ.Bases.vigor"), formula: "CUE", valor: cuerpo },
+        { key: "tecnica", label: loc("TQ.Bases.tecnica"), formula: "(MEN+CUE)/2", valor: tqRound((mente + cuerpo) / 2) }
+      ],
+      hechiceria: { label: loc("TQ.Bases.hechiceria"), formula: "(MEN+ESP)/3", valor: Math.floor((mente + espiritu) / 3) }
+    };
+
     let entornosData = null;
     let eleccionesEntorno = null;
     if (pasoId === "entorno") {
@@ -563,8 +579,14 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
         const afinidad = elegidoEntry?.afinidad ?? "";
         const blanco = elegidoEntry?.blanco ?? "";
         const nombreMostrado = tieneAfinidad && afinidad ? `Afinidad con ${afinidad}` : tieneBlanco && blanco ? `Blanco de ${blanco}` : r.name;
+        const habStr = (r.habilidades ?? []).filter(h => h.clave && h.bonus)
+          .map(h => {
+            const op = HABILIDADES_OPCIONES.find(o => o.clave === h.clave);
+            const label = op?.label ?? (h.clave.charAt(0).toUpperCase() + h.clave.slice(1));
+            return `${label} +${h.bonus}`;
+          }).join(", ");
         return {
-          ...r, selected: elegidosMap.has(r.id), deshabilitada: !elegidosMap.has(r.id) && r.coste < 0 && ppActual + r.coste < 0, costeBadge: r.coste < 0 ? r.coste + " PP" : "+" + r.coste + " PP", esHechizos, cantidad: esHechizos && elegidoEntry ? (elegidoEntry.cantidad ?? 1) : undefined, tieneAfinidad, afinidad, tieneBlanco, blanco, nombreMostrado
+          ...r, selected: elegidosMap.has(r.id), deshabilitada: !elegidosMap.has(r.id) && r.coste < 0 && ppActual + r.coste < 0, costeBadge: r.coste < 0 ? r.coste + " PP" : "+" + r.coste + " PP", esHechizos, cantidad: esHechizos && elegidoEntry ? (elegidoEntry.cantidad ?? 1) : undefined, tieneAfinidad, afinidad, tieneBlanco, blanco, nombreMostrado, habStr
         };
       };
       rasgosItemsData = {
@@ -754,21 +776,21 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
     }
 
     return {
-      pasoId, pasoLabel, pasoIndex: this._pasoIndex, pasos, data: { ...this._charData }, // Edad
-      edades, edad, // Características
-      ptsRestantes, ppAtractivo, ppAtrStr, sumCaract, caractLista, atrTamLista, asignacionAleatoria, tiradaBruta: this._charData.tiradaBruta, // Conflicto
-      hayConflicto, ptsExceso, conflictoCuerpo, reduccionesAleatorias, // Entorno
-      entornos: entornosData, eleccionesEntorno, // Profesión
-      profesiones: profesionesData, eleccionesProfesion, especializaciones, // Origen
-      origenes: origenesData, eleccionesIdiomaOrigen, // Especie
-      especies: especiesData, // Ventajas
+      pasoId, pasoLabel, pasoIndex: this._pasoIndex, pasos, data: { ...this._charData },
+      edades, edad,
+      ptsRestantes, ppAtractivo, ppAtrStr, sumCaract, caractLista, atrTamLista, asignacionAleatoria, tiradaBruta: this._charData.tiradaBruta, derivadasCC,
+      hayConflicto, ptsExceso, conflictoCuerpo, reduccionesAleatorias,
+      entornos: entornosData, eleccionesEntorno,
+      profesiones: profesionesData, eleccionesProfesion, especializaciones,
+      origenes: origenesData, eleccionesIdiomaOrigen,
+      especies: especiesData,
       ventajasLista, desventajasLista, ventajasConteo, habilidadesOpciones: HABILIDADES_OPCIONES,
-      ventajasProfesion: this._charData.profesionVentajas ?? [], rasgosProfesion: this._charData.profesionRasgos ?? [], // Rasgos
-      rasgosItemsData, rasgosData, // Equipo
-      equipoData, armadurasData, armasCaCData, armasProyData, armasArrData, // Habilidades
-      habilidadesData, // Religión
-      religionData, // Magia
-      magiaData, // Global
+      ventajasProfesion: this._charData.profesionVentajas ?? [], rasgosProfesion: this._charData.profesionRasgos ?? [],
+      rasgosItemsData, rasgosData,
+      equipoData, armadurasData, armasCaCData, armasProyData, armasArrData,
+      habilidadesData,
+      religionData,
+      magiaData,
       ppTotal: this._calcPPConVentajas(), puntosHab: this._charData.puntosHab + this._calcPPConVentajas() * 3 - Object.values(this._charData.habilidadesLibres).reduce((a, b) => a + b, 0), esUltimoPaso: this._pasoIndex === CharacterCreator.PASOS.length - 1, mostrarCrear: this._pasoIndex > 0, hayAnterior: this._pasoIndex > 0
     };
   }
