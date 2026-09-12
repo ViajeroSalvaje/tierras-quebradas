@@ -1,3 +1,34 @@
+
+# Notas 12 de septiembre 2026 
+
+ 
+**Cambios**
+
+- Solucionados cambios en el redondeo
+- Desglose de los campos de dinero
+- Añadidas las ventajas relativas a objetos mágicos
+- Añadidas mecanicas de 1 versus varios contra PNJ
+- Añadidos varios modificadores
+- Automatización de la ventaja Buena Suerte
+- Creado un bestiario concreto para los autómatas de la ley
+- Modificados los PJ autómatas
+- Creado un importador de autómatas
+- Implementado un Creador de autómatas
+- Se unifican en un botón los distintos importadores, después sale un modal para escoger
+- Se crea el tipo de objeto Artefacto
+- Se añade el compendio con Rasgos / Poderes y Debilidades de Criaturas/Demonios/Autómatas
+
+**Pendiente**
+- Creador de artefactos de la ley
+- Asistente para el proceso de descubrir/atar demonios
+
+
+
+
+
+
+
+
 # Notas 8 de agosto 2026 
 
  
