@@ -1,6 +1,6 @@
 {
   "Actor": {
-    "types": ["pj", "pnj", "criatura", "demonio"],
+    "types": ["pj", "pnj", "criatura", "automata", "demonio"],
     "templates": {
       "base": {
         "caracteristicas": {
@@ -51,13 +51,17 @@
         },
         "estorbo": { "valor": 0 },
         "carga": { "valor": 0 },
+        "dineroCobre": 0,
         "dinero": 0,
+        "dineroPlata": 0,
+        "dineroOro": 0,
         "descripcion": ""
       },
       "aventurero": {
         "fortuna": {
           "max": 3,
-          "actual": 3
+          "actual": 3,
+          "lucky": 0
         },
         "destino": {
           "max": 1,
@@ -118,16 +122,16 @@
           "sueños": { "nivel": 0, "px": 0, "base": "cultura", "puntosFijos": 0 },
           "trepar": { "nivel": 0, "px": 0, "base": "agilidad", "puntosFijos": 0, "estorbo": 1 },
           "tratarAnimales": { "nivel": 0, "px": 0, "base": "comunicacion", "puntosFijos": 0 },
-          "armasAsta": { "nivel": 0, "px": 0, "base": "vigor", "puntosFijos": 0 },
-          "escudo": { "nivel": 0, "px": 0, "base": "vigor", "puntosFijos": 0 },
-          "armasEspada": { "nivel": 0, "px": 0, "base": "vigor", "puntosFijos": 0 },
-          "armasMangos": { "nivel": 0, "px": 0, "base": "vigor", "puntosFijos": 0 },
-          "armasPunhal": { "nivel": 0, "px": 0, "base": "vigor", "puntosFijos": 0 },
-          "pelea": { "nivel": 0, "px": 0, "base": "vigor", "puntosFijos": 0 },
-          "arco": { "nivel": 0, "px": 0, "base": "tecnica", "puntosFijos": 0 },
-          "ballesta": { "nivel": 0, "px": 0, "base": "tecnica", "puntosFijos": 0 },
-          "canonDeMano": { "nivel": 0, "px": 0, "base": "tecnica", "puntosFijos": 0 },
-          "honda": { "nivel": 0, "px": 0, "base": "tecnica", "puntosFijos": 0 },
+          "armasAsta": { "nivel": 0, "px": 0, "base": "vigor", "puntosFijos": 0, "estorbo": 1 },
+          "escudo": { "nivel": 0, "px": 0, "base": "vigor", "puntosFijos": 0, "estorbo": 1 },
+          "armasEspada": { "nivel": 0, "px": 0, "base": "vigor", "puntosFijos": 0, "estorbo": 1 },
+          "armasMangos": { "nivel": 0, "px": 0, "base": "vigor", "puntosFijos": 0, "estorbo": 1 },
+          "armasPunhal": { "nivel": 0, "px": 0, "base": "vigor", "puntosFijos": 0, "estorbo": 1 },
+          "pelea": { "nivel": 0, "px": 0, "base": "vigor", "puntosFijos": 0, "estorbo": 1 },
+          "arco": { "nivel": 0, "px": 0, "base": "tecnica", "puntosFijos": 0, "estorbo": 1 },
+          "ballesta": { "nivel": 0, "px": 0, "base": "tecnica", "puntosFijos": 0, "estorbo": 1 },
+          "canonDeMano": { "nivel": 0, "px": 0, "base": "tecnica", "puntosFijos": 0, "estorbo": 1 },
+          "honda": { "nivel": 0, "px": 0, "base": "tecnica", "puntosFijos": 0, "estorbo": 1 },
           "idioma1": { "nivel": 0, "px": 0, "base": "cultura", "puntosFijos": 0, "nombre": "" },
           "idioma2": { "nivel": 0, "px": 0, "base": "cultura", "puntosFijos": 0, "nombre": "" },
           "idioma3": { "nivel": 0, "px": 0, "base": "cultura", "puntosFijos": 0, "nombre": "" },
@@ -167,8 +171,10 @@
         "tuMentiraMarcas": 0,
         "pasionAmor": "",
         "pasionOdio": "",
+        "pasionExtra": "",
         "pasionAmorUsada": false,
         "pasionOdioUsada": false,
+        "pasionExtraUsada": false,
         "pasionFlag": "",
         "rasgosPositivos": "",
         "rasgosNegativos": "",
@@ -203,6 +209,7 @@
       "filiacion": "",
       "deidad": "",
       "deidad2": "",
+      "heridas": [],
       "notas": ""
     },
     "criatura": {
@@ -217,6 +224,23 @@
       "movimiento": "",
       "pm": 0,
       "espirituConsagrado": 0,
+      "heridas": [],
+      "notas": ""
+    },
+    "automata": {
+      "templates": ["base"],
+      "habilidades": {},
+      "pm": 0,
+      "espirituConsagrado": 0,
+      "valorMagico": 0,
+      "proteccion": { "valor": 0, "tipo": "dura" },
+      "alImpacto": 0,
+      "coste": 0,
+      "creador": "",
+      "movimiento": "",
+      "poderes": "",
+      "deidad": "",
+      "heridas": [],
       "notas": ""
     },
     "demonio": {
@@ -232,11 +256,12 @@
       "espirituConsagrado": 0,
       "valorMagico": 0,
       "vinculo": "",
+      "heridas": [],
       "notas": ""
     }
   },
   "Item": {
-    "types": ["arma", "armadura", "hechizo", "ventaja", "rasgo", "pacto", "bendicion", "especie", "entorno", "origen", "profesion", "idioma", "objeto", "consumible", "habilidad", "objetoMagico", "deidad"],
+    "types": ["arma", "armadura", "hechizo", "ventaja", "rasgo", "pacto", "bendicion", "especie", "entorno", "origen", "profesion", "idioma", "objeto", "consumible", "habilidad", "objetoMagico", "deidad", "artefacto", "caracteristicaBestiario"],
     "templates": {
       "base": {
         "descripcion": "",
@@ -281,8 +306,9 @@
       "pmCoste": 1,
       "pmMax": 0,
       "dificultad": 15,
-      "duracion": "instantaneo",
+      "duracion": "",
       "alcance": "toque",
+      "inmediato": false,
       "requiereTiradaEspiritu": false,
       "escola": "",
       "sintaxis": "",
@@ -415,6 +441,7 @@
     "deidad": {
       "tipo": "ley",
       "principal": false,
+      "epiteto": "",
       "descripcion": ""
     },
     "consumible": {
@@ -433,6 +460,35 @@
       "puntosFijos": 0,
       "estorbo": 0,
       "especializada": false,
+      "descripcion": ""
+    },
+    "artefacto": {
+
+      "templates": ["base"],
+      "teaurgo": "",
+      "habilidades": {},
+      "pm": 0,
+      "espirituConsagrado": 0,
+      "valorMagico": 0,
+      "vmGastado": 0,
+      "proteccion": { "valor": 0, "tipo": "dura" },
+      "alImpacto": 0,
+      "movimiento": "",
+      "poderes": [],
+      "sosten": "",
+      "deidad": "",
+      "heridas": [],
+      "espiritu": 0,
+      "coste": 0,
+      "notas": ""
+    },
+    "caracteristicaBestiario": {
+      "tipo": "rasgo",
+      "vm": 0,
+      "vmVariable": false,
+      "dano": "",
+      "creaArma": false,
+      "tipoArma": "",
       "descripcion": ""
     }
   }

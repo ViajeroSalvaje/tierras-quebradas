@@ -2,7 +2,7 @@
   "id": "tierras-quebradas",
   "title": "Tierras Quebradas",
   "description": "Tierras Quebradas: Edición Revisada",
-  "version": "2.1.0",
+  "version": "2.3.0",
   "background": "systems/tierras-quebradas/images/default/Espada_blanca.png",
   "url": "https://github.com/ViajeroSalvaje/tierras-quebradas",
   "manifest": "https://raw.githubusercontent.com/ViajeroSalvaje/tierras-quebradas/main/system.json",
@@ -48,7 +48,8 @@
     "entorno",
     "origen",
     "profesion",
-    "deidad"
+    "deidad",
+    "caracteristicaBestiario"
   ],
   "packs": [
     {
@@ -62,6 +63,13 @@
       "name": "criaturas",
       "label": "Bestiario — Criaturas",
       "path": "packs/criaturas",
+      "type": "Actor",
+      "system": "tierras-quebradas"
+    },
+    {
+      "name": "automatas",
+      "label": "Bestiario — Autómatas de la Ley",
+      "path": "packs/automatas",
       "type": "Actor",
       "system": "tierras-quebradas"
     },
@@ -218,6 +226,52 @@
       "path": "packs/deidades",
       "type": "Item",
       "system": "tierras-quebradas"
+    },
+    {
+      "name": "rasgos-bestiario",
+      "label": "Rasgos y Poderes de Bestiario",
+      "path": "packs/rasgos-bestiario",
+      "type": "Item",
+      "system": "tierras-quebradas"
+    }
+  ],
+  "packFolders": [
+    {
+      "name": "Armas y Armaduras",
+      "sorting": "a",
+      "packs": [
+        "armamento-armaduras",
+        "armamento-armas-arrojadizas",
+        "armamento-armas-cuerpo-a-cuerpo",
+        "armamento-armas-improvisadas",
+        "armamento-armas-proyectiles"
+      ]
+    },
+    {
+      "name": "Bestiario",
+      "sorting": "a",
+      "packs": [
+        "animales",
+        "automatas",
+        "criaturas",
+        "demonios"
+      ]
+    },
+    {
+      "name": "Items Actores",
+      "sorting": "a",
+      "packs": [
+        "bendiciones",
+        "entornos",
+        "especies",
+        "habilidades",
+        "hechizos",
+        "idiomas",
+        "origenes",
+        "profesiones",
+        "rasgos",
+        "ventajas"
+      ]
     }
   ]
 }
