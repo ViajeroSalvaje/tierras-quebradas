@@ -4,6 +4,7 @@
       "pj": "Personaje Jugador",
       "pnj": "Personaje No Jugador",
       "criatura": "Criatura",
+      "automata": "Autómata de la Ley",
       "demonio": "Demonio"
     },
     "Item": {
@@ -19,7 +20,9 @@
       "origen": "Origen Étnico",
       "profesion": "Profesión",
       "idioma": "Idioma",
-      "deidad": "Deidad"
+      "deidad": "Deidad",
+      "artefacto": "Artefacto",
+      "caracteristicaBestiario": "Característica de Bestiario"
     }
   },
   "TQ": {
@@ -28,6 +31,7 @@
         "pj": "Personaje Jugador",
         "pnj": "Personaje No Jugador",
         "criatura": "Criatura",
+        "automata": "Autómata de la Ley",
         "demonio": "Demonio"
       },
       "Especie": "Especie",
@@ -48,13 +52,16 @@
         "entorno": "Entorno",
         "origen": "Origen Étnico",
         "profesion": "Profesión",
-        "deidad": "Deidad"
+        "deidad": "Deidad",
+        "artefacto": "Artefacto",
+        "caracteristicaBestiario": "Característica de Bestiario"
       },
       "deidad": "Deidad"
     },
     "Deidad": {
       "Tipo": "Tipo",
-      "Principal": "Principal"
+      "Principal": "Principal",
+      "Epiteto": "Epíteto"
     },
     "ObjetoMagico": {
       "TipoObjeto": "Tipo",
@@ -306,6 +313,7 @@
       "tuMentira": "Tu Mentira",
       "pasionAmor": "Pasión: Amor",
       "pasionOdio": "Pasión: Odio",
+      "pasionExtra": "Pasión: Extra",
       "rasgosPositivos": "Rasgos Positivos",
       "rasgosNegativos": "Rasgos Negativos",
       "rasgos": "Rasgos de Personalidad",
@@ -333,9 +341,13 @@
       "Movimiento": "Movimiento",
       "ModificadoresHabilidades": "Modificadores de Habilidades",
       "CostePP": "Coste PP",
+      "MonedasCobre": "Monedas de cobre (mc)",
       "MonedasBronce": "Monedas de bronce (mb)",
+      "MonedasPlata": "Monedas de plata (mp)",
+      "MonedasOro": "Monedas de oro (mo)",
       "Bonus": "Bonus",
       "MD": "MD",
+      "DP": "DP",
       "ProtAbrev": "Prot.",
       "PM": "PM",
       "Espiritu": "Espíritu",
@@ -355,9 +367,12 @@
       "Protecciones": "Protecciones",
       "ModDano": "Mod. al Daño",
       "Equipo": "Equipo",
+      "Dinero": "Dinero",
+      "Inventario": "Inventario",
       "Consumibles": "Consumibles",
       "CargaEstorbo": "Carga y Estorbo",
       "Lealtad": "Lealtad",
+      "Poderes": "Poderes",
       "Pactos": "Pactos",
       "Bendiciones": "Bendiciones",
       "InfoPersonal": "Información Personal",
@@ -395,6 +410,7 @@
       "DespertarPasion": "Despertar Pasión",
       "TablaLesiones": "Tabla de Lesiones",
       "RepetirFortuna": "Repetir Tirada - 1 Fortuna",
+      "RepetirLucky": "Repetir Tirada - Buena suerte",
       "AplicarDanho": "Aplicar Daño",
       "DanhoAplicado": "Daño aplicado",
       "AplicarResultado": "Aplicar Resultado",
@@ -637,6 +653,10 @@
       "SiGastar": "Sí — gastar 2 Fortuna",
       "NoGastar": "No"
     },
+    "Lucky": {
+      "Label": "Buena suerte",
+      "Restaurar": "Restaurar reserva de Buena suerte"
+    },
     "Rasgos": {
       "Positivos": "Positivos",
       "Negativos": "Negativos",
@@ -667,6 +687,7 @@
       "EligeActorPrimero": "— Elige actor primero —",
       "PuntuacionDefensor": "Punt. defensor",
       "BonificadorDefensor": "Mod. defensor",
+      "SuperioridadNumerica": "Superioridad numérica",
       "PenalizadorProyectil": "−2 (proyectil)",
       "PXAcumulados": "PX acumulados",
       "PXAnadir": "PX a añadir: ",
@@ -695,6 +716,20 @@
       "AceptaMelee": "Acepta la melé",
       "IgnoraMelee": "Ignora la melé",
       "TrataDeEscapar": "Trata de escapar",
+      "MeleeMultiple": "Melé Múltiple",
+      "MeleeMultipleTitulo": "Combate de Melé Múltiple",
+      "Inferioridad": "¿Quién está en inferioridad numérica?",
+      "YoElUnico": "Yo soy el único (1 vs N)",
+      "DefensorElUnico": "El defensor es el único (N vs 1)",
+      "SeleccionarOponentes": "Seleccionar oponentes",
+      "SeleccionarAliados": "Seleccionar atacantes aliados",
+      "ElegirObjetivoDanho": "Elige a quién impactar (solo uno permitido)",
+      "UnicoGana": "Gana",
+      "OponenteGana": "Gana el oponente",
+      "DefensorGana": "Gana el defensor",
+      "TiradasRivales": "Tiradas de los rivales",
+      "BonusSuperioridad": "Superioridad",
+      "GastarFortunaRepetir": "Gastar 1 Fortuna (repetir)",
       "Debilitado": "Debilitado",
       "TextoIgnoraMelee": "Golpe aislado — el defensor ignora la melé y no contraataca.",
       "TextoEscapa": "Golpe aislado — el defensor trata de escapar de la melé."
@@ -840,20 +875,32 @@
       "TituloPNJ": "Importar PNJ",
       "TituloCriatura": "Importar Criatura",
       "TituloDemonio": "Importar Demonio",
+      "TituloAutomata": "Importar Autómata",
+      "AutomataHint": "Pega el bloque de texto del autómata tal como aparece en el manual.",
       "WarnPegaPNJ": "Pega primero el texto del PNJ.",
       "WarnPegaCriatura": "Pega primero el texto de la criatura.",
       "WarnPegaDemonio": "Pega primero el texto del demonio.",
       "WarnNombrePNJ": "No se pudo detectar el nombre del PNJ.",
       "WarnNombreCriatura": "No se pudo detectar el nombre de la criatura.",
       "WarnNombreDemonio": "No se pudo detectar el nombre del demonio.",
+      "WarnPegaAutomata": "Pega primero el texto del autómata.",
+      "WarnNombreAutomata": "No se pudo detectar el nombre del autómata.",
       "InfoPNJ": "PNJ \"{nombre}\" importado.",
       "InfoCriatura": "Criatura \"{nombre}\" importada.",
+      "InfoAutomata": "Autómata \"{nombre}\" importado.",
       "InfoDemonio": "Demonio \"{nombre}\" importado.",
       "ResolverHabilidades": "Resolver habilidades"
     },
     "Demonio": {
       "ValorMagico": "Valor Mágico",
       "Vinculo": "Vínculo"
+    },
+    "Automata": {
+      "Espiritu": "Espíritu",
+      "Coste": "Coste (mb)",
+      "Movimiento": "Movimiento",
+      "Teaurgo": "Teúrgo",
+      "ArrastraPoderes": "Arrastra poderes (hechizos) desde el compendio"
     },
     "Nuevo": {
       "rasgo": "Nuevo rasgo",
@@ -881,6 +928,7 @@
       "PasionActiva": "Ya hay una pasión activa. Haz la tirada primero.",
       "PasionUsada": "Esta pasión ya fue usada en esta escena.",
       "SinObjetivo": "Selecciona un objetivo para la Lucha de Espíritu.",
+      "Nvs1SinDefensor": "Para Nvs1 debes seleccionar como objetivo al defensor único antes de atacar.",
       "PAEspecializada": "Primeros Auxilios (E): necesitas Nivel 1 o superior para intentar procedimientos complejos.",
       "NoAgonia": "{nombre} no está en agonía.",
       "SinHabilidadesSeleccionadas": "No seleccionaste ninguna habilidad.",
@@ -910,7 +958,8 @@
       "SegundoCritico": "Pasión: segundo Éxito Crítico",
       "Critico": "Pasión: Éxito Crítico",
       "ComplicacionYaTenias": "Pasión: Complicación (ya tenías)",
-      "Complicacion": "Pasión: Complicación"
+      "Complicacion": "Pasión: Complicación",
+      "Resistir": "Resistir Pasión"
     },
     "Tablas": {
       "AtacanteImpacta0PE": "Tablas — el atacante impacta con 0 PE",
