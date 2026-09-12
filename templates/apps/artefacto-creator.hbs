@@ -1,0 +1,133 @@
+<div class="tq-creator-wrap">
+
+  <div class="tq-creator-progress">
+    {{#each pasos as |p|}}
+    <div class="tq-creator-paso {{#if p.activo}}activo{{/if}} {{#if p.completado}}completado{{/if}}">
+      <span class="paso-num">{{p.num}}</span>
+      <span class="paso-label">{{p.label}}</span>
+    </div>
+    {{/each}}
+  </div>
+
+  <div class="tq-creator-body">
+
+    {{#if paso1}}
+    <div class="tq-creator-step">
+      <div class="tq-field-group">
+        <label>Nombre del artefacto</label>
+        <input type="text" name="nombre" value="{{estado.nombre}}" placeholder="Nombre…" autofocus />
+      </div>
+      <div class="tq-field-group" style="margin-top:8px;">
+        <label>Teúrgo creador</label>
+        <select name="teaurgoId">
+          <option value="">— Seleccionar —</option>
+          {{#each actores as |a|}}
+          <option value="{{a.id}}" {{#if (tq-eq ../estado.teaurgoId a.id)}}selected{{/if}}>{{a.name}} (MEN {{a.mente}})</option>
+          {{/each}}
+        </select>
+      </div>
+      {{#if estado.teaurgoId}}
+      <div class="tq-creator-stat-row" style="margin-top:12px;">
+        <div class="tq-creator-stat-box">
+          <span class="tq-creator-stat-label">VM disponible (Mente ÷ 2)</span>
+          <span class="tq-valor-grande vm-display">{{estado.vmDisponible}}</span>
+        </div>
+      </div>
+      {{/if}}
+      <div class="tq-field-group" style="margin-top:12px;flex-direction:row;align-items:center;gap:8px;">
+        <input type="checkbox" name="forzarCreacion" id="forzarCreacion" {{#if estado.forzarCreacion}}checked{{/if}} />
+        <label for="forzarCreacion" style="margin:0;cursor:pointer;">Forzar creación (sin requerir Inspiración tecnológica)</label>
+      </div>
+    </div>
+    {{/if}}
+
+    {{#if paso2}}
+    <div class="tq-creator-step">
+      <div class="tq-creator-vm-bar">
+        <span>VM disponible: <strong>{{estado.vmDisponible}}</strong></span>
+        <span>VM gastado: <strong>{{vmGastado}}</strong></span>
+        <span>VM restante: <strong class="{{#if (tq-lt vmRestante 0)}}tq-rojo{{/if}}">{{vmRestante}}</strong></span>
+      </div>
+      <div class="pnj-items-lista" style="margin:8px 0 4px;">
+        {{#each estado.poderes as |p idx|}}
+        <div class="pnj-item-fila">
+          <span class="pnj-item-nombre">{{p.nombre}}</span>
+          <span class="pnj-item-detalle">{{p.vm}} VM</span>
+          <a class="poder-borrar" data-idx="{{idx}}"><i class="fas fa-trash"></i></a>
+        </div>
+        {{/each}}
+      </div>
+      <div class="poderes-dropzone tq-dropzone"><i class="fas fa-magic"></i> Arrastra hechizos o rasgos de bestiario desde el compendio</div>
+      <div class="tq-field-group" style="margin-top:12px;">
+        <label>Sostén de habilidades <em style="font-weight:normal;font-size:11px;">(0 VM — habilidad que apoya la virtud)</em></label>
+        <input type="text" name="sosten" value="{{estado.sosten}}" placeholder="Ej: Espada, Atletismo…" />
+      </div>
+    </div>
+    {{/if}}
+
+    {{#if paso3}}
+    <div class="tq-creator-step">
+      <div class="tq-field-group" style="margin-bottom:16px;flex-direction:row;align-items:center;gap:8px;">
+        <input type="checkbox" name="planoAjeno" id="planoAjeno" {{#if estado.planoAjeno}}checked{{/if}} />
+        <label for="planoAjeno" style="margin:0;cursor:pointer;">Plano ajeno (omite el chequeo de Academia)</label>
+      </div>
+      <div class="fabricacion-academia">
+        <div class="tq-section-header"><span>Diseño en papel</span></div>
+        <p style="font-size:12px;color:var(--tq-text-dim);margin:4px 0 8px;">Habilidad: <strong>Academia</strong> · Dificultad: <strong>{{difFabricacion}}</strong></p>
+        <div class="tq-field-group">
+          <label>Resultado de la tirada</label>
+          <input type="number" name="resultadoAcademia" value="{{estado.resultadoAcademia}}" style="width:72px;" min="0" />
+        </div>
+      </div>
+      <div style="margin-top:16px;">
+        <div class="tq-section-header"><span>Ensamblaje físico</span></div>
+        <p style="font-size:12px;color:var(--tq-text-dim);margin:4px 0 8px;">Habilidad: <strong>Artesanía</strong> · Dificultad: <strong>{{difFabricacion}}</strong></p>
+        <div class="tq-field-group">
+          <label>Resultado de la tirada</label>
+          <input type="number" name="resultadoArtesania" value="{{estado.resultadoArtesania}}" style="width:72px;" min="0" />
+        </div>
+      </div>
+    </div>
+    {{/if}}
+
+    {{#if paso4}}
+    <div class="tq-creator-step">
+      <p style="margin-bottom:12px;">Tira el Espíritu del artefacto. El teúrgo debe gastar puntos de Espíritu para mantener la virtud de forma indefinida.</p>
+      <div class="tq-creator-tirada">
+        <span class="tq-creator-tirada-label">Espíritu <em>(1d6+2)</em></span>
+        <span class="tq-valor-grande">{{#if estado.espiritu}}{{estado.espiritu}}{{else}}—{{/if}}</span>
+        <button type="button" class="tirar-espiritu">Tirar</button>
+      </div>
+      <p class="tq-creator-nota" style="margin-top:16px;">Coste total: <strong>{{estado.vmDisponible}} × 1.000 mb = {{coste}} mb</strong></p>
+    </div>
+    {{/if}}
+
+    {{#if paso5}}
+    <div class="tq-creator-step">
+      <table class="tq-creator-resumen">
+        <tr><th>Nombre</th><td>{{estado.nombre}}</td></tr>
+        <tr><th>Teúrgo</th><td>{{estado.teaurgoNombre}}</td></tr>
+        <tr><th>VM</th><td>{{estado.vmDisponible}}</td><th>VM gastado</th><td>{{vmGastado}}</td></tr>
+        <tr><th>Espíritu</th><td>{{estado.espiritu}}</td><th>Coste</th><td>{{coste}} mb</td></tr>
+        {{#if estado.sosten}}<tr><th>Sostén</th><td colspan="3">{{estado.sosten}}</td></tr>{{/if}}
+      </table>
+      {{#if estado.poderes}}
+      <div class="tq-section-header" style="margin-top:8px;"><span>Poderes</span></div>
+      <div class="pnj-items-lista">
+        {{#each estado.poderes as |p|}}
+        <div class="pnj-item-fila"><span>{{p.nombre}}</span><span class="pnj-item-detalle">{{p.vm}} VM</span></div>
+        {{/each}}
+      </div>
+      {{/if}}
+    </div>
+    {{/if}}
+
+  </div>
+
+  <div class="tq-creator-footer">
+    {{#unless paso1}}<button type="button" class="creator-prev">← Anterior</button>{{/unless}}
+    {{#unless paso5}}<button type="button" class="creator-next">Siguiente →</button>{{/unless}}
+    {{#if paso5}}<button type="button" class="creator-crear">Crear Artefacto</button>{{/if}}
+  </div>
+
+</div>

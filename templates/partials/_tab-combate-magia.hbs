@@ -75,6 +75,47 @@
         </div>
       </div>
 
+      <div class="tq-section-box">
+        <div class="tq-section-header">
+          <span>{{localize "TQ.Secciones.Heridas"}}</span>
+          <a class="herida-add" title="{{localize "TQ.Tooltips.AnadirHerida"}}"><i class="fas fa-plus"></i></a>
+        </div>
+        <div class="tq-section-content" style="padding:2px;">
+          <table class="heridas-table">
+            <thead>
+              <tr>
+                <th>{{localize "TQ.General.Tipo"}}</th>
+                <th>{{localize "TQ.General.Descripcion"}}</th>
+                <th>{{localize "TQ.Salud.Dano"}}</th>
+                <th>{{localize "TQ.Salud.sanando"}}</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {{#each system.heridas as |herida idx|}}
+              <tr data-idx="{{idx}}">
+                <td>
+                  <select name="system.heridas.{{idx}}.tipo">
+                    <option value="rasguño" {{selected herida.tipo "rasguño"}}>{{localize "TQ.Salud.OpcionRasguno"}}</option>
+                    <option value="leve" {{selected herida.tipo "leve"}}>{{localize "TQ.Salud.OpcionLeve"}}</option>
+                    <option value="grave" {{selected herida.tipo "grave"}}>{{localize "TQ.Salud.OpcionGrave"}}</option>
+                  </select>
+                </td>
+                <td><input type="text" name="system.heridas.{{idx}}.descripcion" value="{{herida.descripcion}}" /></td>
+                <td class="herida-dano"><input type="number" name="system.heridas.{{idx}}.dano" value="{{herida.dano}}" min="0" /></td>
+                <td class="herida-sanando">
+                  <a class="tq-circulo toggle-herida-sanando {{#if herida.sanando}}marcado{{/if}}" data-idx="{{idx}}" title="{{localize "TQ.Salud.sanando"}}"></a>
+                </td>
+                <td class="item-controls">
+                  <a class="herida-delete" data-idx="{{idx}}" title="{{localize "TQ.Tooltips.Eliminar"}}"><i class="fas fa-trash"></i></a>
+                </td>
+              </tr>
+              {{/each}}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
       {{#if objetosMagicos}}
       <div class="tq-section-box">
         <div class="tq-section-header">
@@ -100,6 +141,7 @@
       {{/if}}
 
       {{#unless ocultarRasgosVentajas}}
+      {{#unless ocultarRasgos}}
       {{#if rasgos}}
       <div class="tq-section-box">
         <div class="tq-section-header"><span>{{localize "TQ.Secciones.Rasgos"}}</span></div>
@@ -116,6 +158,7 @@
         </div>
       </div>
       {{/if}}
+      {{/unless}}
 
       {{#if ventajas}}
       <div class="tq-section-box">

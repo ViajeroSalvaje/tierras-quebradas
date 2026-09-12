@@ -41,6 +41,11 @@
         <input type="text" name="system.alcance" value="{{system.alcance}}" />
       </div>
       <div class="tq-field-group" style="align-items:center;gap:6px;">
+        <label>{{localize "TQ.Hechizo.Inmediato"}}</label>
+        <a class="tq-circulo toggle-item-bool {{#if system.inmediato}}marcado{{/if}}"
+           data-campo="system.inmediato"></a>
+      </div>
+      <div class="tq-field-group" style="align-items:center;gap:6px;">
         <label>{{localize "TQ.Hechizo.LuchaEspiritu"}}</label>
         <a class="tq-circulo toggle-item-bool {{#if system.requiereTiradaEspiritu}}marcado{{/if}}"
            data-campo="system.requiereTiradaEspiritu"></a>

@@ -1,0 +1,100 @@
+<div class="{{cssClass}} flexcol" autocomplete="off" style="height:100%;width:100%;">
+  <div class="tq-item-header-fila">
+    <img class="profile-img item-img" src="{{item.img}}" data-edit="img" title="{{item.name}}" />
+    <h1><input type="text" name="name" value="{{item.name}}" /></h1>
+  </div>
+
+  <nav class="sheet-tabs">
+    <a class="item active" data-tab="datos">{{localize "TQ.Tabs.Estadisticas"}}</a>
+    <a class="item" data-tab="poderes">{{localize "TQ.Secciones.Poderes"}}</a>
+    <a class="item" data-tab="notas">{{localize "TQ.Tabs.notas"}}</a>
+  </nav>
+
+  <div class="item-body" style="overflow-y:auto;flex:1;">
+
+    <div class="tab active" data-tab="datos">
+      <div class="item-grid" style="grid-template-columns:repeat(3,1fr);gap:6px;padding:6px;">
+        <div class="tq-field-group">
+          <label>VM total</label>
+          <input type="number" name="system.valorMagico" value="{{system.valorMagico}}" min="0" />
+        </div>
+        <div class="tq-field-group">
+          <label>VM gastado</label>
+          <input type="number" name="system.vmGastado" value="{{system.vmGastado}}" min="0" />
+        </div>
+        <div class="tq-field-group">
+          <label>VM restante</label>
+          <span class="tq-valor-grande {{#if (tq-lt vmRestante 0)}}tq-rojo{{/if}}">{{vmRestante}}</span>
+        </div>
+        <div class="tq-field-group">
+          <label>{{localize "TQ.Automata.Espiritu"}}</label>
+          <input type="number" name="system.espiritu" value="{{system.espiritu}}" min="0" />
+        </div>
+        <div class="tq-field-group">
+          <label>{{localize "TQ.Automata.Coste"}}</label>
+          <input type="number" name="system.coste" value="{{system.coste}}" min="0" />
+        </div>
+        <div class="tq-field-group">
+          <label>{{localize "TQ.General.AlImpacto"}}</label>
+          <input type="number" name="system.alImpacto" value="{{system.alImpacto}}" />
+        </div>
+        <div class="tq-field-group">
+          <label>{{localize "TQ.Armadura.Proteccion"}}</label>
+          <input type="number" name="system.proteccion.valor" value="{{system.proteccion.valor}}" min="0" />
+        </div>
+        <div class="tq-field-group">
+          <label>{{localize "TQ.General.Tipo"}}</label>
+          <select name="system.proteccion.tipo">
+            <option value="blanda" {{selected system.proteccion.tipo "blanda"}}>Blanda</option>
+            <option value="dura" {{selected system.proteccion.tipo "dura"}}>Dura</option>
+          </select>
+        </div>
+        <div class="tq-field-group">
+          <label>{{localize "TQ.Automata.Movimiento"}}</label>
+          <input type="text" name="system.movimiento" value="{{system.movimiento}}" />
+        </div>
+      </div>
+      <div class="tq-field-group" style="padding:0 6px;">
+        <label>{{localize "TQ.Automata.Teaurgo"}}</label>
+        <input type="text" name="system.teaurgo" value="{{system.teaurgo}}" />
+      </div>
+    </div>
+
+    <div class="tab" data-tab="poderes">
+      <div class="tq-section-box" style="margin:6px;">
+        <div class="tq-section-header">
+          <span>{{localize "TQ.Secciones.Poderes"}}</span>
+          <span class="pnj-item-detalle">VM gastado: {{system.vmGastado}} / {{system.valorMagico}}</span>
+        </div>
+        <div class="tq-section-content">
+          <div class="pnj-items-lista">
+            {{#each system.poderes as |p idx|}}
+            <div class="pnj-item-fila">
+              <span class="pnj-item-nombre">{{p.nombre}}</span>
+              <span class="pnj-item-detalle">{{p.vm}} VM</span>
+              <a class="poder-borrar" data-idx="{{idx}}" title="{{localize "TQ.Tooltips.Eliminar"}}"><i class="fas fa-trash"></i></a>
+            </div>
+            {{/each}}
+          </div>
+          <div class="poderes-dropzone tq-dropzone">
+            <i class="fas fa-magic"></i> {{localize "TQ.Automata.ArrastraPoderes"}}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab" data-tab="notas">
+      <div style="padding:6px;">
+        <div class="tq-field-group">
+          <label>{{localize "TQ.General.Descripcion"}}</label>
+          <textarea name="system.descripcion" rows="4" class="tq-notas">{{system.descripcion}}</textarea>
+        </div>
+        <div class="tq-field-group" style="margin-top:8px;">
+          <label>{{localize "TQ.General.Notas"}}</label>
+          <textarea name="system.notas" rows="4" class="tq-notas">{{system.notas}}</textarea>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

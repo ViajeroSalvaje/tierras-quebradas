@@ -1,0 +1,255 @@
+<div class="tq-creator-wrap">
+
+  <div class="tq-creator-progress">
+    {{#each pasos as |p|}}
+    <div class="tq-creator-paso {{#if p.activo}}activo{{/if}} {{#if p.completado}}completado{{/if}}">
+      <span class="paso-num">{{p.num}}</span>
+      <span class="paso-label">{{p.label}}</span>
+    </div>
+    {{/each}}
+  </div>
+
+  <div class="tq-creator-body">
+
+    {{#if paso1}}
+    <div class="tq-creator-step">
+      <div class="tq-field-group">
+        <label>Nombre del autómata</label>
+        <input type="text" name="nombre" value="{{estado.nombre}}" placeholder="Nombre…" autofocus />
+      </div>
+      <div class="tq-field-group" style="margin-top:8px;">
+        <label>Teúrgo creador</label>
+        <select name="teaurgoId">
+          <option value="">— Seleccionar —</option>
+          {{#each actores as |a|}}
+          <option value="{{a.id}}" {{#if (tq-eq ../estado.teaurgoId a.id)}}selected{{/if}}>{{a.name}} (MEN {{a.mente}})</option>
+          {{/each}}
+        </select>
+      </div>
+      <div class="tq-field-group" style="margin-top:4px;">
+        <label style="font-size:10px;color:var(--tq-text-dim);">Si no está en el mundo</label>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <input type="text" name="teaurgoNombreManual" value="{{estado.teaurgoNombreManual}}" placeholder="Nombre del teúrgo…" style="flex:1;" />
+          <label style="font-size:11px;white-space:nowrap;color:var(--tq-text-dim);">MEN</label>
+          <input type="number" name="teaurgoMenteManual" value="{{estado.teaurgoMenteManual}}" min="0" style="width:52px;" />
+        </div>
+      </div>
+      {{#if estado.vmDisponible}}
+      <div class="tq-creator-stat-row" style="margin-top:12px;">
+        <div class="tq-creator-stat-box">
+          <span class="tq-creator-stat-label">VM disponible</span>
+          <span class="tq-valor-grande vm-display">{{estado.vmDisponible}}</span>
+        </div>
+        <div class="tq-creator-stat-box">
+          <span class="tq-creator-stat-label">Pool habilidades</span>
+          <span class="tq-valor-grande pool-display">{{estado.poolHabilidades}}</span>
+        </div>
+      </div>
+      {{/if}}
+    </div>
+    {{/if}}
+
+    {{#if paso2}}
+    <div class="tq-creator-step">
+      <div class="tq-field-group" style="margin-bottom:10px;">
+        <label>Característica principal</label>
+        <div class="tq-radio-circulo">
+          <label>
+            <span class="tq-circulo tq-radio-btn {{#if (tq-eq estado.caracteristicaPrincipal "cuerpo")}}marcado{{/if}}" data-principal="cuerpo"></span>
+            Cuerpo (1d10+2)
+          </label>
+          <label>
+            <span class="tq-circulo tq-radio-btn {{#if (tq-eq estado.caracteristicaPrincipal "mente")}}marcado{{/if}}" data-principal="mente"></span>
+            Mente (1d10+2)
+          </label>
+        </div>
+      </div>
+      <div class="tq-creator-tiradas">
+        <div class="tq-creator-tirada">
+          <span class="tq-creator-tirada-label">Cuerpo <em>({{#if (tq-eq estado.caracteristicaPrincipal "cuerpo")}}1d10+2{{else}}1d6+2{{/if}})</em></span>
+          <span class="tq-valor-grande">{{#if estado.cuerpo}}{{estado.cuerpo}}{{else}}—{{/if}}</span>
+          <button type="button" class="tirar-cuerpo">Tirar</button>
+        </div>
+        <div class="tq-creator-tirada">
+          <span class="tq-creator-tirada-label">Mente <em>({{#if (tq-eq estado.caracteristicaPrincipal "mente")}}1d10+2{{else}}1d6+2{{/if}})</em></span>
+          <span class="tq-valor-grande">{{#if estado.mente}}{{estado.mente}}{{else}}—{{/if}}</span>
+          <button type="button" class="tirar-mente">Tirar</button>
+        </div>
+        <div class="tq-creator-tirada">
+          <span class="tq-creator-tirada-label">Tamaño <em>(1d6−1d6)</em></span>
+          <span class="tq-valor-grande">{{#if estado.tamano}}{{estado.tamano}}{{else}}—{{/if}}</span>
+          <button type="button" class="tirar-tamano">Tirar</button>
+        </div>
+      </div>
+      {{#if estado.cuerpo}}
+      <p class="tq-creator-nota">Armadura base: {{armaduraBase}} (Cuerpo/2, dura) · Pool habilidades: {{estado.poolHabilidades}}</p>
+      {{/if}}
+    </div>
+    {{/if}}
+
+    {{#if paso3}}
+    <div class="tq-creator-step">
+      <div class="tq-creator-pool-header">
+        <span>Puntos de habilidad</span>
+        <span>Gastados: <strong>{{poolGastado}}</strong> / {{estado.poolHabilidades}} — Restantes: <strong class="pool-restante {{#if (tq-lt poolRestante 0)}}tq-rojo{{/if}}">{{poolRestante}}</strong></span>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 10px;margin-bottom:8px;">
+        {{#each estado.habilidades as |h|}}
+        <div class="pnj-item-fila">
+          <span style="flex:1;">{{h.nombre}}</span>
+          <input type="number" class="hab-nivel" data-nombre="{{h.nombre}}" value="{{h.nivel}}" min="0" style="width:55px;" />
+          <a class="hab-borrar" data-nombre="{{h.nombre}}" title="Eliminar"><i class="fas fa-trash"></i></a>
+        </div>
+        {{/each}}
+      </div>
+      <button type="button" class="hab-anadir" style="width:100%;">+ Añadir habilidad</button>
+      <div class="hab-dropzone tq-dropzone" style="margin-top:6px;"><i class="fas fa-book"></i> Arrastra habilidades desde el compendio</div>
+    </div>
+    {{/if}}
+
+    {{#if paso4}}
+    <div class="tq-creator-step">
+      <div class="tq-creator-vm-bar">
+        <span>VM disponible: <strong>{{vmEfectivo}}{{#if vmDebilidades}} <em class="tq-creator-nota-inline">(+{{vmDebilidades}} deb.)</em>{{/if}}</strong></span>
+        <span>VM gastado: <strong class="vm-gastado">{{vmGastado}}</strong></span>
+        <span>VM restante: <strong class="vm-restante {{#if (tq-lt vmRestante 0)}}tq-rojo{{/if}}">{{vmRestante}}</strong></span>
+      </div>
+
+      <div class="tq-section-header" style="margin-top:8px;"><span>Movimiento <em class="tq-creator-nota-inline">(1.º tipo lento gratis · +1 VM tipo extra · +1 VM por velocidad)</em></span></div>
+      {{#each estado.movimientos as |m idx|}}
+      <div class="pnj-item-fila" style="margin-bottom:4px;">
+        <select name="mov-tipo-{{idx}}" style="flex:1;">
+          {{#each ../tiposMov as |t|}}
+          <option value="{{t}}" {{#if (tq-eq t ../m.tipo)}}selected{{/if}}>{{t}}</option>
+          {{/each}}
+        </select>
+        <select name="mov-vel-{{idx}}" style="width:90px;">
+          {{#each ../velocidades as |v|}}
+          <option value="{{v}}" {{#if (tq-eq v ../m.velocidad)}}selected{{/if}}>{{v}}</option>
+          {{/each}}
+        </select>
+        {{#if idx}}<a class="mov-borrar" data-idx="{{idx}}"><i class="fas fa-trash"></i></a>{{/if}}
+      </div>
+      {{/each}}
+      <button type="button" class="mov-anadir" style="width:100%;margin-bottom:8px;">+ Añadir tipo de movimiento</button>
+
+      <div class="tq-section-header"><span>Mejoras de características <em class="tq-creator-nota-inline">(1 VM por punto)</em></span></div>
+      <div class="item-grid" style="grid-template-columns:repeat(5,1fr);gap:4px;margin-bottom:8px;">
+        {{#each estado.mejoras}}
+        <div class="tq-field-group">
+          <label>+{{@key}}</label>
+          <input type="number" name="mejora-{{@key}}" value="{{this}}" min="0" style="width:100%;" />
+        </div>
+        {{/each}}
+      </div>
+
+      {{#if estado.habilidades}}
+      <div class="tq-section-header" style="justify-content:space-between;">
+        <span>Puntos de habilidad extra <em class="tq-creator-nota-inline">(1 VM = +3 pts)</em></span>
+        <span>Disponibles: <strong class="boost-pts-restante {{#if (tq-lt puntosBoostDisponibles 0)}}tq-rojo{{/if}}">{{puntosBoostDisponibles}}</strong></span>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 10px;margin-bottom:8px;">
+        {{#each estado.habilidades as |h|}}
+        <div class="pnj-item-fila">
+          <span style="flex:1;">{{h.nombre}} (niv. base {{h.nivel}})</span>
+          <input type="number" class="boost-nivel" name="boost-{{h.nombre}}" data-nombre="{{h.nombre}}" value="{{lookup ../estado.boostsHab h.nombre}}" min="0" style="width:55px;" />
+        </div>
+        {{/each}}
+      </div>
+      {{/if}}
+
+      <div class="tq-section-header"><span>Poderes</span><a class="poder-anadir" title="Añadir poder"><i class="fas fa-plus"></i></a></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:2px 8px;margin-bottom:4px;">
+        {{#each estado.poderes as |p idx|}}
+        <div class="pnj-item-fila">
+          <span class="pnj-item-nombre" style="flex:1;">{{p.nombre}}</span>
+          <span class="pnj-item-detalle" style="font-size:10px;white-space:nowrap;">{{p.vm}} VM</span>
+          <a class="poder-borrar" data-idx="{{idx}}"><i class="fas fa-trash"></i></a>
+        </div>
+        {{/each}}
+      </div>
+      <div class="poderes-dropzone tq-dropzone"><i class="fas fa-magic"></i> Arrastra Rasgos / Poderes desde el compendio de Bestiario</div>
+
+      <div class="tq-section-header" style="margin-top:8px;"><span>Debilidades</span><a class="debilidad-anadir" title="Añadir debilidad"><i class="fas fa-plus"></i></a></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:2px 8px;margin-bottom:4px;">
+        {{#each estado.debilidades as |d idx|}}
+        <div class="pnj-item-fila">
+          <span class="pnj-item-nombre" style="flex:1;">{{d.nombre}}</span>
+          <a class="debilidad-borrar" data-idx="{{idx}}"><i class="fas fa-trash"></i></a>
+        </div>
+        {{/each}}
+      </div>
+      <div class="debilidades-dropzone tq-dropzone" style="margin-bottom:6px;"><i class="fas fa-skull"></i> Arrastra debilidades del compendio de Bestiario</div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <button type="button" class="debilidad-aleatoria" style="flex:1;">Debilidad Aleatoria</button>
+        <input type="number" class="debilidad-aleatoria-num" value="1" min="1" max="20" style="width:52px;" />
+      </div>
+    </div>
+    {{/if}}
+
+    {{#if paso5}}
+    <div class="tq-creator-step">
+      <p style="margin-bottom:12px;">Tira el Espíritu del autómata. El teúrgo debe gastar puntos de Espíritu para mantener la virtud de forma indefinida.</p>
+      <div class="tq-creator-tirada">
+        <span class="tq-creator-tirada-label">Espíritu <em>(1d6+2)</em></span>
+        <span class="tq-valor-grande">{{#if estado.espiritu}}{{estado.espiritu}}{{else}}—{{/if}}</span>
+        <button type="button" class="tirar-espiritu">Tirar</button>
+      </div>
+      <p class="tq-creator-nota" style="margin-top:16px;">Coste total: <strong>{{estado.vmDisponible}} × 1.000 mb = {{coste}} mb</strong></p>
+    </div>
+    {{/if}}
+
+    {{#if paso6}}
+    <div class="tq-creator-step">
+      <div class="tq-resumen-card">
+        <div class="tq-resumen-card-header">
+          <span class="tq-resumen-card-nombre">{{estado.nombre}}</span>
+          <span class="tq-resumen-card-creador">por {{#if estado.teaurgoNombre}}{{estado.teaurgoNombre}}{{else}}{{estado.teaurgoNombreManual}}{{/if}}</span>
+        </div>
+        <div class="tq-resumen-stat-row">
+          <div class="tq-resumen-stat-box"><span class="rsb-val">{{cuerpoFinal}}</span><span class="rsb-lbl">CUE</span></div>
+          <div class="tq-resumen-stat-box"><span class="rsb-val">{{menteFinal}}</span><span class="rsb-lbl">MEN</span></div>
+          <div class="tq-resumen-stat-box"><span class="rsb-val">{{tamanoFinal}}</span><span class="rsb-lbl">TAM</span></div>
+          <div class="tq-resumen-stat-box"><span class="rsb-val">{{armaduraFinal}}d</span><span class="rsb-lbl">ARM</span></div>
+          <div class="tq-resumen-stat-box"><span class="rsb-val">{{estado.vmDisponible}}</span><span class="rsb-lbl">VM</span></div>
+          <div class="tq-resumen-stat-box"><span class="rsb-val">{{estado.espiritu}}</span><span class="rsb-lbl">ESP</span></div>
+        </div>
+        {{#if movimientoStr}}<div class="tq-resumen-mov">{{movimientoStr}}</div>{{/if}}
+        <div class="tq-resumen-body">
+          <div class="tq-resumen-col tq-resumen-col-izq">
+            {{#if habilidadesResumen}}
+            <div class="tq-resumen-section-lbl">Habilidades</div>
+            {{#each habilidadesResumen as |h|}}
+            <div class="tq-resumen-item">· {{h.nombre}} {{h.nivel}}</div>
+            {{/each}}
+            {{/if}}
+          </div>
+          <div class="tq-resumen-col">
+            {{#if estado.poderes}}
+            <div class="tq-resumen-section-lbl">Poderes</div>
+            {{#each estado.poderes as |p|}}
+            <div class="tq-resumen-item">· {{p.nombre}}</div>
+            {{/each}}
+            {{/if}}
+            {{#if estado.debilidades}}
+            <div class="tq-resumen-section-lbl" style="{{#if estado.poderes}}margin-top:6px;{{/if}}">Debilidades</div>
+            {{#each estado.debilidades as |d|}}
+            <div class="tq-resumen-item">· {{d.nombre}}</div>
+            {{/each}}
+            {{/if}}
+          </div>
+        </div>
+        <div class="tq-resumen-footer">{{coste}} mb</div>
+      </div>
+    </div>
+    {{/if}}
+
+  </div>
+
+  <div class="tq-creator-footer">
+    {{#unless paso1}}<button type="button" class="creator-prev">← Anterior</button>{{/unless}}
+    {{#unless paso6}}<button type="button" class="creator-next">Siguiente →</button>{{/unless}}
+    {{#if paso6}}<button type="button" class="creator-crear">Crear Autómata</button>{{/if}}
+  </div>
+
+</div>

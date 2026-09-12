@@ -57,6 +57,7 @@
         <span>+ {{#if puntuacionMostrada}}{{puntuacionMostrada}}{{else}}{{puntuacion}}{{/if}}</span>
         {{#each modDesglose as |m|}}<span>{{m.signo}} {{m.valorAbs}} ({{m.label}})</span>{{/each}}
         {{#if bonificador}}<span>{{#if (tq-gt bonificador 0)}}+{{/if}}{{bonificador}}</span>{{/if}}
+        {{#if superioridad}}<span>+{{superioridad}} (Superioridad)</span>{{/if}}
         {{#if modLongitud}}<span>+{{modLongitud}} (long.)</span>{{/if}}
         <span class="tq-melee-total">= <strong>{{total}}</strong></span>
       </div>
@@ -162,6 +163,11 @@
     <button class="tq-fortuna-repetir" type="button" data-actor-id="{{actorId}}">
       {{localize "TQ.Botones.RepetirFortuna"}}
     </button>
+    {{#if mostrarLucky}}
+    <button class="tq-fortuna-lucky" type="button" data-actor-id="{{actorId}}">
+      {{localize "TQ.Botones.RepetirLucky"}}
+    </button>
+    {{/if}}
     {{#if mostrarAplicarResultado}}
     <button class="tq-aplicar-resultado" type="button"
       data-actor-id="{{actorId}}"

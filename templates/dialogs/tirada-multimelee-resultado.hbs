@@ -1,0 +1,83 @@
+<div class="tq-tirada-resultado">
+
+  <div class="tq-chat-header">
+    <span class="tq-chat-etiqueta">{{localize "TQ.Melee.MeleeMultipleTitulo"}}</span>
+  </div>
+
+  {{!-- Fila del único --}}
+  <div style="padding:4px 8px 2px;border-top:1px solid rgba(0,0,0,0.08);margin-bottom:4px;">
+    <div class="tq-melee-titulo">{{unicoNombre}}</div>
+    <div class="tq-mm-nums">
+      <span><i class="fas fa-dice-d10"></i> <strong>{{dadoDisplayU}}</strong></span>
+      <span>+ {{unicoPuntuacion}}</span>
+      {{#each modDesglose as |m|}}<span>{{m.signo}} {{m.valorAbs}} ({{m.label}})</span>{{/each}}
+      <span class="tq-melee-total">= <strong>{{totalUnico}}</strong></span>
+    </div>
+  </div>
+
+  <hr style="margin:4px 0 6px;" />
+
+  {{!-- Fila por cada oponente --}}
+  {{#each filas as |f|}}
+  <div style="border-left:3px solid {{#if (tq-eq ../modo "Nvs1")}}{{#if f.unicoGana}}var(--color-border-highlight,#c44){{else}}var(--color-border-highlight-alt,#4a7){{/if}}{{else}}{{#if f.unicoGana}}var(--color-border-highlight-alt,#4a7){{else}}var(--color-border-highlight,#c44){{/if}}{{/if}};padding-left:6px;margin-bottom:6px;">
+    <div class="tq-melee-titulo" style="color:#999;font-size:0.8em;text-transform:uppercase;letter-spacing:1px;">{{f.nombre}}</div>
+    <div class="tq-mm-nums">
+      <span><i class="fas fa-dice-d10"></i> <strong>{{f.dadoDisplay}}</strong></span>
+      <span>+ {{f.puntuacion}}</span>
+      {{#if f.bonoSuperioridad}}<span>+ {{f.bonoSuperioridad}} ({{localize "TQ.Melee.BonusSuperioridad"}})</span>{{/if}}
+      <span class="tq-melee-total">= <strong>{{f.total}}</strong></span>
+    </div>
+    <div class="tq-chat-exitos-fila" style="font-size:0.85em;{{#if (tq-eq ../modo "Nvs1")}}{{#if f.unicoGana}}color:var(--color-border-highlight,#c44);font-weight:bold;{{/if}}{{else}}{{#unless f.unicoGana}}color:var(--color-border-highlight,#c44);font-weight:bold;{{/unless}}{{/if}}">
+      {{#if (tq-eq ../modo "Nvs1")}}{{#if f.unicoGana}}{{localize "TQ.Melee.DefensorGana"}}{{else}}{{localize "TQ.Melee.UnicoGana"}}{{/if}}{{else}}{{#if f.unicoGana}}{{localize "TQ.Melee.UnicoGana"}}{{else}}{{localize "TQ.Melee.OponenteGana"}}{{/if}}{{/if}}
+      ({{#if (tq-gt f.exitos 0)}}+{{/if}}{{f.exitos}})
+    </div>
+    {{#if f.unicoGana}}
+      {{#if f.pdUnico}}
+      <div class="tq-chat-danho" style="font-size:0.85em;">
+        {{f.pdUnico.formula}} = <strong>{{f.pdUnico.total}} {{localize "TQ.General.DP"}}</strong>{{#if f.protOponente}} — {{f.protOponente}} {{localize "TQ.General.ProtAbrev"}} → <strong>{{f.danhoOponente}} {{localize "TQ.General.Dano"}}</strong>{{/if}}
+      </div>
+      {{#unless ../necesitaElegir}}
+      {{#if f.actorId}}
+      <div class="tq-fortuna-actions">
+        <button class="tq-mm-elegir" type="button" data-actor-id="{{f.actorId}}">{{localize "TQ.Botones.AplicarDanho"}}</button>
+      </div>
+      {{/if}}
+      {{/unless}}
+      {{/if}}
+    {{else}}
+      {{#if f.pdOponente}}
+      <div class="tq-chat-danho rival" style="font-size:0.85em;">
+        {{f.nombre}}: {{f.pdOponente.formula}} = <strong>{{f.pdOponente.total}} {{localize "TQ.General.DP"}}</strong>{{#if f.protUnico}} — {{f.protUnico}} {{localize "TQ.General.ProtAbrev"}} → <strong>{{f.danhoUnico}} {{localize "TQ.General.Dano"}}</strong>{{/if}}
+        {{#if f.actorId}}
+        <div class="tq-fortuna-actions">
+          <button class="tq-mm-danho-rival" data-actor-id="{{../unicoActorId}}" data-danho-neto="{{f.danhoUnico}}" data-danho-bruto="{{f.pdOponente.total}}">{{localize "TQ.Botones.AplicarDanho"}}</button>
+        </div>
+        {{/if}}
+      </div>
+      {{/if}}
+    {{/if}}
+  </div>
+  {{/each}}
+
+  {{!-- 1 Fortuna: repetir tirada del único --}}
+  {{#if puedeUsarFortuna}}
+  <div class="tq-fortuna-actions">
+    <button class="tq-mm-fortuna" type="button">{{localize "TQ.Melee.GastarFortunaRepetir"}}</button>
+  </div>
+  {{/if}}
+
+  {{!-- Elegir a quién impactar si el único ganó contra varios --}}
+  {{#if necesitaElegir}}
+  <div class="tq-fortuna-actions tq-mm-elegir-seccion">
+    <p style="margin:4px 0 6px;font-style:italic;font-size:0.85em;">{{localize "TQ.Melee.ElegirObjetivoDanho"}}</p>
+    {{#each filas as |f|}}
+    {{#if f.unicoGana}}{{#if f.pdUnico}}
+    <button class="tq-mm-elegir" data-actor-id="{{f.actorId}}" data-danho-neto="{{f.danhoOponente}}" data-danho-bruto="{{f.pdUnico.total}}">
+      {{f.nombre}} ({{f.danhoOponente}} {{localize "TQ.General.Dano"}})
+    </button>
+    {{/if}}{{/if}}
+    {{/each}}
+  </div>
+  {{/if}}
+
+</div>

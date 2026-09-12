@@ -69,6 +69,12 @@
         </select>
       </div>
     </div>
+    <div class="tq-campo-tope">
+      <input type="checkbox" name="superioridad_activo" id="superioridad_activo" class="tq-apuntar-check" />
+      <label for="superioridad_activo" class="tq-circulo tq-apuntar-circulo" style="width:16px;height:16px;cursor:pointer;flex-shrink:0;"></label>
+      <span class="tq-tope-label">{{localize "TQ.Dialogo.SuperioridadNumerica"}}</span>
+      <input type="number" name="superioridad_valor" id="superioridad_valor" value="0" min="0" step="1" style="width:44px;" />
+    </div>
 
     {{else if (tq-eq modo "distancia")}}
     {{!-- Tirada a distancia --}}
@@ -260,6 +266,12 @@
       </div>
       {{/if}}
     </div>
+    <div class="tq-campo-tope">
+      <input type="checkbox" name="superioridad_activo" id="superioridad_activo" class="tq-apuntar-check" />
+      <label for="superioridad_activo" class="tq-circulo tq-apuntar-circulo" style="width:16px;height:16px;cursor:pointer;flex-shrink:0;"></label>
+      <span class="tq-tope-label">{{localize "TQ.Dialogo.SuperioridadNumerica"}}</span>
+      <input type="number" name="superioridad_valor" id="superioridad_valor" value="0" min="0" step="1" style="width:44px;" />
+    </div>
 
     {{else if (tq-eq modo "golpe-aislado")}}
     {{!-- Golpe aislado / Trata de escapar --}}
@@ -293,6 +305,12 @@
         <span class="tq-ga-debilitado-aviso" id="tq-ga-deb-aviso" style="display:none;">{{localize "TQ.Melee.Debilitado"}}: +2</span>
       </div>
       {{/if}}
+    </div>
+    <div class="tq-campo-tope">
+      <input type="checkbox" name="superioridad_activo" id="superioridad_activo" class="tq-apuntar-check" />
+      <label for="superioridad_activo" class="tq-circulo tq-apuntar-circulo" style="width:16px;height:16px;cursor:pointer;flex-shrink:0;"></label>
+      <span class="tq-tope-label">{{localize "TQ.Dialogo.SuperioridadNumerica"}}</span>
+      <input type="number" name="superioridad_valor" id="superioridad_valor" value="0" min="0" step="1" style="width:44px;" />
     </div>
 
     {{else if (tq-eq escalaDif "meditacion")}}

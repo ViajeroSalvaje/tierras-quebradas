@@ -1,0 +1,214 @@
+<section class="{{cssClass}} flexcol" style="display:flex;flex-direction:column;height:100%;width:100%;overflow:hidden;">
+  <header class="sheet-header">
+    <img class="profile-img" src="{{actor.img}}" data-edit="img" title="{{actor.name}}" />
+    <div class="header-fields pnj-header-fields">
+      <h1 class="charname">
+        <input name="name" type="text" value="{{actor.name}}" placeholder="{{localize "TQ.Placeholders.Nombre"}}" />
+      </h1>
+    </div>
+  </header>
+
+  <nav class="sheet-tabs">
+    <a class="item active" data-tab="stats">{{localize "TQ.Tabs.Estadisticas"}}</a>
+    <a class="item" data-tab="combate">{{localize "TQ.Tabs.CombateMagia"}}</a>
+    <a class="item" data-tab="notas">{{localize "TQ.Tabs.notas"}}</a>
+  </nav>
+
+  <section class="sheet-body">
+    <div class="tab active" data-tab="stats">
+      <div class="caract-grid">
+        {{#each system.caracteristicas as |caract clave|}}
+        <div class="caract-item">
+          <span class="caract-etiqueta tirar-caracteristica" data-caracteristica="{{clave}}">
+            {{localize (concat "TQ.Caracteristicas." clave)}}
+          </span>
+          <div class="caract-circulo">
+            <input type="number" name="system.caracteristicas.{{clave}}.valor"
+                   value="{{caract.valor}}" min="-5" max="20" />
+          </div>
+        </div>
+        {{/each}}
+      </div>
+
+      <div class="tq-derivadas-fila">
+        <div class="derivada-item">
+          <span class="derivada-label tirar-caracteristica" data-caracteristica="fuerza" title="{{localize "TQ.Tooltips.TirarFuerza"}}" style="cursor:pointer;">{{localize "TQ.Caracteristicas.fuerza"}}</span>
+          <div class="tq-caract-sec-circulo">
+            <span class="derivada-value">{{system.derivadas.fuerza.valor}}</span>
+          </div>
+        </div>
+        <div class="derivada-item">
+          <span class="derivada-label">MD 1M</span>
+          <div class="tq-caract-sec-circulo">
+            <span class="derivada-value">{{system.derivadas.mDano1m.valor}}</span>
+          </div>
+        </div>
+        <div class="derivada-item">
+          <span class="derivada-label">MD 2M</span>
+          <div class="tq-caract-sec-circulo">
+            <span class="derivada-value">{{system.derivadas.mDano2m.valor}}</span>
+          </div>
+        </div>
+        <div class="derivada-item tirar-base" data-nombre="Vigor" data-base="vigor" style="margin-left:24px">
+          <span class="derivada-label">VIG</span>
+          <div class="tq-caract-sec-circulo"><span>{{system.bases.vigor.valor}}</span></div>
+        </div>
+        <div class="derivada-item tirar-base" data-nombre="Agilidad" data-base="agilidad">
+          <span class="derivada-label">AGI</span>
+          <div class="tq-caract-sec-circulo"><span>{{system.bases.agilidad.valor}}</span></div>
+        </div>
+        <div class="derivada-item tirar-base" data-nombre="Comunicación" data-base="comunicacion">
+          <span class="derivada-label">COM</span>
+          <div class="tq-caract-sec-circulo"><span>{{system.bases.comunicacion.valor}}</span></div>
+        </div>
+        <div class="derivada-item tirar-base" data-nombre="Cultura" data-base="cultura">
+          <span class="derivada-label">CUL</span>
+          <div class="tq-caract-sec-circulo"><span>{{system.bases.cultura.valor}}</span></div>
+        </div>
+        <div class="derivada-item tirar-base" data-nombre="Hechicería" data-base="hechiceria">
+          <span class="derivada-label">HEC</span>
+          <div class="tq-caract-sec-circulo"><span>{{system.bases.hechiceria.valor}}</span></div>
+        </div>
+        <div class="derivada-item tirar-base" data-nombre="Percepción" data-base="percepcion">
+          <span class="derivada-label">PER</span>
+          <div class="tq-caract-sec-circulo"><span>{{system.bases.percepcion.valor}}</span></div>
+        </div>
+        <div class="derivada-item tirar-base" data-nombre="Técnica" data-base="tecnica">
+          <span class="derivada-label">TEC</span>
+          <div class="tq-caract-sec-circulo"><span>{{system.bases.tecnica.valor}}</span></div>
+        </div>
+      </div>
+
+      <div class="combat-stats">
+        <div class="stat-item">
+          <label>{{localize "TQ.Armadura.Proteccion"}}</label>
+          <input type="number" name="system.proteccion.valor" value="{{system.proteccion.valor}}" style="width:40px" />
+          <select name="system.proteccion.tipo">
+            <option value="blanda" {{#if (eq system.proteccion.tipo "blanda")}}selected{{/if}}>{{localize "TQ.Armadura.Blanda"}}</option>
+            <option value="dura" {{#if (eq system.proteccion.tipo "dura")}}selected{{/if}}>{{localize "TQ.Armadura.Dura"}}</option>
+          </select>
+        </div>
+        <div class="stat-item">
+          <label>{{localize "TQ.General.AlImpacto"}}</label>
+          <input type="number" name="system.alImpacto" value="{{system.alImpacto}}" style="width:40px" />
+        </div>
+        <div class="stat-item">
+          <label>VM</label>
+          <input type="number" name="system.valorMagico" value="{{system.valorMagico}}" style="width:40px" />
+        </div>
+        <div class="stat-item">
+          <label>Precio</label>
+          <input type="number" name="system.coste" value="{{system.coste}}" style="width:64px" />
+          <span style="font-size:11px;color:var(--tq-text-dim);">mb</span>
+        </div>
+      </div>
+
+      <div class="tq-movimiento-fila">
+        <label>{{localize "TQ.General.Movimiento"}}</label>
+        <input type="text" name="system.movimiento" value="{{system.movimiento}}" />
+      </div>
+
+      <div class="pnj-salud-fila">
+        <label class="tq-salud-label">PV</label>
+        <input type="number" name="system.salud.pvActual.valor" value="{{system.salud.pvActual.valor}}" class="pnj-pv-input" />
+        <span class="tq-salud-sep">/</span>
+        <input type="number" name="system.salud.pvMax.valor" value="{{system.salud.pvMax.valor}}" class="pnj-pv-input" />
+        <span class="pnj-heridas-sep"></span>
+        <span class="pnj-salud-label">{{localize "TQ.Salud.heridasLevesAbrev"}}</span>
+        <a class="tq-circulo toggle-estado {{#if system.salud.heridasLeves1}}marcado{{/if}}" data-campo="system.salud.heridasLeves1" title="Herida leve 1"></a>
+        <a class="tq-circulo toggle-estado {{#if system.salud.heridasLeves2}}marcado{{/if}}" data-campo="system.salud.heridasLeves2" title="Herida leve 2"></a>
+        <a class="tq-circulo toggle-estado {{#if system.salud.heridasLeves3}}marcado{{/if}}" data-campo="system.salud.heridasLeves3" title="Herida leve 3"></a>
+        <a class="tq-circulo toggle-estado {{#if system.salud.heridasLeves4}}marcado{{/if}}" data-campo="system.salud.heridasLeves4" title="Herida leve 4"></a>
+        <span class="pnj-heridas-sep"></span>
+        <span class="pnj-salud-label">{{localize "TQ.Salud.heridasGravesAbrev"}}</span>
+        <a class="tq-circulo toggle-estado tq-circulo-grave {{#if system.salud.heridasGraves1}}marcado{{/if}}" data-campo="system.salud.heridasGraves1" title="Herida grave 1"></a>
+        <a class="tq-circulo toggle-estado tq-circulo-grave {{#if system.salud.heridasGraves2}}marcado{{/if}}" data-campo="system.salud.heridasGraves2" title="Herida grave 2"></a>
+        <span class="pnj-heridas-sep"></span>
+        <span class="pnj-salud-label">{{localize "TQ.Salud.debilitado"}}</span>
+        <a class="tq-circulo toggle-estado {{#if system.salud.debilitado}}marcado{{/if}}" data-campo="system.salud.debilitado" title="{{localize "TQ.Salud.debilitado"}}"></a>
+        <span class="pnj-heridas-sep"></span>
+        <span class="pnj-salud-label">{{localize "TQ.Salud.incapacitado"}}</span>
+        <a class="tq-circulo toggle-estado {{#if system.salud.incapacitado}}marcado{{/if}}" data-campo="system.salud.incapacitado" title="{{localize "TQ.Salud.incapacitado"}}"></a>
+      </div>
+
+      <div class="tq-section-header">
+        <span>{{localize "TQ.Secciones.Habilidades"}}</span>
+        <a class="anadir-habilidad" title="{{localize "TQ.Tooltips.AnadirHabilidad"}}"><i class="fas fa-plus"></i></a>
+      </div>
+      <div class="pnj-habilidades">
+        {{#each habilidades as |hab|}}
+        <div class="pnj-hab" data-nombre="{{hab.nombre}}">
+          <span class="hab-nombre tirar-habilidad" data-nombre="{{hab.nombre}}" data-total="{{hab.total}}" title="Tirar {{hab.nombre}}">{{hab.nombre}}</span>
+          <span class="tq-habilidad-total">{{hab.total}}</span>
+          <span class="tq-habilidad-nivel">
+            <input type="number" class="hab-nivel-input" data-nombre="{{hab.nombre}}"
+                   value="{{hab.nivel}}" min="0" />
+          </span>
+          <a class="eliminar-habilidad" data-nombre="{{hab.nombre}}" title="{{localize "TQ.Tooltips.Eliminar"}}">
+            <i class="fas fa-trash"></i>
+          </a>
+        </div>
+        {{/each}}
+      </div>
+
+    </div>
+
+    <div class="tab" data-tab="combate">
+      {{> "systems/tierras-quebradas/templates/partials/_tab-combate-magia.hbs"}}
+    </div>
+
+    <div class="tab" data-tab="notas">
+      <div class="tq-field-group" style="margin-bottom:8px;">
+        <label>{{localize "TQ.Lealtad.Deidad"}}</label>
+        <select name="system.deidad">
+          <option value="">Ninguna</option>
+          {{#each deidadesLey as |d|}}
+          <option value="{{d}}" {{selected ../system.deidad d}}>{{d}}</option>
+          {{/each}}
+        </select>
+      </div>
+
+      <div class="tq-field-group" style="margin-bottom:8px;">
+        <label>Creador</label>
+        <input type="text" name="system.creador" value="{{system.creador}}" />
+      </div>
+
+      <textarea name="system.notas" rows="5" class="tq-notas">{{system.notas}}</textarea>
+
+      <div class="tq-section-header" style="margin-top:8px;">
+        <span>{{localize "TQ.Secciones.Rasgos"}}</span>
+        <a class="pnj-anadir-rasgo" title="{{localize "TQ.Tooltips.AnadirRasgo"}}"><i class="fas fa-plus"></i></a>
+      </div>
+      <ul class="ventajas-list" style="display:grid;grid-template-columns:1fr 1fr;gap:0 8px;">
+        {{#each rasgos as |r|}}
+        <li data-item-id="{{r.id}}" class="ventaja-item">
+          <strong>{{r.name}}</strong>
+          {{#if r.coste}}<span class="coste">({{r.coste}} PP)</span>{{/if}}
+          <span class="item-controls">
+            <a class="item-edit" data-item-id="{{r.id}}"><i class="fas fa-edit"></i></a>
+            <a class="pnj-item-borrar" data-id="{{r.id}}"><i class="fas fa-trash"></i></a>
+          </span>
+        </li>
+        {{/each}}
+      </ul>
+
+      <div class="tq-section-header" style="margin-top:8px;">
+        <span>Debilidades</span>
+        <a class="anadir-debilidad" title="Añadir debilidad"><i class="fas fa-plus"></i></a>
+      </div>
+      <ul class="ventajas-list" style="display:grid;grid-template-columns:1fr 1fr;gap:0 8px;">
+        {{#each debilidades as |d|}}
+        <li data-item-id="{{d.id}}" class="ventaja-item">
+          <strong>{{d.name}}</strong>
+          <span class="item-controls">
+            <a class="item-edit" data-item-id="{{d.id}}"><i class="fas fa-edit"></i></a>
+            <a class="pnj-item-borrar" data-id="{{d.id}}"><i class="fas fa-trash"></i></a>
+          </span>
+        </li>
+        {{/each}}
+      </ul>
+      <div class="debilidades-dropzone tq-dropzone" style="margin-top:4px;"><i class="fas fa-skull"></i> Arrastra debilidades del compendio de Bestiario</div>
+
+    </div>
+  </section>
+</section>

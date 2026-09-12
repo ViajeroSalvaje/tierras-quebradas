@@ -3,82 +3,117 @@
   <button type="button" class="cc-metodo-btn {{#if (tq-eq data.metodoCaract 'aleatorio')}}active{{/if}}" data-metodo="aleatorio">{{localize "TQ.CC.Aleatorio"}}</button>
 </div>
 
-{{#if (tq-eq data.metodoCaract "distribuir")}}
-<div class="cc-section">
-  <h3 class="cc-section-title">
-    {{localize "TQ.Secciones.Caracteristicas"}}
-    <span class="cc-pts-badge {{#if (tq-gt ptsRestantes 0)}}pendiente{{else if (tq-gt 0 ptsRestantes)}}exceso{{/if}}">
-      {{#if (tq-gt ptsRestantes 0)}}Faltan {{ptsRestantes}} pts.
-      {{else if (tq-gt 0 ptsRestantes)}}Exceso {{ptsRestantes}} pts.
-      {{else}}19 / 19 ✓{{/if}}
-    </span>
-  </h3>
-  <div class="cc-caract-grid">
-    {{#each caractLista as |c|}}
-    <div class="cc-caract-fila">
-      <span class="cc-caract-etiqueta">{{c.label}}</span>
-      <button type="button" class="cc-caract-btn" data-caract="{{c.key}}" data-delta="-1">−</button>
-      <span class="cc-caract-val">{{c.valor}}</span>
-      <button type="button" class="cc-caract-btn" data-caract="{{c.key}}" data-delta="1">+</button>
-      <span class="cc-caract-range">{{c.min}} – {{c.max}}</span>
-    </div>
-    {{/each}}
-  </div>
-</div>
-{{/if}}
+<div class="cc-caract-layout">
 
-{{#if (tq-eq data.metodoCaract "aleatorio")}}
-<div class="cc-section">
-  <h3 class="cc-section-title">{{localize "TQ.CC.CaractAleatorio"}}</h3>
-  {{#if asignacionAleatoria}}
-  <p class="cc-aleatorio-hint">{{localize "TQ.CC.AsignaValores"}}</p>
-  <div class="cc-aleatorio-layout">
-    <div class="cc-aleatorio-asignacion">
-      <div class="cc-caract-grid cc-aleatorio-grid">
-        {{#each asignacionAleatoria as |c|}}
+  <div class="cc-caract-izq">
+
+    {{#if (tq-eq data.metodoCaract "distribuir")}}
+    <div class="cc-section">
+      <h3 class="cc-section-title">
+        {{localize "TQ.Secciones.Caracteristicas"}}
+        <span class="cc-pts-badge {{#if (tq-gt ptsRestantes 0)}}pendiente{{else if (tq-gt 0 ptsRestantes)}}exceso{{/if}}">
+          {{#if (tq-gt ptsRestantes 0)}}Faltan {{ptsRestantes}} pts.
+          {{else if (tq-gt 0 ptsRestantes)}}Exceso {{ptsRestantes}} pts.
+          {{else}}19 / 19 ✓{{/if}}
+        </span>
+      </h3>
+      <div class="cc-caract-grid">
+        {{#each caractLista as |c|}}
         <div class="cc-caract-fila">
           <span class="cc-caract-etiqueta">{{c.label}}</span>
-          <select class="cc-aleatorio-select" data-caract="{{c.key}}">
-            {{#each c.opciones as |op|}}
-            <option value="{{op.valor}}" {{#if op.seleccionado}}selected{{/if}}>{{op.valor}}</option>
-            {{/each}}
-          </select>
+          <button type="button" class="cc-caract-btn" data-caract="{{c.key}}" data-delta="-1">−</button>
+          <span class="cc-caract-val">{{c.valor}}</span>
+          <button type="button" class="cc-caract-btn" data-caract="{{c.key}}" data-delta="1">+</button>
+          <span class="cc-caract-range">{{c.min}} – {{c.max}}</span>
         </div>
         {{/each}}
       </div>
     </div>
-    {{#if tiradaBruta}}
-    <div class="cc-aleatorio-resultados">
-      <p class="cc-aleatorio-resultados-titulo">{{localize "TQ.CC.ResultadosObtenidos"}}</p>
-      {{#each tiradaBruta as |v i|}}
-      <div class="cc-aleatorio-dado {{#if v.descartado}}descartado{{/if}}">{{v.valor}}</div>
-      {{/each}}
-      <p class="cc-aleatorio-resultados-nota">{{localize "TQ.CC.ValorDescartado"}}</p>
-    </div>
     {{/if}}
-  </div>
-  <button type="button" class="cc-tirar-aleatorio cc-tirar-de-nuevo">{{localize "TQ.CC.VolverTirar"}}</button>
-  {{else}}
-  <p class="cc-aleatorio-hint">{{localize "TQ.CC.InstruccionTirar"}}</p>
-  <button type="button" class="cc-tirar-aleatorio">{{localize "TQ.CC.TirarDados"}}</button>
-  {{/if}}
-</div>
-{{/if}}
 
-<div class="cc-section cc-atr-tam-section">
-  <h3 class="cc-section-title">{{localize "TQ.Secciones.AtrTam"}}</h3>
-  <div class="cc-atr-tam-grid">
-    {{#each atrTamLista as |c|}}
-    <div class="cc-caract-fila">
-      <span class="cc-caract-etiqueta">{{c.label}}</span>
-      <button type="button" class="cc-caract-btn" data-caract="{{c.key}}" data-delta="-1">−</button>
-      <span class="cc-caract-val">{{c.valor}}</span>
-      <button type="button" class="cc-caract-btn" data-caract="{{c.key}}" data-delta="1">+</button>
-      <span class="cc-caract-range">{{c.min}} – +{{c.max}}</span>
-      {{#if c.ppStr}}
-      <span class="cc-atr-pp {{#if (tq-gt c.ppMod 0)}}bonus{{else if (tq-gt 0 c.ppMod)}}coste{{/if}}">{{c.ppStr}}</span>
+    {{#if (tq-eq data.metodoCaract "aleatorio")}}
+    <div class="cc-section">
+      <h3 class="cc-section-title">{{localize "TQ.CC.CaractAleatorio"}}</h3>
+      {{#if asignacionAleatoria}}
+      <p class="cc-aleatorio-hint">{{localize "TQ.CC.AsignaValores"}}</p>
+      <div class="cc-aleatorio-layout">
+        <div class="cc-aleatorio-asignacion">
+          <div class="cc-caract-grid cc-aleatorio-grid">
+            {{#each asignacionAleatoria as |c|}}
+            <div class="cc-caract-fila">
+              <span class="cc-caract-etiqueta">{{c.label}}</span>
+              <select class="cc-aleatorio-select" data-caract="{{c.key}}">
+                {{#each c.opciones as |op|}}
+                <option value="{{op.valor}}" {{#if op.seleccionado}}selected{{/if}}>{{op.valor}}</option>
+                {{/each}}
+              </select>
+            </div>
+            {{/each}}
+          </div>
+        </div>
+        {{#if tiradaBruta}}
+        <div class="cc-aleatorio-resultados">
+          <p class="cc-aleatorio-resultados-titulo">{{localize "TQ.CC.ResultadosObtenidos"}}</p>
+          {{#each tiradaBruta as |v i|}}
+          <div class="cc-aleatorio-dado {{#if v.descartado}}descartado{{/if}}">{{v.valor}}</div>
+          {{/each}}
+          <p class="cc-aleatorio-resultados-nota">{{localize "TQ.CC.ValorDescartado"}}</p>
+        </div>
+        {{/if}}
+      </div>
+      <button type="button" class="cc-tirar-aleatorio cc-tirar-de-nuevo">{{localize "TQ.CC.VolverTirar"}}</button>
+      {{else}}
+      <p class="cc-aleatorio-hint">{{localize "TQ.CC.InstruccionTirar"}}</p>
+      <button type="button" class="cc-tirar-aleatorio">{{localize "TQ.CC.TirarDados"}}</button>
       {{/if}}
     </div>
-    {{/each}}
+    {{/if}}
+
+    <div class="cc-section cc-atr-tam-section">
+      <h3 class="cc-section-title">{{localize "TQ.Secciones.AtrTam"}}</h3>
+      <div class="cc-atr-tam-grid">
+        {{#each atrTamLista as |c|}}
+        <div class="cc-caract-fila">
+          <span class="cc-caract-etiqueta">{{c.label}}</span>
+          <button type="button" class="cc-caract-btn" data-caract="{{c.key}}" data-delta="-1">−</button>
+          <span class="cc-caract-val">{{c.valor}}</span>
+          <button type="button" class="cc-caract-btn" data-caract="{{c.key}}" data-delta="1">+</button>
+          <span class="cc-caract-range">{{c.min}} – +{{c.max}}</span>
+          {{#if c.ppStr}}
+          <span class="cc-atr-pp {{#if (tq-gt c.ppMod 0)}}bonus{{else if (tq-gt 0 c.ppMod)}}coste{{/if}}">{{c.ppStr}}</span>
+          {{/if}}
+        </div>
+        {{/each}}
+      </div>
+    </div>
+
   </div>
+
+  <div class="cc-caract-der">
+    <div class="cc-derivadas-panel">
+      <div class="cc-derivada-fila cc-derivada-fuerza">
+        <span class="cc-derivada-label">{{localize "TQ.Caracteristicas.fuerza"}}</span>
+        <span class="cc-derivada-valor">{{derivadasCC.fuerza}}</span>
+      </div>
+      <div class="cc-derivada-fila cc-derivada-dm">
+        <span class="cc-derivada-label">MD</span>
+        <span class="cc-derivada-valor">{{derivadasCC.dm}}</span>
+      </div>
+      <div class="cc-derivadas-sep"></div>
+      {{#each derivadasCC.bases as |b|}}
+      <div class="cc-derivada-fila">
+        <span class="cc-derivada-label">{{b.label}}</span>
+        <span class="cc-derivada-formula">{{b.formula}}</span>
+        <span class="cc-derivada-valor">{{b.valor}}</span>
+      </div>
+      {{/each}}
+      <div class="cc-derivadas-sep"></div>
+      <div class="cc-derivada-fila">
+        <span class="cc-derivada-label">{{derivadasCC.hechiceria.label}}</span>
+        <span class="cc-derivada-formula">{{derivadasCC.hechiceria.formula}}</span>
+        <span class="cc-derivada-valor">{{derivadasCC.hechiceria.valor}}</span>
+      </div>
+    </div>
+  </div>
+
 </div>

@@ -1,0 +1,19 @@
+<div class="tq-tirada-resultado">
+
+  <div class="tq-chat-header">
+    <span class="tq-chat-etiqueta">{{localize "TQ.Melee.MeleeMultipleTitulo"}} — {{localize "TQ.Melee.TiradasRivales"}}</span>
+  </div>
+
+  {{#each filas as |f|}}
+  <div style="padding:4px 8px 2px;border-top:1px solid rgba(0,0,0,0.08);">
+    <div class="tq-melee-titulo" style="color:#999;font-size:0.8em;text-transform:uppercase;letter-spacing:1px;">{{f.nombre}}</div>
+    <div class="tq-mm-nums">
+      <span><i class="fas fa-dice-d10"></i> <strong>{{f.dadoDisplay}}</strong></span>
+      <span>+ {{f.puntuacion}}</span>
+      {{#if f.bonoSuperioridad}}<span>+ {{f.bonoSuperioridad}} ({{localize "TQ.Melee.BonusSuperioridad"}})</span>{{/if}}
+      <span class="tq-melee-total">= <strong>{{f.total}}</strong></span>
+    </div>
+  </div>
+  {{/each}}
+
+</div>
