@@ -56,7 +56,7 @@
       "name": "Bestiario",
       "sorting": "a",
       "color": "#1c6473",
-	  "packs": ["criaturas", "demonios", "animales"]
+	  "packs": ["rasgos-bestiario", "automatas", "criaturas", "demonios", "animales"]
     },
     {
       "name": "Equipo",
@@ -64,7 +64,7 @@
       "color": "#1c6473",
       "folders": [
         {
-          "name": "Armamento",
+          "name": "Armas y armaduras",
           "sorting": "a",
           "color": "#1c6473",
           "packs": ["armamento-armaduras", "armamento-armas-improvisadas", "armamento-armas-cuerpo-a-cuerpo", "armamento-armas-proyectiles", "armamento-armas-arrojadizas"]
@@ -96,7 +96,7 @@
 	  "packs": ["especies", "entornos", "origenes", "profesiones", "ventajas", "rasgos", "idiomas", "habilidades"]
     },	
     {
-      "name": "Religión y magia",
+      "name": "Magia",
       "sorting": "a",
       "color": "#1c6473",
 	  "packs": ["bendiciones", "hechizos"]
@@ -105,7 +105,7 @@
   "packs": [
     {
       "name": "bendiciones",
-      "label": "Bendiciones Divinas",
+      "label": "Bendiciones divinas",
       "path": "packs/bendiciones",
       "type": "Item",
       "system": "tierras-quebradas"
@@ -119,7 +119,7 @@
     },
     {
       "name": "automatas",
-      "label": "Bestiario — Autómatas de la Ley",
+      "label": "Autómatas de la Ley",
       "path": "packs/automatas",
       "type": "Actor",
       "system": "tierras-quebradas"
@@ -161,7 +161,7 @@
     },
     {
       "name": "origenes",
-      "label": "Orígenes Étnicos",
+      "label": "Orígenes étnicos",
       "path": "packs/origenes",
       "type": "Item",
       "system": "tierras-quebradas"
@@ -175,7 +175,7 @@
     },
     {
       "name": "ventajas",
-      "label": "Ventajas y Desventajas",
+      "label": "Ventajas y desventajas",
       "path": "packs/ventajas",
       "type": "Item",
       "system": "tierras-quebradas"
@@ -196,28 +196,28 @@
     },
     {
       "name": "armamento-armas-improvisadas",
-      "label": "Armas Improvisadas",
+      "label": "Armas improvisadas",
       "path": "packs/armamento-armas-improvisadas",
       "type": "Item",
       "system": "tierras-quebradas"
     },
     {
       "name": "armamento-armas-cuerpo-a-cuerpo",
-      "label": "Armas Cuerpo a Cuerpo",
+      "label": "Armas cuerpo a cuerpo",
       "path": "packs/armamento-armas-cuerpo-a-cuerpo",
       "type": "Item",
       "system": "tierras-quebradas"
     },
     {
       "name": "armamento-armas-proyectiles",
-      "label": "Armas de Proyectiles",
+      "label": "Armas de proyectiles",
       "path": "packs/armamento-armas-proyectiles",
       "type": "Item",
       "system": "tierras-quebradas"
     },
     {
       "name": "armamento-armas-arrojadizas",
-      "label": "Armas Arrojadizas",
+      "label": "Armas arrojadizas",
       "path": "packs/armamento-armas-arrojadizas",
       "type": "Item",
       "system": "tierras-quebradas"
@@ -266,7 +266,7 @@
     },
     {
       "name": "objetos-magicos",
-      "label": "Objetos Mágicos",
+      "label": "Objetos mágicos",
       "path": "packs/objetos-magicos",
       "type": "Item",
       "system": "tierras-quebradas"
@@ -280,49 +280,10 @@
     },
     {
       "name": "rasgos-bestiario",
-      "label": "Rasgos y Poderes de Bestiario",
+      "label": "Rasgos y poderes",
       "path": "packs/rasgos-bestiario",
       "type": "Item",
       "system": "tierras-quebradas"
-    }
-  ],
-  "packFolders": [
-    {
-      "name": "Armas y Armaduras",
-      "sorting": "a",
-      "packs": [
-        "armamento-armaduras",
-        "armamento-armas-arrojadizas",
-        "armamento-armas-cuerpo-a-cuerpo",
-        "armamento-armas-improvisadas",
-        "armamento-armas-proyectiles"
-      ]
-    },
-    {
-      "name": "Bestiario",
-      "sorting": "a",
-      "packs": [
-        "animales",
-        "automatas",
-        "criaturas",
-        "demonios"
-      ]
-    },
-    {
-      "name": "Items Actores",
-      "sorting": "a",
-      "packs": [
-        "bendiciones",
-        "entornos",
-        "especies",
-        "habilidades",
-        "hechizos",
-        "idiomas",
-        "origenes",
-        "profesiones",
-        "rasgos",
-        "ventajas"
-      ]
     }
   ]
 }
