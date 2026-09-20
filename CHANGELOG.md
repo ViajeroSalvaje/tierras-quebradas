@@ -3,9 +3,9 @@
  
 **Cambios**
 
-- Implementado el creador de artefactos
-- Implementado el asistente de demonología
-- Se añaden todas las ventajas relativas a objetos
+- Implementado el creador de artefactos.
+- Implementado el asistente de demonología.
+- Se añaden todas las ventajas relativas a objetos.
 - Modificados los PNJ demonios
 - Correcciones en el sistema de melé
 
