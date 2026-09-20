@@ -1,0 +1,25 @@
+{{#each entries as |entry|}}
+<div class="tq-habilidad-fila">
+  <a class="tq-circulo toggle-exito {{#if entry.hab.exito}}marcado{{/if}}"
+     data-habilidad="{{entry.key}}" title="Marcar/desmarcar éxito"></a>
+  {{#if entry.esIdioma}}
+  <a class="tq-habilidad-nombre tirar-habilidad" data-habilidad="{{entry.key}}"
+     data-tq-hab-tooltip="{{entry.tooltip}}">
+    {{#if entry.hab.nombre}}{{entry.hab.nombre}}
+    {{else}}<em style="color:var(--tq-text-dim);">—</em>{{/if}}
+  </a>
+  {{else}}
+  <a class="tq-habilidad-nombre tirar-habilidad" data-habilidad="{{entry.key}}"
+     data-tq-hab-tooltip="{{entry.tooltip}}">
+    {{localize (concat "TQ.Habilidades." entry.key)}}
+  </a>
+  {{/if}}
+  <span class="tq-habilidad-px" data-habilidad="{{entry.key}}" title="PX acumulados — clic para editar">({{entry.hab.px}})</span>
+  <span class="tq-habilidad-base-tag">{{tq-base-abrev entry.hab.base}}+</span>
+  <span class="tq-habilidad-nivel">
+    <input type="number" name="system.habilidades.{{entry.key}}.nivel"
+           value="{{entry.hab.nivel}}" min="0" />
+  </span>
+  <span class="tq-habilidad-total">{{tq-habilidad-total entry.hab @root.system.bases @root.system.estorbo.valor}}</span>
+</div>
+{{/each}}

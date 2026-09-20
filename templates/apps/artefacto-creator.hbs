@@ -18,6 +18,18 @@
         <input type="text" name="nombre" value="{{estado.nombre}}" placeholder="Nombre…" autofocus />
       </div>
       <div class="tq-field-group" style="margin-top:8px;">
+        <label>Receptáculo físico</label>
+        {{#if estado.objetoBase}}
+        <div style="display:flex;align-items:center;gap:8px;padding:4px 0;">
+          <span style="flex:1;font-weight:bold;">{{estado.objetoBase.nombre}}</span>
+          <a class="objeto-base-editar" title="Editar"><i class="fas fa-edit"></i></a>
+          <a class="objeto-base-quitar" title="Quitar"><i class="fas fa-times"></i></a>
+        </div>
+        {{else}}
+        <div class="objeto-base-dropzone tq-dropzone">Arrastra cualquier objeto aquí</div>
+        {{/if}}
+      </div>
+      <div class="tq-field-group" style="margin-top:8px;">
         <label>Teúrgo creador</label>
         <select name="teaurgoId">
           <option value="">— Seleccionar —</option>
@@ -26,17 +38,30 @@
           {{/each}}
         </select>
       </div>
+      <div class="tq-field-group" style="margin-top:4px;">
+        <label class="tq-creator-nota-inline">Si no está en el mundo</label>
+        <input type="text" name="teaurgoNombreManual" value="{{estado.teaurgoNombreManual}}" placeholder="Nombre del teúrgo…" style="width:100%;margin-bottom:4px;" />
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+          <label class="tq-inline-label">MEN</label>
+          <input type="number" name="teaurgoMenteManual" value="{{estado.teaurgoMenteManual}}" min="0" style="width:48px;" />
+          <label class="tq-inline-label">Academia</label>
+          <input type="number" name="teaurgoAcademiaManual" value="{{estado.teaurgoAcademiaManual}}" min="0" style="width:48px;" />
+          <label class="tq-inline-label">Artesanía</label>
+          <input type="number" name="teaurgoArtesaniaManual" value="{{estado.teaurgoArtesaniaManual}}" min="0" style="width:48px;" />
+        </div>
+      </div>
       {{#if estado.teaurgoId}}
-      <div class="tq-creator-stat-row" style="margin-top:12px;">
+      <div class="tq-creator-stat-row">
         <div class="tq-creator-stat-box">
           <span class="tq-creator-stat-label">VM disponible (Mente ÷ 2)</span>
           <span class="tq-valor-grande vm-display">{{estado.vmDisponible}}</span>
         </div>
       </div>
       {{/if}}
-      <div class="tq-field-group" style="margin-top:12px;flex-direction:row;align-items:center;gap:8px;">
-        <input type="checkbox" name="forzarCreacion" id="forzarCreacion" {{#if estado.forzarCreacion}}checked{{/if}} />
-        <label for="forzarCreacion" style="margin:0;cursor:pointer;">Forzar creación (sin requerir Inspiración tecnológica)</label>
+      <div class="tq-check-row" style="margin-top:12px;">
+        <input type="checkbox" class="tq-apuntar-check" name="forzarCreacion" id="forzarCreacion" {{#if estado.forzarCreacion}}checked{{/if}} />
+        <label for="forzarCreacion" class="tq-circulo tq-apuntar-circulo"></label>
+        <label for="forzarCreacion" class="tq-check-label">Forzar creación (sin requerir Inspiración tecnológica)</label>
       </div>
     </div>
     {{/if}}
@@ -48,44 +73,79 @@
         <span>VM gastado: <strong>{{vmGastado}}</strong></span>
         <span>VM restante: <strong class="{{#if (tq-lt vmRestante 0)}}tq-rojo{{/if}}">{{vmRestante}}</strong></span>
       </div>
-      <div class="pnj-items-lista" style="margin:8px 0 4px;">
-        {{#each estado.poderes as |p idx|}}
+      <div class="tq-section-header" style="margin-top:8px;">
+        <span>Hechizos</span>
+        <a class="add-hechizo-manual" title="Añadir hechizo manualmente"><i class="fas fa-plus"></i></a>
+      </div>
+      <div class="pnj-items-lista" style="margin:2px 0;">
+        {{#each poderHechizos as |p|}}
         <div class="pnj-item-fila">
           <span class="pnj-item-nombre">{{p.nombre}}</span>
           <span class="pnj-item-detalle">{{p.vm}} VM</span>
-          <a class="poder-borrar" data-idx="{{idx}}"><i class="fas fa-trash"></i></a>
+          <a class="poder-borrar" data-idx="{{p._idx}}"><i class="fas fa-trash"></i></a>
         </div>
         {{/each}}
       </div>
-      <div class="poderes-dropzone tq-dropzone"><i class="fas fa-magic"></i> Arrastra hechizos o rasgos de bestiario desde el compendio</div>
-      <div class="tq-field-group" style="margin-top:12px;">
-        <label>Sostén de habilidades <em style="font-weight:normal;font-size:11px;">(0 VM — habilidad que apoya la virtud)</em></label>
-        <input type="text" name="sosten" value="{{estado.sosten}}" placeholder="Ej: Espada, Atletismo…" />
+      <div class="hechizos-dropzone tq-dropzone">Arrastra hechizos desde el compendio</div>
+      <div class="tq-section-header" style="margin-top:8px;">
+        <span>Rasgos</span>
+        <a class="add-rasgo-manual" title="Añadir rasgo manualmente"><i class="fas fa-plus"></i></a>
       </div>
+      <div class="pnj-items-lista" style="margin:2px 0;">
+        {{#each poderRasgos as |p|}}
+        <div class="pnj-item-fila">
+          <span class="pnj-item-nombre">{{p.nombre}}</span>
+          <span class="pnj-item-detalle">{{p.vm}} VM</span>
+          <a class="poder-borrar" data-idx="{{p._idx}}"><i class="fas fa-trash"></i></a>
+        </div>
+        {{/each}}
+      </div>
+      <div class="rasgos-dropzone tq-dropzone">Arrastra rasgos de bestiario desde el compendio</div>
+      <div class="tq-section-header" style="margin-top:8px;">
+        <span>Habilidades sostenidas</span>
+        <a class="add-habilidad-manual" title="Añadir habilidad manualmente"><i class="fas fa-plus"></i></a>
+      </div>
+      <div class="pnj-items-lista" style="margin:2px 0;">
+        {{#each estado.habilidadesSostenidas as |h idx|}}
+        <div class="pnj-item-fila">
+          <span class="pnj-item-nombre">{{h.nombre}}</span>
+          <a class="habilidad-borrar" data-idx="{{idx}}"><i class="fas fa-trash"></i></a>
+        </div>
+        {{/each}}
+      </div>
+      <div class="habilidades-dropzone tq-dropzone">Arrastra habilidades desde el compendio</div>
     </div>
     {{/if}}
 
     {{#if paso3}}
     <div class="tq-creator-step">
-      <div class="tq-field-group" style="margin-bottom:16px;flex-direction:row;align-items:center;gap:8px;">
-        <input type="checkbox" name="planoAjeno" id="planoAjeno" {{#if estado.planoAjeno}}checked{{/if}} />
-        <label for="planoAjeno" style="margin:0;cursor:pointer;">Plano ajeno (omite el chequeo de Academia)</label>
+      <div class="tq-check-row" style="margin-bottom:16px;">
+        <input type="checkbox" class="tq-apuntar-check" name="planoAjeno" id="planoAjeno" {{#if estado.planoAjeno}}checked{{/if}} />
+        <label for="planoAjeno" class="tq-circulo tq-apuntar-circulo"></label>
+        <label for="planoAjeno" class="tq-check-label">Plano ajeno (omite el chequeo de Academia)</label>
       </div>
-      <div class="fabricacion-academia">
-        <div class="tq-section-header"><span>Diseño en papel</span></div>
-        <p style="font-size:12px;color:var(--tq-text-dim);margin:4px 0 8px;">Habilidad: <strong>Academia</strong> · Dificultad: <strong>{{difFabricacion}}</strong></p>
-        <div class="tq-field-group">
-          <label>Resultado de la tirada</label>
-          <input type="number" name="resultadoAcademia" value="{{estado.resultadoAcademia}}" style="width:72px;" min="0" />
+      <div style="display:flex;gap:12px;align-items:flex-start;">
+        <div class="fabricacion-academia" style="flex:1;">
+          <div class="tq-section-header"><span>Diseño en papel</span></div>
+          <p class="tq-fabricacion-detalle">Habilidad: <strong>Academia</strong> · Dif: <strong>{{difFabricacion}}</strong></p>
+          <div style="display:flex;gap:6px;align-items:center;">
+            {{#if tieneTeaurgo}}<button type="button" class="tirar-academia">Tirar</button>{{/if}}
+            <input type="number" name="resultadoAcademia" value="{{estado.resultadoAcademia}}" style="width:72px;" min="0" />
+          </div>
+        </div>
+        <div style="flex:1;" class="fabricacion-ensamblaje{{#unless academiaAprobada}} tq-disabled{{/unless}}">
+          <div class="tq-section-header"><span>Ensamblaje físico</span></div>
+          <p class="tq-fabricacion-detalle">Habilidad: <strong>Artesanía</strong> · Dif: <strong>{{difFabricacion}}</strong></p>
+          {{#unless academiaAprobada}}<p style="font-size:11px;font-style:italic;color:var(--tq-text-dim);margin:0 0 6px;">Supera primero el diseño en papel.</p>{{/unless}}
+          <div style="display:flex;gap:6px;align-items:center;">
+            {{#if tieneTeaurgo}}<button type="button" class="tirar-artesania" {{#unless academiaAprobada}}disabled{{/unless}}>Tirar</button>{{/if}}
+            <input type="number" name="resultadoArtesania" value="{{estado.resultadoArtesania}}" style="width:72px;" min="0" {{#unless academiaAprobada}}disabled{{/unless}} />
+          </div>
         </div>
       </div>
-      <div style="margin-top:16px;">
-        <div class="tq-section-header"><span>Ensamblaje físico</span></div>
-        <p style="font-size:12px;color:var(--tq-text-dim);margin:4px 0 8px;">Habilidad: <strong>Artesanía</strong> · Dificultad: <strong>{{difFabricacion}}</strong></p>
-        <div class="tq-field-group">
-          <label>Resultado de la tirada</label>
-          <input type="number" name="resultadoArtesania" value="{{estado.resultadoArtesania}}" style="width:72px;" min="0" />
-        </div>
+      <div style="display:flex;align-items:center;gap:8px;margin-top:12px;">
+        <label style="font-size:12px;white-space:nowrap;">Meses de construcción</label>
+        <input type="number" name="mesesConstruccion" value="{{estado.mesesConstruccion}}" min="0" style="width:72px;" />
       </div>
     </div>
     {{/if}}
@@ -102,32 +162,87 @@
     </div>
     {{/if}}
 
+    {{#if paso6}}
+    <div class="tq-creator-step">
+      <div class="tq-field-group">
+        <label>Descripción</label>
+        <textarea name="descripcion" rows="5" class="tq-notas">{{estado.descripcion}}</textarea>
+      </div>
+      <div class="tq-field-group" style="margin-top:8px;">
+        <label>Notas</label>
+        <textarea name="notas" rows="5" class="tq-notas">{{estado.notas}}</textarea>
+      </div>
+    </div>
+    {{/if}}
+
     {{#if paso5}}
     <div class="tq-creator-step">
-      <table class="tq-creator-resumen">
-        <tr><th>Nombre</th><td>{{estado.nombre}}</td></tr>
-        <tr><th>Teúrgo</th><td>{{estado.teaurgoNombre}}</td></tr>
-        <tr><th>VM</th><td>{{estado.vmDisponible}}</td><th>VM gastado</th><td>{{vmGastado}}</td></tr>
-        <tr><th>Espíritu</th><td>{{estado.espiritu}}</td><th>Coste</th><td>{{coste}} mb</td></tr>
-        {{#if estado.sosten}}<tr><th>Sostén</th><td colspan="3">{{estado.sosten}}</td></tr>{{/if}}
-      </table>
-      {{#if estado.poderes}}
-      <div class="tq-section-header" style="margin-top:8px;"><span>Poderes</span></div>
-      <div class="pnj-items-lista">
-        {{#each estado.poderes as |p|}}
-        <div class="pnj-item-fila"><span>{{p.nombre}}</span><span class="pnj-item-detalle">{{p.vm}} VM</span></div>
-        {{/each}}
+      <div class="tq-resumen-card">
+        <div class="tq-resumen-card-header">
+          <span class="tq-resumen-card-nombre">{{estado.nombre}}</span>
+          <span class="tq-resumen-card-creador">por {{#if estado.teaurgoNombre}}{{estado.teaurgoNombre}}{{else}}{{estado.teaurgoNombreManual}}{{/if}}</span>
+        </div>
+        <div class="tq-resumen-stat-row" style="grid-template-columns:repeat(4,1fr);">
+          <div class="tq-resumen-stat-box"><span class="rsb-val">{{estado.vmDisponible}}</span><span class="rsb-lbl">VM</span></div>
+          <div class="tq-resumen-stat-box"><span class="rsb-val">{{vmGastado}}</span><span class="rsb-lbl">VM Gast.</span></div>
+          <div class="tq-resumen-stat-box"><span class="rsb-val">{{estado.espiritu}}</span><span class="rsb-lbl">ESP</span></div>
+          <div class="tq-resumen-stat-box"><span class="rsb-val">{{pmArtefacto}}</span><span class="rsb-lbl">PM</span></div>
+        </div>
+        {{#if tipoObjeto}}<div class="tq-resumen-mov">{{tipoObjeto}}</div>{{/if}}
+        {{#if objetoBaseStats}}
+        <div style="padding:2px 10px 4px;font-size:12px;color:var(--tq-text-dim);border-bottom:1px solid rgba(0,0,0,0.1);">
+          {{#if (tq-eq objetoBaseStats.tipoItem "arma")}}
+          {{#if objetoBaseStats.danoArma}}<span style="margin-right:10px;">Daño: <strong>{{objetoBaseStats.danoArma}}</strong></span>{{/if}}
+          {{#if objetoBaseStats.manos}}<span style="margin-right:10px;">Manos: <strong>{{objetoBaseStats.manos}}</strong></span>{{/if}}
+          {{#if objetoBaseStats.alcance}}<span style="margin-right:10px;">Alcance: <strong>{{objetoBaseStats.alcance}}</strong></span>{{/if}}
+          {{#if objetoBaseStats.habilidad}}<span style="margin-right:10px;">Hab.: <strong>{{localize (concat "TQ.Habilidades." objetoBaseStats.habilidad)}}</strong></span>{{/if}}
+          {{#if objetoBaseStats.tieneProteccion}}<span>Prot.: <strong>{{objetoBaseStats.proteccionValor}}</strong></span>{{/if}}
+          {{else}}
+          {{#if objetoBaseStats.proteccion}}<span style="margin-right:10px;">Prot.: <strong>{{objetoBaseStats.proteccion}}</strong></span>{{/if}}
+          {{#if objetoBaseStats.tipo}}<span style="margin-right:10px;">Tipo: <strong>{{objetoBaseStats.tipo}}</strong></span>{{/if}}
+          {{#if objetoBaseStats.zona}}<span>Zona: <strong>{{objetoBaseStats.zona}}</strong></span>{{/if}}
+          {{/if}}
+        </div>
+        {{/if}}
+        <div class="tq-resumen-body">
+          <div class="tq-resumen-col tq-resumen-col-izq">
+            {{#if poderHechizos}}
+            <div class="tq-resumen-section-lbl">Hechizos</div>
+            {{#each poderHechizos as |p|}}
+            <div class="tq-resumen-item">· {{p.nombre}} <span style="color:var(--tq-text-dim);">({{p.vm}} VM)</span></div>
+            {{/each}}
+            {{/if}}
+            {{#if poderRasgos}}
+            <div class="tq-resumen-section-lbl">Rasgos</div>
+            {{#each poderRasgos as |p|}}
+            <div class="tq-resumen-item">· {{p.nombre}} <span style="color:var(--tq-text-dim);">({{p.vm}} VM)</span></div>
+            {{/each}}
+            {{/if}}
+          </div>
+          <div class="tq-resumen-col">
+            {{#if estado.habilidadesSostenidas.length}}
+            <div class="tq-resumen-section-lbl">Hab. sostenidas</div>
+            {{#each estado.habilidadesSostenidas as |h|}}
+            <div class="tq-resumen-item">· {{h.nombre}}</div>
+            {{/each}}
+            {{/if}}
+            {{#if estado.sosten}}
+            <div class="tq-resumen-section-lbl">Sostén</div>
+            <div class="tq-resumen-item">· {{estado.sosten}}</div>
+            {{/if}}
+          </div>
+        </div>
+        <div class="tq-resumen-footer">{{coste}} mb{{#if estado.mesesConstruccion}} · {{estado.mesesConstruccion}} meses{{/if}}</div>
       </div>
-      {{/if}}
     </div>
     {{/if}}
 
   </div>
 
   <div class="tq-creator-footer">
-    {{#unless paso1}}<button type="button" class="creator-prev">← Anterior</button>{{/unless}}
-    {{#unless paso5}}<button type="button" class="creator-next">Siguiente →</button>{{/unless}}
-    {{#if paso5}}<button type="button" class="creator-crear">Crear Artefacto</button>{{/if}}
+    {{#unless paso1}}<button type="button" class="creator-prev">Anterior</button>{{/unless}}
+    {{#unless paso6}}<button type="button" class="creator-next">Siguiente</button>{{/unless}}
+    {{#if paso6}}<button type="button" class="creator-crear">Crear Artefacto</button>{{/if}}
   </div>
 
 </div>

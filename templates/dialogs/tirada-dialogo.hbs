@@ -30,6 +30,7 @@
         <input type="number" name="bonificador" id="bonificador" value="{{bonificadorDefecto}}" step="1" />
       </div>
     </div>
+    {{#unless rivalYaLanzado}}
     {{!-- Fila del rival --}}
     <div class="tq-melee-fila">
       <div class="tq-campo-grupo">
@@ -69,6 +70,14 @@
         </select>
       </div>
     </div>
+    {{else}}
+    <input type="hidden" name="rival_puntuacion" value="{{rivalDatos.puntuacion}}" />
+    <input type="hidden" name="rival_longitud" value="{{rivalDatos.longitud}}" />
+    <input type="hidden" name="rival_bonificador" value="0" />
+    <input type="hidden" name="rival_danoArma" value="{{rivalDatos.danoArma}}" />
+    <input type="hidden" name="rival_md" value="{{rivalDatos.md}}" />
+    <input type="hidden" name="rival_tipo" value="{{rivalDatos.tipo}}" />
+    {{/unless}}
     <div class="tq-campo-tope">
       <input type="checkbox" name="superioridad_activo" id="superioridad_activo" class="tq-apuntar-check" />
       <label for="superioridad_activo" class="tq-circulo tq-apuntar-circulo" style="width:16px;height:16px;cursor:pointer;flex-shrink:0;"></label>
@@ -336,8 +345,10 @@
     <div class="tq-melee-fila">
       <div class="tq-campo-grupo">
         <label for="dificultad">{{localize "TQ.Tirada.Dificultad"}}</label>
-        <select name="dificultad" id="dificultad">
-          {{#if (tq-eq escalaDif "caracteristica")}}
+        <select name="dificultad" id="dificultad" {{#if dificultadForzada}}disabled{{/if}}>
+          {{#if dificultadForzada}}
+          <option value="{{dificultadForzada}}" selected>{{dificultadForzada}}</option>
+          {{else if (tq-eq escalaDif "caracteristica")}}
           <option value="9"  {{#if (tq-eq dificultadPorDefecto "9")}}selected{{/if}}>Fácil (9)</option>
           <option value="12" {{#if (tq-eq dificultadPorDefecto "12")}}selected{{/if}}>Normal (12)</option>
           <option value="15" {{#if (tq-eq dificultadPorDefecto "15")}}selected{{/if}}>Difícil (15)</option>

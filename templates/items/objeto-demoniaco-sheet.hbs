@@ -1,0 +1,89 @@
+<div class="{{cssClass}} flexcol" autocomplete="off" style="height:100%;width:100%;display:flex;flex-direction:column;overflow:hidden;">
+  <div class="tq-item-header-fila">
+    <img class="profile-img item-img" src="{{item.img}}" data-edit="img" title="{{item.name}}" />
+    <h1><input type="text" name="name" value="{{item.name}}" /></h1>
+  </div>
+
+  <nav class="sheet-tabs" data-group="primary">
+    <a class="item" data-tab="principal">Principal</a>
+    <a class="item" data-tab="atributos">Atributos</a>
+  </nav>
+
+  <div class="sheet-body" style="overflow-y:auto;flex:1;padding:8px;">
+
+    <div class="tab" data-tab="principal">
+      <div class="tq-field-group" style="margin-bottom:6px;">
+        <label>Demonio vinculado</label>
+        <input type="text" name="system.demonioNombre" value="{{system.demonioNombre}}" placeholder="Nombre del demonio…" />
+      </div>
+
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;align-items:flex-end;">
+        <div class="tq-field-group" style="flex:1;min-width:120px;">
+          <label>Tipo de objeto</label>
+          <select name="system.tipoObjeto">
+            <option value="arma" {{#if (tq-eq system.tipoObjeto "arma")}}selected{{/if}}>Arma</option>
+            <option value="armadura" {{#if (tq-eq system.tipoObjeto "armadura")}}selected{{/if}}>Armadura</option>
+            <option value="accesorio" {{#if (tq-eq system.tipoObjeto "accesorio")}}selected{{/if}}>Accesorio</option>
+            <option value="otro" {{#if (tq-eq system.tipoObjeto "otro")}}selected{{/if}}>Otro</option>
+          </select>
+        </div>
+        <div class="tq-field-group inline">
+          <label>VM</label>
+          <input type="number" name="system.vm" value="{{system.vm}}" min="0" style="width:52px;" />
+        </div>
+      </div>
+
+      <div class="tq-section-header"><span>Poderes demoniacos</span></div>
+
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin:6px 0;align-items:flex-end;">
+        <div class="tq-field-group inline">
+          <label>Bono al daño</label>
+          <select name="system.bonoDanho" style="width:70px;">
+            <option value="0" {{#if (tq-eq system.bonoDanho 0)}}selected{{/if}}>+0</option>
+            <option value="1" {{#if (tq-eq system.bonoDanho 1)}}selected{{/if}}>+1</option>
+            <option value="2" {{#if (tq-eq system.bonoDanho 2)}}selected{{/if}}>+2</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:16px;flex-wrap:wrap;margin:8px 0;align-items:center;">
+        <div style="display:flex;align-items:center;gap:6px;">
+          <a class="tq-circulo toggle-estado {{#if system.danhoMagico}}marcado{{/if}}" data-campo="system.danhoMagico"></a>
+          <label style="margin:0;">Daño mágico</label>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <a class="tq-circulo toggle-estado {{#if system.danhoEspiritual}}marcado{{/if}}" data-campo="system.danhoEspiritual"></a>
+          <label style="margin:0;">Daño espiritual</label>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <a class="tq-circulo toggle-estado {{#if system.vampiro}}marcado{{/if}}" data-campo="system.vampiro"></a>
+          <label style="margin:0;">Vampiro</label>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <a class="tq-circulo toggle-estado {{#if system.irrompible}}marcado{{/if}}" data-campo="system.irrompible"></a>
+          <label style="margin:0;">Irrompible</label>
+        </div>
+      </div>
+
+      <div class="tq-field-group" style="margin-top:8px;">
+        <label>Notas</label>
+        <textarea name="system.notas" rows="4" class="tq-notas">{{system.notas}}</textarea>
+      </div>
+    </div>
+
+    <div class="tab" data-tab="atributos">
+      <div class="tq-section-header"><span>Bono de habilidad</span></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin:6px 0;align-items:flex-end;">
+        <div class="tq-field-group inline">
+          <label>Bono habilidad</label>
+          <input type="number" name="system.bonoHabilidad" value="{{system.bonoHabilidad}}" style="width:52px;" />
+        </div>
+        <div class="tq-field-group inline">
+          <label>Habilidad (clave)</label>
+          <input type="text" name="system.bonoHabilidadClave" value="{{system.bonoHabilidadClave}}" placeholder="clave…" style="width:120px;" />
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

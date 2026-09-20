@@ -158,21 +158,22 @@
     </div>
 
     <div class="tab" data-tab="notas">
-      <div class="tq-field-group" style="margin-bottom:8px;">
-        <label>{{localize "TQ.Lealtad.Deidad"}}</label>
-        <select name="system.deidad">
-          <option value="">Ninguna</option>
-          {{#each deidadesLey as |d|}}
-          <option value="{{d}}" {{selected ../system.deidad d}}>{{d}}</option>
-          {{/each}}
-        </select>
+      <div style="display:flex;gap:12px;align-items:flex-end;margin-bottom:8px;">
+        <div class="tq-field-group" style="margin-bottom:0;">
+          <label>{{localize "TQ.Lealtad.Deidad"}}</label>
+          <select name="system.deidad">
+            <option value="">Ninguna</option>
+            {{#each deidadesLey as |d|}}
+            <option value="{{d}}" {{selected ../system.deidad d}}>{{d}}</option>
+            {{/each}}
+          </select>
+        </div>
       </div>
 
       <div class="tq-field-group" style="margin-bottom:8px;">
         <label>Creador</label>
         <input type="text" name="system.creador" value="{{system.creador}}" />
       </div>
-
       <textarea name="system.notas" rows="5" class="tq-notas">{{system.notas}}</textarea>
 
       <div class="tq-section-header" style="margin-top:8px;">
@@ -191,6 +192,7 @@
         </li>
         {{/each}}
       </ul>
+      <div class="rasgos-dropzone tq-dropzone" style="margin-top:4px;">Arrastra rasgos del compendio de Bestiario</div>
 
       <div class="tq-section-header" style="margin-top:8px;">
         <span>Debilidades</span>
@@ -207,7 +209,7 @@
         </li>
         {{/each}}
       </ul>
-      <div class="debilidades-dropzone tq-dropzone" style="margin-top:4px;"><i class="fas fa-skull"></i> Arrastra debilidades del compendio de Bestiario</div>
+      <div class="debilidades-dropzone tq-dropzone" style="margin-top:4px;">Arrastra debilidades del compendio de Bestiario</div>
 
     </div>
   </section>

@@ -173,7 +173,8 @@
       data-actor-id="{{actorId}}"
       data-etiqueta="{{etiqueta}}"
       data-exitos="{{exitos}}"
-      data-requiere-espiritu="{{#if requiereTiradaEspiritu}}true{{else}}false{{/if}}">
+      data-requiere-espiritu="{{#if requiereTiradaEspiritu}}true{{else}}false{{/if}}"
+      {{#if esArtefacto}}data-espiritu-artefacto="{{espirituArtefacto}}" data-nombre-artefacto="{{nombreArtefacto}}"{{/if}}>
       {{localize "TQ.Botones.AplicarResultado"}}
     </button>
     {{/if}}
@@ -208,7 +209,8 @@
       data-actor-id="{{actorId}}"
       data-etiqueta="{{etiqueta}}"
       data-exitos="{{exitos}}"
-      data-requiere-espiritu="{{#if requiereTiradaEspiritu}}true{{else}}false{{/if}}">
+      data-requiere-espiritu="{{#if requiereTiradaEspiritu}}true{{else}}false{{/if}}"
+      {{#if esArtefacto}}data-espiritu-artefacto="{{espirituArtefacto}}" data-nombre-artefacto="{{nombreArtefacto}}"{{/if}}>
       {{localize "TQ.Botones.AplicarResultado"}}
     </button>
   </div>

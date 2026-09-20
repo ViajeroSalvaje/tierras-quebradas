@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{{actor.name}}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Source+Sans+3:wght@300;400;600&display=swap">
+  <link rel="stylesheet" href="{{origin}}/systems/tierras-quebradas/styles/print.css">
+</head>
+<body>
+
+<button class="print-btn" onclick="window.print()">Imprimir ficha</button>
+
+<div class="sheet">
+
+  <!-- CABECERA -->
+  <header class="hdr">
+    <h1 class="pnj-name">{{actor.name}}</h1>
+    {{#if system.filiacion}}
+    <div class="pnj-meta">
+      <strong>{{localize (concat "TQ.Lealtad." system.filiacion)}}</strong>
+      {{#if system.deidad}} · {{system.deidad}}{{/if}}
+      {{#if system.deidad2}} / {{system.deidad2}}{{/if}}
+    </div>
+    {{/if}}
+    <div class="pnj-meta">PNJ</div>
+  </header>
+
+  <!-- ESTADÍSTICAS -->
+  <div class="stats">
+    <div>
+      <span class="mlabel">Características</span>
+      <div class="caract-strip">
+        <div class="cc"><span class="cc-lbl">CUE</span><div class="cc-val">{{system.caracteristicas.cuerpo.valor}}</div></div>
+        <div class="cc"><span class="cc-lbl">MEN</span><div class="cc-val">{{system.caracteristicas.mente.valor}}</div></div>
+        <div class="cc"><span class="cc-lbl">ESP</span><div class="cc-val">{{system.caracteristicas.espiritu.valor}}</div></div>
+        <div class="cc"><span class="cc-lbl">ATR</span><div class="cc-val">{{system.caracteristicas.atractivo.valor}}</div></div>
+        <div class="cc"><span class="cc-lbl">TAM</span><div class="cc-val">{{system.caracteristicas.tamano.valor}}</div></div>
+        <div class="cc"><span class="cc-lbl">FUE</span><div class="cc-val">{{system.derivadas.fuerza.valor}}</div></div>
+      </div>
+    </div>
+    <div class="right-stats">
+      <div>
+        <span class="mlabel">Bases</span>
+        <div class="bases-strip">
+          <div class="bs"><span class="bs-lbl">VIG</span><div class="bs-val">{{system.bases.vigor.valor}}</div></div>
+          <div class="bs"><span class="bs-lbl">AGI</span><div class="bs-val">{{system.bases.agilidad.valor}}</div></div>
+          <div class="bs"><span class="bs-lbl">COM</span><div class="bs-val">{{system.bases.comunicacion.valor}}</div></div>
+          <div class="bs"><span class="bs-lbl">CUL</span><div class="bs-val">{{system.bases.cultura.valor}}</div></div>
+          <div class="bs"><span class="bs-lbl">PER</span><div class="bs-val">{{system.bases.percepcion.valor}}</div></div>
+          <div class="bs"><span class="bs-lbl">TEC</span><div class="bs-val">{{system.bases.tecnica.valor}}</div></div>
+          <div class="bs"><span class="bs-lbl">HEC</span><div class="bs-val">{{system.bases.hechiceria.valor}}</div></div>
+        </div>
+      </div>
+      <div class="deriv-strip">
+        <div class="dv"><span class="dv-lbl">MD 1M</span><div class="dv-val">{{mDano1mDisplay}}</div></div>
+        <div class="dv"><span class="dv-lbl">MD 2M</span><div class="dv-val">{{mDano2mDisplay}}</div></div>
+        <div class="v-sep"></div>
+        <div class="salud-strip">
+          <span class="pv-lbl">PV</span>
+          <span class="pv-num">{{system.salud.pvActual.valor}}</span>
+          <span class="pv-sep">/</span>
+          <span class="pv-max">{{system.salud.pvMax.valor}}</span>
+          <span class="h-gap"></span>
+          <span class="h-lbl">HL</span>
+          <span class="dot{{#if system.salud.heridasLeves1}} on{{/if}}"></span>
+          <span class="dot{{#if system.salud.heridasLeves2}} on{{/if}}"></span>
+          <span class="dot{{#if system.salud.heridasLeves3}} on{{/if}}"></span>
+          <span class="dot{{#if system.salud.heridasLeves4}} on{{/if}}"></span>
+          <span class="h-gap"></span>
+          <span class="h-lbl">HG</span>
+          <span class="dot grave{{#if system.salud.heridasGraves1}} on{{/if}}"></span>
+          <span class="dot grave{{#if system.salud.heridasGraves2}} on{{/if}}"></span>
+          <span class="h-gap"></span>
+          <span class="estado{{#if system.salud.debilitado}} on{{/if}}">Deb.</span>
+          <span class="estado{{#if system.salud.incapacitado}} on{{/if}}">Inc.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CUERPO -->
+  <div class="body">
+
+    <!-- Columna izquierda: Habilidades -->
+    <div class="col">
+      <span class="mlabel">Habilidades</span>
+      <div class="hab-grid">
+        {{#each habilidades}}
+        <div class="hrow">
+          <span>{{nombre}}{{#if tieneEstorbo}}*{{/if}}</span>
+          <span>{{total}}</span>
+        </div>
+        {{/each}}
+      </div>
+      {{#if hayEstorbo}}
+      <div class="hab-nota">* Resta estorbo por carga</div>
+      {{/if}}
+    </div>
+
+    <!-- Columna derecha: combate, magia, equipo -->
+    <div class="col">
+
+      <!-- Armas -->
+      {{#if armas}}
+      <span class="mlabel">Armas</span>
+      <table>
+        <thead>
+          <tr><th>Nombre</th><th class="c">Daño</th><th>Alcance</th><th class="c">Carga</th></tr>
+        </thead>
+        <tbody>
+          {{#each armas}}
+          <tr>
+            <td>{{name}}</td>
+            <td class="c">{{dano}}</td>
+            <td>{{alcance}}</td>
+            <td class="c">{{carga}}</td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
+      {{/if}}
+
+      <!-- Protecciones -->
+      {{#if armaduras}}
+      <span class="mlabel" style="margin-top:4px;">Protecciones</span>
+      <table>
+        <thead>
+          <tr><th>Nombre</th><th class="c">ARM</th><th>Zona</th><th>Tipo</th><th class="c">Carga</th></tr>
+        </thead>
+        <tbody>
+          {{#each armaduras}}
+          <tr>
+            <td>{{name}}</td>
+            <td class="c">{{proteccion}}</td>
+            <td>{{zona}}</td>
+            <td>{{tipo}}</td>
+            <td class="c">{{carga}}</td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
+      {{/if}}
+
+      <!-- PM + Espíritu Consagrado -->
+      <div class="pm-esp-row">
+        <div class="pm-item">
+          <span class="pm-lbl">PM</span>
+          <span class="pm-val">{{system.pm}}</span>
+        </div>
+        <div class="pm-item">
+          <span class="pm-lbl">ESP. Cons.</span>
+          <span class="pm-val">{{espirituConsagrado}}</span>
+          <span class="pm-max"> / {{system.caracteristicas.espiritu.valor}}</span>
+        </div>
+      </div>
+
+      <!-- Rasgos -->
+      {{#if rasgos}}
+      <span class="mlabel" style="margin-top:4px;">Rasgos</span>
+      <div class="items-list">
+        {{#each rasgos}}
+        <div class="item-row">
+          <span class="item-name">{{name}}</span>
+          {{#if coste}}<span class="item-detail">{{coste}} PP</span>{{/if}}
+        </div>
+        {{/each}}
+      </div>
+      {{/if}}
+
+      <!-- Ventajas y desventajas -->
+      {{#if ventajas}}
+      <span class="mlabel" style="margin-top:4px;">Ventajas y desventajas</span>
+      <div class="items-list">
+        {{#each ventajas}}
+        <div class="item-row"><span class="item-name">{{name}}</span></div>
+        {{/each}}
+      </div>
+      {{/if}}
+
+      <!-- Hechizos -->
+      {{#if hechizos}}
+      <span class="mlabel" style="margin-top:4px;">Hechizos</span>
+      <table>
+        <thead>
+          <tr><th>Nombre</th><th>Verbo · Esfera</th><th class="c">DIF</th><th class="c">PM</th></tr>
+        </thead>
+        <tbody>
+          {{#each hechizos}}
+          <tr>
+            <td class="hech-nombre">{{name}}</td>
+            <td class="hech-meta">
+              {{#if system.verbo}}{{system.verbo}}{{#if system.esfera}} · {{system.esfera}}{{/if}}{{/if}}
+              {{#if (tq-eq system.duracion "instantaneo")}} <span class="badge">Inmediato</span>{{/if}}
+            </td>
+            <td class="c">{{system.dificultad}}</td>
+            <td class="c">{{system.pmCoste}}{{#if (tq-gt system.pmMax system.pmCoste)}}–{{system.pmMax}}{{/if}}</td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
+      {{/if}}
+
+      <!-- Objetos mágicos -->
+      {{#if objetosMagicos}}
+      <span class="mlabel" style="margin-top:4px;">Objetos mágicos</span>
+      <div class="items-list">
+        {{#each objetosMagicos}}
+        <div class="item-row">
+          <span class="item-name">{{name}}</span>
+          {{#if system.espiritu}}<span class="item-detail">ESP {{system.espiritu}} · PM {{system.pmActual}}</span>{{/if}}
+        </div>
+        {{/each}}
+      </div>
+      {{/if}}
+
+      <!-- Equipo -->
+      {{#if objetos}}
+      <span class="mlabel" style="margin-top:4px;">Equipo</span>
+      <div class="items-list">
+        {{#each objetos}}
+        <div class="item-row">
+          <span class="item-name">{{name}}</span>
+          {{#if categoria}}<span class="item-detail">{{categoria}}</span>{{/if}}
+        </div>
+        {{/each}}
+      </div>
+      {{/if}}
+
+      <!-- Consumibles -->
+      {{#if consumibles}}
+      <span class="mlabel" style="margin-top:4px;">Consumibles</span>
+      <div class="items-list">
+        {{#each consumibles}}
+        <div class="item-row">
+          <span class="item-name">{{name}}</span>
+          <span class="item-detail">×{{dosis}}{{#if efecto}} · {{efecto}}{{/if}}</span>
+        </div>
+        {{/each}}
+      </div>
+      {{/if}}
+
+      <!-- Heridas -->
+      <span class="mlabel" style="margin-top:4px;">Heridas</span>
+      <table>
+        <thead>
+          <tr><th>Tipo</th><th>Descripción</th><th class="c">Daño</th><th class="c">San.</th></tr>
+        </thead>
+        <tbody>
+          {{#each system.heridas}}
+          <tr>
+            <td>{{tipo}}</td>
+            <td>{{descripcion}}</td>
+            <td class="c">{{dano}}</td>
+            <td class="c">{{#if sanando}}✓{{/if}}</td>
+          </tr>
+          {{/each}}
+          <tr class="herida-blank"><td></td><td></td><td></td><td></td></tr>
+          <tr class="herida-blank"><td></td><td></td><td></td><td></td></tr>
+        </tbody>
+      </table>
+
+      <!-- Notas -->
+      {{#if system.notas}}
+      <div class="notas" style="margin-top:4px;">{{system.notas}}</div>
+      {{/if}}
+
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

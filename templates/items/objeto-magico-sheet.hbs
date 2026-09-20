@@ -267,56 +267,6 @@
     </div>
     {{/unless}}
 
-    {{#if (tq-eq system.categoria "demoniaco")}}
-    <div class="tq-section-header" style="margin-top:10px;">
-      <span>{{localize "TQ.ObjetoMagico.PoderesDemoniacos"}}</span>
-    </div>
-    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:6px;align-items:flex-end;">
-      <div class="tq-field-group inline">
-        <label>{{localize "TQ.ObjetoMagico.VM"}}</label>
-        <input type="number" name="system.vm" value="{{system.vm}}" min="0" style="width:52px;" />
-      </div>
-      <div class="tq-field-group inline">
-        <label>{{localize "TQ.ObjetoMagico.BonoDanho"}}</label>
-        <select name="system.poderesDemoniacos.bonoDanho" style="width:70px;">
-          <option value="0" {{#if (tq-eq system.poderesDemoniacos.bonoDanho 0)}}selected{{/if}}>+0</option>
-          <option value="1" {{#if (tq-eq system.poderesDemoniacos.bonoDanho 1)}}selected{{/if}}>+1</option>
-          <option value="2" {{#if (tq-eq system.poderesDemoniacos.bonoDanho 2)}}selected{{/if}}>+2</option>
-        </select>
-      </div>
-      <div class="tq-field-group inline">
-        <label>{{localize "TQ.ObjetoMagico.BonoHabilidad"}}</label>
-        <input type="number" name="system.poderesDemoniacos.bonoHabilidad" value="{{system.poderesDemoniacos.bonoHabilidad}}" style="width:52px;" />
-      </div>
-      <div class="tq-field-group inline">
-        <label>{{localize "TQ.ObjetoMagico.Habilidad"}}</label>
-        <select name="system.poderesDemoniacos.bonoHabilidadClave">
-          <option value="">—</option>
-          {{#each habilidades as |h|}}
-          <option value="{{h.clave}}" {{#if (tq-eq ../system.poderesDemoniacos.bonoHabilidadClave h.clave)}}selected{{/if}}>{{h.nombre}}</option>
-          {{/each}}
-        </select>
-      </div>
-    </div>
-    <div style="display:flex;gap:16px;flex-wrap:wrap;margin-top:8px;align-items:center;">
-      <div style="display:flex;align-items:center;gap:6px;">
-        <a class="tq-circulo toggle-estado {{#if system.poderesDemoniacos.danhoMagico}}marcado{{/if}}" data-campo="system.poderesDemoniacos.danhoMagico"></a>
-        <label style="margin:0;">{{localize "TQ.ObjetoMagico.DanhoMagico"}}</label>
-      </div>
-      <div style="display:flex;align-items:center;gap:6px;">
-        <a class="tq-circulo toggle-estado {{#if system.poderesDemoniacos.danhoEspiritual}}marcado{{/if}}" data-campo="system.poderesDemoniacos.danhoEspiritual"></a>
-        <label style="margin:0;">{{localize "TQ.ObjetoMagico.DanhoEspiritual"}}</label>
-      </div>
-      <div style="display:flex;align-items:center;gap:6px;">
-        <a class="tq-circulo toggle-estado {{#if system.poderesDemoniacos.vampiro}}marcado{{/if}}" data-campo="system.poderesDemoniacos.vampiro"></a>
-        <label style="margin:0;">{{localize "TQ.ObjetoMagico.Vampiro"}}</label>
-      </div>
-      <div style="display:flex;align-items:center;gap:6px;">
-        <a class="tq-circulo toggle-estado {{#if system.poderesDemoniacos.irrompible}}marcado{{/if}}" data-campo="system.poderesDemoniacos.irrompible"></a>
-        <label style="margin:0;">{{localize "TQ.ObjetoMagico.Irrompible"}}</label>
-      </div>
-    </div>
-    {{/if}}
 
     <div class="tq-field-group full-width" style="margin-top:10px;">
       <label>{{localize "TQ.General.Efecto"}}</label>

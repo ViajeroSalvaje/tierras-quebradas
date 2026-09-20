@@ -1,0 +1,156 @@
+/* === TIERRAS QUEBRADAS — PRINT SHEET === */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --teal:    #1C6473;
+  --teal-d:  rgba(28,100,115,0.10);
+  --teal-bd: rgba(28,100,115,0.22);
+  --ground:  #FEFCF7;
+  --text:    #1A1008;
+  --label:   #5C4838;
+  --muted:   #9A8474;
+  --danger:  #7A1515;
+}
+
+body {
+  background: #C8BFB2;
+  font-family: 'Source Sans 3', system-ui, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 16px;
+  gap: 8px;
+  color: var(--text);
+}
+
+.print-btn {
+  align-self: flex-start;
+  background: var(--teal);
+  color: #fff;
+  border: none;
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  padding: 5px 14px;
+  cursor: pointer;
+  border-radius: 2px;
+}
+.print-btn:hover { background: #1e7283; }
+
+/* A4 page */
+.sheet {
+  width: 210mm;
+  min-height: 287mm;
+  background: var(--ground);
+  padding: 9mm 10mm;
+  box-shadow: 0 3px 20px rgba(0,0,0,0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 9.5px;
+}
+
+/* Header */
+.hdr { display: flex; align-items: baseline; gap: 8px; padding-bottom: 4px; border-bottom: 2px solid var(--teal); flex-wrap: wrap; }
+.pnj-name { font-family: 'Cinzel', serif; font-size: 18px; font-weight: 700; line-height: 1; flex: 1; }
+.pnj-meta { font-size: 9.5px; color: var(--label); white-space: nowrap; }
+.pnj-meta strong { color: var(--teal); font-weight: 600; }
+
+/* Section label */
+.mlabel {
+  font-family: 'Cinzel', serif;
+  font-size: 6px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--teal);
+  display: block;
+  margin-bottom: 2px;
+}
+
+/* Stats strip */
+.stats { display: flex; gap: 8px; align-items: flex-start; padding-bottom: 4px; border-bottom: 1px solid var(--teal-bd); }
+
+.caract-strip { display: flex; gap: 4px; flex-shrink: 0; }
+.cc { display: flex; flex-direction: column; align-items: center; gap: 1px; }
+.cc-lbl { font-family: 'Cinzel', serif; font-size: 5.5px; letter-spacing: 0.1em; color: var(--teal); text-transform: uppercase; }
+.cc-val { width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid var(--teal); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+.right-stats { flex: 1; display: flex; flex-direction: column; gap: 3px; }
+.bases-strip { display: flex; gap: 3px; flex-wrap: wrap; }
+.bs { display: flex; flex-direction: column; align-items: center; gap: 1px; }
+.bs-lbl { font-size: 5.5px; letter-spacing: 0.07em; color: var(--muted); text-transform: uppercase; }
+.bs-val { width: 16px; height: 14px; border: 1px solid var(--teal-bd); background: var(--teal-d); display: flex; align-items: center; justify-content: center; font-size: 9.5px; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+.deriv-strip { display: flex; gap: 6px; align-items: center; }
+.dv { display: flex; align-items: center; gap: 3px; }
+.dv-lbl { font-size: 8.5px; color: var(--label); white-space: nowrap; }
+.dv-val { width: 20px; height: 14px; border: 1px solid var(--teal-bd); background: var(--teal-d); display: flex; align-items: center; justify-content: center; font-size: 9.5px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.v-sep { width: 1px; height: 12px; background: var(--teal-bd); margin: 0 2px; flex-shrink: 0; }
+
+.salud-strip { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+.pv-lbl { font-size: 8px; font-weight: 600; color: var(--label); text-transform: uppercase; letter-spacing: 0.08em; }
+.pv-num { font-size: 16px; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1; }
+.pv-sep { font-size: 10px; color: var(--muted); }
+.pv-max { font-size: 9.5px; color: var(--label); font-variant-numeric: tabular-nums; }
+.h-gap { width: 4px; flex-shrink: 0; }
+.h-lbl { font-size: 7px; color: var(--label); text-transform: uppercase; letter-spacing: 0.06em; }
+.dot { width: 10px; height: 10px; border-radius: 50%; border: 1.5px solid var(--teal); display: inline-flex; flex-shrink: 0; }
+.dot.grave { border-color: var(--danger); }
+.dot.on { background: var(--teal); }
+.dot.grave.on { background: var(--danger); }
+.estado { font-size: 6.5px; border: 1px solid var(--teal-bd); padding: 1px 3px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+.estado.on { background: var(--teal); color: #fff; border-color: var(--teal); }
+
+/* Body two columns */
+.body { display: grid; grid-template-columns: 80mm 1fr; gap: 8px; flex: 1; }
+.col { display: flex; flex-direction: column; gap: 4px; }
+
+/* Habilidades */
+.hab-grid { display: grid; grid-template-columns: 1fr auto; gap: 0; }
+.hrow { display: contents; }
+.hrow > span { padding: 1px 3px; border-bottom: 1px solid var(--teal-d); font-size: 10px; display: flex; align-items: center; }
+.hrow:nth-child(even) > span { background: var(--teal-d); }
+.hrow > span:last-child { font-weight: 700; font-variant-numeric: tabular-nums; color: var(--teal); justify-content: flex-end; min-width: 20px; }
+.hab-nota { font-size: 7.5px; color: var(--muted); margin-top: 2px; }
+
+/* Tables */
+table { width: 100%; border-collapse: collapse; font-size: 9px; font-variant-numeric: tabular-nums; }
+thead th { background: var(--teal); color: #fff; font-family: 'Source Sans 3', sans-serif; font-size: 6.5px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; padding: 1.5px 3px; text-align: left; }
+tbody tr { border-bottom: 1px solid var(--teal-d); }
+tbody tr:nth-child(even) { background: var(--teal-d); }
+td { padding: 1.5px 3px; }
+td.c { text-align: center; }
+.herida-blank { height: 13px; background: none !important; border-bottom: 1px dotted var(--teal-bd) !important; }
+
+/* PM/ESP */
+.pm-esp-row { display: flex; gap: 10px; align-items: center; padding: 2px 0; border-top: 1px solid var(--teal-d); border-bottom: 1px solid var(--teal-d); }
+.pm-item { display: flex; align-items: center; gap: 4px; }
+.pm-lbl { font-size: 7.5px; font-weight: 600; color: var(--label); text-transform: uppercase; letter-spacing: 0.07em; }
+.pm-val { font-size: 13px; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1; }
+.pm-max { font-size: 9px; color: var(--muted); }
+
+/* Items list (rasgos, ventajas, objetos...) */
+.items-list { display: flex; flex-direction: column; }
+.item-row { display: flex; align-items: center; gap: 4px; padding: 1px 3px; border-bottom: 1px solid var(--teal-d); font-size: 9.5px; }
+.item-row:nth-child(even) { background: var(--teal-d); }
+.item-detail { font-size: 8.5px; color: var(--muted); margin-left: auto; white-space: nowrap; }
+.item-name { font-weight: 600; }
+
+/* Hechizos */
+.hech-nombre { font-weight: 600; }
+.hech-meta { font-size: 8px; color: var(--muted); }
+.badge { display: inline-block; background: var(--teal-d); border: 1px solid var(--teal-bd); padding: 0 2px; font-size: 7px; }
+
+/* Notas */
+.notas { font-size: 8.5px; color: var(--label); line-height: 1.45; border-left: 2px solid var(--teal-bd); padding-left: 5px; font-style: italic; }
+
+/* Print */
+@media print {
+  body { background: white; padding: 0; }
+  .print-btn { display: none; }
+  .sheet { box-shadow: none; width: 100%; min-height: 0; }
+  @page { margin: 0; size: A4; }
+}

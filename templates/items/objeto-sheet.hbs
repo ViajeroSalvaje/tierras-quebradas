@@ -22,5 +22,29 @@
       <label>{{localize "TQ.General.Descripcion"}}</label>
       <textarea name="system.descripcion" rows="5">{{system.descripcion}}</textarea>
     </div>
+    {{#if system.esDemoniaco}}
+    <hr />
+    <div class="tq-demoniaco-section">
+      <p class="tq-demoniaco-titulo">Objeto Demoníaco — {{system.demonioNombre}} ({{system.vm}} VM)</p>
+      <div class="item-grid">
+        {{#if system.bonoDanho}}<div class="tq-field-group"><label>Bono al daño</label><input type="number" name="system.bonoDanho" value="{{system.bonoDanho}}" /></div>{{/if}}
+        {{#if system.bonoHabilidad}}<div class="tq-field-group"><label>Bono habilidad</label><input type="number" name="system.bonoHabilidad" value="{{system.bonoHabilidad}}" /></div>{{/if}}
+        {{#if system.bonoHabilidad}}<div class="tq-field-group"><label>Habilidad</label><input type="text" name="system.bonoHabilidadClave" value="{{system.bonoHabilidadClave}}" /></div>{{/if}}
+        {{#if system.demonioProteccion}}<div class="tq-field-group"><label>Protección</label><input type="number" name="system.demonioProteccion" value="{{system.demonioProteccion}}" /></div>{{/if}}
+      </div>
+      <div class="tq-demoniaco-flags">
+        {{#if system.danhoMagico}}<span class="tq-demoniaco-tag">Daño mágico</span>{{/if}}
+        {{#if system.danhoEspiritual}}<span class="tq-demoniaco-tag">Daño espiritual</span>{{/if}}
+        {{#if system.vampiro}}<span class="tq-demoniaco-tag">Vampiro</span>{{/if}}
+        {{#if system.irrompible}}<span class="tq-demoniaco-tag">Irrompible</span>{{/if}}
+        {{#if system.salvaguardaFuego}}<span class="tq-demoniaco-tag">Salvaguarda fuego</span>{{/if}}
+        {{#if system.salvaguardaArmas}}<span class="tq-demoniaco-tag">Salvaguarda armas</span>{{/if}}
+        {{#if system.pmPropios}}<span class="tq-demoniaco-tag">PM propios</span>{{/if}}
+      </div>
+      {{#if system.conjuros.length}}
+      <p class="tq-demoniaco-sub">Conjuros: {{#each system.conjuros}}{{nombre}} (Dif {{dificultad}}){{#unless @last}}, {{/unless}}{{/each}}</p>
+      {{/if}}
+    </div>
+    {{/if}}
   </section>
 </div>

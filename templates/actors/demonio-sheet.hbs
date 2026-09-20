@@ -21,7 +21,7 @@
   <nav class="sheet-tabs" data-group="primary">
     <a class="item" data-tab="stats">{{localize "TQ.Tabs.Estadisticas"}}</a>
     <a class="item" data-tab="combate">{{localize "TQ.Tabs.CombateMagia"}}</a>
-    <a class="item" data-tab="informacion">{{localize "TQ.Tabs.Informacion"}}</a>
+    <a class="item" data-tab="informacion">Trasfondo y descripción</a>
   </nav>
 
   <div class="sheet-body">
@@ -153,15 +153,31 @@
     </div>
 
     <div class="tab" data-tab="informacion">
+      <div style="display:flex;gap:12px;align-items:flex-end;margin-bottom:6px;">
+        <div class="tq-field-group" style="margin-bottom:0;">
+          <label>{{localize "TQ.Demonio.Deidad"}}</label>
+          <select name="system.deidad">
+            <option value="" {{#unless system.deidad}}selected{{/unless}}>Ninguna</option>
+            {{#each deidadesCaos}}
+            <option value="{{this}}" {{#if (eq ../system.deidad this)}}selected{{/if}}>{{this}}</option>
+            {{/each}}
+          </select>
+        </div>
+      </div>
       <div class="tq-field-group">
         <label>{{localize "TQ.Demonio.Vinculo"}}</label>
         <input type="text" name="system.vinculo" value="{{system.vinculo}}" />
       </div>
+      <div class="tq-field-group" style="margin-top:6px;">
+        <label>{{localize "TQ.General.Descripcion"}}</label>
+        <textarea name="system.descripcion" rows="5">{{system.descripcion}}</textarea>
+      </div>
+
       <div class="tq-section-header" style="margin-top:6px;">
         <span>{{localize "TQ.Secciones.PoderesRasgos"}}</span>
         <a class="demonio-anadir-poder" title="{{localize "TQ.Tooltips.AnadirPoder"}}"><i class="fas fa-plus"></i></a>
       </div>
-      <ul class="ventajas-list">
+      <ul class="ventajas-list" style="display:grid;grid-template-columns:1fr 1fr;gap:0 8px;">
         {{#each poderes as |p|}}
         <li data-item-id="{{p.id}}" class="ventaja-item">
           <strong>{{p.name}}</strong>
@@ -173,16 +189,13 @@
         </li>
         {{/each}}
       </ul>
-      <div class="tq-field-group" style="margin-top:4px;">
-        <label>{{localize "TQ.General.Notas"}}</label>
-        <textarea name="system.poderes" rows="3">{{system.poderes}}</textarea>
-      </div>
+      <div class="demonio-rasgos-dropzone tq-dropzone" style="margin-top:4px;">Arrastra rasgos del compendio de Bestiario</div>
 
       <div class="tq-section-header" style="margin-top:6px;">
         <span>{{localize "TQ.Secciones.Debilidades"}}</span>
         <a class="demonio-anadir-debilidad" title="{{localize "TQ.Tooltips.AnadirDebilidad"}}"><i class="fas fa-plus"></i></a>
       </div>
-      <ul class="ventajas-list">
+      <ul class="ventajas-list" style="display:grid;grid-template-columns:1fr 1fr;gap:0 8px;">
         {{#each debilidades as |d|}}
         <li data-item-id="{{d.id}}" class="ventaja-item">
           <strong>{{d.name}}</strong>
@@ -193,14 +206,7 @@
         </li>
         {{/each}}
       </ul>
-      <div class="tq-field-group" style="margin-top:4px;">
-        <label>{{localize "TQ.General.Notas"}}</label>
-        <textarea name="system.debilidades" rows="2">{{system.debilidades}}</textarea>
-      </div>
-      <div class="tq-field-group">
-        <label>{{localize "TQ.General.Notas"}}</label>
-        <textarea name="system.notas" rows="6">{{system.notas}}</textarea>
-      </div>
+      <div class="debilidades-dropzone tq-dropzone" style="margin-top:4px;">Arrastra debilidades del compendio de Bestiario</div>
     </div>
   </div>
 </section>

@@ -358,89 +358,17 @@
 
             {{!-- Columna 1 --}}
             <div class="tq-habilidades-col">
-              {{#each col1 as |entry|}}
-              <div class="tq-habilidad-fila">
-                <a class="tq-circulo toggle-exito {{#if entry.hab.exito}}marcado{{/if}}"
-                   data-habilidad="{{entry.key}}" title="Marcar/desmarcar éxito"></a>
-                {{#if entry.esIdioma}}
-                <a class="tq-habilidad-nombre tirar-habilidad" data-habilidad="{{entry.key}}"
-                   data-tq-hab-tooltip="{{entry.tooltip}}">
-                  {{#if entry.hab.nombre}}{{entry.hab.nombre}}
-                  {{else}}<em style="color:var(--tq-text-dim);">—</em>{{/if}}
-                </a>
-                {{else}}
-                <a class="tq-habilidad-nombre tirar-habilidad" data-habilidad="{{entry.key}}"
-                   data-tq-hab-tooltip="{{entry.tooltip}}">
-                  {{localize (concat "TQ.Habilidades." entry.key)}}
-                </a>
-                {{/if}}
-                <span class="tq-habilidad-px" data-habilidad="{{entry.key}}" title="PX acumulados — clic para editar">({{entry.hab.px}})</span>
-                <span class="tq-habilidad-base-tag">{{tq-base-abrev entry.hab.base}}+</span>
-                <span class="tq-habilidad-nivel">
-                  <input type="number" name="system.habilidades.{{entry.key}}.nivel"
-                         value="{{entry.hab.nivel}}" min="0" />
-                </span>
-                <span class="tq-habilidad-total">{{tq-habilidad-total entry.hab @root.system.bases @root.system.estorbo.valor}}</span>
-              </div>
-              {{/each}}
+              {{> "systems/tierras-quebradas/templates/partials/_habilidad-col.hbs" entries=col1}}
             </div>
 
             {{!-- Columna 2 --}}
             <div class="tq-habilidades-col">
-              {{#each col2 as |entry|}}
-              <div class="tq-habilidad-fila">
-                <a class="tq-circulo toggle-exito {{#if entry.hab.exito}}marcado{{/if}}"
-                   data-habilidad="{{entry.key}}" title="Marcar/desmarcar éxito"></a>
-                {{#if entry.esIdioma}}
-                <a class="tq-habilidad-nombre tirar-habilidad" data-habilidad="{{entry.key}}"
-                   data-tq-hab-tooltip="{{entry.tooltip}}">
-                  {{#if entry.hab.nombre}}{{entry.hab.nombre}}
-                  {{else}}<em style="color:var(--tq-text-dim);">—</em>{{/if}}
-                </a>
-                {{else}}
-                <a class="tq-habilidad-nombre tirar-habilidad" data-habilidad="{{entry.key}}"
-                   data-tq-hab-tooltip="{{entry.tooltip}}">
-                  {{localize (concat "TQ.Habilidades." entry.key)}}
-                </a>
-                {{/if}}
-                <span class="tq-habilidad-px" data-habilidad="{{entry.key}}" title="PX acumulados — clic para editar">({{entry.hab.px}})</span>
-                <span class="tq-habilidad-base-tag">{{tq-base-abrev entry.hab.base}}+</span>
-                <span class="tq-habilidad-nivel">
-                  <input type="number" name="system.habilidades.{{entry.key}}.nivel"
-                         value="{{entry.hab.nivel}}" min="0" />
-                </span>
-                <span class="tq-habilidad-total">{{tq-habilidad-total entry.hab @root.system.bases @root.system.estorbo.valor}}</span>
-              </div>
-              {{/each}}
+              {{> "systems/tierras-quebradas/templates/partials/_habilidad-col.hbs" entries=col2}}
             </div>
 
             {{!-- Columna 3 --}}
             <div class="tq-habilidades-col">
-              {{#each col3 as |entry|}}
-              <div class="tq-habilidad-fila">
-                <a class="tq-circulo toggle-exito {{#if entry.hab.exito}}marcado{{/if}}"
-                   data-habilidad="{{entry.key}}" title="Marcar/desmarcar éxito"></a>
-                {{#if entry.esIdioma}}
-                <a class="tq-habilidad-nombre tirar-habilidad" data-habilidad="{{entry.key}}"
-                   data-tq-hab-tooltip="{{entry.tooltip}}">
-                  {{#if entry.hab.nombre}}{{entry.hab.nombre}}
-                  {{else}}<em style="color:var(--tq-text-dim);">—</em>{{/if}}
-                </a>
-                {{else}}
-                <a class="tq-habilidad-nombre tirar-habilidad" data-habilidad="{{entry.key}}"
-                   data-tq-hab-tooltip="{{entry.tooltip}}">
-                  {{localize (concat "TQ.Habilidades." entry.key)}}
-                </a>
-                {{/if}}
-                <span class="tq-habilidad-px" data-habilidad="{{entry.key}}" title="PX acumulados — clic para editar">({{entry.hab.px}})</span>
-                <span class="tq-habilidad-base-tag">{{tq-base-abrev entry.hab.base}}+</span>
-                <span class="tq-habilidad-nivel">
-                  <input type="number" name="system.habilidades.{{entry.key}}.nivel"
-                         value="{{entry.hab.nivel}}" min="0" />
-                </span>
-                <span class="tq-habilidad-total">{{tq-habilidad-total entry.hab @root.system.bases @root.system.estorbo.valor}}</span>
-              </div>
-              {{/each}}
+              {{> "systems/tierras-quebradas/templates/partials/_habilidad-col.hbs" entries=col3}}
             </div>
 
           </div>{{!-- /tq-habilidades-grid --}}
@@ -484,7 +412,7 @@
                 {{#each items.armas as |arma|}}
                 <tr data-item-id="{{arma.item.id}}">
                   <td>
-                    <a class="tirar-arma{{#unless arma.equipped}} tq-desequipado{{/unless}}" data-item-id="{{arma.item.id}}" title="Tirar {{arma.item.name}}">
+                    <a class="tirar-arma{{#unless arma.equipped}} tq-desequipado{{/unless}}{{#if arma.esDemoniaco}} tq-arma-demoniaco{{/if}}{{#if arma.artefacto}} tq-arma-artefacto{{/if}}" data-item-id="{{arma.item.id}}" title="Tirar {{arma.item.name}}">
                       <i class="fas fa-dice-d10"></i>
                     </a>
                   </td>
@@ -560,6 +488,7 @@
           <table class="armaduras-table">
             <thead>
               <tr>
+                <th></th>
                 <th>{{localize "TQ.General.Nombre"}}</th>
                 <th>{{localize "TQ.Armadura.Proteccion"}}</th>
                 <th>{{localize "TQ.General.Zona"}}</th>
@@ -571,6 +500,9 @@
             <tbody>
               {{#each items.armaduras as |arm|}}
               <tr data-item-id="{{arm.id}}">
+                <td style="text-align:center;">
+                  <span class="armadura-icono{{#if arm.esDemoniaco}} tq-arma-demoniaco{{/if}}{{#if arm.magico}} tq-armadura-magica{{/if}}{{#if arm.artefacto}} tq-arma-artefacto{{/if}}"><i class="fas fa-shield-halved"></i></span>
+                </td>
                 <td>{{arm.name}}</td>
                 <td>{{arm.system.proteccion}}</td>
                 <td>{{arm.system.zona}}</td>
@@ -589,8 +521,9 @@
               {{/each}}
             </tbody>
             <tfoot>
-              <tr class="armaduras-totales">
-                <td style="text-align:right;color:var(--tq-text-dim);font-size:14px;font-weight:normal;">Equipado</td>
+              <tr class="armaduras-totales" style="background:var(--tq-parchment);font-size:14px;font-weight:normal;">
+                <td></td>
+                <td style="text-align:right;font-weight:normal;">Equipado</td>
                 <td>{{items.proteccionTotal}}</td>
                 <td colspan="2"></td>
                 <td style="text-align:center;">{{items.cargaProteccionTotal}}</td>
@@ -658,7 +591,7 @@
         <div class="tq-section-content equipo-content">
           {{#each items.objetos as |obj|}}
           <div class="tq-equipo-fila" data-item-id="{{obj.id}}">
-            <span class="equipo-nombre">{{obj.name}}</span>
+            <span class="equipo-nombre">{{obj.name}}{{#if obj.poderesTexto}} <span class="equipo-poderes-texto">· {{obj.poderesTexto}}</span>{{/if}}</span>
             {{#if obj.system.categoria}}<span class="equipo-cat">{{obj.system.categoria}}</span>{{/if}}
             <span class="equipo-carga">{{obj.system.carga}}</span>
             <span class="item-controls">
@@ -763,6 +696,49 @@
         </div>
       </div>
 
+      {{!-- Ataduras demoníacas --}}
+      <div class="tq-section-box">
+        <div class="tq-section-header">Ataduras</div>
+        <div class="tq-section-content">
+          <div class="tq-pm-fila">
+            <label>Máximo</label>
+            <span class="estorbo-valor">{{atadurasMax}}</span>
+            <span class="pm-sep" style="margin:0 8px;">·</span>
+            <label>Activas</label>
+            <span class="estorbo-valor">{{atadurasActivas}}</span>
+            <span class="pm-sep" style="margin:0 8px;">·</span>
+            <label>Libres</label>
+            <span class="estorbo-valor">{{atadurasLibres}}</span>
+          </div>
+          {{#if objetosDemoniacos.length}}
+          <table class="tq-ataduras-table">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Tipo</th>
+                <th>Demonio</th>
+                <th>Creador</th>
+                <th>Vinculación</th>
+              </tr>
+            </thead>
+            <tbody>
+              {{#each objetosDemoniacos}}
+              <tr>
+                <td>{{name}}</td>
+                <td>{{tipoLabel}}</td>
+                <td>{{system.demonioNombre}}</td>
+                <td>{{system.creadoPor}}</td>
+                <td>
+                  <input class="atadura-vinculacion-input" data-item-id="{{id}}" type="text" value="{{system.vinculacionDios}}" />
+                </td>
+              </tr>
+              {{/each}}
+            </tbody>
+          </table>
+          {{/if}}
+        </div>
+      </div>
+
       {{!-- Verbos y Esferas en dos columnas --}}
       <div style="display:flex;gap:6px;">
 
@@ -814,7 +790,7 @@
         </div>
         <ul class="hechizos-list">
           {{#each items.hechizos as |hech|}}
-          <li class="hechizo-item" data-item-id="{{hech.id}}">
+          <li class="hechizo-item{{#if hech.system.fromDemoniaco}} hechizo-demoniaco{{/if}}" data-item-id="{{hech.id}}">
             <div class="hechizo-main">
               <div class="hechizo-nombre-wrap">
                 <span class="tq-circulo hechizo-permanent{{#if hech.system.permanent}} marcado{{/if}}" data-item-id="{{hech.id}}" title="{{localize "TQ.Hechizo.EspirituConsagrado"}}"></span>
@@ -836,6 +812,48 @@
             </div>
           </li>
           {{/each}}
+          {{#each items.hechizosArtefacto as |h|}}
+          <li class="hechizo-item hechizo-artefacto" data-artefacto-id="{{h.artefactoId}}" data-poder-idx="{{h.poderIdx}}">
+            <div class="hechizo-main">
+              <div class="hechizo-nombre-wrap">
+                <span class="hechizo-nombre">{{h.nombre}}</span>
+                <span class="hechizo-artefacto-origen">{{h.artefactoNombre}}</span>
+              </div>
+              <span class="item-controls">
+                <a class="activar-poder-artefacto tq-btn-lanzar">Activar</a>
+              </span>
+            </div>
+            <div class="hechizo-meta">
+              <span>PM {{h.pmCoste}}</span>
+              <span class="hechizo-sep">|</span>
+              <span>{{h.pmActual}} disp.</span>
+              <span class="hechizo-sep">|</span>
+              <span class="hechizo-badge">Automático</span>
+            </div>
+          </li>
+          {{/each}}
+          {{#each items.hechizosObjetoDemoniaco as |h|}}
+          <li class="hechizo-item hechizo-obj-demoniaco" data-item-id="{{h.itemId}}">
+            <div class="hechizo-main">
+              <div class="hechizo-nombre-wrap">
+                <span class="hechizo-nombre">{{h.nombre}}</span>
+                <span class="hechizo-artefacto-origen">{{h.objetoNombre}}</span>
+              </div>
+              <span class="item-controls">
+                <a class="activar-conjuro-demoniaco tq-btn-lanzar" data-item-id="{{h.itemId}}">Activar</a>
+              </span>
+            </div>
+            <div class="hechizo-meta">
+              <span>PM {{h.pmCoste}}</span>
+              {{#if h.pmPropios}}
+              <span class="hechizo-sep">|</span>
+              <span>{{h.pmActual}} disp. (obj.)</span>
+              {{/if}}
+              <span class="hechizo-sep">|</span>
+              <span class="hechizo-badge">Automático</span>
+            </div>
+          </li>
+          {{/each}}
         </ul>
       </div>
 
@@ -849,6 +867,8 @@
          TAB HOJA 2 — TRASFONDO
     ══════════════════════════════════════════════════════════════ --}}
     <div class="tab {{#if (tq-eq activeTab 'hoja2')}}active{{/if}}" data-tab="hoja2">
+
+
 
       {{!-- FILA PRINCIPAL: columna izq (Lealtad + Pactos + Bendiciones) y der (Info Personal + Ventajas) --}}
       <div style="display:flex;gap:6px;align-items:flex-start;margin-bottom:4px;">

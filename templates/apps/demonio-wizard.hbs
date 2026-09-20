@@ -1,0 +1,546 @@
+<div class="tq-creator-wrap">
+
+  <div class="tq-creator-progress">
+    {{#each pasos as |p|}}
+    <div class="tq-creator-paso {{#if p.activo}}activo{{/if}} {{#if p.completado}}completado{{/if}}">
+      <span class="paso-num">{{p.num}}</span>
+      <span class="paso-label">{{p.label}}</span>
+    </div>
+    {{/each}}
+  </div>
+
+  <div class="tq-creator-body">
+
+    {{!-- ======================== PASO 1: HECHICERO ======================== --}}
+    {{#if paso1}}
+    <div class="tq-creator-step">
+      <div class="tq-field-group">
+        <label>Personaje</label>
+        <select name="hechiceroId">
+          <option value="">— Seleccionar —</option>
+          {{#each actores}}
+          <option value="{{id}}" {{#if (tq-eq ../estado.hechiceroId id)}}selected{{/if}}>{{name}} (ESP {{espiritu}})</option>
+          {{/each}}
+        </select>
+      </div>
+      <div class="tq-field-group" style="margin-top:4px;">
+        <label class="tq-creator-nota-inline">Si no está en el mundo</label>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <input type="text" name="hechiceroNombreManual" value="{{estado.hechiceroNombreManual}}" placeholder="Nombre del hechicero…" style="flex:1;">
+          <label class="tq-creator-nota-inline">ESP</label>
+          <input type="number" name="hechiceroEspirituManual" value="{{estado.hechiceroEspirituManual}}" min="0" style="width:52px;">
+        </div>
+      </div>
+      {{#if estado.hechiceroEspiritu}}
+      <div class="tq-creator-stat-row">
+        <div class="tq-creator-stat-box">
+          <span class="tq-creator-stat-label">{{estado.hechiceroNombre}}</span>
+          <span class="tq-valor-grande">ESP {{estado.hechiceroEspiritu}}</span>
+        </div>
+        <div class="tq-creator-stat-box">
+          <span class="tq-creator-stat-label">Límite servidores</span>
+          <span class="tq-valor-grande limit-serv-display">{{limiteServ}}</span>
+        </div>
+        <div class="tq-creator-stat-box">
+          <span class="tq-creator-stat-label">Plazas libres</span>
+          <span class="tq-valor-grande">{{plazasLibres}}</span>
+        </div>
+      </div>
+      {{/if}}
+    </div>
+    {{/if}}
+
+    {{!-- ======================== PASO 2: DEMONIO ======================== --}}
+    {{#if paso2}}
+    <div class="tq-creator-step">
+
+      <div class="tq-field-group">
+        <label>Origen</label>
+        <div class="tq-radio-circulo">
+          <label>
+            <span class="tq-circulo tq-radio-btn {{#if (tq-eq estado.modoOrigen 'conocido')}}marcado{{/if}}" data-origen="conocido"></span>
+            Demonio conocido
+          </label>
+          <label>
+            <span class="tq-circulo tq-radio-btn {{#if (tq-eq estado.modoOrigen 'descubrir')}}marcado{{/if}}" data-origen="descubrir"></span>
+            Descubrir nuevo demonio
+          </label>
+        </div>
+      </div>
+
+      {{!-- Modo conocido --}}
+      {{#if (tq-eq estado.modoOrigen "conocido")}}
+      {{#if estado.demonio}}
+      <div class="tq-creator-tirada" style="margin-top:8px;">
+        <span class="tq-creator-tirada-label"><strong>{{estado.demonio.nombre}}</strong> — ESP {{estado.demonio.espiritu}}</span>
+        <a class="demonio-limpiar" title="Quitar demonio">✕</a>
+      </div>
+      {{else}}
+      <p class="tq-creator-nota">Arrastra un actor de tipo Demonio desde la lista de actores.</p>
+      <div class="tq-dropzone demonio-dropzone" style="margin-top:4px;">Suelta aquí un demonio</div>
+      {{/if}}
+      {{/if}}
+
+      {{!-- Modo descubrir --}}
+      {{#if (tq-eq estado.modoOrigen "descubrir")}}
+
+      {{!-- Sub-paso 2.1: Tirada de invención --}}
+      {{#if subPaso2_1}}
+      <p class="tq-creator-nota" style="margin-top:8px;font-weight:bold;">Paso 1 de 4 — Tirada de invención</p>
+      <div class="tq-field-group" style="margin-top:6px;">
+        <label>Dificultad del demonio</label>
+        <div class="tq-radio-circulo">
+          <label>
+            <span class="tq-circulo tq-radio-btn {{#if (tq-eq estado.nuevo.dificultad 10)}}marcado{{/if}}" data-dif="10"></span>
+            Demonio Menor (Dif 10, 1d3+2 ESP)
+          </label>
+          <label>
+            <span class="tq-circulo tq-radio-btn {{#if (tq-eq estado.nuevo.dificultad 15)}}marcado{{/if}}" data-dif="15"></span>
+            Demonio Medio (Dif 15, 1d6+2 ESP)
+          </label>
+          <label>
+            <span class="tq-circulo tq-radio-btn {{#if (tq-eq estado.nuevo.dificultad 20)}}marcado{{/if}}" data-dif="20"></span>
+            Demonio Mayor (Dif 20, 1d10+2 ESP)
+          </label>
+        </div>
+      </div>
+      <p class="tq-creator-nota">Invocar Caos contra Dificultad {{difInvencion}} · Valor: {{valorInvencion}} · Coste: {{pmCosto}} PM.</p>
+      <button type="button" class="tirar-invencion">Tirar invención</button>
+      {{#if estado.nuevo.tiradaInvencion}}
+      <div class="tq-creator-tirada" style="margin-top:8px;">
+        <span class="tq-creator-tirada-label">Resultado: {{estado.nuevo.tiradaInvencion}}</span>
+        <strong>{{#if estado.nuevo.invencionExito}}Éxito{{else}}Fracaso{{/if}}</strong>
+      </div>
+      {{/if}}
+      {{/if}}
+
+      {{!-- Sub-paso 2.2: Estadísticas --}}
+      {{#if subPaso2_2}}
+      <p class="tq-creator-nota" style="margin-top:8px;font-weight:bold;">Paso 2 de 4 — Estadísticas del demonio</p>
+      <p class="tq-creator-nota">Formula {{dado}} para ESP, CUE y MEN. TAM = 1d6-1d6 (máx CUE-1).</p>
+      <div class="tq-creator-tiradas" style="margin-top:6px;">
+        <div class="tq-creator-tirada">
+          <span class="tq-creator-tirada-label">ESP</span>
+          <input type="number" name="nuevo_esp" value="{{estado.nuevo.esp}}" min="0" style="width:52px;text-align:center;">
+          <button type="button" class="tirar-esp">Tirar</button>
+        </div>
+        <div class="tq-creator-tirada">
+          <span class="tq-creator-tirada-label">CUE</span>
+          <input type="number" name="nuevo_cue" value="{{estado.nuevo.cue}}" min="0" style="width:52px;text-align:center;">
+          <button type="button" class="tirar-cue">Tirar</button>
+        </div>
+        <div class="tq-creator-tirada">
+          <span class="tq-creator-tirada-label">MEN</span>
+          <input type="number" name="nuevo_men" value="{{estado.nuevo.men}}" min="0" style="width:52px;text-align:center;">
+          <button type="button" class="tirar-men">Tirar</button>
+        </div>
+        <div class="tq-creator-tirada">
+          <span class="tq-creator-tirada-label">TAM</span>
+          <input type="number" name="nuevo_tam" value="{{estado.nuevo.tam}}" style="width:52px;text-align:center;">
+          <button type="button" class="tirar-tam">Tirar</button>
+        </div>
+        <div class="tq-creator-tirada">
+          <span class="tq-creator-tirada-label">ATR</span>
+          <span style="width:52px;text-align:center;font-size:14px;font-weight:bold;">{{atrCalculado}}</span>
+        </div>
+        <div class="tq-creator-tirada">
+          <span class="tq-creator-tirada-label">
+            Armadura —
+            <span class="tq-radio-circulo" style="display:inline-flex;gap:10px;margin-left:4px;">
+              <label><span class="tq-circulo tq-radio-btn {{#if (tq-eq estado.nuevo.armaduraTipo 'blanda')}}marcado{{/if}}" data-armadura="blanda"></span> Blanda</label>
+              <label><span class="tq-circulo tq-radio-btn {{#if (tq-eq estado.nuevo.armaduraTipo 'dura')}}marcado{{/if}}" data-armadura="dura"></span> Dura</label>
+            </span>
+          </span>
+          <input type="number" name="nuevo_armaduraValor" value="{{estado.nuevo.armaduraValor}}" min="0" style="width:52px;text-align:center;">
+          <button type="button" class="tirar-armadura">Tirar</button>
+        </div>
+        <p class="tq-creator-nota" style="padding:0 8px;">
+          Fórmula: {{#if (tq-eq estado.nuevo.armaduraTipo "dura")}}1d3-1{{else}}1d6-1{{/if}}
+        </p>
+      </div>
+      {{/if}}
+
+      {{!-- Sub-paso 2.3: Habilidades --}}
+      {{#if subPaso2_3}}
+      <p class="tq-creator-nota" style="margin-top:8px;font-weight:bold;">Paso 3 de 4 — Habilidades del demonio</p>
+      <div class="tq-creator-pool-header" style="margin-top:6px;">
+        <span>Presupuesto: ESP × 2 = {{habPresupuesto}} pts</span>
+        <span>Gastado: {{habGastado}} · Restante: {{habRestante}}</span>
+      </div>
+      <div class="tq-dropzone habilidades-dropzone" style="margin-top:6px;">Suelta aquí una Habilidad</div>
+      <button type="button" class="hab-add" style="margin-top:4px;">+ Añadir habilidad manual</button>
+      {{#if estado.nuevo.habilidades.length}}
+      <table class="tq-creator-resumen" style="margin-top:8px;">
+        <thead><tr><th>Habilidad</th><th>Puntos</th><th></th></tr></thead>
+        <tbody>
+          {{#each estado.nuevo.habilidades}}
+          <tr>
+            <td><input class="hab-nombre" data-idx="{{@index}}" type="text" value="{{nombre}}" style="width:100%;"></td>
+            <td><input class="hab-puntos" data-idx="{{@index}}" type="number" value="{{puntos}}" min="0" style="width:60px;text-align:center;"></td>
+            <td><a class="hab-borrar" data-idx="{{@index}}" title="Borrar" style="cursor:pointer;">✕</a></td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
+      {{/if}}
+      {{/if}}
+
+      {{!-- Sub-paso 2.4: Poderes y debilidades --}}
+      {{#if subPaso2_4}}
+      <p class="tq-creator-nota" style="margin-top:8px;font-weight:bold;">Paso 4 de 4 — Nombre, poderes y debilidades</p>
+      <div class="tq-field-group" style="margin-top:6px;">
+        <label>Nombre del demonio</label>
+        <input type="text" name="nuevoNombre" value="{{estado.nuevo.nombre}}" placeholder="Nombre">
+      </div>
+
+      <p class="tq-creator-nota" style="margin-top:10px;font-weight:bold;">Atractivo</p>
+      <div class="tq-radio-circulo">
+        <label>
+          <span class="tq-circulo tq-radio-btn {{#if estado.nuevo.inteligenciaAnimal}}marcado{{/if}}" data-rasgo-atr="inteligenciaAnimal"></span>
+          Inteligencia animal (1 VM) — elimina ATR
+        </label>
+        <label>
+          <span class="tq-circulo tq-radio-btn {{#if estado.nuevo.aspectoHumano}}marcado{{/if}}" data-rasgo-atr="aspectoHumano"></span>
+          Aspecto humano (2 VM) — base 0
+        </label>
+      </div>
+      {{#unless estado.nuevo.inteligenciaAnimal}}
+      <div class="tq-creator-tirada" style="margin-top:6px;">
+        <span class="tq-creator-tirada-label">Base {{#if estado.nuevo.aspectoHumano}}0{{else}}-4{{/if}} + incremento (+1 VM/pto)</span>
+        <input type="number" name="nuevo_atrIncremento" value="{{estado.nuevo.atrIncremento}}" min="0" style="width:52px;text-align:center;">
+        <span>= ATR {{atrCalculado}}</span>
+      </div>
+      {{/unless}}
+
+      <div class="tq-creator-pool-header" style="margin-top:10px;">
+        <span>Poderes — VM disponible: {{vmPresupuestoNuevo}}</span>
+        <span>Gastado: {{vmGastadoNuevo}} · Restante: {{vmNuevoRestante}}</span>
+      </div>
+      <div class="tq-dropzone rasgos-dropzone" style="margin-top:4px;">Suelta aquí un Rasgo de Bestiario</div>
+      <button type="button" class="poder-add-manual" style="margin-top:4px;">+ Poder manual</button>
+      {{#if estado.nuevo.poderes.length}}
+      <table class="tq-creator-resumen" style="margin-top:8px;">
+        <thead><tr><th>Poder</th><th>VM</th><th></th></tr></thead>
+        <tbody>
+          {{#each estado.nuevo.poderes}}
+          <tr>
+            <td><input class="poder-nombre" data-idx="{{@index}}" type="text" value="{{nombre}}" style="width:100%;"></td>
+            <td><input class="poder-vm" data-idx="{{@index}}" type="number" value="{{vm}}" min="0" style="width:54px;text-align:center;"></td>
+            <td><a class="poder-borrar" data-idx="{{@index}}" title="Borrar" style="cursor:pointer;">✕</a></td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
+      {{/if}}
+
+      <div class="tq-creator-pool-header" style="margin-top:10px;">
+        <span>Debilidades <em style="font-weight:normal;">(máx 2, cada una +1 VM)</em></span>
+      </div>
+      {{#if (tq-lt estado.nuevo.debilidades.length 2)}}
+      <div class="tq-dropzone debilidades-dropzone" style="margin-top:4px;">Suelta aquí una Debilidad</div>
+      <button type="button" class="debilidad-add" style="margin-top:4px;">+ Nueva debilidad</button>
+      {{/if}}
+      {{#if estado.nuevo.debilidades.length}}
+      <table class="tq-creator-resumen" style="margin-top:8px;">
+        <thead><tr><th>Debilidad</th><th>VM</th><th></th></tr></thead>
+        <tbody>
+          {{#each estado.nuevo.debilidades}}
+          <tr>
+            <td><input class="debilidad-nombre" data-idx="{{@index}}" type="text" value="{{nombre}}" style="width:100%;"></td>
+            <td style="text-align:center;">+1</td>
+            <td><a class="debilidad-borrar" data-idx="{{@index}}" title="Borrar" style="cursor:pointer;">✕</a></td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
+      {{/if}}
+      {{/if}}
+
+      {{/if}}{{!-- fin descubrir --}}
+    </div>
+    {{/if}}{{!-- fin paso2 --}}
+
+    {{!-- ======================== PASO 3: RITUAL ======================== --}}
+    {{#if paso3}}
+    <div class="tq-creator-step">
+      {{#if demonio}}
+      <div class="tq-creator-tirada" style="margin-bottom:8px;">
+        <span class="tq-creator-tirada-label"><strong>{{demonio.nombre}}</strong> — ESP {{demonio.espiritu}}</span>
+      </div>
+      {{/if}}
+
+      <div class="tq-field-group">
+        <label>Tipo de vínculo</label>
+        <div class="tq-radio-circulo">
+          <label>
+            <span class="tq-circulo tq-radio-btn {{#if (tq-eq estado.tipoVinculo 'invocacion')}}marcado{{/if}}" data-vinculo="invocacion"></span>
+            Invocación (forzado)
+          </label>
+          <label>
+            <span class="tq-circulo tq-radio-btn {{#if (tq-eq estado.tipoVinculo 'convocacion')}}marcado{{/if}}" data-vinculo="convocacion"></span>
+            Convocación (voluntario)
+          </label>
+        </div>
+      </div>
+
+      {{#if (tq-eq estado.tipoVinculo "invocacion")}}
+      <p class="tq-creator-nota" style="margin-top:6px;">Tirada de Espíritu ({{estado.hechiceroEspiritu}}) contra Dif {{difInvocacion}}.</p>
+      <div class="tq-creator-tiradas" style="margin-top:4px;">
+        <div class="tq-creator-tirada">
+          <span class="tq-creator-tirada-label">Resultado</span>
+          <input type="number" name="resultadoHechicero" value="{{estado.resultadoHechicero}}" min="0" style="width:70px;text-align:center;">
+          <button type="button" class="tirar-invocacion">Tirar</button>
+        </div>
+      </div>
+      {{#if estado.resultadoHechicero}}
+      <div class="tq-creator-tirada" style="margin-top:6px;">
+        <span class="tq-creator-tirada-label">{{estado.resultadoHechicero}} vs Dif {{difInvocacion}}</span>
+        <strong>{{#if estado.vinculoExitoso}}Éxito{{else}}Fracaso{{/if}}</strong>
+      </div>
+      {{/if}}
+      {{/if}}
+
+      {{#if (tq-eq estado.tipoVinculo "convocacion")}}
+      <p class="tq-creator-nota" style="margin-top:6px;">El demonio acepta el vínculo voluntariamente.</p>
+      {{/if}}
+    </div>
+    {{/if}}{{!-- fin paso3 --}}
+
+    {{!-- ======================== PASO 4: OBJETO ======================== --}}
+    {{#if paso4}}
+    <div class="tq-creator-step">
+      <p class="tq-creator-nota">Arrastra el objeto mundano que servirá de receptáculo para el demonio.</p>
+      {{#if estado.objeto}}
+      <div class="tq-creator-tirada" style="margin-top:8px;">
+        <span class="tq-creator-tirada-label">{{estado.objeto.nombre}}</span>
+        <a class="objeto-limpiar" title="Quitar objeto" style="cursor:pointer;">✕</a>
+      </div>
+      <div class="tq-field-group" style="margin-top:8px;">
+        <label>Nombre del objeto demoníaco</label>
+        <input type="text" name="objetoNombreFinal" value="{{estado.objeto.nombreFinal}}" placeholder="Nombre del objeto demoníaco…">
+      </div>
+      {{else}}
+      <div class="tq-dropzone objeto-dropzone" style="margin-top:8px;">Suelta aquí el objeto mundano</div>
+      {{/if}}
+    </div>
+    {{/if}}{{!-- fin paso4 --}}
+
+    {{!-- ======================== PASO 5: PODERES ======================== --}}
+    {{#if paso5}}
+    <div class="tq-creator-step">
+      <div class="tq-creator-pool-header">
+        <span>VM del objeto</span>
+        <span>Disponible: {{vmPresupuesto}} · Gastado: {{vmGastadoPoderes}} · Restante: {{vmRestantePoderes}}</span>
+      </div>
+
+      <div class="tq-poderes-lista" style="margin-top:8px;display:flex;flex-direction:column;gap:4px;">
+
+        <div class="tq-poder-row" style="display:flex;align-items:center;gap:8px;">
+          <span>Bono al daño</span>
+          <span style="font-size:11px;color:var(--tq-text-dim);flex:1;">+1 = 2 VM · +2 = 4 VM</span>
+          <select name="poder_bonoDanho" style="width:60px;">
+            <option value="0" {{#if (tq-eq estado.poderes.bonoDanho 0)}}selected{{/if}}>0</option>
+            <option value="1" {{#if (tq-eq estado.poderes.bonoDanho 1)}}selected{{/if}}>+1</option>
+            <option value="2" {{#if (tq-eq estado.poderes.bonoDanho 2)}}selected{{/if}}>+2</option>
+          </select>
+        </div>
+
+        <div class="tq-poder-row" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span>Bono a habilidad</span>
+          <span style="font-size:11px;color:var(--tq-text-dim);flex:1;">+1 = 2 VM · +2 = 4 VM</span>
+          <select name="poder_bonoHabilidad" style="width:60px;">
+            <option value="0" {{#if (tq-eq estado.poderes.bonoHabilidad 0)}}selected{{/if}}>0</option>
+            <option value="1" {{#if (tq-eq estado.poderes.bonoHabilidad 1)}}selected{{/if}}>+1</option>
+            <option value="2" {{#if (tq-eq estado.poderes.bonoHabilidad 2)}}selected{{/if}}>+2</option>
+          </select>
+          {{#if estado.poderes.bonoHabilidad}}
+          {{#if estado.poderes.bonoHabilidadClave}}
+          <span style="font-size:12px;">{{estado.poderes.bonoHabilidadClave}} <a class="hab-clave-limpiar" style="cursor:pointer;">✕</a></span>
+          {{else}}
+          <div class="tq-dropzone hab-clave-dropzone" style="display:inline-block;padding:2px 10px;min-width:80px;">Suelta habilidad</div>
+          {{/if}}
+          {{/if}}
+        </div>
+
+        <div class="tq-poder-row" style="display:flex;align-items:center;gap:8px;">
+          <span>Protección</span>
+          <span style="font-size:11px;color:var(--tq-text-dim);flex:1;">+1 = 2 VM · +2 = 4 VM</span>
+          <select name="poder_proteccion" style="width:60px;">
+            <option value="0" {{#if (tq-eq estado.poderes.proteccion 0)}}selected{{/if}}>0</option>
+            <option value="1" {{#if (tq-eq estado.poderes.proteccion 1)}}selected{{/if}}>+1</option>
+            <option value="2" {{#if (tq-eq estado.poderes.proteccion 2)}}selected{{/if}}>+2</option>
+          </select>
+        </div>
+
+        <div class="tq-poder-row" style="display:flex;align-items:center;gap:8px;">
+          <span>Daño mágico</span>
+          <span style="font-size:11px;color:var(--tq-text-dim);flex:1;">2 VM</span>
+          <span class="tq-circulo tq-radio-btn {{#if estado.poderes.danhoMagico}}marcado{{/if}}" data-poder="danhoMagico" style="cursor:pointer;"></span>
+        </div>
+        <div class="tq-poder-row" style="display:flex;align-items:center;gap:8px;">
+          <span>Daño espiritual</span>
+          <span style="font-size:11px;color:var(--tq-text-dim);flex:1;">2 VM</span>
+          <span class="tq-circulo tq-radio-btn {{#if estado.poderes.danhoEspiritual}}marcado{{/if}}" data-poder="danhoEspiritual" style="cursor:pointer;"></span>
+        </div>
+        <div class="tq-poder-row" style="display:flex;align-items:center;gap:8px;">
+          <span>Vampiro</span>
+          <span style="font-size:11px;color:var(--tq-text-dim);flex:1;">5 VM</span>
+          <span class="tq-circulo tq-radio-btn {{#if estado.poderes.vampiro}}marcado{{/if}}" data-poder="vampiro" style="cursor:pointer;"></span>
+        </div>
+        <div class="tq-poder-row" style="display:flex;align-items:center;gap:8px;">
+          <span>Irrompible</span>
+          <span style="font-size:11px;color:var(--tq-text-dim);flex:1;">1 VM</span>
+          <span class="tq-circulo tq-radio-btn {{#if estado.poderes.irrompible}}marcado{{/if}}" data-poder="irrompible" style="cursor:pointer;"></span>
+        </div>
+        <div class="tq-poder-row" style="display:flex;align-items:center;gap:8px;">
+          <span>Salvaguarda fuego</span>
+          <span style="font-size:11px;color:var(--tq-text-dim);flex:1;">4 VM</span>
+          <span class="tq-circulo tq-radio-btn {{#if estado.poderes.salvaguardaFuego}}marcado{{/if}}" data-poder="salvaguardaFuego" style="cursor:pointer;"></span>
+        </div>
+        <div class="tq-poder-row" style="display:flex;align-items:center;gap:8px;">
+          <span>Salvaguarda armas</span>
+          <span style="font-size:11px;color:var(--tq-text-dim);flex:1;">7 VM</span>
+          <span class="tq-circulo tq-radio-btn {{#if estado.poderes.salvaguardaArmas}}marcado{{/if}}" data-poder="salvaguardaArmas" style="cursor:pointer;"></span>
+        </div>
+        <div class="tq-poder-row" style="display:flex;align-items:center;gap:8px;">
+          <span>PM propios</span>
+          <span style="font-size:11px;color:var(--tq-text-dim);flex:1;">2 VM</span>
+          <span class="tq-circulo tq-radio-btn {{#if estado.poderes.pmPropios}}marcado{{/if}}" data-poder="pmPropios" style="cursor:pointer;"></span>
+        </div>
+
+      </div>
+
+      <p class="tq-creator-nota" style="margin-top:12px;font-weight:bold;">Conjuros incorporados</p>
+      <p class="tq-creator-nota">Dif 10 = 2 VM · Dif 15 = 4 VM · Dif 20 = 6 VM · Dif 25 = 8 VM</p>
+      {{#if estado.poderes.conjuros.length}}
+      <div style="margin-top:4px;display:flex;flex-direction:column;gap:2px;">
+        {{#each estado.poderes.conjuros}}
+        <div style="display:flex;align-items:center;gap:8px;font-size:12px;">
+          <span style="flex:1;">{{nombre}}</span>
+          <span style="color:var(--tq-text-dim);">Dif {{dificultad}}</span>
+          <a class="conjuro-borrar" data-idx="{{@index}}" title="Borrar" style="cursor:pointer;color:var(--tq-text-dim);">✕</a>
+        </div>
+        {{/each}}
+      </div>
+      {{/if}}
+      <div class="tq-dropzone conjuros-dropzone" style="margin-top:6px;">Suelta aquí un hechizo</div>
+      <div style="display:flex;gap:6px;align-items:center;margin-top:6px;">
+        <input type="text" name="conjuroNombre" placeholder="Nombre del conjuro" style="flex:1;min-width:0;">
+        <select name="conjuroDificultad" style="width:80px;flex-shrink:0;">
+          <option value="10">Dif 10</option>
+          <option value="15" selected>Dif 15</option>
+          <option value="20">Dif 20</option>
+          <option value="25">Dif 25</option>
+        </select>
+        <button type="button" class="conjuro-add" style="flex-shrink:0;">Añadir</button>
+      </div>
+    </div>
+    {{/if}}{{!-- fin paso5 --}}
+
+    {{!-- ======================== PASO 6: RESUMEN ======================== --}}
+    {{#if paso6}}
+    <div class="tq-creator-step">
+      <div class="tq-resumen-card">
+
+        <div class="tq-resumen-card-header">
+          <span class="tq-resumen-card-nombre">{{#if demonio}}{{demonio.nombre}}{{else}}—{{/if}}</span>
+          <span class="tq-resumen-card-creador">por {{estado.hechiceroNombre}}</span>
+        </div>
+
+        <div class="tq-resumen-stat-row">
+          <div class="tq-resumen-stat-box"><span class="rsb-val">{{estado.hechiceroEspiritu}}</span><span class="rsb-lbl">ESP hech.</span></div>
+          {{#if demonio}}<div class="tq-resumen-stat-box"><span class="rsb-val">{{demonio.espiritu}}</span><span class="rsb-lbl">ESP dem.</span></div>{{/if}}
+          {{#if (tq-eq estado.modoOrigen "descubrir")}}
+          <div class="tq-resumen-stat-box"><span class="rsb-val">{{estado.nuevo.cue}}</span><span class="rsb-lbl">CUE</span></div>
+          <div class="tq-resumen-stat-box"><span class="rsb-val">{{estado.nuevo.men}}</span><span class="rsb-lbl">MEN</span></div>
+          <div class="tq-resumen-stat-box"><span class="rsb-val">{{estado.nuevo.tam}}</span><span class="rsb-lbl">TAM</span></div>
+          {{#if estado.nuevo.armaduraValor}}
+          <div class="tq-resumen-stat-box"><span class="rsb-val">{{estado.nuevo.armaduraValor}}{{#if (tq-eq estado.nuevo.armaduraTipo "dura")}}d{{else}}b{{/if}}</span><span class="rsb-lbl">ARM</span></div>
+          {{/if}}
+          {{/if}}
+          <div class="tq-resumen-stat-box"><span class="rsb-val">{{vmGastadoPoderes}}/{{vmPresupuesto}}</span><span class="rsb-lbl">VM obj.</span></div>
+        </div>
+
+        <div class="tq-resumen-mov">{{vinculoStr}}{{#if estado.resultadoHechicero}} — {{#if estado.vinculoExitoso}}Éxito{{else}}Fracaso{{/if}} ({{estado.resultadoHechicero}}){{/if}}</div>
+
+        <div class="tq-resumen-body">
+
+          {{!-- Columna izquierda: Receptáculo + Poderes del objeto --}}
+          <div class="tq-resumen-col tq-resumen-col-izq">
+            {{#if objetoResumen}}
+            <div class="tq-resumen-section-lbl">{{objetoResumen.nombre}} <em style="font-weight:normal;font-size:10px;">({{objetoResumen.tipo}})</em></div>
+            {{#each objetoResumen.campos}}
+            <div class="tq-resumen-item">· {{label}}: {{valor}}</div>
+            {{/each}}
+            {{#if objetoResumen.flags.length}}
+            <div class="tq-resumen-item">{{#each objetoResumen.flags}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}</div>
+            {{/if}}
+            {{#if objetoResumen.conjuros.length}}
+            <div class="tq-resumen-section-lbl" style="margin-top:4px;">Conjuros</div>
+            {{#each objetoResumen.conjuros}}
+            <div class="tq-resumen-item">· {{nombre}} ({{dificultad}})</div>
+            {{/each}}
+            {{/if}}
+            {{/if}}
+            {{#if vmGastadoPoderes}}
+            <div class="tq-resumen-section-lbl" style="margin-top:6px;">Poderes del objeto</div>
+            {{#if estado.poderes.bonoDanho}}<div class="tq-resumen-item">· Bono al daño: +{{estado.poderes.bonoDanho}}</div>{{/if}}
+            {{#if estado.poderes.bonoHabilidad}}<div class="tq-resumen-item">· Bono hab.: +{{estado.poderes.bonoHabilidad}}{{#if estado.poderes.bonoHabilidadClave}} ({{estado.poderes.bonoHabilidadClave}}){{/if}}</div>{{/if}}
+            {{#if estado.poderes.proteccion}}<div class="tq-resumen-item">· Protección: +{{estado.poderes.proteccion}}</div>{{/if}}
+            {{#if estado.poderes.danhoMagico}}<div class="tq-resumen-item">· Daño mágico</div>{{/if}}
+            {{#if estado.poderes.danhoEspiritual}}<div class="tq-resumen-item">· Daño espiritual</div>{{/if}}
+            {{#if estado.poderes.vampiro}}<div class="tq-resumen-item">· Vampiro</div>{{/if}}
+            {{#if estado.poderes.irrompible}}<div class="tq-resumen-item">· Irrompible</div>{{/if}}
+            {{#if estado.poderes.salvaguardaFuego}}<div class="tq-resumen-item">· Salv. fuego</div>{{/if}}
+            {{#if estado.poderes.salvaguardaArmas}}<div class="tq-resumen-item">· Salv. armas</div>{{/if}}
+            {{#if estado.poderes.pmPropios}}<div class="tq-resumen-item">· PM propios</div>{{/if}}
+            {{#each estado.poderes.conjuros}}<div class="tq-resumen-item">· {{nombre}} ({{dificultad}})</div>{{/each}}
+            {{/if}}
+          </div>
+
+          {{!-- Columna derecha: Demonio --}}
+          <div class="tq-resumen-col">
+            {{#if demonio}}
+            <div class="tq-resumen-section-lbl">Demonio: {{demonio.nombre}}</div>
+            {{/if}}
+            {{#if estado.nuevo.habilidades.length}}
+            <div class="tq-resumen-section-lbl" style="margin-top:4px;">Habilidades</div>
+            {{#each estado.nuevo.habilidades}}
+            <div class="tq-resumen-item">· {{nombre}} {{puntos}}</div>
+            {{/each}}
+            {{/if}}
+            {{#if estado.nuevo.poderes.length}}
+            <div class="tq-resumen-section-lbl" style="margin-top:6px;">Poderes</div>
+            {{#each estado.nuevo.poderes}}
+            <div class="tq-resumen-item">· {{nombre}}</div>
+            {{/each}}
+            {{/if}}
+            {{#if estado.nuevo.debilidades.length}}
+            <div class="tq-resumen-section-lbl" style="margin-top:6px;">Debilidades</div>
+            {{#each estado.nuevo.debilidades}}
+            <div class="tq-resumen-item">· {{nombre}}</div>
+            {{/each}}
+            {{/if}}
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+    {{/if}}{{!-- fin paso6 --}}
+
+  </div>{{!-- fin tq-creator-body --}}
+
+  <div class="tq-creator-footer">
+    {{#unless paso1}}
+    <button type="button" class="creator-prev">Anterior</button>
+    {{/unless}}
+    {{#unless paso6}}
+    <button type="button" class="creator-next">Siguiente</button>
+    {{/unless}}
+    {{#if paso6}}
+    <button type="button" class="creator-crear">Finalizar</button>
+    {{/if}}
+  </div>
+
+</div>

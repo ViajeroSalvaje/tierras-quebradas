@@ -20,7 +20,7 @@
               {{#each armas as |a|}}
               <tr>
                 <td style="text-align:center;">
-                  <a class="pnj-tirar-arma{{#unless a.equipped}} tq-desequipado{{/unless}}" data-id="{{a.id}}" title="Tirar {{a.name}}"><i class="fas fa-dice-d10"{{#if a.magico}} style="color:var(--tq-teal);filter:drop-shadow(0 0 4px var(--tq-teal));"{{/if}}></i></a>
+                  <a class="pnj-tirar-arma{{#unless a.equipped}} tq-desequipado{{/unless}}{{#if a.esDemoniaco}} tq-arma-demoniaco{{/if}}{{#if a.artefacto}} tq-arma-artefacto{{/if}}" data-id="{{a.id}}" title="Tirar {{a.name}}"><i class="fas fa-dice-d10"{{#if a.magico}} style="color:var(--tq-teal);filter:drop-shadow(0 0 4px var(--tq-teal));"{{/if}}></i></a>
                 </td>
                 <td>{{a.name}}</td>
                 <td>{{a.dano}}</td>
@@ -47,6 +47,7 @@
           <table class="armaduras-table">
             <thead>
               <tr>
+                <th></th>
                 <th>{{localize "TQ.General.Nombre"}}</th>
                 <th>{{localize "TQ.Armadura.Proteccion"}}</th>
                 <th>{{localize "TQ.General.Zona"}}</th>
@@ -58,6 +59,9 @@
             <tbody>
               {{#each armaduras as |a|}}
               <tr>
+                <td style="text-align:center;">
+                  <span class="armadura-icono{{#if a.esDemoniaco}} tq-arma-demoniaco{{/if}}{{#if a.magico}} tq-armadura-magica{{/if}}{{#if a.artefacto}} tq-arma-artefacto{{/if}}"><i class="fas fa-shield-halved"></i></span>
+                </td>
                 <td>{{a.name}}</td>
                 <td>{{a.proteccion}}</td>
                 <td>{{a.zona}}</td>
@@ -71,6 +75,16 @@
               </tr>
               {{/each}}
             </tbody>
+            <tfoot>
+              <tr class="armaduras-totales" style="background:var(--tq-parchment);font-size:14px;font-weight:normal;">
+                <td></td>
+                <td style="text-align:right;font-weight:normal;">Equipado</td>
+                <td>{{proteccionTotal}}</td>
+                <td colspan="2"></td>
+                <td style="text-align:center;">{{cargaProteccionTotal}}</td>
+                <td></td>
+              </tr>
+            </tfoot>
           </table>
         </div>
       </div>
@@ -191,6 +205,50 @@
               {{#if o.categoria}}<span class="pnj-item-detalle">{{o.categoria}}</span>{{/if}}
               <span class="item-controls">
                 <a class="toggle-equipado{{#if o.equipped}} equipado{{/if}}" data-item-id="{{o.id}}" title="{{#if o.equipped}}Equipado{{else}}Sin equipar{{/if}}"><i class="fas fa-shirt"></i></a>
+                <a class="item-edit" data-item-id="{{o.id}}" title="{{localize "TQ.Tooltips.Editar"}}"><i class="fas fa-edit"></i></a>
+                <a class="pnj-item-borrar" data-id="{{o.id}}" title="{{localize "TQ.Tooltips.Eliminar"}}"><i class="fas fa-trash"></i></a>
+              </span>
+            </div>
+            {{/each}}
+          </div>
+        </div>
+      </div>
+      {{/if}}
+
+      {{#if artefactosEquipo}}
+      <div class="tq-section-box">
+        <div class="tq-section-header">
+          <span>{{localize "TQ.Secciones.Artefactos"}}</span>
+        </div>
+        <div class="tq-section-content">
+          <div class="pnj-items-lista">
+            {{#each artefactosEquipo as |a|}}
+            <div class="pnj-item-fila">
+              <span style="flex:1">{{a.name}}</span>
+              <span class="pnj-item-detalle">ESP {{a.espiritu}} · PM {{a.pm}}</span>
+              <span class="item-controls">
+                <a class="item-edit" data-item-id="{{a.id}}" title="{{localize "TQ.Tooltips.Editar"}}"><i class="fas fa-edit"></i></a>
+                <a class="pnj-item-borrar" data-id="{{a.id}}" title="{{localize "TQ.Tooltips.Eliminar"}}"><i class="fas fa-trash"></i></a>
+              </span>
+            </div>
+            {{/each}}
+          </div>
+        </div>
+      </div>
+      {{/if}}
+
+      {{#if objetosDemoniacosEquipo}}
+      <div class="tq-section-box">
+        <div class="tq-section-header">
+          <span>{{localize "TQ.Secciones.ObjetosDemoniacos"}}</span>
+        </div>
+        <div class="tq-section-content">
+          <div class="pnj-items-lista">
+            {{#each objetosDemoniacosEquipo as |o|}}
+            <div class="pnj-item-fila">
+              <span style="flex:1">{{o.name}}</span>
+              <span class="pnj-item-detalle">{{#if o.pmPropios}}PM {{o.pm}} · {{/if}}ESP {{o.vm}}</span>
+              <span class="item-controls">
                 <a class="item-edit" data-item-id="{{o.id}}" title="{{localize "TQ.Tooltips.Editar"}}"><i class="fas fa-edit"></i></a>
                 <a class="pnj-item-borrar" data-id="{{o.id}}" title="{{localize "TQ.Tooltips.Eliminar"}}"><i class="fas fa-trash"></i></a>
               </span>

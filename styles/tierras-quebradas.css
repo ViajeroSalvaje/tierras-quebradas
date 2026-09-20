@@ -9,6 +9,7 @@
   --tq-teal: #1c6473;
   --tq-teal-dark: #154e5a;
   --tq-teal-light: #2a8090;
+  --tq-teal-sub: #247383;
   --tq-text: #111111;
   --tq-text-dim: #44677a;
   --tq-white: #ffffff;
@@ -268,6 +269,26 @@
 
 .tq-consumible-fila .equipo-nombre {
   color: var(--tq-teal-dark);
+}
+
+.equipo-poderes-texto {
+  font-size: 11px;
+  color: var(--tq-text-dim);
+  font-weight: normal;
+}
+
+.hechizo-artefacto-origen {
+  font-size: 11px;
+  color: var(--tq-text-dim);
+  margin-left: 6px;
+}
+
+.hechizo-artefacto .hechizo-nombre {
+  color: #1a5fa0;
+}
+
+.hechizo-obj-demoniaco .hechizo-nombre {
+  color: #a01a1a;
 }
 
 .equipo-vacio {
@@ -799,7 +820,7 @@
 .armas-table th:nth-child(8), .armas-table td:nth-child(8) { width: 14%; }
 
 .armas-table thead th {
-  background: var(--tq-teal);
+  background: var(--tq-teal-sub);
   color: var(--tq-white);
   padding: 2px 4px;
   text-align: left;
@@ -813,8 +834,9 @@
   background: var(--tq-parchment);
 }
 
-.armas-table tbody tr:hover {
-  background: rgba(28,100,115,0.08);
+.armas-table tbody tr:hover,
+.armas-table tbody tr:hover td {
+  background: #dacfaf !important;
 }
 
 .armas-table th,
@@ -831,15 +853,16 @@
   font-size: 16px;
 }
 
-.armaduras-table th:nth-child(1), .armaduras-table td:nth-child(1) { width: 30%; }
-.armaduras-table th:nth-child(2), .armaduras-table td:nth-child(2) { width: 12%; text-align: center; }
-.armaduras-table th:nth-child(3), .armaduras-table td:nth-child(3) { width: 18%; }
+.armaduras-table th:nth-child(1), .armaduras-table td:nth-child(1) { width: 4%;  text-align: center; }
+.armaduras-table th:nth-child(2), .armaduras-table td:nth-child(2) { width: 26%; }
+.armaduras-table th:nth-child(3), .armaduras-table td:nth-child(3) { width: 12%; text-align: center; }
 .armaduras-table th:nth-child(4), .armaduras-table td:nth-child(4) { width: 18%; }
-.armaduras-table th:nth-child(5), .armaduras-table td:nth-child(5) { width: 10%; text-align: center; }
-.armaduras-table th:nth-child(6), .armaduras-table td:nth-child(6) { width: 12%; }
+.armaduras-table th:nth-child(5), .armaduras-table td:nth-child(5) { width: 18%; }
+.armaduras-table th:nth-child(6), .armaduras-table td:nth-child(6) { width: 10%; text-align: center; }
+.armaduras-table th:nth-child(7), .armaduras-table td:nth-child(7) { width: 12%; }
 
 .armaduras-table thead th {
-  background: var(--tq-teal);
+  background: var(--tq-teal-sub);
   color: var(--tq-white);
   padding: 2px 4px;
   text-align: left;
@@ -853,8 +876,9 @@
   background: var(--tq-parchment);
 }
 
-.armaduras-table tbody tr:hover {
-  background: rgba(28,100,115,0.08);
+.armaduras-table tbody tr:hover,
+.armaduras-table tbody tr:hover td {
+  background: #dacfaf !important;
 }
 
 .armaduras-table th,
@@ -862,9 +886,73 @@
   padding: 2px 4px;
   color: var(--tq-text);
   vertical-align: middle;
+  white-space: nowrap;
+}
+
+.tq-ataduras-table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  font-size: 14px;
+  margin-top: 6px;
+}
+
+.tq-ataduras-table th:nth-child(1), .tq-ataduras-table td:nth-child(1) { width: 20%; }
+.tq-ataduras-table th:nth-child(2), .tq-ataduras-table td:nth-child(2) { width: 22%; }
+.tq-ataduras-table th:nth-child(3), .tq-ataduras-table td:nth-child(3) { width: 22%; }
+.tq-ataduras-table th:nth-child(4), .tq-ataduras-table td:nth-child(4) { width: 22%; }
+.tq-ataduras-table th:nth-child(5), .tq-ataduras-table td:nth-child(5) { width: 14%; }
+
+.tq-ataduras-table thead th {
+  background: var(--tq-teal-sub);
+  color: var(--tq-white);
+  padding: 2px 4px;
+  text-align: left;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.tq-ataduras-table tbody tr {
+  border-bottom: 1px solid rgba(28,100,115,0.15);
+  background: var(--tq-parchment);
+  height: 20px;
+  max-height: 20px;
+}
+
+.tq-ataduras-table tbody tr:hover,
+.tq-ataduras-table tbody tr:hover td {
+  background: #dacfaf !important;
+}
+
+.tq-ataduras-table th,
+.tq-ataduras-table td {
+  padding: 0 4px;
+  height: 20px;
+  max-height: 20px;
+  color: var(--tq-text);
+  vertical-align: middle;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  line-height: 20px;
+}
+
+.tq-ataduras-table .atadura-vinculacion-input {
+  width: 100%;
+  height: 16px;
+  background: transparent;
+  border: none;
+  font-size: 12px;
+  color: var(--tq-text);
+  padding: 0;
+  line-height: 1;
+  display: block;
+}
+
+.tq-ataduras-table .atadura-vinculacion-input:focus {
+  outline: none;
+  border-bottom: 1px solid var(--tq-teal);
 }
 
 .tq-bottom-fila {
@@ -1692,6 +1780,7 @@
 .item-controls {
   display: flex;
   gap: 2px;
+  align-items: center;
 }
 
 .armas-table td.item-controls,
@@ -2458,6 +2547,26 @@
 .tierras-quebradas .pnj-item-fila a:not(.pnj-item-nombre):hover { opacity: 1; color: var(--tq-teal); }
 .tierras-quebradas .pnj-item-borrar:hover { color: var(--tq-red-dmg) !important; }
 
+.tierras-quebradas .tq-disabled {
+  opacity: 0.4;
+  pointer-events: none;
+  user-select: none;
+}
+
+.tierras-quebradas .tq-badge-auto {
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: var(--tq-teal);
+  background: rgba(0,180,150,0.1);
+  border: 1px solid rgba(0,180,150,0.25);
+  border-radius: 3px;
+  padding: 1px 5px;
+  white-space: nowrap;
+  cursor: default;
+}
+
 .tierras-quebradas .pnj-hab input {
   width: 40px;
   height: 24px;
@@ -2485,6 +2594,28 @@
 .tirar-arma:hover { background: var(--tq-teal-dark); }
 .tirar-arma-magico { background: var(--color-border-light, #fff); color: var(--tq-teal); }
 .tirar-arma-magico:hover { background: #e8e8e8; }
+.tirar-arma.tq-arma-demoniaco { background: #fff; color: var(--tq-red-dmg); }
+.tirar-arma.tq-arma-demoniaco:hover { background: #fceaea; }
+.pnj-tirar-arma.tq-arma-demoniaco { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; background: #fff; color: var(--tq-red-dmg); border-radius: 3px; font-size: 11px; cursor: pointer; }
+.pnj-tirar-arma.tq-arma-demoniaco:hover { background: #fceaea; }
+.armadura-icono {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  background: var(--tq-teal);
+  color: #fff;
+  border-radius: 3px;
+  font-size: 11px;
+}
+.armadura-icono.tq-arma-demoniaco { background: #fff; color: var(--tq-red-dmg); }
+.armadura-icono.tq-armadura-magica { background: var(--color-border-light, #fff); color: var(--tq-teal); }
+.armadura-icono.tq-arma-artefacto { background: #fff; color: #5bc0e8; }
+.tirar-arma.tq-arma-artefacto { background: #fff; color: #5bc0e8; }
+.tirar-arma.tq-arma-artefacto:hover { background: #e8f4fa; color: #5bc0e8; }
+.pnj-tirar-arma.tq-arma-artefacto { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; background: #fff; color: #5bc0e8; border-radius: 3px; font-size: 11px; cursor: pointer; }
+.pnj-tirar-arma.tq-arma-artefacto:hover { background: #e8f4fa; }
 
 .arma-hab { display: flex; align-items: center; gap: 4px; }
 .arma-hab-clave { font-size: 12px; color: var(--tq-text-dim); }
@@ -5162,6 +5293,112 @@ li.chat-message .message-delete:hover {
   color: var(--tq-white) !important;
 }
 
+
+#settings {
+  background: var(--tq-parchment) !important;
+  font-family: var(--tq-font) !important;
+  color: var(--tq-text) !important;
+}
+
+#settings section.info {
+  background: var(--tq-parchment) !important;
+  border-bottom: none !important;
+  font-family: var(--tq-font) !important;
+}
+
+#settings .info h1.title,
+#settings .info .subtitle,
+#settings .info .label,
+#settings .info .value {
+  color: var(--tq-teal-dark) !important;
+}
+
+#settings h2,
+#settings h3,
+#settings h4 {
+  color: var(--tq-teal-dark) !important;
+  font-family: var(--tq-font) !important;
+  font-size: 0.85rem !important;
+  border-bottom: 1px solid var(--tq-teal) !important;
+  padding-bottom: 4px !important;
+  letter-spacing: 0.05em !important;
+}
+
+#settings button,
+#settings a.button {
+  background: var(--tq-teal) !important;
+  color: var(--tq-white) !important;
+  border: none !important;
+  font-family: var(--tq-font) !important;
+  border-radius: 4px !important;
+}
+
+#settings button:hover,
+#settings a.button:hover {
+  background: var(--tq-teal-light) !important;
+}
+
+#settings button i,
+#settings a.button i {
+  color: var(--tq-white) !important;
+}
+
+.application aside nav.tabs.vertical button.plain {
+  color: var(--tq-teal) !important;
+  background: transparent !important;
+}
+.application aside nav.tabs.vertical button.plain .count {
+  color: inherit !important;
+}
+.application aside nav.tabs.vertical button.plain:hover {
+  background: var(--tq-teal) !important;
+  color: #fff !important;
+}
+.application aside nav.tabs.vertical button.plain.active {
+  background: var(--tq-teal-dark) !important;
+  color: #fff !important;
+}
+
+#settings-config .categories .form-group > label,
+.application:not(.tierras-quebradas) {
+  --color-form-hint: var(--tq-text);
+  --color-form-hint-hover: var(--tq-text-dim);
+  --color-form-label: var(--tq-teal);
+  --color-form-label-hover: var(--tq-teal-dark);
+  --table-header-bg-color: var(--tq-teal-dark) !important;
+  --table-header-text-color: #fff !important;
+}
+.application:not(.tierras-quebradas) .window-content {
+  background: var(--tq-parchment) !important;
+}
+.application:not(.tierras-quebradas) nav.sheet-tabs {
+  background: var(--tq-parchment) !important;
+  border-color: var(--tq-teal) !important;
+}
+.application:not(.tierras-quebradas) nav.sheet-tabs [data-tab] {
+  color: var(--tq-teal) !important;
+  text-shadow: none !important;
+}
+.application:not(.tierras-quebradas) nav.sheet-tabs [data-tab].active {
+  color: var(--tq-teal-dark) !important;
+}
+.application:not(.tierras-quebradas) nav.sheet-tabs [data-tab]:hover {
+  color: var(--tq-teal-light) !important;
+}
+.application:not(.tierras-quebradas) .form-group > label,
+.application:not(.tierras-quebradas) fieldset > legend {
+  color: var(--tq-teal) !important;
+}
+#settings-config .categories .form-group:hover {
+  background: rgba(28, 100, 115, 0.05) !important;
+}
+#settings-config .categories h2,
+#settings-config .categories h3,
+#settings-config .categories .divider {
+  color: var(--tq-teal-dark) !important;
+  border-bottom: 1px solid var(--tq-teal) !important;
+}
+
 .cc-hab-header {
   display: flex;
   flex-direction: column;
@@ -5641,7 +5878,7 @@ li.chat-message .message-delete:hover {
 .heridas-table td.herida-dano input { width: 6ch; text-align: center; }
 
 .heridas-table thead th {
-  background: var(--tq-teal);
+  background: var(--tq-teal-sub);
   color: var(--tq-white);
   padding: 2px 4px;
   text-align: left;
@@ -5658,8 +5895,9 @@ li.chat-message .message-delete:hover {
   background: var(--tq-parchment);
 }
 
-.heridas-table tbody tr:hover {
-  background: rgba(28,100,115,0.08);
+.heridas-table tbody tr:hover,
+.heridas-table tbody tr:hover td {
+  background: #dacfaf !important;
 }
 
 .heridas-table th,
@@ -5997,10 +6235,17 @@ li.chat-message .message-delete:hover {
 }
 
 .tq-import-menu .form-footer,
-.tq-import-menu footer {
+.tq-import-menu footer,
+.tq-crear-menu .form-footer,
+.tq-crear-menu footer {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 6px;
+}
+
+.tq-crear-menu .form-footer button:last-child,
+.tq-crear-menu footer button:last-child {
+  grid-column: 1 / -1;
 }
 
 /* Radio buttons estilo tq-circulo */
@@ -6100,6 +6345,7 @@ li.chat-message .message-delete:hover {
   display: flex;
   gap: 12px;
   justify-content: center;
+  margin-top: 12px;
 }
 
 .tq-creator-stat-box {
@@ -6132,6 +6378,22 @@ li.chat-message .message-delete:hover {
 
 .tq-creator-tirada-label { flex: 1; font-size: 12px; }
 .tq-creator-tirada .tq-valor-grande { min-width: 36px; text-align: center; }
+
+.tq-creator-tiradas input[type="number"] {
+  width: 44px;
+  text-align: center;
+  border: none;
+  background: transparent;
+  color: var(--tq-text);
+  font-family: var(--tq-font);
+  font-size: 16px;
+  font-weight: bold;
+  padding: 0;
+  box-shadow: none;
+  -moz-appearance: textfield;
+}
+.tq-creator-tiradas input[type="number"]::-webkit-inner-spin-button,
+.tq-creator-tiradas input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
 
 .tq-creator-nota { font-size: 11px; color: var(--tq-text-dim); margin: 4px 0; }
 .tq-creator-nota-inline { font-size: 10px; color: var(--tq-text-dim); }
@@ -6280,3 +6542,61 @@ li.chat-message .message-delete:hover {
 
 .tq-valor-grande { font-size: 18px; font-weight: 700; color: var(--tq-teal); }
 .tq-rojo { color: var(--tq-red-dmg) !important; }
+.tq-inline-label { font-size: 11px; white-space: nowrap; color: var(--tq-text-dim); }
+.tq-check-row { display: flex; align-items: center; gap: 8px; }
+.tq-check-label { margin: 0; cursor: pointer; }
+.tq-grid-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 10px; margin-bottom: 8px; }
+.tq-fabricacion-detalle { font-size: 12px; color: var(--tq-text-dim); margin: 4px 0 8px; }
+.add-hechizo-manual, .add-rasgo-manual, .add-habilidad-manual { cursor: pointer; font-size: 14px; }
+.objeto-base-editar, .objeto-base-quitar { cursor: pointer; }
+
+.tierras-quebradas .hechizo-demoniaco .hechizo-nombre { color: #c0392b; font-style: italic; }
+
+.tierras-quebradas .tq-demoniaco-section {
+  margin-top: 8px;
+  padding: 8px;
+  background: color-mix(in srgb, var(--tq-teal) 8%, var(--tq-parchment));
+  border: 1px solid var(--tq-teal-dark);
+  border-radius: 3px;
+}
+.tierras-quebradas .tq-demoniaco-titulo {
+  margin: 0 0 6px;
+  font-weight: bold;
+  font-size: 12px;
+  color: var(--tq-teal-dark);
+}
+.tierras-quebradas .tq-demoniaco-flags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 6px;
+}
+.tierras-quebradas .tq-demoniaco-tag {
+  background: var(--tq-teal);
+  color: #fff;
+  font-size: 11px;
+  padding: 1px 6px;
+  border-radius: 10px;
+}
+.tierras-quebradas .tq-demoniaco-sub {
+  margin: 6px 0 0;
+  font-size: 11px;
+  color: var(--tq-text-dim);
+}
+
+.tierras-quebradas .tq-print-btn {
+  background: var(--tq-teal);
+  color: #fff;
+  border: none;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  padding: 3px 10px;
+  cursor: pointer;
+  border-radius: 2px;
+  white-space: nowrap;
+}
+.tierras-quebradas .tq-print-btn:hover {
+  background: color-mix(in srgb, var(--tq-teal) 80%, white);
+}
