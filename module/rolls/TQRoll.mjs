@@ -332,7 +332,19 @@ export class TQRoll {
     };
     const topesOpciones = capClaves.map(clave => ({ clave, label: habLabel(clave), valor: getCapValor(clave) }));
 
-    const rivalDatos = TQRoll._prepararDatosRival(targetActor);
+    let rivalDatos = TQRoll._prepararDatosRival(targetActor);
+    let rivalPrerollData = null;
+    if (modo === "melee" && targetActor) {
+      const armaRival = await TQRoll._seleccionarArmaRival(targetActor);
+      rivalDatos = TQRoll._extraerDatosArmaRival(targetActor, armaRival);
+      const modoTiradaActual = rollModeEfectivo ?? game.settings.get("core", "rollMode");
+      const debilitadoR = targetActor.system?.salud?.debilitado ?? false;
+      const preroll = await TQRoll._tirarExplosivo(debilitadoR ? 6 : 10, modoTiradaActual);
+      const modRivalPre = TQRoll._calcularModLongitud(rivalDatos.longitud, longitudArma);
+      const totalRivalPre = preroll.total + rivalDatos.puntuacion + modRivalPre;
+      await TQRoll._publicarPrerollRival(targetActor, rivalDatos, preroll, modRivalPre, totalRivalPre, modoTiradaActual);
+      rivalPrerollData = { dado: preroll.dado, total: preroll.total, tiradas: preroll.tiradas };
+    }
     const jugadorDatos = { danoArma: danho?.danoArma ?? "—", md: danho?.md ?? 0, tipo: danho?.tipo ?? "—" };
 
     const escalaDif = opciones.escalaDif ?? "habilidad";
@@ -345,7 +357,7 @@ export class TQRoll {
           .map(t => ({ id: t.actor.id, name: t.name }))
       : [];
     const content = await foundry.applications.handlebars.renderTemplate(
-      "systems/tierras-quebradas/templates/dialogs/tirada-dialogo.hbs", { etiqueta, puntuacion, modo, longitudArma, jugadorDatos, rivalDatos, rivalDatosGA: opciones.rivalDatosGA ?? null, rivalDatosDA, dificultadPorDefecto: String(dificultadPorDefecto), topesOpciones, escalaDif, aliados, bonificadorDefecto }
+      "systems/tierras-quebradas/templates/dialogs/tirada-dialogo.hbs", { etiqueta, puntuacion, modo, longitudArma, jugadorDatos, rivalDatos, rivalYaLanzado: rivalPrerollData !== null, rivalDatosGA: opciones.rivalDatosGA ?? null, rivalDatosDA, dificultadPorDefecto: String(dificultadForzada ?? dificultadPorDefecto), dificultadForzada: dificultadForzada != null ? String(dificultadForzada) : null, topesOpciones, escalaDif, aliados, bonificadorDefecto }
     );
 
     const eleccion = await DialogV2.wait({
@@ -506,7 +518,7 @@ export class TQRoll {
     }
 
     if (modo === "melee") {
-      return TQRoll.tirarMelee(etiqueta, puntuacionFinal, longitudArma, eleccion, { ...opciones, targetActor, topeInfo, puntuacionMostrada, rollMode: rollModeEfectivo, dosFortuna: eleccion.dosFortuna ?? false, luckyDosFortuna: eleccion.luckyDosFortuna ?? false, mixedDosFortuna: eleccion.mixedDosFortuna ?? false });
+      return TQRoll.tirarMelee(etiqueta, puntuacionFinal, longitudArma, eleccion, { ...opciones, targetActor, topeInfo, puntuacionMostrada, rollMode: rollModeEfectivo, dosFortuna: eleccion.dosFortuna ?? false, luckyDosFortuna: eleccion.luckyDosFortuna ?? false, mixedDosFortuna: eleccion.mixedDosFortuna ?? false, rivalPreroll: rivalPrerollData });
     }
 
     if (modo === "melee-multiple") {
@@ -536,7 +548,7 @@ export class TQRoll {
   }
 
   static async tirarMelee(etiqueta, puntuacion, longitudJugador, eleccion, opciones = {}) {
-    const { actor = null, danho = null, targetActor = null, topeInfo = null, rollMode: rollModeOpc = null, dosFortuna = false, luckyDosFortuna = false, mixedDosFortuna = false, modDesglose = null, puntuacionMostrada = null } = opciones;
+    const { actor = null, danho = null, targetActor = null, topeInfo = null, rollMode: rollModeOpc = null, dosFortuna = false, luckyDosFortuna = false, mixedDosFortuna = false, modDesglose = null, puntuacionMostrada = null, rivalPreroll = null } = opciones;
     const { puntuacionRival, longitudRival, bonificadorRival, danoRival, mdRival, tipoRival, bonificador, superioridad = 0 } = eleccion;
     const modoTirada = rollModeOpc ?? game.settings.get("core", "rollMode");
 
@@ -572,7 +584,7 @@ export class TQRoll {
     } else {
       ({ dado: dadoJ, total: dadoTotalJ, tiradas: tiradasJ } = await TQRoll._tirarExplosivo(dadoJ_size, modoTirada));
     }
-    const { dado: dadoR, total: dadoTotalR, tiradas: tiradasR } = await TQRoll._tirarExplosivo(dadoR_size, modoTirada);
+    const { dado: dadoR, total: dadoTotalR, tiradas: tiradasR } = rivalPreroll ?? await TQRoll._tirarExplosivo(dadoR_size, modoTirada);
 
     const totalJugador = dadoTotalJ + puntuacion + bonusJ + modJugador;
     const totalRival = dadoTotalR + puntuacionRival + bonificadorRival + modRival;
@@ -1122,7 +1134,8 @@ export class TQRoll {
     } else {
       const habNombre = ARMA_A_HABILIDAD_PNJ[habKey] ?? habKey;
       const valor = targetActor.system.habilidades?.[habNombre];
-      puntuacion = typeof valor === "number" ? valor : 0;
+      if (typeof valor === "number") puntuacion = valor;
+      else if (valor && typeof valor === "object") puntuacion = valor.total ?? valor.nivel ?? 0;
     }
     const md = (manos === "2m")
       ? (targetActor.system.derivadas?.mDano2m?.valor ?? 0)
@@ -1131,6 +1144,73 @@ export class TQRoll {
     return {
       puntuacion, longitud: arma.system.longitud ?? "media", danoArma: arma.system.danoArma ?? "0", md, tipo: arma.system.tipo ?? "cortante"
     };
+  }
+
+  static async _seleccionarArmaRival(targetActor) {
+    const armasMelee = targetActor.items.filter(i => i.type === "arma" && i.system.alcance === "contacto");
+    if (armasMelee.length === 0) return null;
+    if (armasMelee.length === 1) return armasMelee[0];
+    const equipadas = armasMelee.filter(i => i.system.equipped !== false);
+    if (equipadas.length === 0) return armasMelee[0];
+    if (equipadas.length === 1) return equipadas[0];
+    const opcionesHtml = equipadas.map(a => `<option value="${a.id}">${a.name}</option>`).join("");
+    const armaId = await DialogV2.prompt({
+      window: { title: `Arma de ${targetActor.name}` },
+      content: `<select name="arma_rival" style="width:100%;margin-top:8px">${opcionesHtml}</select>`,
+      ok: { label: "Confirmar", callback: (_ev, button) => button.form.elements.arma_rival?.value }
+    });
+    return equipadas.find(a => a.id === armaId) ?? equipadas[0];
+  }
+
+  static _extraerDatosArmaRival(targetActor, arma) {
+    const defaults = { puntuacion: 10, longitud: "media", danoArma: "0", md: 0, tipo: "cortante" };
+    if (!arma) return defaults;
+    const habKey = arma.system.habilidad;
+    const manos = arma.system.manos ?? "1m";
+    let puntuacion = 0;
+    if (targetActor.type === "pj") {
+      const habilidad = targetActor.system.habilidades?.[habKey];
+      if (habilidad) {
+        const base = targetActor.system.bases?.[habilidad.base]?.valor ?? 0;
+        puntuacion = base + (habilidad.nivel ?? 0);
+      }
+    } else {
+      const habNombre = ARMA_A_HABILIDAD_PNJ[habKey] ?? habKey;
+      const valor = targetActor.system.habilidades?.[habNombre];
+      if (typeof valor === "number") puntuacion = valor;
+      else if (valor && typeof valor === "object") puntuacion = valor.total ?? valor.nivel ?? 0;
+    }
+    const md = (manos === "2m")
+      ? (targetActor.system.derivadas?.mDano2m?.valor ?? 0)
+      : (targetActor.system.derivadas?.mDano1m?.valor ?? 0);
+    return {
+      puntuacion, longitud: arma.system.longitud ?? "media", danoArma: arma.system.danoArma ?? "0", md, tipo: arma.system.tipo ?? "cortante"
+    };
+  }
+
+  static async _publicarPrerollRival(targetActor, datosRival, preroll, modRival, totalRival, modoTirada) {
+    const debilitado = targetActor.system?.salud?.debilitado ?? false;
+    const dadoDisplay = TQRoll._dadoDisplay(preroll.total, preroll.tiradas);
+    const partesMod = modRival ? `<span>+ ${modRival} (long.)</span>` : "";
+    const contenido = `<div class="tq-tirada-resultado parcial tq-tablas-card">
+  <div class="tq-chat-header"><span class="tq-chat-etiqueta">${targetActor.name}</span></div>
+  <div class="tq-melee-grid" style="grid-template-columns:1fr">
+    <div class="tq-melee-col rival">
+      <div class="tq-melee-titulo">Tirada de melé</div>
+      <div class="tq-melee-nums">
+        <span><i class="fas fa-dice-d${debilitado ? 6 : 10}"></i> <strong>${dadoDisplay}</strong></span>
+        <span>+ ${datosRival.puntuacion}</span>
+        ${partesMod}
+        <span class="tq-melee-total">= <strong>${totalRival}</strong></span>
+      </div>
+    </div>
+  </div>
+</div>`;
+    await ChatMessage.create({
+      speaker: ChatMessage.getSpeaker({ actor: targetActor }),
+      content: contenido,
+      ...TQRoll._rollModeData(modoTirada)
+    });
   }
 
   static async tirarEnfrentada(actorA, habNombreA, habTotalA, actorB, habNombreB, habTotalB, opciones = {}) {

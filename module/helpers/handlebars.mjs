@@ -17,7 +17,7 @@ export function registerHandlebarsHelpers() {
     if (!habilidad || !bases) return 0;
     const base = bases[habilidad.base]?.valor ?? 0;
     const nivel = habilidad.nivel ?? 0;
-    return base + nivel;
+    return base + nivel + (habilidad.puntosFijos ?? 0);
   });
 
   Handlebars.registerHelper("tq-base-abrev", function (base) {

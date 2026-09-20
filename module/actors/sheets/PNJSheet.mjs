@@ -1,4 +1,5 @@
 import { TQRoll } from "../../rolls/TQRoll.mjs";
+import { printActorPDF } from "../../apps/printPDF.mjs";
 
 const { HandlebarsApplicationMixin, DialogV2 } = foundry.applications.api;
 const { ActorSheetV2 } = foundry.applications.sheets;
@@ -47,10 +48,16 @@ export class PNJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     const espHechizos = items.filter(i => i.type === "hechizo" && i.system.permanent).reduce((s, i) => s + (i.system.pmCoste || 1), 0);
     const espSintonizados = items.filter(i => i.type === "objetoMagico" && i.system.categoria === "encantado" && i.system.sintonizado).reduce((s, i) => s + (i.system.sintonizacion || 0), 0);
     const espirituConsagrado = espHechizos + espSintonizados;
+    const armEquipadas = items.filter(i => i.type === "armadura" && i.system.equipped !== false);
+    const proteccionTotal = armEquipadas.reduce((s, i) => s + (i.system.proteccion ?? 0), 0);
+    const cargaProteccionTotal = armEquipadas.reduce((s, i) => s + (i.system.carga ?? 0), 0);
+    const alineadoLey = this._esAlineadoLey();
     return {
-      actor: this.actor, system: this.actor.system, cssClass: this.options.classes.join(" "), config: CONFIG.TQ, habilidades, deidadesActuales, esSincretismo, espirituConsagrado, ocultarRasgosVentajas: true, armas: [...items.filter(i => i.type === "arma").map(i => ({ id: i.id, name: i.name, dano: i.system.danoArma, habilidad: i.system.habilidad, alcance: i.system.alcance, carga: i.system.carga, equipped: i.system.equipped !== false })), ...items.filter(i => i.type === "objetoMagico" && i.system.tipoObjeto === "arma").map(i => ({ id: i.id, name: i.name, dano: i.system.danoArma, habilidad: i.system.habilidad, alcance: i.system.alcance, carga: 0, magico: true, equipped: i.system.equipped !== false }))], armaduras: [...items.filter(i => i.type === "armadura").map(i => ({ id: i.id, name: i.name, proteccion: i.system.proteccion, tipo: i.system.tipo, zona: i.system.zona, carga: i.system.carga, equipped: i.system.equipped !== false })), ...items.filter(i => i.type === "objetoMagico" && i.system.tipoObjeto === "armadura").map(i => { const modProt = i.system.categoria === "encantado" && !i.system.sintonizado ? 0 : (i.system.modProteccion ?? 0); return { id: i.id, name: i.name, proteccion: (i.system.proteccion ?? 0) + modProt, tipo: i.system.tipoProteccion, zona: "—", carga: i.system.carga ?? 0, equipped: i.system.equipped !== false }; })], hechizos: items.filter(i => i.type === "hechizo"), rasgos: items.filter(i => i.type === "rasgo").map(i => ({ id: i.id, name: i.name, coste: i.system.coste ?? 0 })), ventajas: items.filter(i => i.type === "ventaja").map(i => ({ id: i.id, name: i.name })), objetos: items.filter(i => i.type === "objeto").map(i => ({ id: i.id, name: i.name, categoria: i.system.categoria, carga: i.system.carga, equipped: i.system.equipped !== false })), consumibles: items.filter(i => i.type === "consumible").map(i => ({ id: i.id, name: i.name, dosis: i.system.dosis, efecto: i.system.efecto, carga: i.system.carga, equipped: i.system.equipped !== false })), objetosMagicos: items.filter(i => i.type === "objetoMagico"), bendiciones: items.filter(i => i.type === "bendicion")
+      actor: this.actor, system: this.actor.system, cssClass: this.options.classes.join(" "), config: CONFIG.TQ, habilidades, deidadesActuales, esSincretismo, espirituConsagrado, proteccionTotal, cargaProteccionTotal, ocultarRasgosVentajas: true, armas: [...items.filter(i => i.type === "arma").map(i => ({ id: i.id, name: i.name, dano: i.system.danoArma, habilidad: i.system.habilidad, alcance: i.system.alcance, carga: i.system.carga, equipped: i.system.equipped !== false, esDemoniaco: i.system.esDemoniaco ?? false })), ...items.filter(i => i.type === "objetoMagico" && i.system.tipoObjeto === "arma").map(i => ({ id: i.id, name: i.name, dano: i.system.danoArma, habilidad: i.system.habilidad, alcance: i.system.alcance, carga: 0, magico: true, equipped: i.system.equipped !== false })), ...items.filter(i => i.type === "artefacto" && i.system.objetoBase?.tipo === "arma").map(i => { const b = i.system.objetoBase._itemData?.system ?? {}; return { id: i.id, name: i.name, dano: b.danoArma, habilidad: b.habilidad, alcance: b.alcance, carga: b.carga ?? 0, equipped: alineadoLey && i.system.equipped !== false, artefacto: true }; })], armaduras: [...items.filter(i => i.type === "armadura").map(i => { const src = items.get(i.getFlag("tierras-quebradas", "fromArmaId") ?? ""); return { id: i.id, name: i.name, proteccion: i.system.proteccion, tipo: i.system.tipo, zona: i.system.zona, carga: i.system.carga, equipped: i.system.equipped !== false, esDemoniaco: !!(i.system.esDemoniaco || src?.system?.esDemoniaco) }; }), ...items.filter(i => i.type === "objetoMagico" && i.system.tipoObjeto === "armadura").map(i => { const modProt = i.system.categoria === "encantado" && !i.system.sintonizado ? 0 : (i.system.modProteccion ?? 0); return { id: i.id, name: i.name, proteccion: (i.system.proteccion ?? 0) + modProt, tipo: i.system.tipoProteccion, zona: "—", carga: i.system.carga ?? 0, equipped: i.system.equipped !== false, magico: true }; }), ...items.filter(i => i.type === "artefacto" && i.system.objetoBase?.tipo === "armadura").map(i => { const b = i.system.objetoBase._itemData?.system ?? {}; return { id: i.id, name: i.name, proteccion: b.proteccion, tipo: b.tipo, zona: b.zona, carga: b.carga ?? 0, equipped: alineadoLey && i.system.equipped !== false, artefacto: true }; })], hechizos: items.filter(i => i.type === "hechizo"), rasgos: items.filter(i => i.type === "rasgo").map(i => ({ id: i.id, name: i.name, coste: i.system.coste ?? 0 })), ventajas: items.filter(i => i.type === "ventaja").map(i => ({ id: i.id, name: i.name })), objetos: items.filter(i => i.type === "objeto" && !i.system.esDemoniaco).map(i => ({ id: i.id, name: i.name, categoria: i.system.categoria, carga: i.system.carga, equipped: i.system.equipped !== false })), artefactosEquipo: items.filter(i => i.type === "artefacto" && !["arma", "armadura"].includes(i.system.objetoBase?.tipo)).map(i => ({ id: i.id, name: i.name, espiritu: i.system.espiritu ?? 0, pm: i.system.pm ?? 0 })), objetosDemoniacosEquipo: items.filter(i => (i.type === "objeto" && (i.system.esDemoniaco ?? false)) || i.type === "objetoDemoniaco").map(i => ({ id: i.id, name: i.name, pm: i.system.pm ?? 0, pmPropios: i.system.pmPropios ?? false, vm: i.system.vm ?? 0 })), consumibles: items.filter(i => i.type === "consumible").map(i => ({ id: i.id, name: i.name, dosis: i.system.dosis, efecto: i.system.efecto, carga: i.system.carga, equipped: i.system.equipped !== false })), objetosMagicos: items.filter(i => i.type === "objetoMagico"), bendiciones: items.filter(i => i.type === "bendicion")
     };
   }
+
+  _esAlineadoLey() { return this.actor.system.filiacion === "ley"; }
 
   async _onDropItem(event, data) {
     const item = await fromUuid(data.uuid);
@@ -247,6 +254,7 @@ export class PNJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
         const id = ev.currentTarget.dataset.itemId;
         const item = this.actor.items.get(id);
         if (!item) return;
+        if (item.type === "artefacto" && !this._esAlineadoLey()) return;
         const newVal = !(item.system.equipped ?? true);
         const ops = [item.update({ "system.equipped": newVal })];
         const vinculada = this.actor.items.find(i => i.type === "armadura" && i.getFlag("tierras-quebradas", "fromArmaId") === id);
@@ -336,6 +344,17 @@ export class PNJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       a.addEventListener("click", ev => {
         this.actor.activarBendicion(ev.currentTarget.dataset.id);
       });
+    });
+
+    el.querySelector(".btn-print-ficha")?.addEventListener("click", async () => {
+      const data = await this._prepareContext({});
+      const rawHabs = this.actor.system.habilidades ?? {};
+      data.habilidades = data.habilidades.map(hab => {
+        const raw = rawHabs[hab.nombre];
+        return { ...hab, tieneEstorbo: typeof raw === "object" && (raw.estorbo ?? 0) > 0 };
+      });
+      data.hayEstorbo = data.habilidades.some(h => h.tieneEstorbo);
+      await printActorPDF(this.actor, data);
     });
   }
 

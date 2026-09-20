@@ -1,10 +1,14 @@
+let _cacheDeidades = null;
+
 async function _cargar() {
+  if (_cacheDeidades) return _cacheDeidades;
   const pack = game.packs.get("tierras-quebradas.deidades");
   const docs = pack ? await pack.getDocuments() : [];
   const g = { ley: [], caos: [], elementos: [], antepasados: [] };
   for (const d of docs.sort((a, b) => a.name.localeCompare(b.name, "es"))) {
     g[d.system.tipo]?.push(d.name);
   }
+  _cacheDeidades = g;
   return g;
 }
 

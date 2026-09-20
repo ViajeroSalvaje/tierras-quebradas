@@ -1,5 +1,6 @@
 import { TQRoll } from "../../rolls/TQRoll.mjs";
 import { getDeidadesGrupos } from "../../helpers/deidades.mjs";
+import { printActorPDF } from "../../apps/printPDF.mjs";
 
 const { HandlebarsApplicationMixin, DialogV2 } = foundry.applications.api;
 const { ActorSheetV2 } = foundry.applications.sheets;
@@ -26,6 +27,8 @@ export class PJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     }
   };
 
+  static _habDescripciones = null;
+
   // persiste entre re-renders
   _activeTab = "hoja1";
 
@@ -35,6 +38,9 @@ export class PJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 
   async _prepareContext(options) {
     const habs = this.actor.system.habilidades;
+
+    const byType = {};
+    for (const i of this.actor.items) (byType[i.type] ??= []).push(i);
 
     // Columnas de habilidades según orden de la hoja oficial
     const COL1 = [
@@ -47,15 +53,18 @@ export class PJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       "nadar", "naturaleza", "navegacion", "ocultar", "oratoria", "pelea", "percatarse", "perspicacia", "pociones", "primerosAuxilios", "rastrear", "seguir", "sigilo", "sueños", "tierrasQuebradas", "tratarAnimales", "trepar"
     ];
 
-    const habDescripciones = {};
-    const packHabs = game.packs.get("tierras-quebradas.habilidades");
-    if (packHabs) {
-      const docs = await packHabs.getDocuments();
-      for (const item of docs) {
-        if (item.system.clave && item.system.descripcion)
-          habDescripciones[item.system.clave] = item.system.descripcion;
+    if (!PJSheet._habDescripciones) {
+      PJSheet._habDescripciones = {};
+      const packHabs = game.packs.get("tierras-quebradas.habilidades");
+      if (packHabs) {
+        const docs = await packHabs.getDocuments();
+        for (const item of docs) {
+          if (item.system.clave && item.system.descripcion)
+            PJSheet._habDescripciones[item.system.clave] = item.system.descripcion;
+        }
       }
     }
+    const habDescripciones = { ...PJSheet._habDescripciones };
     for (const item of game.items) {
       if (item.type === "habilidad" && item.system.clave && item.system.descripcion)
         habDescripciones[item.system.clave] = item.system.descripcion;
@@ -76,57 +85,27 @@ export class PJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       agilidad: "CUE − TAM", comunicacion: "ESP + ATR", cultura: "MEN", hechiceria: "(MEN+ESP)/3", percepcion: "(MEN+ESP)/2", tecnica: "(MEN+CUE)/2", vigor: "CUE"
     };
 
-    const armasEnriquecidas = this.actor.items
-      .filter(i => i.type === "arma")
+    const armasEnriquecidas = (byType.arma ?? [])
       .map(arma => {
-        const habClave = arma.system.habilidad;
-        const habilidad = habs[habClave];
-        const manos = arma.system.manos ?? "1m";
-        let md, mdStr;
-        if (manos === "2m") {
-          md = this.actor.system.derivadas?.mDano2m?.valor ?? 0;
-          mdStr = md >= 0 ? `+${md}` : `${md}`;
-        } else if (manos === "ambas") {
-          const md1 = this.actor.system.derivadas?.mDano1m?.valor ?? 0;
-          const md2 = this.actor.system.derivadas?.mDano2m?.valor ?? 0;
-          md = md1;
-          mdStr = `${md1 >= 0 ? "+" : ""}${md1}/${md2 >= 0 ? "+" : ""}${md2}`;
-        } else {
-          md = this.actor.system.derivadas?.mDano1m?.valor ?? 0;
-          mdStr = md >= 0 ? `+${md}` : `${md}`;
-        }
-        let habTotal = "—";
-        if (habilidad) {
-          const base = this.actor.system.bases[habilidad.base]?.valor ?? 0;
-          habTotal = base + (habilidad.nivel ?? 0);
-        }
-        return { item: arma, habTotal, md, mdStr, equipped: arma.system.equipped !== false };
+        const { md, mdStr, habTotal } = this._calcMDHab(arma.system.habilidad, arma.system.manos ?? "1m");
+        return { item: arma, habTotal, md, mdStr, equipped: arma.system.equipped !== false, esDemoniaco: arma.system.esDemoniaco ?? false };
       });
 
-    const armasMagicasEnriquecidas = this.actor.items
-      .filter(i => i.type === "objetoMagico" && i.system.tipoObjeto === "arma")
+    const alineadoLey = this._esAlineadoLey();
+    const armasArtefacto = (byType.artefacto ?? [])
+      .filter(i => i.system.objetoBase?.tipo === "arma")
+      .map(artefacto => {
+        const baseSys = artefacto.system.objetoBase._itemData?.system ?? {};
+        const { md, mdStr, habTotal } = this._calcMDHab(baseSys.habilidad ?? "", baseSys.manos ?? "1m");
+        return { item: { id: artefacto.id, name: artefacto.name, system: { habilidad: baseSys.habilidad, danoArma: baseSys.danoArma, alcance: baseSys.alcance, carga: baseSys.carga } }, habTotal, md, mdStr, equipped: alineadoLey && artefacto.system.equipped !== false, artefacto: true };
+      });
+
+    armasEnriquecidas.push(...armasArtefacto);
+
+    const armasMagicasEnriquecidas = (byType.objetoMagico ?? [])
+      .filter(i => i.system.tipoObjeto === "arma")
       .map(arma => {
-        const habClave = arma.system.habilidad;
-        const habilidad = habs[habClave];
-        const manos = arma.system.manos ?? "1m";
-        let md, mdStr;
-        if (manos === "2m") {
-          md = this.actor.system.derivadas?.mDano2m?.valor ?? 0;
-          mdStr = md >= 0 ? `+${md}` : `${md}`;
-        } else if (manos === "ambas") {
-          const md1 = this.actor.system.derivadas?.mDano1m?.valor ?? 0;
-          const md2 = this.actor.system.derivadas?.mDano2m?.valor ?? 0;
-          md = md1;
-          mdStr = `${md1 >= 0 ? "+" : ""}${md1}/${md2 >= 0 ? "+" : ""}${md2}`;
-        } else {
-          md = this.actor.system.derivadas?.mDano1m?.valor ?? 0;
-          mdStr = md >= 0 ? `+${md}` : `${md}`;
-        }
-        let habTotal = "—";
-        if (habilidad) {
-          const base = this.actor.system.bases[habilidad.base]?.valor ?? 0;
-          habTotal = base + (habilidad.nivel ?? 0);
-        }
+        const { md, mdStr, habTotal } = this._calcMDHab(arma.system.habilidad, arma.system.manos ?? "1m");
         return { item: arma, habTotal, md, mdStr, equipped: arma.system.equipped !== false };
       });
 
@@ -155,22 +134,125 @@ export class PJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     const deidadesGrupos = await getDeidadesGrupos();
 
     const armaduras = [
-      ...this.actor.items.filter(i => i.type === "armadura"),
-      ...this.actor.items.filter(i => i.type === "objetoMagico" && i.system.tipoObjeto === "armadura")
+      ...(byType.armadura ?? []).map(i => { const src = this.actor.items.get(i.getFlag("tierras-quebradas", "fromArmaId") ?? ""); return { id: i.id, name: i.name, system: i.system, esDemoniaco: !!(i.system.esDemoniaco || src?.system?.esDemoniaco) }; }),
+      ...(byType.objetoMagico ?? []).filter(i => i.system.tipoObjeto === "armadura")
         .map(i => {
           const modProt = i.system.categoria === "encantado" && !i.system.sintonizado ? 0 : (i.system.modProteccion ?? 0);
-          return { id: i.id, name: i.name, system: { proteccion: (i.system.proteccion ?? 0) + modProt, zona: "—", tipo: i.system.tipoProteccion, carga: i.system.carga ?? 0, equipped: i.system.equipped } };
+          return { id: i.id, name: i.name, system: { proteccion: (i.system.proteccion ?? 0) + modProt, zona: "—", tipo: i.system.tipoProteccion, carga: i.system.carga ?? 0, equipped: i.system.equipped }, magico: true };
+        }),
+      ...(byType.artefacto ?? []).filter(i => i.system.objetoBase?.tipo === "armadura")
+        .map(i => {
+          const b = i.system.objetoBase._itemData?.system ?? {};
+          return { id: i.id, name: i.name, system: { proteccion: b.proteccion ?? 0, zona: b.zona ?? "—", tipo: b.tipo ?? "", carga: b.carga ?? 0, equipped: alineadoLey ? i.system.equipped : false }, artefacto: true };
         })
     ];
     const armaduraEquipadas = armaduras.filter(a => a.system.equipped !== false);
     const proteccionTotal = armaduraEquipadas.reduce((s, a) => s + (a.system.proteccion ?? 0), 0);
     const cargaProteccionTotal = armaduraEquipadas.reduce((s, a) => s + (a.system.carga ?? 0), 0);
 
+    const espiritu = this.actor.system.caracteristicas?.espiritu?.valor ?? 0;
+    const atadurasMax = Math.floor(espiritu / 2);
+    const objetosDemoniacos = this.actor.items
+      .filter(i => i.system?.esDemoniaco && i.system?.equipped !== false)
+      .map(i => {
+        let tipoLabel;
+        if (i.type === "arma") tipoLabel = i.system.habilidad ? game.i18n.localize(`TQ.Habilidades.${i.system.habilidad}`) || i.system.habilidad : "Arma";
+        else if (i.type === "armadura") tipoLabel = `Armadura ${i.system.tipo ?? ""}`.trim();
+        else tipoLabel = i.type;
+        return { id: i.id, name: i.name, type: i.type, tipoLabel, system: i.system };
+      });
+    const atadurasActivas = objetosDemoniacos.length;
+    const atadurasLibres = Math.max(0, atadurasMax - atadurasActivas);
+
+    const tienePasionExtra = (byType.ventaja ?? []).some(i => i.name === "Pasión extra");
+    const hasLucky = (byType.rasgo ?? []).some(i => i.name === "Buena suerte");
+
     return {
-      actor: this.actor, system: this.actor.system, cssClass: this.options.classes.join(" "), activeTab: this._activeTab, imagenLealtad, destinoTotal, items: {
-        armas: armasEnriquecidas, armasMagicas: armasMagicasEnriquecidas, armaduras, proteccionTotal, cargaProteccionTotal, hechizos: this.actor.items.filter(i => i.type === "hechizo"), ventajas: this.actor.items.filter(i => i.type === "ventaja"), rasgos: this.actor.items.filter(i => i.type === "rasgo"), pactos: this.actor.items.filter(i => i.type === "pacto"), bendiciones: this.actor.items.filter(i => i.type === "bendicion"), especie: this.actor.items.find(i => i.type === "especie") ?? null, entorno: this.actor.items.find(i => i.type === "entorno") ?? null, origen: this.actor.items.find(i => i.type === "origen") ?? null, profesion: this.actor.items.find(i => i.type === "profesion") ?? null, objetos: this.actor.items.filter(i => i.type === "objeto"), consumibles: this.actor.items.filter(i => i.type === "consumible"), objetosMagicos: this.actor.items.filter(i => i.type === "objetoMagico")
-      }, lealtad: { alineado }, lealtadesEnTexto: game.settings.get("tierras-quebradas", "lealtadesEnTexto"), pasionAmorActiva: this.actor.system.pasionFlag === "amor", pasionOdioActiva: this.actor.system.pasionFlag === "odio", pasionExtraActiva: this.actor.system.pasionFlag === "extra", tienePasionExtra: this.actor.items.some(i => i.type === "ventaja" && i.name === "Pasión extra"), hasLucky: this.actor.items.some(i => i.type === "rasgo" && i.name === "Buena suerte"), luckyMax: this.actor.items.some(i => i.type === "rasgo" && i.name === "Buena suerte") ? Math.floor((this.actor.system.caracteristicas?.mente?.valor ?? 0) / 2) : 0, config: CONFIG.TQ, col1: makeCol(COL1), col2: makeCol(COL2), col3: makeCol(COL3), basesFormulas, deidadesGrupos
+      actor: this.actor,
+      system: this.actor.system,
+      cssClass: this.options.classes.join(" "),
+      activeTab: this._activeTab,
+      imagenLealtad,
+      destinoTotal,
+      items: {
+        armas: armasEnriquecidas,
+        armasMagicas: armasMagicasEnriquecidas,
+        armaduras, proteccionTotal, cargaProteccionTotal,
+        hechizos: (byType.hechizo ?? []).filter(h => !h.system.fromDemoniaco),
+        ventajas: byType.ventaja ?? [],
+        rasgos: byType.rasgo ?? [],
+        pactos: byType.pacto ?? [],
+        bendiciones: byType.bendicion ?? [],
+        especie: (byType.especie ?? [])[0] ?? null,
+        entorno: (byType.entorno ?? [])[0] ?? null,
+        origen: (byType.origen ?? [])[0] ?? null,
+        profesion: (byType.profesion ?? [])[0] ?? null,
+        objetos: [
+          ...(byType.objeto ?? []),
+          ...(byType.artefacto ?? []).filter(i => !["arma", "armadura"].includes(i.system.objetoBase?.tipo)).map(i => ({ id: i.id, name: i.name, system: { categoria: "", carga: 0, equipped: alineadoLey ? i.system.equipped : false }, artefacto: true, poderesTexto: (() => {
+              const hechizos = (i.system.poderes ?? []).filter(p => p.tipo === "hechizo" && p.nombre).map(p => p.nombre);
+              const rasgos   = (i.system.poderes ?? []).filter(p => p.tipo === "rasgo"   && p.nombre).map(p => p.nombre);
+              const habs     = (i.system.habilidadesSostenidas ?? []).filter(h => h.nombre).map(h => h.nombre);
+              return [hechizos, rasgos, habs].filter(g => g.length).map(g => g.join(" · ")).join("  -  ");
+            })() }))
+        ],
+        consumibles: byType.consumible ?? [],
+        objetosMagicos: byType.objetoMagico ?? [],
+        hechizosArtefacto: (byType.artefacto ?? []).flatMap(i =>
+          (i.system.poderes ?? []).filter(p => p.tipo === "hechizo" && p.nombre)
+            .map((p, idx) => ({ artefactoId: i.id, artefactoNombre: i.name, poderIdx: idx, nombre: p.nombre, pmCoste: p.pmCoste || 0, pmActual: i.system.pm ?? 0 }))
+        ),
+        hechizosObjetoDemoniaco: (byType.hechizo ?? []).filter(h => h.system.fromDemoniaco).map(h => {
+          const obj = this.actor.items.get(h.system.fromDemoniaco);
+          return { itemId: h.id, nombre: h.name, objetoNombre: obj?.name ?? "", pmCoste: h.system.pmCoste ?? 1, pmActual: obj?.system.pm ?? 0, pmPropios: obj?.system.pmPropios ?? false };
+        })
+      },
+      atadurasMax, atadurasActivas, atadurasLibres, objetosDemoniacos,
+      lealtad: { alineado },
+      lealtadesEnTexto: game.settings.get("tierras-quebradas", "lealtadesEnTexto"),
+      pasionAmorActiva: this.actor.system.pasionFlag === "amor",
+      pasionOdioActiva: this.actor.system.pasionFlag === "odio",
+      pasionExtraActiva: this.actor.system.pasionFlag === "extra",
+      tienePasionExtra,
+      hasLucky,
+      luckyMax: hasLucky ? Math.floor((this.actor.system.caracteristicas?.mente?.valor ?? 0) / 2) : 0,
+      config: CONFIG.TQ,
+      col1: makeCol(COL1), col2: makeCol(COL2), col3: makeCol(COL3),
+      basesFormulas,
+      deidadesGrupos
     };
+  }
+
+  _calcMDHab(habClave, manos) {
+    const habs = this.actor.system.habilidades;
+    const deriv = this.actor.system.derivadas;
+    let md, mdStr;
+    if (manos === "2m") {
+      md = deriv?.mDano2m?.valor ?? 0;
+      mdStr = md >= 0 ? `+${md}` : `${md}`;
+    } else if (manos === "ambas") {
+      const md1 = deriv?.mDano1m?.valor ?? 0;
+      const md2 = deriv?.mDano2m?.valor ?? 0;
+      md = md1;
+      mdStr = `${md1 >= 0 ? "+" : ""}${md1}/${md2 >= 0 ? "+" : ""}${md2}`;
+    } else {
+      md = deriv?.mDano1m?.valor ?? 0;
+      mdStr = md >= 0 ? `+${md}` : `${md}`;
+    }
+    const habilidad = habs[habClave];
+    let habTotal = "—";
+    if (habilidad) {
+      const base = this.actor.system.bases[habilidad.base]?.valor ?? 0;
+      habTotal = base + (habilidad.nivel ?? 0) + (habilidad.puntosFijos ?? 0);
+    }
+    return { md, mdStr, habTotal };
+  }
+
+  _esAlineadoLey() {
+    const l = this.actor.system.lealtad;
+    const religiones = ["caos", "elementos", "antepasados"];
+    const otrasMax = Math.max(...religiones.map(r => l[r] ?? 0));
+    return (l.ley ?? 0) - otrasMax >= 10;
   }
 
   async _onDropItem(event, data) {
@@ -308,6 +390,7 @@ export class PJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
         const id = ev.currentTarget.dataset.itemId;
         const item = this.actor.items.get(id);
         if (!item) return;
+        if (item.type === "artefacto" && !this._esAlineadoLey()) return;
         const newVal = !(item.system.equipped ?? true);
         const ops = [item.update({ "system.equipped": newVal })];
         const vinculada = this.actor.items.find(i => i.type === "armadura" && i.getFlag("tierras-quebradas", "fromArmaId") === id);
@@ -424,10 +507,109 @@ export class PJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       this.actor.rezarPM();
     });
 
+    el.querySelectorAll(".atadura-vinculacion-input").forEach(inp => {
+      inp.addEventListener("change", ev => {
+        const item = this.actor.items.get(ev.currentTarget.dataset.itemId);
+        if (item) item.update({ "system.vinculacionDios": ev.target.value });
+      });
+    });
+
     el.querySelectorAll(".tirar-hechizo").forEach(a => {
       a.addEventListener("click", ev => {
         ev.preventDefault();
         this.actor.lanzarHechizo(ev.currentTarget.dataset.itemId);
+      });
+    });
+
+    el.querySelectorAll(".activar-poder-artefacto").forEach(btn => {
+      btn.addEventListener("click", async ev => {
+        ev.preventDefault();
+        const li = ev.currentTarget.closest("[data-artefacto-id]");
+        const artefacto = this.actor.items.get(li?.dataset.artefactoId);
+        const poderIdx = parseInt(li?.dataset.poderIdx ?? "-1");
+        if (!artefacto) return;
+        const poder = artefacto.system.poderes?.[poderIdx];
+        if (!poder) return;
+        if (!this._esAlineadoLey()) {
+          ui.notifications.warn(`La virtud no responde — ${this.actor.name} no está alineado con la Ley.`);
+          return;
+        }
+        const pmCoste = poder.pmCoste || 0;
+        const pmActual = artefacto.system.pm ?? 0;
+        if (pmCoste > 0 && pmActual < pmCoste) {
+          ui.notifications.warn(`PM insuficiente. El artefacto necesita ${pmCoste} PM pero solo le quedan ${pmActual}.`);
+          return;
+        }
+        if (poder.tipo === "hechizo") {
+          let hechizoItem = null;
+          if (poder.uuid) hechizoItem = await fromUuid(poder.uuid);
+          else if (poder._itemData) hechizoItem = new CONFIG.Item.documentClass(foundry.utils.deepClone(poder._itemData), { temporary: true });
+          if (hechizoItem) {
+            await this.actor.lanzarHechizo(null, { hechizoItem, forzarAutoExito: true, artefacto, artefactoPmCoste: pmCoste });
+            return;
+          }
+        }
+        if (pmCoste > 0) await artefacto.update({ "system.pm": pmActual - pmCoste });
+        ChatMessage.create({
+          content: `<div class="tq-result-card"><p style="text-align:center;font-weight:bold;">${artefacto.name}</p><hr><p><em>${poder.nombre}</em> se activa automáticamente.${pmCoste > 0 ? ` (−${pmCoste} PM)` : ""}</p></div>`,
+          speaker: ChatMessage.getSpeaker({ actor: this.actor })
+        });
+      });
+    });
+
+    el.querySelectorAll(".activar-conjuro-demoniaco").forEach(btn => {
+      btn.addEventListener("click", async ev => {
+        ev.preventDefault();
+        const hechizo = this.actor.items.get(ev.currentTarget.dataset.itemId);
+        if (!hechizo) return;
+        const objetoDemoniaco = this.actor.items.get(hechizo.system.fromDemoniaco);
+        if (!objetoDemoniaco) return;
+
+        const pmCoste = hechizo.system.pmCoste ?? 1;
+        const pmPropios = objetoDemoniaco.system.pmPropios ?? false;
+        const pmObjeto = objetoDemoniaco.system.pm ?? 0;
+
+        let pmDelObjeto = 0;
+        let pmDelActor = pmCoste;
+        if (pmPropios && pmObjeto > 0) {
+          pmDelObjeto = Math.min(pmObjeto, pmCoste);
+          pmDelActor = pmCoste - pmDelObjeto;
+        }
+
+        if (pmDelObjeto > 0) {
+          await objetoDemoniaco.update({ "system.pm": pmObjeto - pmDelObjeto });
+        }
+        if (pmDelActor > 0) {
+          const pmActual = this.actor.system.hechiceria?.pmActual ?? 0;
+          const pmNuevo = pmActual - pmDelActor;
+          await this.actor.update({ "system.hechiceria.pmActual": Math.max(0, pmNuevo) });
+          if (pmNuevo <= 0) {
+            await this.actor.update({ "system.salud.debilitado": true });
+            ui.notifications.warn(game.i18n.format("TQ.Magia.Debilitado", { nombre: this.actor.name }));
+          }
+        }
+
+        const requiereEsp = hechizo.system.requiereTiradaEspiritu ?? false;
+        const espObjeto = objetoDemoniaco.system.vm ?? 0;
+        const nombreObjeto = objetoDemoniaco.name;
+        const modoTirada = game.settings.get("core", "rollMode");
+
+        const desglosePM = pmDelObjeto > 0 && pmDelActor > 0
+          ? ` (−${pmDelObjeto} PM del objeto, −${pmDelActor} PM del actor)`
+          : pmDelObjeto > 0 ? ` (−${pmDelObjeto} PM del objeto)` : ` (−${pmDelActor} PM)`;
+
+        const btnEsp = requiereEsp
+          ? `<div style="margin-top:8px;text-align:center;"><button class="tq-aplicar-resultado" type="button" data-actor-id="${this.actor.id}" data-etiqueta="${hechizo.name}" data-exitos="0" data-requiere-espiritu="true" data-espiritu-artefacto="${espObjeto}" data-nombre-artefacto="${nombreObjeto}">${game.i18n.localize("TQ.Botones.AplicarResultado")}</button></div>`
+          : "";
+
+        const contenido = `<div class="tq-result-card"><p style="text-align:center;font-weight:bold;">${hechizo.name}</p><hr><p>${this.actor.name} ha lanzado <em>${hechizo.name}</em> usando <em>${nombreObjeto}</em>.${pmCoste > 0 ? desglosePM : ""}</p>${btnEsp}</div>`;
+
+        await ChatMessage.create({
+          speaker: ChatMessage.getSpeaker({ actor: this.actor }),
+          content: contenido,
+          ...TQRoll._rollModeData(modoTirada),
+          flags: { "tierras-quebradas": { etiqueta: hechizo.name, actorId: this.actor.id, requiereTiradaEspiritu: requiereEsp, bonusEspiritu: 0 } }
+        });
       });
     });
 
@@ -621,6 +803,11 @@ export class PJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       });
       if (!eleccion) return;
       await TQRoll.tirar("Fortuna", fortActual, eleccion.dificultad, { actor, bonificador: eleccion.bonificador });
+    });
+
+    el.querySelector(".btn-print-ficha")?.addEventListener("click", async () => {
+      const data = await this._prepareContext({});
+      await printActorPDF(this.actor, data);
     });
   }
 

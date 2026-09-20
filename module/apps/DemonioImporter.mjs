@@ -4,9 +4,13 @@ import { tqRound } from "../helpers/utils.mjs";
 
 const { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api;
 
+const norm = s => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").trim();
+
 export class DemonioImporter extends HandlebarsApplicationMixin(ApplicationV2) {
   static DEFAULT_OPTIONS = {
-    id: "tq-demonio-importer", classes: ["tierras-quebradas", "pnj-importer"], position: { width: 560, height: 520 }, window: { title: "Importar Demonio", resizable: true }
+    id: "tq-demonio-importer", classes: ["tierras-quebradas", "pnj-importer"],
+    position: { width: 560, height: 520 },
+    window: { title: "Importar Demonio", resizable: true }
   };
 
   static PARTS = {
@@ -49,9 +53,11 @@ Movimiento: Correr, rápido.`;
     const datos = DemonioImporter._parsear(raw);
     if (!datos.nombre) return ui.notifications.warn(game.i18n.localize("TQ.Importer.WarnNombreDemonio"));
 
-    const norm = s => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").trim();
     const packNombres = [
-      "tierras-quebradas.armamento-armas-cuerpo-a-cuerpo", "tierras-quebradas.armamento-armas-proyectiles", "tierras-quebradas.armamento-armas-arrojadizas", "tierras-quebradas.armamento-armas-improvisadas"
+      "tierras-quebradas.armamento-armas-cuerpo-a-cuerpo",
+      "tierras-quebradas.armamento-armas-proyectiles",
+      "tierras-quebradas.armamento-armas-arrojadizas",
+      "tierras-quebradas.armamento-armas-improvisadas"
     ];
     let catalogoArmas = null;
     const getCatalogo = async () => {
@@ -77,21 +83,41 @@ Movimiento: Correr, rápido.`;
     }
 
     const actor = await Actor.create({
-      name: datos.nombre, type: "demonio", img: "icons/svg/mystery-man.svg", system: {
+      name: datos.nombre,
+      type: "demonio",
+      img: "icons/svg/mystery-man.svg",
+      system: {
         caracteristicas: {
-          cuerpo: { valor: datos.cuerpo }, mente: { valor: datos.mente }, espiritu: { valor: datos.espiritu }, atractivo: { valor: datos.atractivo }, tamano: { valor: datos.tamanyo }
-        }, derivadas: {
-          fuerza: { valor: datos.fuerza }, mDano1m: { valor: datos.mDano1m }, mDano2m: { valor: datos.mDano2m }
-        }, salud: {
-          pvMax: { valor: datos.pvMax }, pvActual: { valor: datos.pvMax }, pvGrave: { valor: datos.pvGrave }, pvLeve: { valor: datos.pvLeve }
-        }, proteccion: { valor: datos.proteccion, tipo: datos.proteccionTipo }, alImpacto: datos.alImpacto, pm: datos.pm, movimiento: datos.movimiento, poderes: datos.poderes, debilidades: datos.debilidades, notas: datos.notas
+          cuerpo: { valor: datos.cuerpo },
+          mente: { valor: datos.mente },
+          espiritu: { valor: datos.espiritu },
+          atractivo: { valor: datos.atractivo },
+          tamano: { valor: datos.tamanyo }
+        },
+        derivadas: {
+          fuerza: { valor: datos.fuerza },
+          mDano1m: { valor: datos.mDano1m },
+          mDano2m: { valor: datos.mDano2m }
+        },
+        salud: {
+          pvMax: { valor: datos.pvMax },
+          pvActual: { valor: datos.pvMax },
+          pvGrave: { valor: datos.pvGrave },
+          pvLeve: { valor: datos.pvLeve }
+        },
+        proteccion: { valor: datos.proteccion, tipo: datos.proteccionTipo },
+        alImpacto: datos.alImpacto,
+        pm: datos.pm,
+        movimiento: datos.movimiento,
+        descripcion: datos.notas
       }
     });
     if (!actor) return;
 
     if (datos.proteccion > 0) {
       await Item.create({
-        name: "Protección", type: "armadura", system: { proteccion: datos.proteccion, tipo: datos.proteccionTipo }
+        name: "Protección", type: "armadura",
+        system: { proteccion: datos.proteccion, tipo: datos.proteccionTipo }
       }, { parent: actor });
     }
 
@@ -123,40 +149,41 @@ Movimiento: Correr, rápido.`;
         const habMatch = datos.habilidades[habNombreResuelto] ?? 0;
         const nivelFinal = a.nivel || habMatch;
         await Item.create({
-          name: a.nombre, type: "arma", system: { habilidad: habNombreResuelto, danoArma: a.dano, propiedades: a.propiedades }
+          name: a.nombre, type: "arma",
+          system: { habilidad: habNombreResuelto, danoArma: a.dano, propiedades: a.propiedades }
         }, { parent: actor });
         if (nivelFinal) {
           await actor.update({ [`system.habilidades.${habNombreResuelto}`]: nivelFinal });
         }
       }
     }
-    const packRasgos = game.packs.get("tierras-quebradas.rasgos");
-    const catalogoRasgos = packRasgos ? await packRasgos.getDocuments() : [];
 
     for (const p of datos.poderesItems) {
-      const doc = catalogoRasgos.find(d => norm(d.name) === norm(p.nombre));
-      if (doc) {
-        await Item.create(doc.toObject(), { parent: actor });
-      } else {
-        await Item.create({ name: p.nombre, type: "rasgo", system: { tipo: "rasgoSobrenatural", efecto: p.efecto } }, { parent: actor });
-      }
+      await Item.create({
+        name: p.nombre, type: "caracteristicaBestiario",
+        system: { tipo: "rasgo", descripcion: p.efecto }
+      }, { parent: actor });
     }
 
     for (const d of datos.debilidadesItems) {
-      const doc = catalogoRasgos.find(d2 => norm(d2.name) === norm(d.nombre));
-      if (doc) {
-        await Item.create(doc.toObject(), { parent: actor });
-      } else {
-        await Item.create({ name: d.nombre, type: "rasgo", system: { tipo: "debilidad", efecto: d.efecto } }, { parent: actor });
-      }
+      await Item.create({
+        name: d.nombre, type: "caracteristicaBestiario",
+        system: { tipo: "debilidad", descripcion: d.efecto }
+      }, { parent: actor });
     }
 
     const packOM = game.packs.get("tierras-quebradas.objetos-magicos");
     const catalogoOM = packOM ? await packOM.getDocuments() : [];
     for (const o of datos.objetosMagicos) {
       const doc = catalogoOM.find(d => norm(d.name) === norm(o.nombre));
-      if (doc) await Item.create(doc.toObject(), { parent: actor });
-      else await Item.create({ name: o.nombre, type: "objetoMagico", system: { espiritu: o.espiritu, pmActual: o.pm, efecto: o.efecto } }, { parent: actor });
+      if (doc) {
+        await Item.create(doc.toObject(), { parent: actor });
+      } else {
+        await Item.create({
+          name: o.nombre, type: "objetoMagico",
+          system: { espiritu: o.espiritu, pmActual: o.pm, efecto: o.efecto }
+        }, { parent: actor });
+      }
     }
 
     ui.notifications.info(game.i18n.format("TQ.Importer.InfoDemonio", { nombre: datos.nombre }));
@@ -177,31 +204,35 @@ Movimiento: Correr, rápido.`;
     const int = (re, t = texto) => parseInt(t.match(re)?.[1]) || 0;
     const intSig = (re, t = texto) => { const m = t.match(re); return m ? (parseInt(m[1]) || 0) : 0; };
 
+    // Características
     const cuerpo = int(/CUE:\s*(\d+)/i);
     const mente = int(/MEN:\s*(\d+)/i);
     const espiritu = int(/ESP:\s*(\d+)/i);
     const atrRaw = texto.match(/ATR:\s*([+-]?\d+|-)/i)?.[1] ?? "0";
     const atractivo = atrRaw === "-" ? 0 : (parseInt(atrRaw) || 0);
     const tamanyo = intSig(/TAM:\s*([+-]?\d+)/i);
+
+    // Derivadas
     const fuerza = int(/FUE:\s*(\d+)/i);
     const pm = int(/PM:\s*(\d+)/i);
     const alImpacto = intSig(/Al\s+impacto:\s*([+-]?\d+)/i);
-
-    const protLine = lineas.find(l => /protecc/i.test(l)) ?? "";
-    const protMatch = protLine.normalize("NFC").match(/Protecci[oó]n:?\s*(\d+)\s*(?:\(([^)]+)\))?/i)
-      ?? texto.normalize("NFC").match(/Protecci[oó]n:?\s*(\d+)\s*(?:\(([^)]+)\))?/i);
-    const proteccion = parseInt(protMatch?.[1]) || 0;
-    const proteccionTipo = protMatch?.[2]?.toLowerCase().includes("dura") ? "dura" : "blanda";
-
     const modDanoStr = texto.match(/Mod\.?\s+al\s+Da[ñn]o:\s*([^\s,;]+)/i)?.[1] ?? "";
     const modDanoParts = modDanoStr.split("/");
     const mDano1m = parseInt(modDanoParts[0]) || 0;
     const mDano2m = modDanoParts[1] ? (parseInt(modDanoParts[1]) || 0) : mDano1m;
 
+    // Salud
     const pvMatch = texto.match(/PV:\s*(\d+)\s*\|\s*(\d+)\s*\|\s*(\d+)/);
     const pvMax = parseInt(pvMatch?.[1]) || 10;
     const pvGrave = parseInt(pvMatch?.[2]) || Math.ceil(pvMax / 2);
     const pvLeve = parseInt(pvMatch?.[3]) || Math.ceil(pvMax / 4);
+
+    // Protección y movimiento
+    const protLine = lineas.find(l => /protecc/i.test(l)) ?? "";
+    const protMatch = protLine.normalize("NFC").match(/Protecci[oó]n:?\s*(\d+)\s*(?:\(([^)]+)\))?/i)
+      ?? texto.normalize("NFC").match(/Protecci[oó]n:?\s*(\d+)\s*(?:\(([^)]+)\))?/i);
+    const proteccion = parseInt(protMatch?.[1]) || 0;
+    const proteccionTipo = protMatch?.[2]?.toLowerCase().includes("dura") ? "dura" : "blanda";
 
     const movimientoMatch = texto.match(/Movimiento:\s*([^.]+\.?)/i);
     const movimiento = movimientoMatch?.[1]?.trim() ?? "";
@@ -245,14 +276,11 @@ Movimiento: Correr, rápido.`;
       const re = /([A-Za-záéíóúñÁÉÍÓÚÑ][A-Za-záéíóúñÁÉÍÓÚÑ\s]*?)\s+(?:[12]M\s+)?(\d+)\.\s*Da[ñn]o:?\s*([^.]+)\.\s*([^A-Z]*?(?=[A-ZÁÉÍÓÚÑ]|$))?/g;
       let m;
       while ((m = re.exec(sec.armas)) !== null) {
-        armas.push({
-          nombre: m[1].trim(), nivel: parseInt(m[2]), dano: m[3].trim(), propiedades: m[4]?.trim() ?? ""
-        });
+        armas.push({ nombre: m[1].trim(), nivel: parseInt(m[2]), dano: m[3].trim(), propiedades: m[4]?.trim() ?? "" });
       }
     }
 
-    const poderes = sec.poderes ? sec.poderes.replace(/Movimiento:.*/i, "").trim() : "";
-    const debilidades = sec.debilidades ? sec.debilidades.replace(/Movimiento:.*/i, "").trim() : "";
+    // Poderes y debilidades: separados por ◆ o •
     const parsearEntradas = (texto) => {
       if (!texto) return [];
       return texto.split(/◆|•|\n/).map(s => s.trim()).filter(Boolean).map(entrada => {
@@ -263,37 +291,54 @@ Movimiento: Correr, rápido.`;
         return { nombre: entrada, efecto: "" };
       });
     };
+
+    const poderes = sec.poderes ? sec.poderes.replace(/Movimiento:.*/i, "").trim() : "";
+    const debilidades = sec.debilidades ? sec.debilidades.replace(/Movimiento:.*/i, "").trim() : "";
     const poderesItems = parsearEntradas(poderes);
     const debilidadesItems = parsearEntradas(debilidades);
 
-    const notasParts = [];
-    if (desc) notasParts.push(desc);
-    const notas = notasParts.join("\n");
+    // Descripción: líneas entre nombre y estadísticas
+    const notas = desc || "";
 
+    // Objetos mágicos
     const objetosMagicos = [];
     if (sec.objetosMagicos) {
       const entradas = sec.objetosMagicos.split(/◆|•/).map(s => s.replace(/\s*\n\s*/g, " ").trim()).filter(Boolean);
       for (const entrada of entradas) {
         const m = entrada.match(/^(.+?)\s*\(ESP:?\s*(\d+)[,\s]+PM:?\s*(\d+)[^)]*\)\.\s*([\s\S]*)/i);
-        if (m) objetosMagicos.push({ nombre: m[1].trim(), espiritu: parseInt(m[2]) || 0, pm: parseInt(m[3]) || 0, efecto: m[4].trim() });
-        else objetosMagicos.push({ nombre: entrada.replace(/\([\s\S]*?\)/, "").trim(), espiritu: 0, pm: 0, efecto: "" });
+        if (m) {
+          objetosMagicos.push({ nombre: m[1].trim(), espiritu: parseInt(m[2]) || 0, pm: parseInt(m[3]) || 0, efecto: m[4].trim() });
+        } else {
+          objetosMagicos.push({ nombre: entrada.replace(/\([\s\S]*?\)/, "").trim(), espiritu: 0, pm: 0, efecto: "" });
+        }
       }
     }
 
-    return { nombre, cuerpo, mente, espiritu, atractivo, tamanyo, fuerza, pvMax, pvGrave, pvLeve, proteccion, proteccionTipo, mDano1m, mDano2m, pm, alImpacto, movimiento, habilidades, armas, poderes, debilidades, poderesItems, debilidadesItems, objetosMagicos, notas };
+    return {
+      nombre, cuerpo, mente, espiritu, atractivo, tamanyo,
+      fuerza, pvMax, pvGrave, pvLeve,
+      proteccion, proteccionTipo, mDano1m, mDano2m, pm, alImpacto,
+      movimiento, habilidades, armas,
+      poderes, debilidades, poderesItems, debilidadesItems,
+      objetosMagicos, notas
+    };
   }
 
   static async _elegirHabilidadCorrecta(datos) {
     const { DialogV2 } = foundry.applications.api;
-    const cue = datos.cuerpo, men = datos.mente, esp = datos.espiritu;
-    const atr = datos.atractivo, tam = datos.tamanyo;
+    const { cuerpo: cue, mente: men, espiritu: esp, atractivo: atr, tamanyo: tam } = datos;
     const bases = {
-      agilidad: cue - tam, comunicacion: esp + atr, cultura: men, hechiceria: Math.round((men + esp) / 3), percepcion: tqRound((men + esp) / 2), vigor: cue, tecnica: tqRound((men + cue) / 2)
+      agilidad: cue - tam,
+      comunicacion: esp + atr,
+      cultura: men,
+      hechiceria: Math.round((men + esp) / 3),
+      percepcion: tqRound((men + esp) / 2),
+      vigor: cue,
+      tecnica: tqRound((men + cue) / 2)
     };
 
     const packHabs = game.packs.get("tierras-quebradas.habilidades");
     const catalogoHabs = packHabs ? await packHabs.getDocuments() : [];
-    const norm = s => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").trim();
     const palabras = s => norm(s).split(/\s+/).filter(w => w.length > 2);
 
     const exactas = {};
@@ -346,10 +391,16 @@ Movimiento: Correr, rápido.`;
         </table>`;
 
       const resultado = await DialogV2.prompt({
-        window: { title: game.i18n.localize("TQ.Importer.ResolverHabilidades"), resizable: true }, position: { width: 500 }, content: html, ok: { label: game.i18n.localize("TQ.Botones.Importar"), callback: (_ev, button) => {
-          const form = button.form;
-          return Object.fromEntries(entradas.map(([nombre], i) => [nombre, form.elements[`h${i}`]?.value ?? ""]));
-        }}
+        window: { title: game.i18n.localize("TQ.Importer.ResolverHabilidades"), resizable: true },
+        position: { width: 500 },
+        content: html,
+        ok: {
+          label: game.i18n.localize("TQ.Botones.Importar"),
+          callback: (_ev, button) => {
+            const form = button.form;
+            return Object.fromEntries(entradas.map(([nombre], i) => [nombre, form.elements[`h${i}`]?.value ?? ""]));
+          }
+        }
       }).catch(() => null);
 
       if (resultado === null) return null;
@@ -361,7 +412,10 @@ Movimiento: Correr, rápido.`;
     const aplicar = (nombre, total, habItem) => {
       const baseValor = bases[habItem.system.base] ?? 0;
       upd[`system.habilidades.${nombre}`] = {
-        base: habItem.system.base, nivel: Math.max(0, total - baseValor), puntosFijos: habItem.system.puntosFijos ?? 0, estorbo: habItem.system.estorbo ?? 0
+        base: habItem.system.base,
+        nivel: Math.max(0, total - baseValor),
+        puntosFijos: habItem.system.puntosFijos ?? 0,
+        estorbo: habItem.system.estorbo ?? 0
       };
     };
 

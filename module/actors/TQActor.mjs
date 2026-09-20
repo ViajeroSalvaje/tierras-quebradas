@@ -124,7 +124,7 @@ export class TQActor extends Actor {
       const estorboCanon = TQActor.ESTORBO_HABILIDADES[clave];
       if (estorboCanon !== undefined) hab.estorbo = estorboCanon;
       const baseValor = bases[hab.base]?.valor ?? 0;
-      hab.total = baseValor + (hab.nivel ?? 0);
+      hab.total = baseValor + (hab.nivel ?? 0) + (hab.puntosFijos ?? 0);
     }
   }
 
@@ -180,8 +180,40 @@ export class TQActor extends Actor {
     if (penalizacionEstorbo > 0) mods.push({ label: "Estorbo", valor: -penalizacionEstorbo, signo: "−", valorAbs: penalizacionEstorbo });
     if (this.system.salud?.ceguera && TQActor.HABILIDADES_CEGUERA.has(clave)) mods.push({ label: "Ceguera", valor: -4, signo: "−", valorAbs: 4 });
     const modDesglose = mods.length > 0 ? mods : null;
+    const artefactosSosten = this.items.filter(i =>
+      i.type === "artefacto" && i.system.equipped &&
+      (i.system.habilidadesSostenidas ?? []).some(h =>
+        (h.clave ? h.clave === clave : (h.nombre ?? "").toLowerCase() === (etiqueta ?? "").toLowerCase())
+      ) &&
+      (i.system.pm ?? 0) > 0
+    );
+    for (const art of artefactosSosten) {
+      const pmDisp = art.system.pm ?? 0;
+      const maximo = Math.min(5, pmDisp);
+      let pmElegido = 0;
+      try {
+        pmElegido = await DialogV2.prompt({
+          window: { title: `Sostén — ${art.name}` },
+          content: `<form><div style="padding:8px;">
+            <p><strong>${art.name}</strong> puede apoyar <em>${etiqueta}</em>.</p>
+            <p style="font-size:12px;color:var(--tq-text-dim);">1 PM = +1 al resultado · máx. ${maximo} · declara antes de tirar</p>
+            <div style="display:flex;align-items:center;gap:8px;margin-top:6px;">
+              <label>PM a usar (0–${maximo})</label>
+              <input type="number" name="pm" min="0" max="${maximo}" value="0" autofocus style="width:60px;" />
+            </div>
+          </div></form>`,
+          ok: { label: "Confirmar", callback: (_ev, btn) => parseInt(btn.form.elements.pm?.value) || 0 }
+        }) ?? 0;
+      } catch { pmElegido = 0; }
+      const gasto = Math.max(0, Math.min(maximo, pmElegido));
+      if (gasto > 0) {
+        await art.update({ "system.pm": pmDisp - gasto });
+        mods.push({ label: `Sostén: ${art.name}`, valor: gasto, signo: "+", valorAbs: gasto });
+      }
+    }
     const bonificadorDefecto = this._sumModsMagicosHabilidad(clave);
-    const resultado = await TQRoll.dialogoTirada(etiqueta, total, { actor: this, habClave: clave, modDesglose, bonificadorDefecto });
+    const modDesgloseConSosten = mods.length > 0 ? mods : null;
+    const resultado = await TQRoll.dialogoTirada(etiqueta, total, { actor: this, habClave: clave, modDesglose: modDesgloseConSosten, bonificadorDefecto });
     if (resultado && resultado.exitos >= 0 && !resultado.autoExito && !habilidad.exito) {
       await this.update({ [`system.habilidades.${clave}.exito`]: true });
     }
@@ -310,7 +342,7 @@ export class TQActor extends Actor {
     const tipoDano = arma.type === "objetoMagico" ? (arma.system.tipoArma ?? "cortante") : (arma.system.tipo ?? "cortante");
     const bonoDanoTotal = (arma.system.bonoDano ?? 0)
       + (arma.type === "objetoMagico" ? (arma.system.modDanho ?? 0) : 0)
-      + (arma.type === "objetoMagico" && arma.system.categoria === "demoniaco" ? parseInt(arma.system.poderesDemoniacos?.bonoDanho ?? 0) : 0);
+      + (arma.type === "objetoDemoniaco" ? parseInt(arma.system.bonoDanho ?? 0) : 0);
 
     const habClave = arma.system.habilidad;
     const manos = arma.system.manos ?? "1m";
@@ -373,6 +405,41 @@ export class TQActor extends Actor {
           modDesglose.push({ label: "Virtud", valor: pmInvertidos, signo: "+", valorAbs: pmInvertidos });
           puntuacion += pmInvertidos;
           await arma.update({ "system.pmActual": arma.system.pmActual - pmInvertidos });
+        }
+      }
+    }
+
+    if (this.type === "pj") {
+      const etiquetaHab = game.i18n.localize(`TQ.Habilidades.${habClave}`) || habClave;
+      const artefactosSostenArma = this.items.filter(i =>
+        i.type === "artefacto" && i.system.equipped &&
+        (i.system.habilidadesSostenidas ?? []).some(h =>
+          (h.clave ? h.clave === habClave : (h.nombre ?? "").toLowerCase() === etiquetaHab.toLowerCase())
+        ) &&
+        (i.system.pm ?? 0) > 0
+      );
+      for (const art of artefactosSostenArma) {
+        const pmDisp = art.system.pm ?? 0;
+        const maximo = Math.min(5, pmDisp);
+        let pmElegido = 0;
+        try {
+          pmElegido = await DialogV2.prompt({
+            window: { title: `Sostén — ${art.name}` },
+            content: `<form><div style="padding:8px;">
+              <p><strong>${art.name}</strong> puede apoyar <em>${etiquetaHab}</em>.</p>
+              <p style="font-size:12px;color:var(--tq-text-dim);">1 PM = +1 al resultado · máx. ${maximo} · declara antes de tirar</p>
+              <div style="display:flex;align-items:center;gap:8px;margin-top:6px;">
+                <label>PM a usar (0–${maximo})</label>
+                <input type="number" name="pm" min="0" max="${maximo}" value="0" autofocus style="width:60px;" />
+              </div>
+            </div></form>`,
+            ok: { label: "Confirmar", callback: (_ev, btn) => parseInt(btn.form.elements.pm?.value) || 0 }
+          }) ?? 0;
+        } catch { pmElegido = 0; }
+        const gasto = Math.max(0, Math.min(maximo, pmElegido));
+        if (gasto > 0) {
+          await art.update({ "system.pm": pmDisp - gasto });
+          modDesglose.push({ label: `Sostén: ${art.name}`, valor: gasto, signo: "+", valorAbs: gasto });
         }
       }
     }
@@ -939,12 +1006,38 @@ export class TQActor extends Actor {
     });
   }
 
-  async lanzarHechizo(itemId) {
+  async lanzarHechizo(itemId, opciones = {}) {
 
 
 
-    const hechizo = this.items.get(itemId);
+    const hechizo = opciones.hechizoItem ?? this.items.get(itemId);
     if (!hechizo) return;
+
+    if (opciones.forzarAutoExito) {
+      const dif = hechizo.system.dificultad ?? 15;
+      let pmBase = 4;
+      if (dif <= 10) pmBase = 1;
+      else if (dif <= 15) pmBase = 2;
+      else if (dif <= 20) pmBase = 3;
+      const pmGasto = opciones.artefactoPmCoste ?? (hechizo.system.pmCoste ?? pmBase);
+      const modoTirada = game.settings.get("core", "rollMode");
+      const requiereEsp = hechizo.system.requiereTiradaEspiritu ?? false;
+      const espArt = opciones.artefacto?.system?.espiritu ?? 0;
+      const nombreArt = opciones.artefacto?.name ?? "";
+      const btnEsp = requiereEsp
+        ? `<div style="margin-top:8px;text-align:center;"><button class="tq-aplicar-resultado" type="button" data-actor-id="${this.id}" data-etiqueta="${hechizo.name}" data-exitos="0" data-requiere-espiritu="true" data-espiritu-artefacto="${espArt}" data-nombre-artefacto="${nombreArt}">${game.i18n.localize("TQ.Botones.AplicarResultado")}</button></div>`
+        : "";
+      const contenido = `<div class="tq-result-card"><p style="text-align:center;font-weight:bold;">${hechizo.name}</p><hr><p>${this.name} activa el conjuro <em>${hechizo.name}</em> a través del artefacto <em>${nombreArt}</em>.</p>${btnEsp}</div>`;
+      await ChatMessage.create({
+        speaker: ChatMessage.getSpeaker({ actor: this }), content: contenido, ...TQRoll._rollModeData(modoTirada),
+        flags: { "tierras-quebradas": { etiqueta: hechizo.name, actorId: this.id, requiereTiradaEspiritu: requiereEsp, bonusEspiritu: 0 } }
+      });
+      if (opciones.artefacto) {
+        const pmDisp = opciones.artefacto.system.pm ?? 0;
+        await opciones.artefacto.update({ "system.pm": Math.max(0, pmDisp - pmGasto) });
+      }
+      return;
+    }
 
     const baseHech = this.system.bases?.hechiceria?.valor ?? 0;
     const verbos = this.system.hechiceria?.verbos ?? {};
@@ -977,37 +1070,39 @@ export class TQActor extends Actor {
     const pmActual = esPJ ? (this.system.hechiceria.pmActual ?? 0) : (this.system.pm ?? 0);
     const pmMaxTotal = esPJ ? (this.system.hechiceria.pmMax ?? 0) : (this.system.pm ?? 0);
 
-    const mdDefecto = this.type === "pj"
-      ? this._sumModsMagicosMagia(hechizo.system.verbo, hechizo.system.esfera)
-      : 0;
-    const contenidoDialogo = await foundry.applications.handlebars.renderTemplate(
-      "systems/tierras-quebradas/templates/dialogs/lanzar-hechizo.hbs", { hechizo, puntuacion, dif, pmBase, pmMin, pmMax, pmVariable: pmMax > 0, pmActual, pmMaxTotal, mdDefecto }
-    );
-
-    const fortunaActual = this.system.fortuna?.actual ?? 0;
-    const luckyActual = TQActor._hasLucky(this) ? (this.system.fortuna?.lucky ?? 0) : 0;
-    const leerCamposHechizo = campos => ({
-      pmElegido: parseInt(campos.pmElegido?.value) || pmMin, blancos: Math.max(1, parseInt(campos.blancos?.value) || 1), duracion: campos.duracion?.value   || "standard", ceremonia: campos.ceremonia?.checked ?? false, grimorio: campos.grimorio?.checked ?? false, acelerar: campos.acelerar?.checked ?? false, limFisica: parseInt(campos.limFisica?.value) || 0, md: parseInt(campos.md?.value) || 0
-    });
-    const config = await DialogV2.wait({
-      window: { title: `Lanzar: ${hechizo.name}`, width: 420 }, classes: [
-        "lh-dialog-window", "tq-tirada-dialog", ...(fortunaActual < 2 && luckyActual < 2 && !(fortunaActual >= 1 && luckyActual >= 1) ? ["tq-fort-insuf"] : [])
-      ], content: contenidoDialogo, rejectClose: false, buttons: [
-        {
-          action: "lanzar", label: "Lanzar hechizo", default: true, callback: (_ev, button) => leerCamposHechizo(button.form.elements)
-        }, {
-          action: "dos-fortuna", label: "Usar 2 Fortuna", callback: (_ev, button) => {
-            if (fortunaActual < 2 && luckyActual < 2 && !(fortunaActual >= 1 && luckyActual >= 1)) return null;
-            const luckyDosFortuna = fortunaActual < 2 && luckyActual >= 2;
-            const mixedDosFortuna = !luckyDosFortuna && fortunaActual < 2 && fortunaActual >= 1 && luckyActual >= 1;
-            return { ...leerCamposHechizo(button.form.elements), dosFortuna: true, luckyDosFortuna, mixedDosFortuna };
+    let config;
+    {
+      const mdDefecto = this.type === "pj"
+        ? this._sumModsMagicosMagia(hechizo.system.verbo, hechizo.system.esfera)
+        : 0;
+      const contenidoDialogo = await foundry.applications.handlebars.renderTemplate(
+        "systems/tierras-quebradas/templates/dialogs/lanzar-hechizo.hbs", { hechizo, puntuacion, dif, pmBase, pmMin, pmMax, pmVariable: pmMax > 0, pmActual, pmMaxTotal, mdDefecto }
+      );
+      const fortunaActual = this.system.fortuna?.actual ?? 0;
+      const luckyActual = TQActor._hasLucky(this) ? (this.system.fortuna?.lucky ?? 0) : 0;
+      const leerCamposHechizo = campos => ({
+        pmElegido: parseInt(campos.pmElegido?.value) || pmMin, blancos: Math.max(1, parseInt(campos.blancos?.value) || 1), duracion: campos.duracion?.value   || "standard", ceremonia: campos.ceremonia?.checked ?? false, grimorio: campos.grimorio?.checked ?? false, acelerar: campos.acelerar?.checked ?? false, limFisica: parseInt(campos.limFisica?.value) || 0, md: parseInt(campos.md?.value) || 0
+      });
+      config = await DialogV2.wait({
+        window: { title: `Lanzar: ${hechizo.name}`, width: 420 }, classes: [
+          "lh-dialog-window", "tq-tirada-dialog", ...(fortunaActual < 2 && luckyActual < 2 && !(fortunaActual >= 1 && luckyActual >= 1) ? ["tq-fort-insuf"] : [])
+        ], content: contenidoDialogo, rejectClose: false, buttons: [
+          {
+            action: "lanzar", label: "Lanzar hechizo", default: true, callback: (_ev, button) => leerCamposHechizo(button.form.elements)
+          }, {
+            action: "dos-fortuna", label: "Usar 2 Fortuna", callback: (_ev, button) => {
+              if (fortunaActual < 2 && luckyActual < 2 && !(fortunaActual >= 1 && luckyActual >= 1)) return null;
+              const luckyDosFortuna = fortunaActual < 2 && luckyActual >= 2;
+              const mixedDosFortuna = !luckyDosFortuna && fortunaActual < 2 && fortunaActual >= 1 && luckyActual >= 1;
+              return { ...leerCamposHechizo(button.form.elements), dosFortuna: true, luckyDosFortuna, mixedDosFortuna };
+            }
+          }, { action: "cancelar", label: "Cancelar" }, {
+            action: "auto", label: "Éxito Automático", callback: (_ev, button) => ({ ...leerCamposHechizo(button.form.elements), autoExito: true })
           }
-        }, { action: "cancelar", label: "Cancelar" }, {
-          action: "auto", label: "Éxito Automático", callback: (_ev, button) => ({ ...leerCamposHechizo(button.form.elements), autoExito: true })
-        }
-      ]
-    });
-    if (!config || config === "cancelar") return;
+        ]
+      });
+      if (!config || config === "cancelar") return;
+    }
 
     let mod = 0;
     if (config.ceremonia) mod += 2;
@@ -1099,7 +1194,7 @@ export class TQActor extends Actor {
 
     const mostrarAplicarResultado = !fallo;
     const datosChat = {
-      etiqueta: hechizo.name, puntuacion, bonificador: mod, dificultad: dif, debilitado, dolorExtremo, dado: dadoTotal, dadoDisplay: config.autoExito ? "—" : (dadoDisplayCustom ?? TQRoll._dadoDisplay(dadoTotal, tiradas)), total, exitos, resultado, css: resultado.css, pd: null, desgloseHechizo, modDesglose, mostrarFortuna: !config.autoExito && !config.dosFortuna, mostrarLucky: !config.autoExito && !config.dosFortuna && TQRoll._hasLucky(this), actorId: this.id, mostrarAplicarResultado, bonusEspiritu, requiereTiradaEspiritu: hechizo.system.requiereTiradaEspiritu ?? false
+      etiqueta: hechizo.name, puntuacion, bonificador: mod, dificultad: dif, debilitado, dolorExtremo, dado: dadoTotal, dadoDisplay: config.autoExito ? "—" : (dadoDisplayCustom ?? TQRoll._dadoDisplay(dadoTotal, tiradas)), total, exitos, resultado, css: resultado.css, pd: null, desgloseHechizo, modDesglose, mostrarFortuna: !config.autoExito && !config.dosFortuna, mostrarLucky: !config.autoExito && !config.dosFortuna && TQRoll._hasLucky(this), actorId: this.id, mostrarAplicarResultado, bonusEspiritu, requiereTiradaEspiritu: hechizo.system.requiereTiradaEspiritu ?? false, espirituArtefacto: opciones.artefacto?.system?.espiritu ?? null
     };
     const contenido = await foundry.applications.handlebars.renderTemplate(
       "systems/tierras-quebradas/templates/dialogs/tirada-resultado.hbs", datosChat
@@ -1112,23 +1207,29 @@ export class TQActor extends Actor {
       }
     });
 
-    const pmNuevo = pmActual - costePM;
-    const camposPM = esPJ
-      ? { "system.hechiceria.pmActual": Math.max(0, pmNuevo) }
-      : { "system.pm": Math.max(0, pmNuevo) };
-    if (pmNuevo >= 0) {
-      await this.update(camposPM);
-      if (pmNuevo === 0) {
-        await this.update({ "system.salud.debilitado": true });
-        ui.notifications.warn(game.i18n.format("TQ.Magia.Debilitado", { nombre: this.name }));
-      } else {
-        ui.notifications.info(game.i18n.format("TQ.Magia.PMGastados", { hechizo: hechizo.name, costePM, pmNuevo, pmMax: pmMaxTotal }));
-      }
+    if (opciones.artefacto) {
+      const pmDisp = opciones.artefacto.system.pm ?? 0;
+      const pmGasto = opciones.artefactoPmCoste ?? costePM;
+      await opciones.artefacto.update({ "system.pm": Math.max(0, pmDisp - pmGasto) });
     } else {
-      const danhoMagico = Math.abs(pmNuevo);
-      await this.update({ ...camposPM, "system.salud.debilitado": true });
-      await this.recibirDanho(danhoMagico, danhoMagico);
-      ui.notifications.error(game.i18n.format("TQ.Magia.AgotamientoExtremo", { nombre: this.name, danho: danhoMagico }));
+      const pmNuevo = pmActual - costePM;
+      const camposPM = esPJ
+        ? { "system.hechiceria.pmActual": Math.max(0, pmNuevo) }
+        : { "system.pm": Math.max(0, pmNuevo) };
+      if (pmNuevo >= 0) {
+        await this.update(camposPM);
+        if (pmNuevo === 0) {
+          await this.update({ "system.salud.debilitado": true });
+          ui.notifications.warn(game.i18n.format("TQ.Magia.Debilitado", { nombre: this.name }));
+        } else {
+          ui.notifications.info(game.i18n.format("TQ.Magia.PMGastados", { hechizo: hechizo.name, costePM, pmNuevo, pmMax: pmMaxTotal }));
+        }
+      } else {
+        const danhoMagico = Math.abs(pmNuevo);
+        await this.update({ ...camposPM, "system.salud.debilitado": true });
+        await this.recibirDanho(danhoMagico, danhoMagico);
+        ui.notifications.error(game.i18n.format("TQ.Magia.AgotamientoExtremo", { nombre: this.name, danho: danhoMagico }));
+      }
     }
 
     if (resultado.css.includes("complicacion")) {
@@ -1138,15 +1239,16 @@ export class TQActor extends Actor {
 
   }
 
-  async _luchaDeEspiritu(nombreHechizo, bonusCaster = 0) {
+  async _luchaDeEspiritu(nombreHechizo, bonusCaster = 0, espirituAtacanteOverride = null, nombreAtacanteOverride = null) {
 
     const targetActor = game.user.targets.first()?.actor;
     if (!targetActor) {
       ui.notifications.warn(game.i18n.localize("TQ.Warn.SinObjetivo"));
       return false;
     }
-    const espirituAtacante = this.system.caracteristicas?.espiritu?.valor ?? 0;
+    const espirituAtacante = espirituAtacanteOverride ?? (this.system.caracteristicas?.espiritu?.valor ?? 0);
     const espirituObjetivo = targetActor.system.caracteristicas?.espiritu?.valor ?? 0;
+    const nombreAtacante = nombreAtacanteOverride ?? this.name;
     const { total: dadoAtacante } = await TQRoll._tirarExplosivo(10);
     const { total: dadoObjetivo } = await TQRoll._tirarExplosivo(10);
     const totalAtacante = dadoAtacante + espirituAtacante + bonusCaster;
@@ -1158,7 +1260,7 @@ export class TQActor extends Actor {
         <div class="tq-card-titulo">${gana ? game.i18n.localize("TQ.Magia.HechizSurteEfecto") : game.i18n.localize("TQ.Magia.ObjetivoResiste")}</div>
         <hr/>
         <div class="tq-desglose" style="text-align:center;">
-          ${this.name}: ${dadoAtacante} + ${espirituAtacante}(Esp)${bonusCaster ? ` + ${bonusCaster}(crít.)` : ""} = <strong>${totalAtacante}</strong><br>
+          ${nombreAtacante}: ${dadoAtacante} + ${espirituAtacante}(Esp)${bonusCaster ? ` + ${bonusCaster}(crít.)` : ""} = <strong>${totalAtacante}</strong><br>
           ${targetActor.name}: ${dadoObjetivo} + ${espirituObjetivo}(Esp) = <strong>${totalObjetivo}</strong>
         </div>
       </div>`

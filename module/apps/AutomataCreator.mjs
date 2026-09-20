@@ -33,40 +33,43 @@ export class AutomataCreator extends HandlebarsApplicationMixin(ApplicationV2) {
   static open() { return new AutomataCreator().render(true); }
 
   async _prepareContext() {
-    const e = this._estado;
+    const estado = this._estado;
     const actores = game.actors
       .filter(a => ["pj", "pnj"].includes(a.type))
       .map(a => ({ id: a.id, name: a.name, mente: a.system.caracteristicas?.mente?.valor ?? 0 }))
       .sort((a, b) => a.name.localeCompare(b.name, "es"));
 
-    const vmDebilidades = e.debilidades.length;
-    const vmEfectivo = e.vmDisponible + vmDebilidades;
+    const vmDebilidades = estado.debilidades.length;
+    const vmEfectivo = estado.vmDisponible + vmDebilidades;
     const vmGastado = this._vmTotal();
     const vmRestante = vmEfectivo - vmGastado;
-    const poolGastado = e.habilidades.reduce((s, h) => s + (h.nivel || 0), 0);
-    const armaduraBase = Math.floor((e.cuerpo || 0) / 2);
+    const poolGastado = estado.habilidades.reduce((acc, h) => acc + (h.nivel || 0), 0);
+    const armaduraBase = Math.floor((estado.cuerpo || 0) / 2);
 
     const pasos = [
       { num: 1, label: "Base" }, { num: 2, label: "Stats" }, { num: 3, label: "Habilidades" },
       { num: 4, label: "VM" }, { num: 5, label: "Virtud" }, { num: 6, label: "Resumen" }
     ].map(p => ({ ...p, activo: p.num === this._paso, completado: p.num < this._paso }));
 
+    const vmLibre = vmEfectivo - this._vmMovimiento() - this._vmMejoras() - this._vmPoderes();
+    const boostsPuntos = Object.values(estado.boostsHab).reduce((acc, v) => acc + (v || 0), 0);
+
     return {
       paso: this._paso, paso1: this._paso === 1, paso2: this._paso === 2,
       paso3: this._paso === 3, paso4: this._paso === 4, paso5: this._paso === 5, paso6: this._paso === 6,
-      pasos, estado: e, actores, vmDebilidades, vmEfectivo, vmGastado, vmRestante, armaduraBase,
-      poolGastado, poolRestante: e.poolHabilidades - poolGastado,
+      pasos, estado, actores, vmDebilidades, vmEfectivo, vmGastado, vmRestante, armaduraBase,
+      poolGastado, poolRestante: estado.poolHabilidades - poolGastado,
       tiposMov: TIPOS_MOV, velocidades: VELOCIDADES,
       vmMov: this._vmMovimiento(), vmMejoras: this._vmMejoras(),
       vmBoosts: this._vmBoosts(), vmPoderes: this._vmPoderes(),
-      puntosBoostDisponibles: (vmEfectivo - this._vmMovimiento() - this._vmMejoras() - this._vmPoderes()) * 3 - Object.values(e.boostsHab).reduce((s, v) => s + (v || 0), 0),
-      cuerpoFinal: (e.cuerpo || 0) + (e.mejoras.cuerpo || 0),
-      menteFinal: (e.mente || 0) + (e.mejoras.mente || 0),
-      tamanoFinal: (e.tamano || 0) + (e.mejoras.tamano || 0),
-      armaduraFinal: armaduraBase + (e.mejoras.armadura || 0),
-      coste: e.vmDisponible * 1000,
-      movimientoStr: e.movimientos.map(m => `${m.tipo}, ${m.velocidad}`).join(". ") + (e.movimientos.length ? "." : ""),
-      habilidadesResumen: e.habilidades.map(h => ({ nombre: h.nombre, nivel: (h.nivel || 0) + (e.boostsHab[h.nombre] || 0) }))
+      puntosBoostDisponibles: vmLibre * 3 - boostsPuntos,
+      cuerpoFinal: (estado.cuerpo || 0) + (estado.mejoras.cuerpo || 0),
+      menteFinal: (estado.mente || 0) + (estado.mejoras.mente || 0),
+      tamanoFinal: (estado.tamano || 0) + (estado.mejoras.tamano || 0),
+      armaduraFinal: armaduraBase + (estado.mejoras.armadura || 0),
+      coste: estado.vmDisponible * 1000,
+      movimientoStr: estado.movimientos.map(m => `${m.tipo}, ${m.velocidad}`).join(". ") + (estado.movimientos.length ? "." : ""),
+      habilidadesResumen: estado.habilidades.map(h => ({ nombre: h.nombre, nivel: (h.nivel || 0) + (estado.boostsHab[h.nombre] || 0) }))
     };
   }
 
@@ -80,9 +83,9 @@ export class AutomataCreator extends HandlebarsApplicationMixin(ApplicationV2) {
     return vm;
   }
 
-  _vmMejoras() { return Object.values(this._estado.mejoras).reduce((s, v) => s + (v || 0), 0); }
-  _vmBoosts() { return Math.floor(Object.values(this._estado.boostsHab).reduce((s, v) => s + (v || 0), 0) / 3); }
-  _vmPoderes() { return this._estado.poderes.reduce((s, p) => s + (p.vm || 0), 0); }
+  _vmMejoras() { return Object.values(this._estado.mejoras).reduce((acc, v) => acc + (v || 0), 0); }
+  _vmBoosts() { return Math.floor(Object.values(this._estado.boostsHab).reduce((acc, v) => acc + (v || 0), 0) / 3); }
+  _vmPoderes() { return this._estado.poderes.reduce((acc, p) => acc + (p.vm || 0), 0); }
   _vmTotal() { return this._vmMovimiento() + this._vmMejoras() + this._vmBoosts() + this._vmPoderes(); }
 
   _guardarPaso1(el) {
@@ -147,7 +150,7 @@ export class AutomataCreator extends HandlebarsApplicationMixin(ApplicationV2) {
   }
 
   _actualizarPoolDisplay(el) {
-    const gastado = this._estado.habilidades.reduce((s, h) => s + (h.nivel || 0), 0);
+    const gastado = this._estado.habilidades.reduce((acc, h) => acc + (h.nivel || 0), 0);
     const restante = this._estado.poolHabilidades - gastado;
     const span = el.querySelector(".pool-restante");
     if (span) { span.textContent = restante; span.classList.toggle("tq-rojo", restante < 0); }
@@ -165,9 +168,9 @@ export class AutomataCreator extends HandlebarsApplicationMixin(ApplicationV2) {
   }
 
   _actualizarBoostDisplay(el) {
-    const e = this._estado;
-    const totalPuntos = Object.values(e.boostsHab).reduce((s, v) => s + (v || 0), 0);
-    const vmEfectivo = e.vmDisponible + e.debilidades.length;
+    const estado = this._estado;
+    const totalPuntos = Object.values(estado.boostsHab).reduce((acc, v) => acc + (v || 0), 0);
+    const vmEfectivo = estado.vmDisponible + estado.debilidades.length;
     const disponibles = (vmEfectivo - this._vmMovimiento() - this._vmMejoras() - this._vmPoderes()) * 3 - totalPuntos;
     const span = el.querySelector(".boost-pts-restante");
     if (span) { span.textContent = disponibles; span.classList.toggle("tq-rojo", disponibles < 0); }
@@ -227,6 +230,7 @@ export class AutomataCreator extends HandlebarsApplicationMixin(ApplicationV2) {
         this._estado.vmDisponible = mente;
         this._estado.poolHabilidades = mente * 3;
         if (wasZero && mente > 0) {
+          this._guardarPaso1(el);
           this.render();
         } else {
           const vmDisplay = el.querySelector(".vm-display");
@@ -366,56 +370,65 @@ export class AutomataCreator extends HandlebarsApplicationMixin(ApplicationV2) {
           const vm = item.system.vm || 1;
           const vmRestante = this._estado.vmDisponible + this._estado.debilidades.length - this._vmTotal();
           if (vm > vmRestante) { ui.notifications.warn(`VM insuficiente. Necesitas ${vm} VM pero solo quedan ${vmRestante}.`); return; }
+          this._guardarPaso4(el);
           this._estado.poderes.push({ nombre: item.name, vm, uuid: data.uuid });
           this._actualizarVMDisplay();
           this.render();
         });
       }
 
-      el.querySelector(".poder-anadir")?.addEventListener("click", async () => {
-        const { DialogV2 } = foundry.applications.api;
-        const result = await DialogV2.prompt({
-          window: { title: "Añadir poder" },
-          content: `<div style="display:flex;flex-direction:column;gap:6px;">
-            <input type="text" name="nombre" placeholder="Nombre del poder" autofocus />
-            <div style="display:flex;align-items:center;gap:8px;">
-              <label style="white-space:nowrap;">Coste VM</label>
-              <input type="number" name="vm" value="1" min="0" style="width:60px;" />
-            </div>
-          </div>`,
-          ok: { label: "Añadir", callback: (_ev, btn) => ({ nombre: btn.form.elements.nombre.value.trim(), vm: parseInt(btn.form.elements.vm.value) || 0 }) }
-        }).catch(() => null);
-        if (!result?.nombre) return;
-        const vmRestante = this._estado.vmDisponible + this._estado.debilidades.length - this._vmTotal();
-        if (result.vm > vmRestante) { ui.notifications.warn(`VM insuficiente. Necesitas ${result.vm} VM pero solo quedan ${vmRestante}.`); return; }
-        this._estado.poderes.push({ nombre: result.nombre, vm: result.vm, uuid: null });
-        this._actualizarVMDisplay();
-        this.render();
+      const capturarItemTemporal = async (datos, onCapturar) => {
+        const item = await Item.create(datos);
+        if (!item) return;
+        const sheet = item.sheet;
+        if (!sheet) return;
+        let capturado = false;
+        const closeOriginal = sheet.close.bind(sheet);
+        sheet.close = async (...args) => {
+          const r = await closeOriginal(...args);
+          if (!capturado) {
+            capturado = true;
+            const live = game.items.get(item.id);
+            if (live) { onCapturar(live); await live.delete(); }
+          }
+          return r;
+        };
+        await sheet.render(true);
+      };
+
+      el.querySelector(".poder-anadir")?.addEventListener("click", () => {
+        capturarItemTemporal({ name: "Nuevo Rasgo", type: "caracteristicaBestiario", system: { tipo: "rasgo", vm: 1 } }, (live) => {
+          const vm = live.system.vm || 0;
+          const vmRestante = this._estado.vmDisponible + this._estado.debilidades.length - this._vmTotal();
+          if (vm > vmRestante) { ui.notifications.warn(`VM insuficiente. Necesitas ${vm} VM pero solo quedan ${vmRestante}.`); return; }
+          this._guardarPaso4(el);
+          this._estado.poderes.push({ nombre: live.name, vm, uuid: null, _itemData: live.toObject() });
+          this._actualizarVMDisplay();
+          this.render();
+        });
       });
 
       el.querySelectorAll(".poder-borrar").forEach(a => {
         a.addEventListener("click", ev => {
+          this._guardarPaso4(el);
           this._estado.poderes.splice(parseInt(ev.currentTarget.dataset.idx), 1);
           this._actualizarVMDisplay();
           this.render();
         });
       });
 
-      el.querySelector(".debilidad-anadir")?.addEventListener("click", async () => {
-        const { DialogV2 } = foundry.applications.api;
-        const nombre = await DialogV2.prompt({
-          window: { title: "Añadir debilidad" },
-          content: `<input type="text" name="nombre" placeholder="Nombre de la debilidad" autofocus />`,
-          ok: { label: "Añadir", callback: (_ev, btn) => btn.form.elements.nombre.value.trim() }
-        }).catch(() => null);
-        if (!nombre) return;
-        if (this._estado.debilidades.some(d => d.nombre === nombre)) return;
-        this._estado.debilidades.push({ nombre, uuid: null });
-        this.render();
+      el.querySelector(".debilidad-anadir")?.addEventListener("click", () => {
+        capturarItemTemporal({ name: "Nueva Debilidad", type: "caracteristicaBestiario", system: { tipo: "debilidad" } }, (live) => {
+          if (this._estado.debilidades.some(d => d.nombre === live.name)) return;
+          this._guardarPaso4(el);
+          this._estado.debilidades.push({ nombre: live.name, uuid: null, _itemData: live.toObject() });
+          this.render();
+        });
       });
 
       el.querySelectorAll(".debilidad-borrar").forEach(a => {
         a.addEventListener("click", ev => {
+          this._guardarPaso4(el);
           this._estado.debilidades.splice(parseInt(ev.currentTarget.dataset.idx), 1);
           this.render();
         });
@@ -437,6 +450,7 @@ export class AutomataCreator extends HandlebarsApplicationMixin(ApplicationV2) {
             return;
           }
           if (this._estado.debilidades.some(d => d.nombre === item.name)) return;
+          this._guardarPaso4(el);
           this._estado.debilidades.push({ nombre: item.name, uuid: data.uuid });
           this.render();
         });
@@ -485,6 +499,7 @@ export class AutomataCreator extends HandlebarsApplicationMixin(ApplicationV2) {
             this._estado.debilidades.push({ nombre, uuid: item?.uuid ?? null });
           }
         }
+        this._guardarPaso4(el);
         this.render();
       });
     }
@@ -500,34 +515,34 @@ export class AutomataCreator extends HandlebarsApplicationMixin(ApplicationV2) {
 
   async _crearAutomata() {
     this._guardarPaso4(this.element);
-    const e = this._estado;
+    const estado = this._estado;
     const habilidadesObj = {};
-    for (const h of e.habilidades) {
-      const boost = e.boostsHab[h.nombre] ?? 0;
+    for (const h of estado.habilidades) {
+      const boost = estado.boostsHab[h.nombre] ?? 0;
       habilidadesObj[h.nombre] = { base: "cuerpo", nivel: (h.nivel || 0) + boost, puntosFijos: 0, estorbo: 0 };
     }
 
-    const cuerpoFinal = (e.cuerpo || 0) + (e.mejoras.cuerpo || 0);
-    const menteFinal = (e.mente || 0) + (e.mejoras.mente || 0);
-    const tamanoFinal = (e.tamano || 0) + (e.mejoras.tamano || 0);
-    const armaduraFinal = Math.floor(cuerpoFinal / 2) + (e.mejoras.armadura || 0);
-    const movStr = e.movimientos.map(m => `${m.tipo}, ${m.velocidad}`).join(". ") + ".";
+    const cuerpoFinal = (estado.cuerpo || 0) + (estado.mejoras.cuerpo || 0);
+    const menteFinal = (estado.mente || 0) + (estado.mejoras.mente || 0);
+    const tamanoFinal = (estado.tamano || 0) + (estado.mejoras.tamano || 0);
+    const armaduraFinal = Math.floor(cuerpoFinal / 2) + (estado.mejoras.armadura || 0);
+    const movStr = estado.movimientos.map(m => `${m.tipo}, ${m.velocidad}`).join(". ") + ".";
 
     const actor = await Actor.create({
-      name: e.nombre || "Nuevo Autómata",
+      name: estado.nombre || "Nuevo Autómata",
       type: "automata",
       system: {
         caracteristicas: {
           cuerpo: { valor: cuerpoFinal },
           mente: { valor: menteFinal },
-          espiritu: { valor: e.espiritu },
-          atractivo: { valor: e.mejoras.atractivo || 0 },
+          espiritu: { valor: estado.espiritu },
+          atractivo: { valor: estado.mejoras.atractivo || 0 },
           tamano: { valor: tamanoFinal }
         },
         habilidades: habilidadesObj,
-        valorMagico: e.vmDisponible,
-        coste: e.vmDisponible * 1000,
-        creador: e.teaurgoNombre || e.teaurgoNombreManual || "",
+        valorMagico: estado.vmDisponible,
+        coste: estado.vmDisponible * 1000,
+        creador: estado.teaurgoNombre || estado.teaurgoNombreManual || "",
         proteccion: { valor: armaduraFinal, tipo: "dura" },
         alImpacto: 0,
         movimiento: movStr,
@@ -543,18 +558,28 @@ export class AutomataCreator extends HandlebarsApplicationMixin(ApplicationV2) {
       system: { proteccion: armaduraFinal, tipo: "dura", zona: "cuerpo", equipped: true }
     }];
 
-    for (const p of e.poderes) {
+    for (const p of estado.poderes) {
       if (p.uuid) {
         const src = await fromUuid(p.uuid);
         if (src) { itemsToCreate.push(src.toObject()); continue; }
       }
+      if (p._itemData) {
+        const data = foundry.utils.deepClone(p._itemData);
+        data.system.vm = p.vm || data.system.vm;
+        itemsToCreate.push(data);
+        continue;
+      }
       itemsToCreate.push({ name: p.nombre, type: "caracteristicaBestiario", system: { tipo: "rasgo", vm: p.vm } });
     }
 
-    for (const d of e.debilidades) {
+    for (const d of estado.debilidades) {
       if (d.uuid) {
         const src = await fromUuid(d.uuid);
         if (src) { itemsToCreate.push(src.toObject()); continue; }
+      }
+      if (d._itemData) {
+        itemsToCreate.push(foundry.utils.deepClone(d._itemData));
+        continue;
       }
       itemsToCreate.push({ name: d.nombre, type: "caracteristicaBestiario", system: { tipo: "debilidad" } });
     }

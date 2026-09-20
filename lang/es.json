@@ -22,7 +22,8 @@
       "idioma": "Idioma",
       "deidad": "Deidad",
       "artefacto": "Artefacto",
-      "caracteristicaBestiario": "Característica de Bestiario"
+      "caracteristicaBestiario": "Característica de Bestiario",
+      "objetoDemoniaco": "Objeto Demoníaco"
     }
   },
   "TQ": {
@@ -54,7 +55,8 @@
         "profesion": "Profesión",
         "deidad": "Deidad",
         "artefacto": "Artefacto",
-        "caracteristicaBestiario": "Característica de Bestiario"
+        "caracteristicaBestiario": "Característica de Bestiario",
+        "objetoDemoniaco": "Objeto Demoníaco"
       },
       "deidad": "Deidad"
     },
@@ -392,7 +394,9 @@
       "Debilidades": "Debilidades",
       "Destino": "Destino",
       "Objetos": "Objetos",
-      "ObjetosMagicos": "Objetos Mágicos"
+      "ObjetosMagicos": "Objetos Mágicos",
+      "Artefactos": "Artefactos",
+      "ObjetosDemoniacos": "Objetos Demoníacos"
     },
     "Botones": {
       "FinSesion": "Fin de Sesión",
@@ -893,6 +897,7 @@
     },
     "Demonio": {
       "ValorMagico": "Valor Mágico",
+      "Deidad": "Deidad",
       "Vinculo": "Vínculo"
     },
     "Automata": {
