@@ -1,3 +1,7 @@
-2026/09/12-18:03:20.734 888 Recovering log #332
-2026/09/12-18:03:20.741 888 Delete type=0 #332
-2026/09/12-18:03:20.741 888 Delete type=3 #330
+2026/09/20-12:56:11.558 1ecc Recovering log #402
+2026/09/20-12:56:11.568 1ecc Delete type=0 #402
+2026/09/20-12:56:11.568 1ecc Delete type=3 #400
+2026/09/20-12:57:11.763 203c Level-0 table #407: started
+2026/09/20-12:57:11.763 203c Level-0 table #407: 0 bytes OK
+2026/09/20-12:57:11.768 203c Delete type=0 #405
+2026/09/20-12:57:11.774 203c Manual compaction at level-0 from '!items!3LPIO0YabwwsRunI' @ 72057594037927935 : 1 .. '!items!3LPIO0YabwwsRunI' @ 0 : 0; will stop at (end)
