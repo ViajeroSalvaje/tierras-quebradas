@@ -32,9 +32,11 @@ import { HabilidadSheet } from "./module/items/sheets/HabilidadSheet.mjs";
 import { DeidadSheet } from "./module/items/sheets/DeidadSheet.mjs";
 import { ArtefactoSheet } from "./module/items/sheets/ArtefactoSheet.mjs";
 import { CaracteristicaBestiarioSheet } from "./module/items/sheets/CaracteristicaBestiarioSheet.mjs";
+import { ObjetoDemoniacoSheet } from "./module/items/sheets/ObjetoDemoniacoSheet.mjs";
 
 // Helpers y apps
 import { registerHandlebarsHelpers } from "./module/helpers/handlebars.mjs";
+import { HABILIDADES_OPCIONES } from "./module/helpers/habilidades.mjs";
 import { CharacterCreator } from "./module/apps/CharacterCreator.mjs";
 import { PNJImporter } from "./module/apps/PNJImporter.mjs";
 import { DemonioImporter } from "./module/apps/DemonioImporter.mjs";
@@ -42,6 +44,7 @@ import { CriaturaImporter } from "./module/apps/CriaturaImporter.mjs";
 import { AutomataImporter } from "./module/apps/AutomataImporter.mjs";
 import { AutomataCreator } from "./module/apps/AutomataCreator.mjs";
 import { ArtefactoCreator } from "./module/apps/ArtefactoCreator.mjs";
+import { DemonioWizard } from "./module/apps/DemonioWizard.mjs";
 import { DirectorWidget } from "./module/apps/DirectorWidget.mjs";
 import { TQLinkCreator } from "./module/apps/TQLinkCreator.mjs";
 import { ModoTrey } from "./module/apps/ModoTrey.mjs";
@@ -136,14 +139,15 @@ Hooks.once("init", () => {
   Items.registerSheet("tierras-quebradas", DeidadSheet, { types: ["deidad"], makeDefault: true, label: "TQ.Item.Types.deidad" });
   Items.registerSheet("tierras-quebradas", ArtefactoSheet, { types: ["artefacto"], makeDefault: true, label: "TQ.Item.Types.artefacto" });
   Items.registerSheet("tierras-quebradas", CaracteristicaBestiarioSheet, { types: ["caracteristicaBestiario"], makeDefault: true, label: "TQ.Item.Types.caracteristicaBestiario" });
+  Items.registerSheet("tierras-quebradas", ObjetoDemoniacoSheet, { types: ["objetoDemoniaco"], makeDefault: true, label: "TQ.Item.Types.objetoDemoniaco" });
 
   registerHandlebarsHelpers();
 
   loadTemplates([
-    "systems/tierras-quebradas/templates/partials/_tab-combate-magia.hbs", "systems/tierras-quebradas/templates/partials/cc/_cc-paso-caracteristicas.hbs", "systems/tierras-quebradas/templates/partials/cc/_cc-paso-edad.hbs", "systems/tierras-quebradas/templates/partials/cc/_cc-paso-origen.hbs", "systems/tierras-quebradas/templates/partials/cc/_cc-paso-especie.hbs", "systems/tierras-quebradas/templates/partials/cc/_cc-paso-entorno.hbs", "systems/tierras-quebradas/templates/partials/cc/_cc-paso-profesion.hbs", "systems/tierras-quebradas/templates/partials/cc/_cc-paso-ventajas.hbs", "systems/tierras-quebradas/templates/partials/cc/_cc-paso-rasgos.hbs", "systems/tierras-quebradas/templates/partials/cc/_cc-paso-equipo.hbs", "systems/tierras-quebradas/templates/partials/cc/_cc-paso-habilidades.hbs", "systems/tierras-quebradas/templates/partials/cc/_cc-paso-religion.hbs", "systems/tierras-quebradas/templates/partials/cc/_cc-paso-magia.hbs",
-    "systems/tierras-quebradas/templates/apps/character-creator.hbs", "systems/tierras-quebradas/templates/apps/pnj-importer.hbs", "systems/tierras-quebradas/templates/apps/demonio-importer.hbs", "systems/tierras-quebradas/templates/apps/criatura-importer.hbs", "systems/tierras-quebradas/templates/apps/automata-importer.hbs", "systems/tierras-quebradas/templates/apps/director-widget.hbs", "systems/tierras-quebradas/templates/apps/tq-link-creator.hbs", "systems/tierras-quebradas/templates/apps/automata-creator.hbs", "systems/tierras-quebradas/templates/apps/artefacto-creator.hbs",
+    "systems/tierras-quebradas/templates/partials/_tab-combate-magia.hbs", "systems/tierras-quebradas/templates/partials/_habilidad-col.hbs", "systems/tierras-quebradas/templates/partials/cc/_cc-paso-caracteristicas.hbs", "systems/tierras-quebradas/templates/partials/cc/_cc-paso-edad.hbs", "systems/tierras-quebradas/templates/partials/cc/_cc-paso-origen.hbs", "systems/tierras-quebradas/templates/partials/cc/_cc-paso-especie.hbs", "systems/tierras-quebradas/templates/partials/cc/_cc-paso-entorno.hbs", "systems/tierras-quebradas/templates/partials/cc/_cc-paso-profesion.hbs", "systems/tierras-quebradas/templates/partials/cc/_cc-paso-ventajas.hbs", "systems/tierras-quebradas/templates/partials/cc/_cc-paso-rasgos.hbs", "systems/tierras-quebradas/templates/partials/cc/_cc-paso-equipo.hbs", "systems/tierras-quebradas/templates/partials/cc/_cc-paso-habilidades.hbs", "systems/tierras-quebradas/templates/partials/cc/_cc-paso-religion.hbs", "systems/tierras-quebradas/templates/partials/cc/_cc-paso-magia.hbs",
+    "systems/tierras-quebradas/templates/apps/character-creator.hbs", "systems/tierras-quebradas/templates/apps/pnj-importer.hbs", "systems/tierras-quebradas/templates/apps/demonio-importer.hbs", "systems/tierras-quebradas/templates/apps/criatura-importer.hbs", "systems/tierras-quebradas/templates/apps/automata-importer.hbs", "systems/tierras-quebradas/templates/apps/director-widget.hbs", "systems/tierras-quebradas/templates/apps/tq-link-creator.hbs", "systems/tierras-quebradas/templates/apps/automata-creator.hbs", "systems/tierras-quebradas/templates/apps/artefacto-creator.hbs", "systems/tierras-quebradas/templates/apps/demonio-wizard.hbs",
     "systems/tierras-quebradas/templates/actors/pj-sheet.hbs", "systems/tierras-quebradas/templates/actors/pnj-sheet.hbs", "systems/tierras-quebradas/templates/actors/criatura-sheet.hbs", "systems/tierras-quebradas/templates/actors/demonio-sheet.hbs", "systems/tierras-quebradas/templates/actors/automata-sheet.hbs",
-    "systems/tierras-quebradas/templates/items/objeto-magico-sheet.hbs", "systems/tierras-quebradas/templates/items/deidad-sheet.hbs", "systems/tierras-quebradas/templates/items/artefacto-sheet.hbs", "systems/tierras-quebradas/templates/items/caracteristica-bestiario-sheet.hbs", "systems/tierras-quebradas/templates/items/arma-sheet.hbs", "systems/tierras-quebradas/templates/items/armadura-sheet.hbs", "systems/tierras-quebradas/templates/items/hechizo-sheet.hbs", "systems/tierras-quebradas/templates/items/ventaja-sheet.hbs", "systems/tierras-quebradas/templates/items/rasgo-sheet.hbs", "systems/tierras-quebradas/templates/items/especie-sheet.hbs", "systems/tierras-quebradas/templates/items/idioma-sheet.hbs", "systems/tierras-quebradas/templates/items/objeto-sheet.hbs", "systems/tierras-quebradas/templates/items/consumible-sheet.hbs", "systems/tierras-quebradas/templates/items/habilidad-sheet.hbs", "systems/tierras-quebradas/templates/items/entorno-sheet.hbs", "systems/tierras-quebradas/templates/items/origen-sheet.hbs", "systems/tierras-quebradas/templates/items/profesion-sheet.hbs",
+    "systems/tierras-quebradas/templates/items/objeto-magico-sheet.hbs", "systems/tierras-quebradas/templates/items/deidad-sheet.hbs", "systems/tierras-quebradas/templates/items/artefacto-sheet.hbs", "systems/tierras-quebradas/templates/items/caracteristica-bestiario-sheet.hbs", "systems/tierras-quebradas/templates/items/objeto-demoniaco-sheet.hbs", "systems/tierras-quebradas/templates/items/arma-sheet.hbs", "systems/tierras-quebradas/templates/items/armadura-sheet.hbs", "systems/tierras-quebradas/templates/items/hechizo-sheet.hbs", "systems/tierras-quebradas/templates/items/ventaja-sheet.hbs", "systems/tierras-quebradas/templates/items/rasgo-sheet.hbs", "systems/tierras-quebradas/templates/items/especie-sheet.hbs", "systems/tierras-quebradas/templates/items/idioma-sheet.hbs", "systems/tierras-quebradas/templates/items/objeto-sheet.hbs", "systems/tierras-quebradas/templates/items/consumible-sheet.hbs", "systems/tierras-quebradas/templates/items/habilidad-sheet.hbs", "systems/tierras-quebradas/templates/items/entorno-sheet.hbs", "systems/tierras-quebradas/templates/items/origen-sheet.hbs", "systems/tierras-quebradas/templates/items/profesion-sheet.hbs",
     "systems/tierras-quebradas/templates/dialogs/tirada-dialogo.hbs", "systems/tierras-quebradas/templates/dialogs/tirada-resultado.hbs", "systems/tierras-quebradas/templates/dialogs/tirada-fortuna-eleccion.hbs", "systems/tierras-quebradas/templates/dialogs/tablas-melee.hbs", "systems/tierras-quebradas/templates/dialogs/fortuna-dialogo.hbs",
     "systems/tierras-quebradas/templates/dialogs/tirada-multimelee-rivales.hbs", "systems/tierras-quebradas/templates/dialogs/tirada-multimelee-resultado.hbs", "systems/tierras-quebradas/templates/dialogs/tirada-fortuna-eleccion-multiple.hbs"
   ]);
@@ -310,7 +314,7 @@ Hooks.on("renderActorDirectory", (_app, html) => {
 
   if (game.user.isGM) {
     const wrapper = document.createElement("div");
-    wrapper.style.cssText = "grid-column: 1 / -1; display: flex; flex-direction: column; gap: 4px;";
+    wrapper.style.cssText = "grid-column: 1 / -1; flex-basis: 100%; width: 100%; display: flex; flex-direction: column; gap: 4px;";
 
     const btnImportar = document.createElement("button");
     btnImportar.type = "button";
@@ -335,12 +339,27 @@ Hooks.on("renderActorDirectory", (_app, html) => {
     });
     wrapper.appendChild(btnImportar);
 
-    const btnCrearAutomata = document.createElement("button");
-    btnCrearAutomata.type = "button";
-    btnCrearAutomata.style.cssText = "width:100%;";
-    btnCrearAutomata.textContent = "Crear Autómata";
-    btnCrearAutomata.addEventListener("click", () => AutomataCreator.open());
-    wrapper.appendChild(btnCrearAutomata);
+    const btnCrear = document.createElement("button");
+    btnCrear.type = "button";
+    btnCrear.style.cssText = "width:100%;";
+    btnCrear.textContent = "Crear";
+    btnCrear.addEventListener("click", async () => {
+      const { DialogV2 } = foundry.applications.api;
+      const result = await DialogV2.wait({
+        window: { title: "Crear" },
+        classes: ["tq-crear-menu"],
+        content: "",
+        rejectClose: false,
+        buttons: [
+          { action: "automata", label: "Crear Autómata" },
+          { action: "artefacto", label: "Crear Artefacto" },
+          { action: "demonologia", label: "Demonología" }
+        ]
+      });
+      const map = { automata: AutomataCreator, artefacto: ArtefactoCreator, demonologia: DemonioWizard };
+      if (result && map[result]) map[result].open();
+    });
+    wrapper.appendChild(btnCrear);
 
     actions.appendChild(wrapper);
   } else {
@@ -352,19 +371,6 @@ Hooks.on("renderActorDirectory", (_app, html) => {
     actions.appendChild(btnWizard);
   }
 });
-
-// Botón Crear Artefacto — desactivado temporalmente
-// Hooks.on("renderItemDirectory", (_app, html) => {
-//   if (!game.user.isGM) return;
-//   const actions = html.querySelector(".action-buttons");
-//   if (!actions) return;
-//   const btn = document.createElement("button");
-//   btn.type = "button";
-//   btn.style.cssText = "grid-column: 1 / -1; width:100%;";
-//   btn.textContent = "Crear Artefacto";
-//   btn.addEventListener("click", () => ArtefactoCreator.open());
-//   actions.appendChild(btn);
-// });
 
 // Interceptar creación de PJ para mostrar diálogo de elección
 Hooks.on("preCreateActor", (actor, data, options, userId) => {
@@ -388,6 +394,19 @@ Hooks.on("preCreateActor", (actor, data, options, userId) => {
     }
   }, 0);
   return false;
+});
+
+Hooks.on("preCreateToken", (tokenDocument, data, options, userId) => {
+  if (game.userId !== userId) return;
+  const actor = game.actors.get(tokenDocument.actorId);
+  if (actor?.type === "pj") return;
+  const baseName = tokenDocument.name;
+  if (!baseName) return;
+  const usedNames = new Set([...(game.scenes.current?.tokens ?? [])].map(t => t.name));
+  if (!usedNames.has(baseName)) return;
+  let n = 2;
+  while (usedNames.has(`${baseName} ${n}`)) n++;
+  tokenDocument.updateSource({ name: `${baseName} ${n}` });
 });
 
 Hooks.on("createItem", async (item, options, userId) => {
@@ -519,7 +538,7 @@ Hooks.on("updateItem", async (item, changes, options, userId) => {
   const actor = item.parent;
   if (!actor) return;
 
-  // Armadura vinculada → sincronizar equipped de vuelta al arma fuente
+ 
   const fromArmaId = item.getFlag("tierras-quebradas", "fromArmaId");
   if (fromArmaId && changes.system?.equipped !== undefined) {
     const armaFuente = actor.items.get(fromArmaId);
@@ -553,7 +572,104 @@ Hooks.on("deleteItem", async (item, options, userId) => {
 });
 
 
-// Retrato del actor + color del jugador en la cabecera de mensajes TQ
+// --- Objetos demoníacos ---
+
+function _tieneConjurosDemoniacos(item) {
+  return item.parent?.documentName === "Actor" && item.system?.esDemoniaco && item.system?.conjuros?.length;
+}
+
+async function _crearHechizosDeObjeto(actor, item) {
+  const conjuros = item.system.conjuros ?? [];
+  if (!conjuros.length) return;
+  const itemsToCreate = [];
+  for (const c of conjuros) {
+    const data = { dificultad: c.dificultad, fromDemoniaco: item.id };
+    if (c.verbo || c.pmCoste) {
+      if (c.verbo) data.verbo = c.verbo;
+      if (c.esfera) data.esfera = c.esfera;
+      if (c.pmCoste) data.pmCoste = c.pmCoste;
+      if (c.pmMax) data.pmMax = c.pmMax;
+      if (c.duracion) data.duracion = c.duracion;
+      if (c.requiereTiradaEspiritu) data.requiereTiradaEspiritu = c.requiereTiradaEspiritu;
+    } else {
+      for (const pack of game.packs) {
+        if (pack.metadata.type !== "Item") continue;
+        const idx = await pack.getIndex({ fields: ["type"] });
+        const entry = idx.find(e => e.name === c.nombre && e.type === "hechizo");
+        if (entry) {
+          const doc = await pack.getDocument(entry._id);
+          if (doc.system.verbo) data.verbo = doc.system.verbo;
+          if (doc.system.esfera) data.esfera = doc.system.esfera;
+          if (doc.system.pmCoste) data.pmCoste = doc.system.pmCoste;
+          if (doc.system.pmMax) data.pmMax = doc.system.pmMax;
+          if (doc.system.duracion) data.duracion = doc.system.duracion;
+          if (doc.system.requiereTiradaEspiritu) data.requiereTiradaEspiritu = doc.system.requiereTiradaEspiritu;
+          break;
+        }
+      }
+    }
+    itemsToCreate.push({ name: c.nombre, type: "hechizo", system: data });
+  }
+  await actor.createEmbeddedDocuments("Item", itemsToCreate);
+}
+
+async function _borrarHechizosDeObjeto(actor, itemId) {
+  const ids = actor.items.filter(i => i.system?.fromDemoniaco === itemId).map(i => i.id);
+  if (ids.length) await actor.deleteEmbeddedDocuments("Item", ids, { tqFromDemoniaco: true });
+}
+
+async function _aplicarBonoHabilidad(actor, item, signo) {
+  const bono = (item.system.bonoHabilidad ?? 0) * signo;
+  if (!bono) return;
+  let claveSistema = item.system.bonoHabilidadClaveSistema;
+  const claveNombre = item.system.bonoHabilidadClave;
+  if (!claveSistema && claveNombre) {
+    claveSistema = HABILIDADES_OPCIONES.find(h => h.label === claveNombre)?.clave ?? "";
+  }
+  if (claveSistema && actor.system.habilidades?.[claveSistema]?.puntosFijos !== undefined) {
+    const actual = actor.system.habilidades[claveSistema].puntosFijos ?? 0;
+    await actor.update({ [`system.habilidades.${claveSistema}.puntosFijos`]: actual + bono });
+  } else if (claveNombre && typeof actor.system.habilidades?.[claveNombre] === "number") {
+    const actual = actor.system.habilidades[claveNombre] ?? 0;
+    await actor.update({ [`system.habilidades.${claveNombre}`]: actual + bono });
+  }
+}
+
+function _tieneBonoHabilidad(item) {
+  return item.parent?.documentName === "Actor" && item.system?.esDemoniaco
+    && item.system?.bonoHabilidad > 0 && item.system?.bonoHabilidadClave;
+}
+
+Hooks.on("createItem", async (item, options, userId) => {
+  if (game.userId !== userId) return;
+  if (!item.parent || !item.system?.esDemoniaco) return;
+  if (_tieneConjurosDemoniacos(item)) await _crearHechizosDeObjeto(item.parent, item);
+  if (_tieneBonoHabilidad(item)) await _aplicarBonoHabilidad(item.parent, item, +1);
+});
+
+Hooks.on("deleteItem", async (item, options, userId) => {
+  if (game.userId !== userId) return;
+  if (options.tqFromDemoniaco) return;
+  if (!item.parent || !item.system?.esDemoniaco) return;
+  if (_tieneConjurosDemoniacos(item)) await _borrarHechizosDeObjeto(item.parent, item.id);
+  if (_tieneBonoHabilidad(item)) await _aplicarBonoHabilidad(item.parent, item, -1);
+});
+
+Hooks.on("updateItem", async (item, changes, options, userId) => {
+  if (game.userId !== userId) return;
+  if (!item.parent || !item.system?.esDemoniaco) return;
+  if (typeof changes.system?.equipped === "undefined") return;
+  const actor = item.parent;
+  if (changes.system.equipped === false) {
+    if (_tieneConjurosDemoniacos(item)) await _borrarHechizosDeObjeto(actor, item.id);
+    if (_tieneBonoHabilidad(item)) await _aplicarBonoHabilidad(actor, item, -1);
+  } else if (changes.system.equipped === true) {
+    if (_tieneConjurosDemoniacos(item)) await _crearHechizosDeObjeto(actor, item);
+    if (_tieneBonoHabilidad(item)) await _aplicarBonoHabilidad(actor, item, +1);
+  }
+});
+
+
 Hooks.on("renderChatMessageHTML", (message, html) => {
   if (message.blind && !game.user.isGM) {
     const resultado = html.querySelector(".tq-tirada-resultado");
@@ -568,7 +684,7 @@ Hooks.on("renderChatMessageHTML", (message, html) => {
     }
     return;
   }
-  // Botón "Aplicar Pasión" visible solo para el GM
+
   const btnAplicar = html.querySelector(".tq-aplicar-pasion");
   if (btnAplicar && game.user.isGM) {
     btnAplicar.style.display = "";
@@ -673,8 +789,12 @@ Hooks.on("renderChatMessageHTML", (message, html) => {
         if (beneficio === "espiritu") bonusEspiritu = 2;
       }
 
-      if (btnResultado.dataset.requiereEspiritu === "true")
-        await actor._luchaDeEspiritu(btnResultado.dataset.etiqueta ?? "", bonusEspiritu);
+      if (btnResultado.dataset.requiereEspiritu === "true") {
+        const espArt = btnResultado.dataset.espirituArtefacto;
+        const espOverride = espArt !== undefined && espArt !== "" ? parseInt(espArt) : null;
+        const nombreArt = btnResultado.dataset.nombreArtefacto || null;
+        await actor._luchaDeEspiritu(btnResultado.dataset.etiqueta ?? "", bonusEspiritu, espOverride, nombreArt);
+      }
       btnResultado.disabled = true;
       btnResultado.textContent = game.i18n.localize("TQ.Botones.ResultadoAplicado");
     });

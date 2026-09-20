@@ -2,7 +2,7 @@
   "id": "tierras-quebradas",
   "title": "Tierras Quebradas",
   "description": "Tierras Quebradas: Edición Revisada",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "background": "systems/tierras-quebradas/images/default/Espada_blanca.png",
   "url": "https://github.com/ViajeroSalvaje/tierras-quebradas",
   "manifest": "https://raw.githubusercontent.com/ViajeroSalvaje/tierras-quebradas/main/system.json",
@@ -51,89 +51,38 @@
     "deidad",
     "caracteristicaBestiario"
   ],
-  "packFolders": [
-    {
-      "name": "Bestiario",
-      "sorting": "a",
-      "color": "#1c6473",
-	  "packs": ["rasgos-bestiario", "automatas", "criaturas", "demonios", "animales"]
-    },
-    {
-      "name": "Equipo",
-      "sorting": "a",
-      "color": "#1c6473",
-      "folders": [
-        {
-          "name": "Armas y armaduras",
-          "sorting": "a",
-          "color": "#1c6473",
-          "packs": ["armamento-armaduras", "armamento-armas-improvisadas", "armamento-armas-cuerpo-a-cuerpo", "armamento-armas-proyectiles", "armamento-armas-arrojadizas"]
-        },
-        {
-          "name": "Otro equipo",
-          "sorting": "a",
-          "color": "#1c6473",
-          "packs": ["equipo", "objetos", "objetos-magicos"]
-        }
-      ]
-    },
-    {
-      "name": "Mundo",
-      "sorting": "a",
-      "color": "#1c6473",
-	  "packs": ["deidades"]
-    },
-    {
-      "name": "Narrador",
-      "sorting": "a",
-      "color": "#1c6473",
-	  "packs": ["tablas-sucesos", "aventuras"]
-    },
-    {
-      "name": "Personajes",
-      "sorting": "a",
-      "color": "#1c6473",
-	  "packs": ["especies", "entornos", "origenes", "profesiones", "ventajas", "rasgos", "idiomas", "habilidades"]
-    },	
-    {
-      "name": "Magia",
-      "sorting": "a",
-      "color": "#1c6473",
-	  "packs": ["bendiciones", "hechizos"]
-    }
-  ],
   "packs": [
     {
       "name": "bendiciones",
-      "label": "Bendiciones divinas",
+      "label": "Bendiciones Divinas",
       "path": "packs/bendiciones",
       "type": "Item",
       "system": "tierras-quebradas"
     },
     {
       "name": "criaturas",
-      "label": "Criaturas",
+      "label": "Bestiario — Criaturas",
       "path": "packs/criaturas",
       "type": "Actor",
       "system": "tierras-quebradas"
     },
     {
       "name": "automatas",
-      "label": "Autómatas de la Ley",
+      "label": "Bestiario — Autómatas de la Ley",
       "path": "packs/automatas",
       "type": "Actor",
       "system": "tierras-quebradas"
     },
     {
       "name": "demonios",
-      "label": "Demonios",
+      "label": "Bestiario — Demonios",
       "path": "packs/demonios",
       "type": "Actor",
       "system": "tierras-quebradas"
     },
     {
       "name": "animales",
-      "label": "Animales",
+      "label": "Bestiario — Animales",
       "path": "packs/animales",
       "type": "Actor",
       "system": "tierras-quebradas"
@@ -161,7 +110,7 @@
     },
     {
       "name": "origenes",
-      "label": "Orígenes étnicos",
+      "label": "Orígenes Étnicos",
       "path": "packs/origenes",
       "type": "Item",
       "system": "tierras-quebradas"
@@ -175,7 +124,7 @@
     },
     {
       "name": "ventajas",
-      "label": "Ventajas y desventajas",
+      "label": "Ventajas y Desventajas",
       "path": "packs/ventajas",
       "type": "Item",
       "system": "tierras-quebradas"
@@ -189,35 +138,35 @@
     },
     {
       "name": "armamento-armaduras",
-      "label": "Armaduras",
+      "label": "Armamento: Armaduras",
       "path": "packs/armamento-armaduras",
       "type": "Item",
       "system": "tierras-quebradas"
     },
     {
       "name": "armamento-armas-improvisadas",
-      "label": "Armas improvisadas",
+      "label": "Armamento: Armas Improvisadas",
       "path": "packs/armamento-armas-improvisadas",
       "type": "Item",
       "system": "tierras-quebradas"
     },
     {
       "name": "armamento-armas-cuerpo-a-cuerpo",
-      "label": "Armas cuerpo a cuerpo",
+      "label": "Armamento: Armas Cuerpo a Cuerpo",
       "path": "packs/armamento-armas-cuerpo-a-cuerpo",
       "type": "Item",
       "system": "tierras-quebradas"
     },
     {
       "name": "armamento-armas-proyectiles",
-      "label": "Armas de proyectiles",
+      "label": "Armamento: Armas de Proyectiles",
       "path": "packs/armamento-armas-proyectiles",
       "type": "Item",
       "system": "tierras-quebradas"
     },
     {
       "name": "armamento-armas-arrojadizas",
-      "label": "Armas arrojadizas",
+      "label": "Armamento: Armas Arrojadizas",
       "path": "packs/armamento-armas-arrojadizas",
       "type": "Item",
       "system": "tierras-quebradas"
@@ -266,7 +215,7 @@
     },
     {
       "name": "objetos-magicos",
-      "label": "Objetos mágicos",
+      "label": "Objetos Mágicos",
       "path": "packs/objetos-magicos",
       "type": "Item",
       "system": "tierras-quebradas"
@@ -280,10 +229,69 @@
     },
     {
       "name": "rasgos-bestiario",
-      "label": "Rasgos y poderes",
+      "label": "Rasgos y Poderes de Bestiario",
       "path": "packs/rasgos-bestiario",
       "type": "Item",
       "system": "tierras-quebradas"
+    }
+  ],
+  "packFolders": [
+    {
+      "name": "Bestiario",
+      "sorting": "a",
+      "color": "#1c6473",
+      "packs": ["criaturas", "demonios", "animales", "automatas"],
+      "folders": [
+        {
+          "name": "Creación Bestiario",
+          "sorting": "a",
+          "color": "#1c6473",
+          "packs": ["rasgos-bestiario"]
+        }
+      ]
+    },
+    {
+      "name": "Equipo",
+      "sorting": "a",
+      "color": "#1c6473",
+      "folders": [
+        {
+          "name": "Armamento",
+          "sorting": "a",
+          "color": "#1c6473",
+          "packs": ["armamento-armaduras", "armamento-armas-improvisadas", "armamento-armas-cuerpo-a-cuerpo", "armamento-armas-proyectiles", "armamento-armas-arrojadizas"]
+        },
+        {
+          "name": "Otro equipo",
+          "sorting": "a",
+          "color": "#1c6473",
+          "packs": ["equipo", "objetos", "objetos-magicos"]
+        }
+      ]
+    },
+    {
+      "name": "Mundo",
+      "sorting": "a",
+      "color": "#1c6473",
+      "packs": ["deidades"]
+    },
+    {
+      "name": "Narrador",
+      "sorting": "a",
+      "color": "#1c6473",
+      "packs": ["tablas-sucesos", "aventuras"]
+    },
+    {
+      "name": "Personajes",
+      "sorting": "a",
+      "color": "#1c6473",
+      "packs": ["especies", "entornos", "origenes", "profesiones", "ventajas", "rasgos", "idiomas", "habilidades"]
+    },
+    {
+      "name": "Religión y magia",
+      "sorting": "a",
+      "color": "#1c6473",
+      "packs": ["bendiciones", "hechizos"]
     }
   ]
 }

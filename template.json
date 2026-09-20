@@ -195,7 +195,8 @@
         "idiomaNoativo": "",
         "donesPara": [],
         "afinidadesCon": [],
-        "blancosDe": []
+        "blancosDe": [],
+        "alianzas": []
       }
     },
     "pj": {
@@ -255,13 +256,15 @@
       "pm": 0,
       "espirituConsagrado": 0,
       "valorMagico": 0,
+      "deidad": "",
       "vinculo": "",
+      "descripcion": "",
       "heridas": [],
       "notas": ""
     }
   },
   "Item": {
-    "types": ["arma", "armadura", "hechizo", "ventaja", "rasgo", "pacto", "bendicion", "especie", "entorno", "origen", "profesion", "idioma", "objeto", "consumible", "habilidad", "objetoMagico", "deidad", "artefacto", "caracteristicaBestiario"],
+    "types": ["arma", "armadura", "hechizo", "ventaja", "rasgo", "pacto", "bendicion", "especie", "entorno", "origen", "profesion", "idioma", "objeto", "consumible", "habilidad", "objetoMagico", "deidad", "artefacto", "caracteristicaBestiario", "objetoDemoniaco"],
     "templates": {
       "base": {
         "descripcion": "",
@@ -286,7 +289,26 @@
       "proteccionValor": 0,
       "propiedades": "",
       "precio": 0,
-      "equipped": true
+      "equipped": true,
+      "esDemoniaco": false,
+      "demonioNombre": "",
+      "demonioActorId": "",
+      "vm": 0,
+      "bonoDanho": 0,
+      "bonoHabilidad": 0,
+      "bonoHabilidadClave": "",
+      "bonoHabilidadClaveSistema": "",
+      "danhoMagico": false,
+      "danhoEspiritual": false,
+      "vampiro": false,
+      "irrompible": false,
+      "demonioProteccion": 0,
+      "salvaguardaFuego": false,
+      "salvaguardaArmas": false,
+      "conjuros": [],
+      "pmPropios": false,
+      "creadoPor": "",
+      "vinculacionDios": ""
     },
     "armadura": {
       "templates": ["base"],
@@ -297,7 +319,26 @@
       "precio": 0,
       "esYelmo": false,
       "viseraBajada": false,
-      "equipped": true
+      "equipped": true,
+      "esDemoniaco": false,
+      "demonioNombre": "",
+      "demonioActorId": "",
+      "vm": 0,
+      "bonoDanho": 0,
+      "bonoHabilidad": 0,
+      "bonoHabilidadClave": "",
+      "bonoHabilidadClaveSistema": "",
+      "danhoMagico": false,
+      "danhoEspiritual": false,
+      "vampiro": false,
+      "irrompible": false,
+      "demonioProteccion": 0,
+      "salvaguardaFuego": false,
+      "salvaguardaArmas": false,
+      "conjuros": [],
+      "pmPropios": false,
+      "creadoPor": "",
+      "vinculacionDios": ""
     },
     "hechizo": {
       "templates": ["base"],
@@ -306,6 +347,7 @@
       "pmCoste": 1,
       "pmMax": 0,
       "dificultad": 15,
+      "fromDemoniaco": "",
       "duracion": "",
       "alcance": "toque",
       "inmediato": false,
@@ -385,7 +427,24 @@
       "precio": 0,
       "categoria": "",
       "descripcion": "",
-      "equipped": true
+      "equipped": true,
+      "esDemoniaco": false,
+      "demonioNombre": "",
+      "demonioActorId": "",
+      "vm": 0,
+      "bonoDanho": 0,
+      "bonoHabilidad": 0,
+      "bonoHabilidadClave": "",
+      "bonoHabilidadClaveSistema": "",
+      "danhoMagico": false,
+      "danhoEspiritual": false,
+      "vampiro": false,
+      "irrompible": false,
+      "demonioProteccion": 0,
+      "salvaguardaFuego": false,
+      "salvaguardaArmas": false,
+      "conjuros": [],
+      "pmPropios": false
     },
     "objetoMagico": {
       "tipoObjeto": "otro",
@@ -466,6 +525,7 @@
 
       "templates": ["base"],
       "teaurgo": "",
+      "tipoObjeto": "",
       "habilidades": {},
       "pm": 0,
       "espirituConsagrado": 0,
@@ -475,11 +535,15 @@
       "alImpacto": 0,
       "movimiento": "",
       "poderes": [],
+      "habilidadesSostenidas": [],
       "sosten": "",
       "deidad": "",
       "heridas": [],
       "espiritu": 0,
       "coste": 0,
+      "tiempoConstruccion": "",
+      "objetoBase": null,
+      "equipped": true,
       "notas": ""
     },
     "caracteristicaBestiario": {
@@ -490,6 +554,27 @@
       "creaArma": false,
       "tipoArma": "",
       "descripcion": ""
+    },
+    "objetoDemoniaco": {
+      "demonioNombre": "",
+      "demonioActorId": "",
+      "tipoObjeto": "arma",
+      "vm": 1,
+      "bonoDanho": 0,
+      "bonoHabilidad": 0,
+      "bonoHabilidadClave": "",
+      "bonoHabilidadClaveSistema": "",
+      "danhoMagico": false,
+      "danhoEspiritual": false,
+      "vampiro": false,
+      "irrompible": false,
+      "proteccion": 0,
+      "salvaguardaFuego": false,
+      "salvaguardaArmas": false,
+      "conjuros": [],
+      "pmPropios": false,
+      "notas": "",
+      "equipped": true
     }
   }
 }
