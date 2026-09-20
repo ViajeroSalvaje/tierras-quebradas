@@ -1,3 +1,22 @@
+# Notas 12 de septiembre 2026 
+
+ 
+**Cambios**
+
+- Implementado el creador de artefactos
+- Implementado el asistente de demonología
+- Se añaden todas las ventajas relativas a objetos
+- Modificados los PNJ demonios
+- Correcciones en el sistema de melé
+
+  **Pendiente**
+  - Cambios en como se muestran los rangos de las heridas
+  - Impresión de fichas en físico
+    
+
+
+
+
 
 # Notas 12 de septiembre 2026 
 
