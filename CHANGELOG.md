@@ -9,7 +9,8 @@
 - Modificados los PNJ demonios
 - Correcciones en el sistema de melé
 
-  **Pendiente**
+**Pendiente**
+
   - Cambios en como se muestran los rangos de las heridas
   - Impresión de fichas en físico
     
