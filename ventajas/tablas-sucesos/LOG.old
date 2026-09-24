@@ -1,0 +1,17 @@
+2026/06/07-01:38:34.903 2be4 Recovering log #191
+2026/06/07-01:38:34.903 2be4 Level-0 table #194: started
+2026/06/07-01:38:34.907 2be4 Level-0 table #194: 1537 bytes OK
+2026/06/07-01:38:34.917 2be4 Delete type=0 #191
+2026/06/07-01:38:34.918 2be4 Delete type=3 #189
+2026/06/07-01:41:00.267 6918 Level-0 table #197: started
+2026/06/07-01:41:00.270 6918 Level-0 table #197: 1553 bytes OK
+2026/06/07-01:41:00.272 6918 Delete type=0 #195
+2026/06/07-01:41:00.277 6918 Manual compaction at level-0 from '!tables!TQtsCompMagi0001' @ 72057594037927935 : 1 .. '!tables.results!yQjUEzbmj98sxB8Y' @ 0 : 0; will stop at '!tables.results!wuQa3l7BmDkVvXw5' @ 887 : 0
+2026/06/07-01:41:00.277 6918 Compacting 2@0 + 1@1 files
+2026/06/07-01:41:00.281 6918 Generated table #198@0: 87 keys, 11408 bytes
+2026/06/07-01:41:00.281 6918 Compacted 2@0 + 1@1 files => 11408 bytes
+2026/06/07-01:41:00.283 6918 compacted to: files[ 0 1 0 0 0 0 0 ]
+2026/06/07-01:41:00.283 6918 Delete type=2 #192
+2026/06/07-01:41:00.284 6918 Delete type=2 #194
+2026/06/07-01:41:00.284 6918 Delete type=2 #197
+2026/06/07-01:41:00.288 6918 Manual compaction at level-0 from '!tables.results!wuQa3l7BmDkVvXw5' @ 887 : 0 .. '!tables.results!yQjUEzbmj98sxB8Y' @ 0 : 0; will stop at (end)
