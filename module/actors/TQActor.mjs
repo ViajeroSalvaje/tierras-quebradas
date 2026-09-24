@@ -8,7 +8,7 @@ const { DialogV2 } = foundry.applications.api;
 export class TQActor extends Actor {
   // Habilidades especializadas
   static HABILIDADES_ESPECIALIZADAS = new Set([
-    "academia", "conocimientoMagico", "estrategia", "multiverso", "pociones", "sueños", "artesania", "forzarCerraduras", "arco", "honda", "nadar", "navegacion", "manejarBotes", "actuacion", "idioma1", "idioma2", "idioma3"
+    "academia", "conocimientoMagico", "estrategia", "multiverso", "pociones", "suenhos", "artesania", "forzarCerraduras", "arco", "honda", "nadar", "navegacion", "manejarBotes", "actuacion", "medicina", "idioma1", "idioma2", "idioma3"
   ]);
   static HABILIDADES_CEGUERA = new Set([
     "artesania", "forzarCerraduras", "hurtar", "manejarCarros", "ocultar",
@@ -1302,14 +1302,14 @@ export class TQActor extends Actor {
     const pmBase = Math.floor(horas / 2);
 
     if (lanzarSuenos) {
-      const habilidad = this.system.habilidades?.["sueños"];
+      const habilidad = this.system.habilidades?.["suenhos"];
       let puntuacion = 0;
       if (habilidad) {
         const base = this.system.bases[habilidad.base]?.valor ?? 0;
         puntuacion = base + (habilidad.nivel ?? 0);
       }
       await TQRoll.dialogoTirada("Sueños", puntuacion, {
-        actor: this, habClave: "sueños", dificultadPorDefecto: 15,
+        actor: this, habClave: "suenhos", dificultadPorDefecto: 15,
         pmRecuperadoBase: pmBase, pmRecuperadoExito: horas
       });
       return;

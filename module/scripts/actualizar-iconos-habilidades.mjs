@@ -41,7 +41,7 @@ const ICONOS = {
   rastrear: "systems/tierras-quebradas/images/iconos/rastrear.svg",
   seguir: "systems/tierras-quebradas/images/iconos/seguir.svg",
   sigilo: "systems/tierras-quebradas/images/iconos/sigilo.svg",
-  sueños: "systems/tierras-quebradas/images/iconos/sueños.svg",
+  suenhos: "systems/tierras-quebradas/images/iconos/sueños.svg",
   tierrasQuebradas: "systems/tierras-quebradas/images/iconos/tierrasQuebradas.svg",
   tratarAnimales: "systems/tierras-quebradas/images/iconos/tratarAnimales.svg",
   trepar: "systems/tierras-quebradas/images/iconos/trepar.svg",

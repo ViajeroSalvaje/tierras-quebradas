@@ -31,7 +31,7 @@ export class CriaturaSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
   get title() { return this.actor.name; }
 
   async _prepareContext(options) {
-    const CARACTS = ["cuerpo", "mente", "espiritu", "atractivo", "tamanyo"];
+    const CARACTS = ["cuerpo", "mente", "espiritu", "atractivo", "tamano"];
     const LABELS = Object.fromEntries(CARACTS.map(c => [c, game.i18n.localize(`TQ.Caracteristicas.${c}`)]));
     const caracts = this.actor.system.caracteristicas;
     const caracteristicasOrdenadas = CARACTS.map(c => ({

@@ -9,7 +9,7 @@ const GRUPOS_HABILIDADES = [
   ]}, { id: "comunicacion", label: "Comunicación (COM)", habs: [
     { clave: "actuacion", label: "Actuación (E)" }, { clave: "callejeo", label: "Callejeo" }, { clave: "disfrazarse", label: "Disfrazarse" }, { clave: "encanto", label: "Encanto" }, { clave: "imponerse", label: "Imponerse" }, { clave: "instruir", label: "Instruir" }, { clave: "manipulacion", label: "Manipular" }, { clave: "oratoria", label: "Oratoria" }, { clave: "tratarAnimales", label: "Tratar animales" }
   ]}, { id: "cultura", label: "Cultura (CUL)", habs: [
-    { clave: "academia", label: "Academia (E)" }, { clave: "conocimientoMagico", label: "Conocimiento mágico (E)" }, { clave: "estrategia", label: "Estrategia (E)" }, { clave: "idioma2", label: "Idioma 2 (E)" }, { clave: "idioma3", label: "Idioma 3 (E)" }, { clave: "leyendas", label: "Leyendas" }, { clave: "medicina", label: "Medicina (E)" }, { clave: "memorizar", label: "Memorizar" }, { clave: "multiverso", label: "Multiverso (E)" }, { clave: "naturaleza", label: "Naturaleza" }, { clave: "navegacion", label: "Navegación (E)" }, { clave: "pociones", label: "Pociones (E)" }, { clave: "sueños", label: "Sueños (E)" }, { clave: "tierrasQuebradas", label: "Tierras Quebradas" }
+    { clave: "academia", label: "Academia (E)" }, { clave: "conocimientoMagico", label: "Conocimiento mágico (E)" }, { clave: "estrategia", label: "Estrategia (E)" }, { clave: "idioma2", label: "Idioma 2 (E)" }, { clave: "idioma3", label: "Idioma 3 (E)" }, { clave: "leyendas", label: "Leyendas" }, { clave: "medicina", label: "Medicina (E)" }, { clave: "memorizar", label: "Memorizar" }, { clave: "multiverso", label: "Multiverso (E)" }, { clave: "naturaleza", label: "Naturaleza" }, { clave: "navegacion", label: "Navegación (E)" }, { clave: "pociones", label: "Pociones (E)" }, { clave: "suenhos", label: "Sueños (E)" }, { clave: "tierrasQuebradas", label: "Tierras Quebradas" }
   ]}, { id: "percepcion", label: "Percepción (PER)", habs: [
     { clave: "buscar", label: "Buscar" }, { clave: "documentacion", label: "Documentación" }, { clave: "juego", label: "Juego" }, { clave: "percatarse", label: "Percatarse" }, { clave: "perspicacia", label: "Perspicacia" }, { clave: "rastrear", label: "Rastrear" }, { clave: "seguir", label: "Seguir" }
   ]}, { id: "tecnica", label: "Técnica (TEC)", habs: [
@@ -746,7 +746,7 @@ export class CharacterCreator extends HandlebarsApplicationMixin(ApplicationV2) 
         const libre = this._charData.magiaLibres[key] ?? 0;
         const total = baseHechiceria + prof + libre;
         return {
-          key, label, base: baseHechiceria + prof, libre, total, puedeSubir: total < 8 && puntosRestantes > 0, puedeBajar: libre > 0
+          key, label, base: baseHechiceria + prof, libre, total, puedeSubir: libre < 8 && puntosRestantes > 0, puedeBajar: libre > 0
         };
       };
 

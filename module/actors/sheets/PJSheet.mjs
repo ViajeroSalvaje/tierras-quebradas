@@ -50,7 +50,7 @@ export class PJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       "estrategia", "forzarCerraduras", "hurtar", "idioma1", "idioma2", "idioma3", "imponerse", "instruir", "juego", "lanzar", "leyendas", "manejarBotes", "manejarCarros", "manipulacion", "medicina", "memorizar", "montar", "multiverso"
     ];
     const COL3 = [
-      "nadar", "naturaleza", "navegacion", "ocultar", "oratoria", "pelea", "percatarse", "perspicacia", "pociones", "primerosAuxilios", "rastrear", "seguir", "sigilo", "sueños", "tierrasQuebradas", "tratarAnimales", "trepar"
+      "nadar", "naturaleza", "navegacion", "ocultar", "oratoria", "pelea", "percatarse", "perspicacia", "pociones", "primerosAuxilios", "rastrear", "seguir", "sigilo", "suenhos", "tierrasQuebradas", "tratarAnimales", "trepar"
     ];
 
     if (!PJSheet._habDescripciones) {
@@ -167,6 +167,13 @@ export class PJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     const tienePasionExtra = (byType.ventaja ?? []).some(i => i.name === "Pasión extra");
     const hasLucky = (byType.rasgo ?? []).some(i => i.name === "Buena suerte");
 
+    const pvRagunos = this.actor.system.salud.pvRagunos?.valor ?? 0;
+    const pvGrave = this.actor.system.salud.pvGrave?.valor ?? 0;
+    const pvMax = this.actor.system.salud.pvMax?.valor ?? 0;
+    const umbralR = `1 - ${pvRagunos}`;
+    const umbralHL = `${pvRagunos + 1} - ${pvGrave - 1}`;
+    const umbralHG = `${pvGrave} - ${pvMax - 1}`;
+
     return {
       actor: this.actor,
       system: this.actor.system,
@@ -216,6 +223,7 @@ export class PJSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       tienePasionExtra,
       hasLucky,
       luckyMax: hasLucky ? Math.floor((this.actor.system.caracteristicas?.mente?.valor ?? 0) / 2) : 0,
+      umbralR, umbralHL, umbralHG,
       config: CONFIG.TQ,
       col1: makeCol(COL1), col2: makeCol(COL2), col3: makeCol(COL3),
       basesFormulas,
