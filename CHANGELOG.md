@@ -11,6 +11,7 @@
 - Manipulación cambiado por Manipular.
 - Se han cambiado las claves internas en algunas habilidades.
 - En todos los actores que no son PJ se marca automáticamente el círculo correspondiente a la herida recibida.
+- Corrección en el hechizo Invocar Gnomo.
 
 **Pendiente**
 
