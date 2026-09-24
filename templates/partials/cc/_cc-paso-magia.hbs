@@ -52,7 +52,7 @@
           <span class="cc-magia-hab-nombre">{{v.label}}</span>
           <div class="cc-magia-hab-controles">
             <button type="button" class="cc-magia-btn" data-hab="{{v.key}}" data-delta="-1" {{#unless v.puedeBajar}}disabled{{/unless}}>−</button>
-            <span class="cc-magia-hab-total {{#if v.libre}}tiene-libre{{/if}}">{{v.total}}</span>
+            <span class="cc-magia-hab-total {{#if v.libre}}tiene-libre{{/if}}">{{v.libre}}</span>
             <button type="button" class="cc-magia-btn" data-hab="{{v.key}}" data-delta="1" {{#unless v.puedeSubir}}disabled{{/unless}}>+</button>
           </div>
           <span class="cc-magia-hab-base">(base {{v.base}})</span>
@@ -68,7 +68,7 @@
           <span class="cc-magia-hab-nombre">{{e.label}}</span>
           <div class="cc-magia-hab-controles">
             <button type="button" class="cc-magia-btn" data-hab="{{e.key}}" data-delta="-1" {{#unless e.puedeBajar}}disabled{{/unless}}>−</button>
-            <span class="cc-magia-hab-total {{#if e.libre}}tiene-libre{{/if}}">{{e.total}}</span>
+            <span class="cc-magia-hab-total {{#if e.libre}}tiene-libre{{/if}}">{{e.libre}}</span>
             <button type="button" class="cc-magia-btn" data-hab="{{e.key}}" data-delta="1" {{#unless e.puedeSubir}}disabled{{/unless}}>+</button>
           </div>
           <span class="cc-magia-hab-base">(base {{e.base}})</span>
