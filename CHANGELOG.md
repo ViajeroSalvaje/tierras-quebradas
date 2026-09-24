@@ -1,3 +1,25 @@
+
+# Notas 24 de septiembre 2026 
+
+ 
+**Cambios**
+
+- Medicina ya está puesta como especializada.
+- Se ha corregido el cálculo de la fuerza en los actores tipo Criatura.
+- Se ha cambiado como se muestran los umbrales de herida en los PJ.
+- Cambios en la asignación de puntos a Verbos y Esferas en el creador de personajes.
+- Manipulación cambiado por Manipular.
+- Se han cambiado las claves internas en algunas habilidades.
+- En todos los actores que no son PJ se marca automáticamente el círculo correspondiente a la herida recibida.
+
+**Pendiente**
+
+  - Impresión de fichas en físico
+
+
+
+
+
 # Notas 12 de septiembre 2026 
 
  
